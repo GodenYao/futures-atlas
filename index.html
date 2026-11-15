@@ -75,6 +75,7 @@ button{font:inherit;color:inherit}
 .axr.W,.axr.E{background:repeating-linear-gradient(180deg,#2a323c 0 1px,transparent 1px 16px);width:3px!important}
 /* r4 U12: on zoom-in the 4 axis icons glide into a camera-correct compass legend (#axc), hold ~3.6 s, then return to the (camera-correct) edges as small tabs */
 body.axanim .axi{transition:left .6s cubic-bezier(.3,.7,.3,1),top .6s cubic-bezier(.3,.7,.3,1),transform .6s ease,opacity .6s ease,border-color .4s}
+body.axanim .axi.wy{transition:left .3s ease-out,top .3s ease-out,transform .3s ease,opacity .3s ease,border-color .4s} /* r8 U24: world-view yaw drag glide */
 .axi .axl{position:absolute;top:50%;left:calc(100% + 8px);transform:translateY(-50%);white-space:nowrap;font:500 12px var(--f2);letter-spacing:.06em;color:#E9E4D8;opacity:0;pointer-events:none;transition:opacity .45s ease}
 .axi .axl b{color:var(--acc);font-weight:500;margin-right:5px}
 .axi.lft .axl{left:auto;right:calc(100% + 8px)}
@@ -389,66 +390,29 @@ const hx=h=>{const n=parseInt(h.slice(1),16);return[(n>>16&255)/255,(n>>8&255)/2
 // dominant feeding road of a site (its % colour everywhere = that road's colour)
 function domRoad(src){let b=null,bv=-1;for(const k in src)if(src[k]>bv){bv=src[k];b=k;}return b||'R6';}
 
-// ======================= LOOKS (v4.4 L1): three lighting presets, ?look=1|2|3 (default 1) =======================
-// One config object per look: scene (CSS sky + overlays), fog, lights, terrain palette + shader line colours, water, models, roads, windows, bloom, UI tokens.
-// Lighting is descriptive atmosphere only (Q17): every site is lit the same within a look; no look encodes a judgement.
-// r2: fine = weight of the 1.5 u fine contours, aB = holo base alpha (look 3), rail/fillA = road rail ink + fill alpha (dark ink on the light dawn map),
-//     ui = per-look CSS overrides (look 2 = dark glass panels so the restrained dark UI stays legible on a light map).
-const LOOKS={
- 1:{n:'Cinematic dusk', // deep blue-violet terrain, warm gold city light, strong horizon glow (ref/continuum_home.png)
-  bg:'linear-gradient(180deg,#0A0F22 0%,#18203F 24%,#35294E 38%,#161C38 58%,#080B18 100%)',
-  vig:'linear-gradient(180deg,rgba(8,10,26,.55) 0%,rgba(255,160,90,.30) 7%,rgba(230,130,120,.12) 15%,rgba(150,110,190,.04) 26%,rgba(0,0,0,0) 34%,rgba(0,0,0,0) 62%,rgba(4,6,18,.42) 100%),radial-gradient(ellipse 92% 88% at 55% 40%,rgba(4,6,18,0) 52%,rgba(4,6,18,.55) 100%)',
-  glow:'radial-gradient(ellipse 30% 22% at 57.5% 40%,rgba(255,180,110,.20) 0%,rgba(255,140,100,.07) 45%,rgba(0,0,0,0) 100%),radial-gradient(ellipse 70% 20% at 50% 2%,rgba(255,150,80,.40) 0%,rgba(230,110,110,.10) 55%,rgba(0,0,0,0) 100%),radial-gradient(ellipse 30% 26% at 92% 20%,rgba(200,110,170,.12) 0%,rgba(0,0,0,0) 100%)',
-  fog:['#3E3C78',210,460],hemi:['#8494D8','#120F2C',.62],sun:['#FFB070',1.25],fill:['#6A8EE6',.48],
-  T:{LO:'#0E1430',MID:'#1C2550',HI:'#3C4986',ROCK:'#474A76',WAT:'#0A1230',SHORE:'#2A3560',CHAR:'#100E1A',PAVE:'#1A2140'},
-  rimC:[.14,.15,.32],conC:[.20,.24,.42],conM:[.36,.38,.60],cross:[.26,.30,.46],conK:1,fine:1,alpha:0,aB:.42,ridgeWarm:[.34,.19,.09],
-  night:'#1E2644',nightK:.76,albCap:.5,win:'#FFC266',winOp:1,glowK:.62,glowCap:.34,roadK:1.0,
-  mk:'#C4BFB2',lead:'#F8F2E4',
-  bloom:{s:1.85,r:.78,th:.70,knee:.16},shK:.66,shC:.90}, // r3: th .64 -> .70 + hue-preserving highlight shoulder (max channel <= .90) so no spot clips to white
- 2:{n:'Dawn survey', // light blue-grey terrain, white-cyan morning light: bright, clean orbital survey
-  bg:'linear-gradient(180deg,#9FB4CA 0%,#C4D2E0 28%,#DCE4EC 42%,#B5C3D2 62%,#8EA1B6 100%)',
-  vig:'linear-gradient(180deg,rgba(60,80,110,.30) 0%,rgba(225,245,255,.22) 8%,rgba(255,255,255,.04) 20%,rgba(0,0,0,0) 32%,rgba(0,0,0,0) 66%,rgba(30,45,70,.30) 100%),radial-gradient(ellipse 92% 88% at 55% 40%,rgba(30,45,70,0) 55%,rgba(30,45,70,.34) 100%)',
-  glow:'radial-gradient(ellipse 70% 22% at 40% 0%,rgba(230,250,255,.40) 0%,rgba(200,235,255,.08) 60%,rgba(0,0,0,0) 100%)',
-  fog:['#A6B6C8',220,480],hemi:['#E8F2FF','#4A5870',.58],sun:['#FFF8EE',.70],fill:['#A8DCFF',.40],
-  T:{LO:'#465670',MID:'#5A6C86',HI:'#7487A0',ROCK:'#6A778C',WAT:'#2E4A6C',SHORE:'#566A84',CHAR:'#34343C',PAVE:'#525E72'},
-  rimC:[.48,.54,.62],conC:[.28,.35,.46],conM:[.18,.24,.34],cross:[.24,.30,.40],conK:.85,fine:.8,alpha:0,aB:.42,ridgeWarm:[.06,.06,.05],
-  night:'#5E6B82',nightK:.66,albCap:.74,win:'#E6F6FF',winOp:.9,glowK:.30,glowCap:.20,roadK:.42,rail:'vec3(0.03,0.05,0.09)',railK:.55,fillA:.62,
-  mk:'#1E2A3A',lead:'#0A111C',
-  bloom:{s:.40,r:.4,th:.92,knee:.05},
-  ui:`body.look2 #hud{left:12px;top:10px;padding:10px 12px 11px;background:rgba(10,15,24,.80);backdrop-filter:blur(6px);border-left:1px solid #3A4656}
-body.look2 #menu{background:rgba(10,15,24,.80);backdrop-filter:blur(6px);padding:2px 4px}
-body.look2 #menu button{text-shadow:none}
-body.look2 #legend{background:rgba(10,15,24,.84);backdrop-filter:blur(6px)}
-body.look2 #tl{background:rgba(10,15,24,.80)!important;backdrop-filter:blur(6px);padding:4px 10px 2px!important;border-top:1px solid #3A4656!important}
-body.look2 #foot{background:rgba(10,15,24,.80);padding:2px 8px;left:12px;right:12px;bottom:3px}
-body.look2 #tltab{background:rgba(10,15,24,.80);padding:2px 8px}
-body.look2 .nowl{color:#0C1420;text-shadow:0 0 6px rgba(236,242,248,.98),0 0 14px rgba(236,242,248,.85)}
-body.look2 .nowl span{color:#6E4A0E}
-body.look2 .plq{color:#0C1420;text-shadow:0 0 6px rgba(236,242,248,.98),0 0 2px rgba(236,242,248,.98)}
-body.look2 .wl{color:#26303C;text-shadow:0 0 4px rgba(236,242,248,.95)}
-body.look2 .axr.N,body.look2 .axr.S{background:repeating-linear-gradient(90deg,#46546A 0 1px,transparent 1px 16px)}
-body.look2 .axr.W,body.look2 .axr.E{background:repeating-linear-gradient(180deg,#46546A 0 1px,transparent 1px 16px)}`},
- 3:{n:'Holo sand-table', // see-through terrain: dark void below, sparse glowing contours, solid lit city models, command-deck tactical table
-  bg:'radial-gradient(ellipse 80% 62% at 52% 48%,#0A1622 0%,#050B12 55%,#020408 100%)',
-  vig:'linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 70%,rgba(0,3,8,.45) 100%),repeating-linear-gradient(0deg,rgba(140,220,240,.02) 0px,rgba(140,220,240,.02) 1px,rgba(0,0,0,0) 1px,rgba(0,0,0,0) 3px)',
-  glow:'radial-gradient(ellipse 46% 36% at 52% 46%,rgba(80,180,215,.08) 0%,rgba(0,0,0,0) 100%)',
-  fog:['#050C14',300,620],hemi:['#B4D4E6','#0A1220',.95],sun:['#F4E2C0',.95],fill:['#78C0DA',.70],
-  T:{LO:'#0A2232',MID:'#0E2A3C',HI:'#14384C',ROCK:'#163C50',WAT:'#06283C',SHORE:'#103446',CHAR:'#0A0E14',PAVE:'#123444'},
-  rimC:[.0,.02,.04],conC:[.10,.30,.38],conM:[.42,.86,1.0],cross:[.30,.62,.74],conK:1.25,fine:0,alpha:1,aB:.10,ridgeWarm:[0,0,0],
-  night:'#4A5C70',nightK:.55,win:'#FFC878',winOp:.95,glowK:.40,glowCap:.26,roadK:1.15,
-  mk:'#CFE6EE',lead:'#F4FBFF',
-  bloom:{s:1.05,r:.6,th:.62,knee:.14}}};
-const LOOKN=(()=>{const q=+(new URLSearchParams(location.search).get('look')||1);return LOOKS[q]?q:1;})();
-const LOOK=LOOKS[LOOKN];
-// CSS layers (scene atmosphere) + per-look UI tokens
+// ======================= LOOK (v4.4): one lighting preset, 'Cinematic dusk' =======================
+// r8 U26: looks 2/3, the ?look= URL param and the footer LOOK switcher were removed; the map ships look 1 only.
+// The look stays ONE config object: scene (CSS sky + overlays), fog, lights, terrain palette + shader line colours, water, models, roads, windows, bloom.
+// Contributors can add looks here (add a second object and a way to pick it; geometry colours are baked at build time).
+// Lighting is descriptive atmosphere only (Q17): every site is lit the same; the look encodes no judgement.
+const LOOK={n:'Cinematic dusk', // deep blue-violet terrain, warm gold city light, strong horizon glow (ref/continuum_home.png)
+ bg:'linear-gradient(180deg,#0A0F22 0%,#18203F 24%,#35294E 38%,#161C38 58%,#080B18 100%)',
+ vig:'linear-gradient(180deg,rgba(8,10,26,.55) 0%,rgba(255,160,90,.30) 7%,rgba(230,130,120,.12) 15%,rgba(150,110,190,.04) 26%,rgba(0,0,0,0) 34%,rgba(0,0,0,0) 62%,rgba(4,6,18,.42) 100%),radial-gradient(ellipse 92% 88% at 55% 40%,rgba(4,6,18,0) 52%,rgba(4,6,18,.55) 100%)',
+ glow:'radial-gradient(ellipse 30% 22% at 57.5% 40%,rgba(255,180,110,.20) 0%,rgba(255,140,100,.07) 45%,rgba(0,0,0,0) 100%),radial-gradient(ellipse 70% 20% at 50% 2%,rgba(255,150,80,.40) 0%,rgba(230,110,110,.10) 55%,rgba(0,0,0,0) 100%),radial-gradient(ellipse 30% 26% at 92% 20%,rgba(200,110,170,.12) 0%,rgba(0,0,0,0) 100%)',
+ fog:['#3E3C78',210,460],hemi:['#8494D8','#120F2C',.62],sun:['#FFB070',1.25],fill:['#6A8EE6',.48],
+ T:{LO:'#0E1430',MID:'#1C2550',HI:'#3C4986',ROCK:'#474A76',WAT:'#0A1230',SHORE:'#2A3560',CHAR:'#100E1A',PAVE:'#1A2140'},
+ rimC:[.14,.15,.32],conC:[.20,.24,.42],conM:[.36,.38,.60],cross:[.26,.30,.46],conK:1,fine:1,alpha:0,aB:.42,ridgeWarm:[.34,.19,.09],
+ night:'#1E2644',nightK:.76,albCap:.5,win:'#FFC266',winOp:1,glowK:.62,glowCap:.34,roadK:1.0,
+ mk:'#C4BFB2',lead:'#F8F2E4',
+ bloom:{s:1.85,r:.78,th:.70,knee:.16},shK:.66,shC:.90}; // r3: th .64 -> .70 + hue-preserving highlight shoulder (max channel <= .90) so no spot clips to white
+// CSS layers (scene atmosphere) + UI tokens
 {const st=document.createElement('style');st.textContent=`html,body{background:${LOOK.bg}!important}#vig{background:${LOOK.vig}!important}#glow{background:${LOOK.glow}!important}
-#looksw{pointer-events:auto;margin-right:18px;color:var(--t3)}#looksw a{cursor:pointer;color:var(--t2);padding:0 3px;text-decoration:none}#looksw a:hover{color:var(--acc)}#looksw a.on{color:var(--acc);border-bottom:1px solid var(--acc)}
 /* r2 U2: dark glass backplates (#0A0E13 @ 84-86 % + blur + 1 px hairline) so HUD / legend / timeline text clears 7:1 over the dusk horizon glow */
-body:not(.look2) #hud{left:12px;top:10px;padding:10px 14px 11px;width:auto!important;max-width:680px;white-space:nowrap;background:rgba(10,14,19,.85);backdrop-filter:blur(8px);border:1px solid rgba(130,140,160,.22)}
-body:not(.look2) #legend{background:rgba(10,14,19,.86)!important;backdrop-filter:blur(8px);border:1px solid rgba(130,140,160,.22)}
-body:not(.look2) #tl{background:rgba(10,14,19,.85)!important;backdrop-filter:blur(8px);border-top:1px solid rgba(130,140,160,.25)!important}
-body:not(.look2) #menu{background:rgba(10,14,19,.74);backdrop-filter:blur(6px);padding:2px 4px}
-body:not(.look2) #foot{background:rgba(10,14,19,.80);padding:2px 8px;left:12px;right:12px;bottom:3px}
+#hud{left:12px;top:10px;padding:10px 14px 11px;width:auto!important;max-width:680px;white-space:nowrap;background:rgba(10,14,19,.85);backdrop-filter:blur(8px);border:1px solid rgba(130,140,160,.22)}
+#legend{background:rgba(10,14,19,.86)!important;backdrop-filter:blur(8px);border:1px solid rgba(130,140,160,.22)}
+#tl{background:rgba(10,14,19,.85)!important;backdrop-filter:blur(8px);border-top:1px solid rgba(130,140,160,.25)!important}
+#menu{background:rgba(10,14,19,.74);backdrop-filter:blur(6px);padding:2px 4px}
+#foot{background:rgba(10,14,19,.80);padding:2px 8px;left:12px;right:12px;bottom:3px}
 #hud,#legend,#tl,#foot,#lenspop{--t2:#C4BFB3;--t3:#ADA99F}
 /* r2 U7: lens picker lives in the ROADS card header (magnifier + active lens name) with a popover; the HUD keeps title + leading site */
 #hud #lenscard{display:none!important}
@@ -463,17 +427,10 @@ body:not(.look2) #foot{background:rgba(10,14,19,.80);padding:2px 8px;left:12px;r
 /* r3 U6: close-up name plate on a dark glass backing panel (small numbers raised to t2) */
 .plq.big{background:rgba(10,14,19,.88);padding:5px 10px 6px;border:1px solid rgba(130,140,160,.22);border-left:2px solid var(--acc);text-shadow:none!important;color:#F1ECE0!important}.plq.big .v,.plq.big .pt{color:#C4BFB3!important;text-shadow:none!important}
 /* r3 U5: slow horizon light shift (compositor-only opacity/transform drift, 90 s; off for reduced motion) */
-body.look1 #glow{animation:faHz 90s ease-in-out infinite alternate;transform-origin:50% 0}
+#glow{animation:faHz 90s ease-in-out infinite alternate;transform-origin:50% 0}
 @keyframes faHz{0%{opacity:1;transform:translateX(0) scale(1.04)}35%{opacity:.84;transform:translateX(-2.2%) scale(1.04)}70%{opacity:.93;transform:translateX(1.6%) scale(1.06)}100%{opacity:.8;transform:translateX(2.6%) scale(1.04)}}
-@media (prefers-reduced-motion:reduce){body.look1 #glow{animation:none}}
-${LOOK.ui||''}`;document.head.appendChild(st);document.body.classList.add('look'+LOOKN);}
+@media (prefers-reduced-motion:reduce){#glow{animation:none}}`;document.head.appendChild(st);}
 const LKV=a=>new THREE.Vector3(a[0],a[1],a[2]);
-// r2 item 2: small look switcher in the footer (LOOK 1 · 2 · 3). Geometry colours are baked at build, so a switch rewrites ?look= and reloads.
-function lookSwitcher(){const f=document.getElementById('foot');if(!f){setTimeout(lookSwitcher,200);return;}if(document.getElementById('looksw'))return;
- const s=document.createElement('span');s.id='looksw';s.innerHTML='LOOK '+[1,2,3].map(n=>`<a data-l="${n}" class="${n===LOOKN?'on':''}" title="${LOOKS[n].n}">${n}</a>`).join(' · ');
- s.addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;const n=+a.dataset.l;if(n===LOOKN)return;const u=new URL(location.href);u.searchParams.set('look',n);try{history.replaceState(null,'',u.toString());}catch(_){}location.href=u.toString();});
- const sp=f.children[1];if(sp){sp.style.pointerEvents='auto';sp.insertBefore(s,sp.firstChild);}else f.appendChild(s);}
-lookSwitcher();
 
 // ======================= WORLD ANCHORS =======================
 const TWIN=12.5,PITW=11;
@@ -585,17 +542,9 @@ TERM.onBeforeCompile=sh=>{Object.assign(sh.uniforms,TU,TLU);
    gl_FragColor.rgb+=uRidge*smoothstep(1.,14.,vWP.y)*rim; // v4.4 L1: warm light on ridge tops (dusk), valleys stay blue -> local contrast
    gl_FragColor.rgb=mix(gl_FragColor.rgb,uConC*uConK,min(1.,con*.45*uConK*uFine)*rim);gl_FragColor.rgb=mix(gl_FragColor.rgb,uConM*uConK,min(1.,conM*.55*uConK)*rim);
    gl_FragColor.rgb=mix(gl_FragColor.rgb,uCrossC,cross_*.6*rim);
-   gl_FragColor.rgb+=uConM*conM*.35*uAlpha*rim; // r2 look 3: index contours glow (feed the bloom)
-   gl_FragColor.a=mix(gl_FragColor.a,(uAB+(1.-uAB)*max(con*.8*uFine,max(conM,cross_*.55)))*rim,uAlpha);} // v4.4 L1 look 3: semi-transparent holo terrain, opaque glowing contour lines, fades out at the table edge
+  } // r8 U26: look-3 holo-table alpha/glow branch removed (look 1 only)
   #include <dithering_fragment>`);};
-const TER=new THREE.Mesh(TG,TERM);TER.receiveShadow=false;TER.castShadow=false;if(LOOK.alpha>0){TERM.transparent=true;TER.renderOrder=-1;}SC.add(TER);
-// r2 look 3: the table under the hologram - a dark void with a faint emitter grid and a glowing bezel, seen THROUGH the terrain (drawn first)
-if(LOOK.alpha>0){const gy=-16,gm=new THREE.LineBasicMaterial({color:'#2E7F98',transparent:true,opacity:.22,depthWrite:false,fog:false});
- const gp=[];for(let x=-120;x<=120;x+=8)gp.push(x,gy,-86,x,gy,86);for(let z=-86;z<=86;z+=8)gp.push(-120,gy,z,120,gy,z);
- const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(gp,3));const GL=new THREE.LineSegments(gg,gm);GL.renderOrder=-3;SC.add(GL);
- const bz=new THREE.LineBasicMaterial({color:'#7FE0F4',transparent:true,opacity:.75,depthWrite:false,fog:false});
- for(const[k,y,op]of[[1,gy,.75],[1.03,gy+.2,.35]]){const X=120*k,Z=86*k;const bg=new THREE.BufferGeometry().setFromPoints([[-X,-Z],[X,-Z],[X,Z],[-X,Z],[-X,-Z]].map(p=>new THREE.Vector3(p[0],y,p[1])));const m=bz.clone();m.opacity=op;const L=new THREE.Line(bg,m);L.renderOrder=-3;SC.add(L);}
- const vm=new THREE.MeshBasicMaterial({color:'#02050A',transparent:true,opacity:.92,depthWrite:false,fog:false});const vp=new THREE.Mesh(new THREE.PlaneGeometry(250,180),vm);vp.rotation.x=-Math.PI/2;vp.position.y=gy-.4;vp.renderOrder=-4;SC.add(vp);}
+const TER=new THREE.Mesh(TG,TERM);TER.receiveShadow=false;TER.castShadow=false;SC.add(TER);
 // v4.2 night palette (dark ground; colour only hints at the two halves: teal-black west = humans decide, violet-black east = AI decides)
 const C_MEAD=hx('#14302f'),C_MEAD2=hx('#163432'),C_MEAD3=hx('#1b3a36'),C_FLOW=hx('#1e3b38'),C_SAND=hx('#1f2a2c'),C_LAV=hx('#231e44'),C_LAV2=hx('#26214a'),C_LAV3=hx('#2c2654'),C_SLATE=hx('#1d1b38'),C_RKH=hx('#22303a'),C_RKM=hx('#29274a'),C_CHAR=hx('#060608'),C_SNOW=hx('#33435e'),C_SHORE=hx('#123a48'),C_SHORE2=hx('#22285a'),C_WAT=hx('#0b4a6a'),C_WAT2=hx('#262a72'),C_PAVE=hx('#123444');
 const C_FIELD=['#1d3a2a','#183a2c','#24362a','#163628','#22402e','#22332a'].map(hx);
@@ -1050,12 +999,14 @@ const nearRoad=(X,Z)=>RDGRID.has(rk(X,Z));
 // Shoulder band (tcase) = upper bound of the range at 12% opacity.
 const RW=w=>Math.max(.48,.145*w),SW=v=>v<.6?0:Math.max(.17,.145*v);
 const PWC={d:-1,st:null};function poolSt(){if(PWC.d!==day){PWC.d=day;PWC.st=pulls(day,'pooled');}return PWC.st;}
-function setRoadWidths(st){const CM=!!(window.CMP&&CMP.on&&LCUR!=='pooled'),KC=CM?CMPK:1;for(const rv of ROADV){const w=st.w[rv.r.id];const tw=RW(w)*KC;let mx=0;
+// r8 U29 (owner): compare ON = roads at their plain POOLED width (no gain/loss band, no hatching, no 1.5x widening, no dashed ghost);
+// the lens difference is carried only by the site pp pills (fa4_post.js POSTO) and the site dual arcs. CMPK/BAND_F kept only as dormant code.
+function setRoadWidths(st){const CM=!!(window.CMP&&CMP.on&&LCUR!=='pooled'),KC=1;if(CM)st=poolSt();for(const rv of ROADV){const w=st.w[rv.r.id];const tw=RW(w)*KC;let mx=0;
  for(const S of rv.spurs){const v=(st.src[S.site][rv.r.id]||0)*S.half;const sw=SW(v);S.rib.set(sw);S.cas.set(0);mx=Math.max(mx,sw*1.35);}
  rv.endR=clamp(mx/tw,.3,1);rv.tcase.set(RW(rangeOf(w,'road',rv.r.id)[1])*KC);rv.trunk.set(tw);if(rv.lane)rv.lane.set(.06,(R1Q-.5)*tw);
- const pw0=poolSt().w[rv.r.id],pw=RW(pw0)*KC,dd=w-pw0;
- rv.ghost.set(LCUR!=='pooled'&&!CM?pw:0); // r7 U20: compare ON -> the gain/loss band replaces the plain dashed ghost
- if(rv.band){const u=rv.band.m.material.uniforms;if(CM&&Math.abs(dd)>=1){const hi=Math.max(tw,pw),wr=hi+2*BANDC;rv.band.set(wr);u.uIn.value=Math.min(tw,pw)/wr;u.uOut.value=hi/wr;u.uG.value=dd>0?1:0;}else rv.band.set(0);}}}
+ const pw0=poolSt().w[rv.r.id],pw=RW(pw0)*KC;
+ rv.ghost.set(LCUR!=='pooled'&&!CM?pw:0);
+ if(rv.band)rv.band.set(0);}}
 // v4.3 r2: runtime per-road calibration at the default world camera (whatever FOV/pose WORLDV has): measure the projected trunk width
 // in px per world unit (median over the middle of each trunk) and scale each road's compensation so px/unit is identical for all six roads
 // -> on-screen trunk width is strictly proportional (hence monotonic) in share. Called once at init (fa4_app.js).
@@ -1230,22 +1181,30 @@ function placeAxis(tlT,hudR){const W=innerWidth,H=innerHeight,big=view!=='world'
  const tk=big?(focus+'|'+(focusO?focusO.id:'')):'';
  if(big&&AXS.mode==='world'){AXS.tk=tk;axExp();}
  else if(big&&tk!==AXS.tk){AXS.tk=tk;clearTimeout(AXS.tm);if(RMOT&&AXS.mode!=='edge'){AXS.mode='edge';AXKEY='';kick(1500);AXS.tm=setTimeout(axExp,380);}else axExp();}
- if(!big&&AXS.mode!=='world'){AXS.mode='world';AXS.tk='';clearTimeout(AXS.tm);}
- const nvR=big?rectOf('nav'):null,yq=big?Math.round(cam.yaw*24):0,hid=TLE.classList.contains('hid'),lgB=big?0:((rectOf('legend')||{bottom:0}).bottom|0);
- const key=W+'|'+H+'|'+(tlT|0)+'|'+(hudR?hudR.bottom|0:0)+'|'+AXS.mode+'|'+yq+'|'+(nvR?nvR.bottom|0:0)+'|'+hid+'|'+lgB;if(key===AXKEY)return;AXKEY=key;
+ if(!big&&AXS.mode!=='world'){AXS.mode='world';AXS.tk='';clearTimeout(AXS.tm);AXS.wt=performance.now();}
+ // r8 U24: at WORLD zoom the 4 icons also follow a user yaw drag (same yaw math as the compass). yaw ~0 = the classic layout (unchanged).
+ const wyq=Math.round(cam.yaw*48),wy=!big&&wyq!==0,wfast=!big&&performance.now()-(AXS.wt||0)>700; // wfast: 0.3 s glide while rotating (the 0.6 s zoom-out glide is kept)
+ const nvR=big?rectOf('nav'):null,yq=big?Math.round(cam.yaw*24):wyq,hid=TLE.classList.contains('hid'),lgB=big?0:((rectOf('legend')||{bottom:0}).bottom|0);
+ const key=W+'|'+H+'|'+(tlT|0)+'|'+(hudR?hudR.bottom|0:0)+'|'+AXS.mode+'|'+yq+'|'+(nvR?nvR.bottom|0:0)+'|'+hid+'|'+lgB+'|'+big;if(key===AXKEY)return;AXKEY=key;
  const mapB=tlT+16; // bottom edge of the map viewport = just above the timeline (or the footer when hidden)
  const fr=document.getElementById('axf');fr.style.height=(H-12)+'px';fr.style.display=big?'none':'block'; // r5: frame = whole screen; all four tabs dock on the screen edge
  const top=6,mid=(Math.max(hudR?hudR.bottom:60,60)+mapB)/2,exp=AXS.mode==='exp';
  // camera-relative screen direction of each world axis (camera orbits by yaw; screen right = (cos,-sin), screen up = forward = (-sin,-cos))
- const yw=big?cam.yaw:0,cy=Math.cos(yw),sy=Math.sin(yw),DIR={W:[-cy,-sy],E:[cy,sy],N:[sy,-cy],S:[-sy,cy]};
+ const yw=(big||wy)?cam.yaw:0,cy=Math.cos(yw),sy=Math.sin(yw),DIR={W:[-cy,-sy],E:[cy,sy],N:[sy,-cy],S:[-sy,cy]};
  let C=null;if(exp){const t0=Math.round((nvR?nvR.bottom:110)+10);AXC.style.top=t0+'px';C=[24+198,t0+92];
   // 'this region' ring: the focused basin's quadrant (W/E from x, N/S from y), rotated with the camera like the icons
   const Bf=BASINS[focus]||{cx:.5,cy:.5},qx=Math.sign(Bf.cx-.5),qz=Math.sign(Bf.cy-.5),qd=[qx*DIR.E[0]+qz*DIR.S[0],qx*DIR.E[1]+qz*DIR.S[1]];
   const q=AXC.querySelector('.q'),ql=AXC.querySelector('.ql');q.style.left=ql.style.left=(198+qd[0]*34)+'px';q.style.top=ql.style.top=(92+qd[1]*28)+'px';ql.style.transform=qd[0]>=0?'translate(9px,-50%)':'translate(calc(-100% - 9px),-50%)';}AXC.classList.toggle('on',exp);
  const mn=rectOf('menu'),L0=hudR?hudR.right:0,R0=mn?mn.left:W,yS=hid?H-30:tlT-6;
- for(const a of AXM){const el=a.el,rl=a.rl;el.style.display='flex';rl.style.display=big?'none':'flex';el.classList.toggle('exp',exp);el.classList.toggle('sm',big&&!exp);
+ for(const a of AXM){const el=a.el,rl=a.rl;el.style.display='flex';rl.style.display=(big||wy)?'none':'flex';el.classList.toggle('exp',exp);el.classList.toggle('sm',big&&!exp);el.classList.toggle('wy',wfast);
   const w=el.offsetWidth,h=el.offsetHeight,d=DIR[a.k];let x,y,rx=0,ry=0,rw=0,rh=0;el.classList.toggle('lft',exp&&d[0]<-.5);
   if(exp){x=C[0]+d[0]*70-w/2;y=C[1]+d[1]*50-h/2;}
+  else if(wy){ // r8 U24: world view rotated -> each icon slides to the screen edge its world direction now points to; kept clear of HUD, menu, legend, timeline/footer and the timeline tab
+   const mnR=rectOf('menu'),yMin=Math.max(hudR?hudR.bottom:60,mnR?mnR.bottom:0,60)+8,yMax=yS-h-8,lg=rectOf('legend'),tb=rectOf('tltab');
+   if(Math.abs(d[0])*(H*.5)>=Math.abs(d[1])*(W*.5)){x=d[0]>0?W-w-6:6;y=clamp(mid+d[1]/Math.abs(d[0])*(W*.5)-h/2,yMin,yMax);
+    if(d[0]<0&&lg&&lg.left<40&&y<lg.bottom+8&&y+h>lg.top-8){const up=lg.top-h-10,dn=lg.bottom+12;y=(dn<=yMax&&(Math.abs(dn-y)<=Math.abs(up-y)||up<yMin))?dn:Math.max(yMin,up);}}
+   else{x=clamp(W/2+d[0]/Math.abs(d[1])*(H*.5)-w/2,d[1]<0?L0+30:40,(d[1]<0?R0-30:W-40)-w);y=d[1]<0?top:yS-h;
+    if(d[1]>0&&tb&&x<tb.right+8&&x+w>tb.left-8&&y<tb.bottom+4&&y+h>tb.top-4)x=(x+w/2<(tb.left+tb.right)/2)?tb.left-w-10:tb.right+10;}}
   else if(big){ // edge tab on the screen edge the world axis points to in this camera orientation
    if(Math.abs(d[0])*(H*.5)>=Math.abs(d[1])*(W*.5)){x=d[0]>0?W-w-6:6;y=clamp(mid+d[1]/Math.abs(d[0])*(W*.5)-h/2,(nvR?nvR.bottom:100)+8,yS-h-40);}
    else{x=clamp(W/2+d[0]/Math.abs(d[1])*(H*.5)-w/2,d[1]<0?L0+30:40,(d[1]<0?R0-30:W-40)-w);y=d[1]<0?top:yS-h;}}
@@ -1298,7 +1257,7 @@ MATW.onBeforeCompile=sh=>{sh.uniforms.uT=TU.uT;
  #endif`);
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vTw;').replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=vTw;');};
 MATW.needsUpdate=true;
-const AMB=[];{const r=rng(44);const smokeC=LOOKN===2?'#F4F8FF':LOOKN===3?'#9CC6D4':'#A4A6C8';
+const AMB=[];{const r=rng(44);const smokeC='#A4A6C8';
  const spr=(c,op,add)=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex(),color:c,transparent:true,depthWrite:false,opacity:op,blending:add?THREE.AdditiveBlending:THREE.NormalBlending}));s.renderOrder=4;SC.add(s);return s;};
  // drifting smoke / steam where the architecture has it (cooling towers, power plants, hearth fires, smouldering ruins)
  const SMK=[['enslaved',-TWIN+3,-2,7],['enslaved',TWIN-3,-2,7],['conquerors',2,1.5,6],['reversion',0,2,3],['selfdestruct',1,-1,2.5]];
@@ -1306,11 +1265,11 @@ const AMB=[];{const r=rng(44);const smokeC=LOOKN===2?'#F4F8FF':LOOKN===3?'#9CC6D
  // r2 U3: the generic aviation blink is retired (each site now has its own described motion, AMB2 below)
  for(const[id,dx,dz,hy]of[]){const o=byId[id];AMB.push({k:'blink',s:spr('#FFE6C4',0,true),X:o.X+dx,Z:o.Z+dz,hy,ph:r()*3});}
  // tiny vehicles (paired headlights) circling two ordinary towns
- for(const[id,n,rr]of[['normaltech',4,.5],['libertarian',3,.46]]){const o=byId[id];const R=o.w*100*rr*(SCALE[id]||1);for(let k=0;k<n;k++)AMB.push({k:'car',s:spr(LOOKN===2?'#FFFFFF':'#FFE2B0',0,true),X:o.X,Z:o.Z,R:R*(.75+.25*(k%2)),ph:k/n*6.2832,w:(k%2?-1:1)*.11});}
+ for(const[id,n,rr]of[['normaltech',4,.5],['libertarian',3,.46]]){const o=byId[id];const R=o.w*100*rr*(SCALE[id]||1);for(let k=0;k<n;k++)AMB.push({k:'car',s:spr('#FFE2B0',0,true),X:o.X,Z:o.Z,R:R*(.75+.25*(k%2)),ph:k/n*6.2832,w:(k%2?-1:1)*.11});}
  // water shimmer: two soft glints drifting on each lake
- for(const L of LAKES)for(let k=0;k<2;k++)AMB.push({k:'glint',s:spr(LOOKN===2?'#FFFFFF':'#BFD8FF',0,true),X:L.X,Z:L.Z,R:L.R*.45,ph:k*3.1+r()});}
+ for(const L of LAKES)for(let k=0;k<2;k++)AMB.push({k:'glint',s:spr('#BFD8FF',0,true),X:L.X,Z:L.Z,R:L.R*.45,ph:k*3.1+r()});}
 ANIM.push(t=>{const amb=RMOT?1:0;for(const A of AMB){const s=A.s;
- if(A.k==='smoke'){const q=((t/A.T)+A.ph)%1;const y=hMesh(A.X,A.Z)+A.hy+q*6;s.position.set(A.X+q*1.6,y,A.Z-q*.8);const sc=1.6+q*4.5;s.scale.set(sc,sc,1);s.material.opacity=amb*.16*Math.sin(q*Math.PI)*(LOOKN===2?.8:1);}
+ if(A.k==='smoke'){const q=((t/A.T)+A.ph)%1;const y=hMesh(A.X,A.Z)+A.hy+q*6;s.position.set(A.X+q*1.6,y,A.Z-q*.8);const sc=1.6+q*4.5;s.scale.set(sc,sc,1);s.material.opacity=amb*.16*Math.sin(q*Math.PI);}
  else if(A.k==='blink'){const q=((t+A.ph)%2.4);s.position.set(A.X,hMesh(A.X,A.Z)+A.hy,A.Z);s.scale.set(2.2,2.2,1);s.material.opacity=(q<.25?.9:0.08)*(amb?1:.3);}
  else if(A.k==='car'){const a=A.ph+t*A.w*amb;const X=A.X+Math.cos(a)*A.R,Z=A.Z+Math.sin(a)*A.R;s.position.set(X,hMesh(X,Z)+.5,Z);s.scale.set(.9,.9,1);s.material.opacity=.75;}
  else{const a=A.ph+t*.07*amb;const X=A.X+Math.cos(a)*A.R,Z=A.Z+Math.sin(a*1.3)*A.R*.6;s.position.set(X,hMesh(X,Z)+.4,Z);s.scale.set(3.4,1.4,1);s.material.opacity=.05+.07*Math.max(0,Math.sin(t*.9+A.ph))*amb;}}});
@@ -1361,14 +1320,14 @@ const AMB2=[];{const r=rng(45);const add=f=>AMB2.push(f);
  // Self-destruction: embers flicker (drifting ash = A1 smoke)
  {const s=S('selfdestruct');for(let k=0;k<6;k++){const p=gs('#C2502A'),a=r()*6.28,rr=r()*7,x=s.X+Math.cos(a)*rr,z=s.Z+Math.sin(a)*rr,ph=r()*6;add(t=>{p.position.set(x,gy(x,z)+.4,z);p.scale.set(1,1,1);p.material.opacity=.15+.3*Math.max(0,Math.sin(t*.9+ph));});}}
  // U5 whole map: drifting cloud shadows
- for(let k=0;k<4;k++){const m=new THREE.Mesh(new THREE.PlaneGeometry(46,30),new THREE.MeshBasicMaterial({map:glowTex(),color:'#000000',transparent:true,opacity:LOOKN===2?.09:.15,depthWrite:false}));m.rotation.x=-Math.PI/2;m.renderOrder=3;SC.add(m);const z0=-45+k*28,sp=1.1+r()*.6,ph=r()*220;
+ for(let k=0;k<4;k++){const m=new THREE.Mesh(new THREE.PlaneGeometry(46,30),new THREE.MeshBasicMaterial({map:glowTex(),color:'#000000',transparent:true,opacity:.15,depthWrite:false}));m.rotation.x=-Math.PI/2;m.renderOrder=3;SC.add(m);const z0=-45+k*28,sp=1.1+r()*.6,ph=r()*220;
   add(t=>{m.position.set(((t*sp+ph)%240)-120,16,z0+Math.sin(t*.02+k)*6);});}
  // U5: river shimmer flowing downstream
- for(const Rv of RIVERS){const L=poly(Rv.pts);for(let k=0;k<3;k++){const p=gs(LOOKN===2?'#FFFFFF':'#BFD8FF'),ph=k/3;add(t=>{const[X,Z]=along(L,((t*.02+ph)%1)*L.tot);p.position.set(X,hMesh(X,Z)+.35,Z);p.scale.set(2.2,1,1);p.material.opacity=.10+.08*Math.sin(t*1.7+k);});}}
+ for(const Rv of RIVERS){const L=poly(Rv.pts);for(let k=0;k<3;k++){const p=gs('#BFD8FF'),ph=k/3;add(t=>{const[X,Z]=along(L,((t*.02+ph)%1)*L.tot);p.position.set(X,hMesh(X,Z)+.35,Z);p.scale.set(2.2,1,1);p.material.opacity=.10+.08*Math.sin(t*1.7+k);});}}
  // U5: faint light pulses travelling along the minor town roads
  ROADPTS.slice(0,12).forEach(Rp=>{if(!Rp.pts||Rp.pts.length<2)return;const L=poly(Rp.pts),p=gs('#D9A866'),ph=r()*20;add(t=>{const q=((t+ph)%20)/6;if(q>1){p.material.opacity=0;return;}const[X,Z]=along(L,q*L.tot);p.position.set(X,hMesh(X,Z)+.4,Z);p.scale.set(1.1,1.1,1);p.material.opacity=(.42-.14*DUSK)*Math.sin(q*Math.PI);});}); // r4 U11: path pulses warmer + dimmer when zoomed (were read as white orbs in region view)
  // U5: an occasional flock of drones crossing high over the map
- {const F=[];for(let k=0;k<5;k++)F.push(gs(LOOKN===2?'#2A3444':'#E8ECF4',0,LOOKN!==2));add(t=>{const q=(t%45)/18;F.forEach((p,k)=>{if(q>1){p.material.opacity=0;return;}p.position.set(-100+q*200-Math.abs(k-2)*2.2,26+Math.sin(t*3+k)*.3,-30+q*40+(k-2)*2);p.scale.set(.8,.8,1);p.material.opacity=.55*Math.sin(q*Math.PI);});});}}
+ {const F=[];for(let k=0;k<5;k++)F.push(gs('#E8ECF4',0,true));add(t=>{const q=(t%45)/18;F.forEach((p,k)=>{if(q>1){p.material.opacity=0;return;}p.position.set(-100+q*200-Math.abs(k-2)*2.2,26+Math.sin(t*3+k)*.3,-30+q*40+(k-2)*2);p.scale.set(.8,.8,1);p.material.opacity=.55*Math.sin(q*Math.PI);});});}}
 ANIM.push(t=>{const k=RMOT?1:0;for(const f of AMB2)f(t*k);});
 
 // ======================= V1: make a lens switch obvious on the map =======================
@@ -1380,8 +1339,8 @@ const LFX={fx:null,cap:null};
 function lensFx(A,B,from,to){const ref=to==='pooled'?A:poolSt(),fx={t0:performance.now(),roads:[],sites:[],to,from};
  const CMO=window.CMP&&CMP.on&&to!=='pooled',TH=CMO?0:.95; // r3 U10: compare ON -> badges on every road + top 5 sites, persistent
  for(const r of RD6){const d=B.w[r.id]-ref.w[r.id];if(Math.abs(d)>=TH)fx.roads.push({rv:ROADV.find(v=>v.r.id===r.id),id:r.id,d});}
- for(const o of O){const d=(B.p[o.id]||0)-(ref.p[o.id]||0);if(Math.abs(d)>=.95)fx.sites.push({o,d});}
- fx.roads.sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));fx.sites.sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));fx.sites=fx.sites.slice(0,5);LFX.fx=fx;
+ for(const o of O){const d=(B.p[o.id]||0)-(ref.p[o.id]||0);if(CMO||Math.abs(d)>=.95)fx.sites.push({o,d,ph:Math.random()*6.2832});} // r8 U29: compare -> a pill on EVERY site, random bob phase
+ fx.sites.sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));if(!CMO)fx.sites=fx.sites.slice(0,5);LFX.fx=fx;fx.roads.sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
  let lead=null,lv=-1;for(const o of O){const v=B.p[o.id]||0;if(v>lv){lv=v;lead=o;}}
  const R0=fx.roads[0],sg=v=>(v>0?'+':'−')+Math.abs(Math.round(v));
  const c=LFX.cap;c.textContent=to==='pooled'?`Pooled lens · back from ${LENSI[from].n}${R0?` · ${R0.id} ${sg(R0.d)} pp`:''} · leading site → ${lead.n}`:`${LENSI[to].n} lens: ${R0?`${R0.id} ${sg(R0.d)} pp vs Pooled`:'little change vs Pooled'} · leading site → ${lead.n}`;
@@ -1394,8 +1353,8 @@ ANIM.push(()=>{const fx=LFX.fx;if(!fx)return;const e=(performance.now()-fx.t0)/1
 // (c) each site's ground light pool scales with its share (smoothly follows the 1.1 s lens morph)
 ANIM.push(()=>{for(const G of GLOWS){if(!G.o)continue;if(!G.bx){G.bx=G.s.scale.x;G.by=G.s.scale.y;}const v=(curP.p[G.o.id]||0)/(G.o.twin?2:1);const k=clamp(.6+.4*Math.sqrt(v/4),.55,1.35);G.s.scale.set(G.bx*k,G.by*k,1);}});
 // (b) badges + M1 whisper titles: drawn on the overlay canvas by layoutLabels (after the markers) through POSTO
-function badge(g,x,y,d,al,big,pre){const up=d>0,z=Math.round(d)===0,txt=(pre?pre+' ':'')+(z?'= 0 pp':`${up?'▲':'▽'} ${up?'+':'−'}${Math.abs(Math.round(d))} pp`);g.font=`500 ${big?12:11}px ${FM}`;const w=g.measureText(txt).width+12+(pre?14:0),h=big?19:17;
- if(pre){ // r4 U14: SITE chips = rounded pill with a small marker ring at the left (road tags stay square with a road-colour swatch)
+function badge(g,x,y,d,al,big,pre,pill){const up=d>0,z=Math.round(d)===0,txt=(pre?pre+' ':'')+(z?'= 0 pp':`${up?'▲':'▽'} ${up?'+':'−'}${Math.abs(Math.round(d))} pp`);g.font=`500 ${big?12:11}px ${FM}`;const w=g.measureText(txt).width+12+(pre||pill?14:0),h=big?19:17;
+ if(pre||pill){ // r4 U14: SITE chips = rounded pill with a small marker ring at the left (road tags stay square with a road-colour swatch); r8 U29: pill without name in compare
   const r=h/2,x0=x-w/2,y0=y-h/2;g.globalAlpha=al*.9;g.fillStyle='rgba(5,7,10,.88)';g.beginPath();g.moveTo(x0+r,y0);g.lineTo(x0+w-r,y0);g.arc(x0+w-r,y,r,-Math.PI/2,Math.PI/2);g.lineTo(x0+r,y0+h);g.arc(x0+r,y,r,Math.PI/2,Math.PI*1.5);g.closePath();g.fill();
   g.globalAlpha=al;g.strokeStyle=z?'#ADA99F':up?'#C9A45C':'#7D6638';g.lineWidth=1;g.stroke();g.beginPath();g.arc(x0+r+1,y,4,0,6.2832);g.lineWidth=1.4;g.stroke();
   g.fillStyle=z?'#C4BFB3':up?'#F1ECE0':'#8D8A80';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,x+7,y+.5);return[x0,y0,x0+w,y0+h];}
@@ -1405,19 +1364,26 @@ const WSP={list:[],next:1.2};
 function POSTO(g,t,placed,big,tlT){const fx=LFX.fx;g.save();
  if(fx&&!big){const e=(performance.now()-fx.t0)/1000;const al=(window.CMP&&CMP.on&&LCUR!=='pooled'&&fx.to===LCUR)?Math.min(1,e/.3):e<.3?e/.3:e<6?1:Math.max(0,1-(e-6)/1);if(al>0){
   const hitP=b=>placed.some(a=>b[0]<a[2]+4&&b[2]>a[0]-4&&b[1]<a[3]+3&&b[3]>a[1]-3);const bw=d=>(String(Math.abs(Math.round(d))).length+6)*7+12;
-  for(const R of fx.roads){const tp=R.rv.tp;let done=window.CMP&&CMP.on&&LCUR!=='pooled'; // r3 U10: in compare mode the R-tags carry the road deltas, so no separate road badges
-   if(!done)for(const f of[.62,.5,.74,.42,.84,.34]){const p=tp[Math.floor(tp.length*f)];const[x,y,ok]=proj(p[0],hMesh(p[0],p[1])+.3,p[1]);if(!ok||y>tlT-14)continue;const w=bw(R.d);if(hitP([x-w/2,y-10,x+w/2,y+10]))continue;placed.push(badge(g,x,y,R.d,al,true));done=true;break;}
-   if(!done&&window.CMP&&CMP.on&&LCUR!=='pooled')for(let f=.28;f<.97&&!done;f+=.04){const p=tp[Math.floor(tp.length*f)];const[x,y,ok]=proj(p[0],hMesh(p[0],p[1])+.3,p[1]);if(!ok||y>tlT-14||y<70)continue;const w=bw(R.d),bb=[x-w/2+6,y-7,x+w/2-6,y+7];if(placed.some(a=>bb[0]<a[2]&&bb[2]>a[0]&&bb[1]<a[3]&&bb[3]>a[1]))continue;placed.push(badge(g,x,y,R.d,al,true));done=true;}} // r3 U10: compare ON -> every road gets its badge (wider search, tighter margin)
-  for(const S of fx.sites){const m=MK.find(k=>k.o===S.o);if(!m)continue;const pre=(window.CMP&&CMP.on&&LCUR!=='pooled')?S.o.n:'';g.font=`500 11px ${FM}`;const w=pre?g.measureText(pre+' ▲ +00 pp').width+26:bw(S.d); // r3 U10: compare ON -> site chips carry the site name (were confused with road chips)
+  const CMN=!!(window.CMP&&CMP.on&&LCUR!=='pooled');
+  if(CMN){ // r8 U29: compare = one small pp pill floating above EVERY site marker (live delta vs Pooled), gentle bob (3.5 px, 2.4 s, random phase; off under reduced motion)
+   const PS=poolSt();let np=0;for(const S of fx.sites){const m=MK.find(k=>k.o===S.o);if(!m)continue;const d=(curP.p[S.o.id]||0)-(PS.p[S.o.id]||0),w=bw(d)+14,bob=RMOT?3.5*Math.sin(t*2.618+S.ph):0;
+    for(const[ox,oy]of[[0,-30],[0,-47],[18,-30],[-18,-30],[0,-64],[24,-47],[-24,-47],[0,30]]){const x=m.x+ox,y=m.y+oy+bob;if(y>tlT-12||y<40||x-w/2<4||x+w/2>innerWidth-4)continue;if(hitP([x-w/2,y-9-Math.abs(bob),x+w/2,y+9+Math.abs(bob)])||[rectOf('menu'),rectOf('hud'),rectOf('legend')].some(R=>R&&x+w/2>R.left-6&&x-w/2<R.right+6&&y+10>R.top-4&&y-10<R.bottom+4))continue;placed.push(badge(g,x,y,d,al,false,'',true));np++;S.pl=1;break;}
+    if(!S.pl){const x=clamp(m.x,w/2+4,innerWidth-w/2-4),y=m.y-30+bob;if(y<tlT-12&&y>40&&![rectOf('menu'),rectOf('hud'),rectOf('legend')].some(R=>R&&x+w/2>R.left-6&&x-w/2<R.right+6&&y+10>R.top-4&&y-10<R.bottom+4)){placed.push(badge(g,x,y,d,al,false,'',true));np++;}}S.pl=0;}LFX.np=np;} // last resort: every visible site keeps its pill, even if it grazes a neighbour
+  else for(const R of fx.roads){const tp=R.rv.tp;let done=false;
+   if(!done)for(const f of[.62,.5,.74,.42,.84,.34]){const p=tp[Math.floor(tp.length*f)];const[x,y,ok]=proj(p[0],hMesh(p[0],p[1])+.3,p[1]);if(!ok||y>tlT-14)continue;const w=bw(R.d);if(hitP([x-w/2,y-10,x+w/2,y+10]))continue;placed.push(badge(g,x,y,R.d,al,true));done=true;break;}}
+  if(!CMN)for(const S of fx.sites){const m=MK.find(k=>k.o===S.o);if(!m)continue;const pre='';g.font=`500 11px ${FM}`;const w=bw(S.d);
    for(const[ox,oy]of[[0,-30],[0,30],[w/2+22,0],[-w/2-22,0],[0,-52]]){const x=m.x+ox,y=m.y+oy;if(hitP([x-w/2,y-9,x+w/2,y+9])||y>tlT-12||(pre&&[rectOf('menu'),rectOf('hud'),rectOf('legend')].some(R=>R&&x+w/2>R.left-6&&x-w/2<R.right+6&&y+10>R.top-4&&y-10<R.bottom+4))||y<40)continue;placed.push(badge(g,x,y,S.d,al,false,pre));break;}}}} // r4: site chips never slide under the nav/HUD/legend (was a fixed 1440-wide rule; clipped at 1280x720)
  // M1 whisper: every few seconds 1 random site title fades in beside its marker for ~3 s (max 2 at once, never over NOW, tags, badges, the lead title)
  if(!big&&RMOT&&!fx){const now=t;WSP.list=WSP.list.filter(w=>now-w.t0<w.fi+w.h+w.fo); // r2 U4: 3-4 at once, random fade-in / hold 2.5-5 s / fade-out, staggered
   if(now>WSP.next&&WSP.list.length<4&&MK.length){WSP.next=now+(WSP.list.length<3?.5+Math.random()*1.2:1.5+Math.random()*2);const cand=MK.filter(m=>!m.o._lead&&!(HOV&&HOV.o===m.o)&&!WSP.list.some(w=>w.o===m.o)&&m.y<tlT-20);
    if(cand.length){const m=cand[Math.floor(Math.random()*cand.length)];g.font=`600 14px ${FS}`;const w=g.measureText(m.o.n).width;const lr=LEAD&&LEAD.o.el&&LEAD.o.el.style.display!=='none'?LEAD.o.el.getBoundingClientRect():null;
     const tries=[[m.x+24,m.y-9],[m.x-24-w,m.y-9],[m.x-w/2,m.y-42]];for(const[x,y]of tries){const b=[x-4,y-4,x+w+4,y+22];const hit=a=>b[0]<a[2]&&b[2]>a[0]&&b[1]<a[3]&&b[3]>a[1];
-     if(placed.some(hit)||WSP.list.some(q=>hit(q.b))||(lr&&hit([lr.left,lr.top,lr.right,lr.bottom]))||MK.some(k=>k.o!==m.o&&hit([k.x-18,k.y-18,k.x+18,k.y+18]))||x<8||x+w>innerWidth-8)continue;WSP.list.push({o:m.o,t0:now,x,y,b,fi:.5+Math.random()*.9,h:2.5+Math.random()*2.5,fo:.7+Math.random()*.6});break;}}}
-  for(const w of WSP.list){const e=now-w.t0,a=e<w.fi?e/w.fi:e>w.fi+w.h?Math.max(0,1-(e-w.fi-w.h)/w.fo):1;g.globalAlpha=a;g.font=`600 14px ${FS}`;g.textAlign='left';g.textBaseline='top';
-   g.lineWidth=3;g.strokeStyle=LOOKN===2?'rgba(240,245,250,.85)':'rgba(5,7,10,.85)';g.strokeText(w.o.n,w.x,w.y);g.fillStyle=LOOKN===2?'#1E2A3A':TK.t1;g.fillText(w.o.n,w.x,w.y);placed.push(w.b);}}
+     if(placed.some(hit)||WSP.list.some(q=>hit(q.b))||(lr&&hit([lr.left,lr.top,lr.right,lr.bottom]))||MK.some(k=>k.o!==m.o&&hit([k.x-18,k.y-18,k.x+18,k.y+18]))||x<8||x+w>innerWidth-8)continue;WSP.list.push({o:m.o,t0:now,dx:x-m.x,dy:y-m.y,w,b,fi:.5+Math.random()*.9,h:2.5+Math.random()*2.5,fo:.7+Math.random()*.6});break;}}}
+  // r8 U27: a whisper title stores its OFFSET from its marker and is re-anchored to the marker's CURRENT screen position every frame
+  // (was an absolute screen x/y frozen at spawn time, so wheel zoom / drag / fly left the titles behind)
+  for(const w of WSP.list){const m=MK.find(k=>k.o===w.o);if(!m)continue;const x=m.x+w.dx,y=m.y+w.dy;w.x=x;w.y=y;w.b=[x-4,y-4,x+w.w+4,y+22];
+   const e=now-w.t0,a=e<w.fi?e/w.fi:e>w.fi+w.h?Math.max(0,1-(e-w.fi-w.h)/w.fo):1;g.globalAlpha=a;g.font=`600 14px ${FS}`;g.textAlign='left';g.textBaseline='top';
+   g.lineWidth=3;g.strokeStyle='rgba(5,7,10,.85)';g.strokeText(w.o.n,x,y);g.fillStyle=TK.t1;g.fillText(w.o.n,x,y);placed.push(w.b);}}
  g.restore();}
 window.POSTO=POSTO;
 
@@ -1659,6 +1625,18 @@ const GLYPH={
  selfdestruct:(g,t,a)=>{g.save();gScl(g,12,21,1-.06*a*(1-tri(t,5)));gS(g,GD.sel[0]);g.restore();gS(g,GD.sel[1]);}, // mushroom cloud on a ground line (e.g. nuclear or bio war); slow billow 0.94 -> 1.0 (5 s)
  normaltech:(g,t,a)=>{gS(g,GD.nor[0]);const p=t%9,f=p<3?eOut(p/3):1;gDash(g,GD.nor[1],15.5,1-a*(1-f));gS(g,GD.nor[2],1-.6*a*(1-f));}}; // S-curve adoption on axes, diamond at its end; curve draws in (3 s), holds 6 s
 function drawGlyph(g,id,t,a){const fn=GLYPH[id];if(!fn)return;g.save();g.scale(GS,GS);g.translate(-12,-12);g.lineWidth=1.75;g.lineCap='round';g.lineJoin='round';fn(g,t,a);g.restore();}
+// r8 U28: the same glyph set as small static inline SVG (from the GD path data) for site names in the right-panel text (site card, hover card,
+// road card destinations). currentColor, vertical-align middle. Parts: s = stroke, d = ghosted dotted outline (as gDots), f = fill (1984 LED).
+const GSV={libertarian:[['s',GD.lib[0]],['s',GD.lib[1]]],benevolent:GD.ben.map(p=>['s',p]),egalitarian:[['s',GD.ega]],gatekeeper:GD.gat.map(p=>['s',p]),
+ protector:[['d',GD.pro[0]],['s',GD.pro[1]]],enslaved:GD.ens.map(p=>['s',p]),conquerors:[['s',GD.con[0]],['d',GD.con[1]]],descendants:GD.des.map(p=>['s',p]),
+ zookeeper:GD.zoo.map(p=>['s',p]),o1984:[['s',GD.o84[0]],['s',GD.o84[1]],['f',GD.o84[2]]],reversion:GD.rev.map(p=>['s',p]),selfdestruct:GD.sel.map(p=>['s',p]),normaltech:GD.nor.map(p=>['s',p])};
+function glyphSVG(id,px){const P=GSV[id];if(!P)return '';px=px||14;return `<svg class="gi" viewBox="0 0 24 24" width="${px}" height="${px}" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">`+
+ P.map(([k,d])=>k==='d'?`<path d="${d}" stroke-width="2.5" stroke-dasharray=".01 3.4"/>`:k==='f'?`<path d="${d}" fill="currentColor" stroke="none"/>`:`<path d="${d}"/>`).join('')+'</svg>';}
+function siteName(o,px){return `<span class="gn">${glyphSVG(o.id,px)}${o.n}</span>`;} // glyph + outcome name, kept together on one line
+// glyphTxt: prefix every outcome name found in a prose string (text nodes only, never inside tags) with its glyph
+let GNRX=null;function glyphTxt(s){if(!s)return s;if(!GNRX){const L=O.filter(o=>GSV[o.id]).sort((a,b)=>b.n.length-a.n.length);GNRX=new RegExp('(?<![\\w-])('+L.map(o=>o.n.replace(/[-]/g,'\\-')).join('|')+')(?![\\w-])','g');}
+ return String(s).split(/(<[^>]*>)/).map(p=>p[0]==='<'?p:p.replace(GNRX,m=>{const o=O.find(q=>q.n===m);return o?siteName(o,13):m;})).join('');}
+{const st=document.createElement('style');st.textContent='.gi{display:inline-block;vertical-align:middle;margin:-3px .32em 0 0;flex:none;overflow:visible}.gn{white-space:nowrap}h2 .gi{margin-top:-4px}';document.head.appendChild(st);}
 const MK=[]; // screen markers of this frame: {o,x,y}
 function drawMarker(g,o,x,y,t,st){const lead=o._lead,hov=HOV&&HOV.o===o,sel_=sel===o.id;const f=focusRoads();const fed=!f.length||f.some(r=>(st.src[o.id]||{})[r]>.3)||hov;
  const br=RMOT?(.85+.15*Math.sin(t*1.0472+o.ph)):.85; // 6 s breathe, 70..100 %
@@ -1682,8 +1660,8 @@ function drawMarker(g,o,x,y,t,st){const lead=o._lead,hov=HOV&&HOV.o===o,sel_=sel
  g.globalAlpha=al;g.lineWidth=1.5;{const ga=!RMOT?0:(hov||sel_)?1:view!=='world'?.6:.3;drawGlyph(g,o.id,t,ga);}g.restore();} // r5 U16: Fable icon set, per-icon animation (subtle at world zoom, full on hover/selection, off for reduced motion)
 // ---- site tooltip (brass, chamfered, slides out 6 px on the side away from the hub)
 function siteTip(o,x,y,hubX){const st=curP,fd=feeders(o),lz=LCUR!=='pooled';
- TIP.className='stip';TIP.innerHTML=`<div class="h">${o.n}</div><div class="m"><span class="t1">${rstr(o._rg||rangeOf(o._c||0))}</span> <span class="t2">CENTRAL ≈${(o._c||0).toFixed(0)}%</span>${lz?' '+dlt(o._d):''}${o._lead?' · <span class="t2">LEADING'+(o._con?', CONTESTED':'')+'</span>':''}</div>`+
- `<div class="f">${fd.map(r=>`<span><i style="background:${RDI[r].c}"></i>${r} ${(st.src[o.id][r]).toFixed(0)}%</span>`).join('')}</div>${o.note?`<div class="s">${o.note}</div>`:''}<div class="s" style="opacity:.75">ring = central share of 100%</div>`;
+ TIP.className='stip';TIP.innerHTML=`<div class="h">${siteName(o,14)}</div><div class="m"><span class="t1">${rstr(o._rg||rangeOf(o._c||0))}</span> <span class="t2">CENTRAL ≈${(o._c||0).toFixed(0)}%</span>${lz?' '+dlt(o._d):''}${o._lead?' · <span class="t2">LEADING'+(o._con?', CONTESTED':'')+'</span>':''}</div>`+
+ `<div class="f">${fd.map(r=>`<span><i style="background:${RDI[r].c}"></i>${r} ${(st.src[o.id][r]).toFixed(0)}%</span>`).join('')}</div>${o.note?`<div class="s">${glyphTxt(o.note)}</div>`:''}<div class="s" style="opacity:.75">ring = central share of 100%</div>`;
  TIP.style.display='block';const w=TIP.offsetWidth,h=TIP.offsetHeight;const right=x>=hubX;let tx=right?x+28:x-28-w,ty=y-h/2;
  tx=clamp(tx,8,innerWidth-w-8);ty=clamp(ty,56,innerHeight-h-80);
  {const L=rectOf('legend');if(L){const hitL=(a,b)=>a<L.right+8&&a+w>L.left-8&&b<L.bottom+8&&b+h>L.top-8;if(hitL(tx,ty)){const t2=clamp(x+28,8,innerWidth-w-8);if(!hitL(t2,ty))tx=t2;else tx=Math.max(tx,L.right+12);}}} // r4 U14: the hover card never covers the ROADS legend
@@ -1743,7 +1721,7 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   og.fillStyle='#F4EFE3';og.beginPath();og.arc(g0[0],g0[1],3.6,0,6.2832);og.fill();og.strokeStyle='rgba(8,12,22,.9)';og.lineWidth=1.5;og.stroke();og.restore();placed.push([g0[0]-6,g0[1]-6,g0[0]+6,g0[1]+6],[Math.min(hx,g0[0])-5,hy,Math.max(hx,g0[0])+5,g0[1]]);}for(const m of MKB)placed.push([m[0]-17,m[1]-17,m[0]+17,m[1]+17]); // r4 (item 8): R-tags also keep clear of site icons
  const ovl=(a)=>placed.some(b=>a[0]-10<b[2]&&a[2]+10>b[0]&&a[1]-7<b[3]&&a[3]+7>b[1]); // r3: 8/6 px clearance between tags and from the NOW text (r4: 10/7 px)
  const PRJ=big?null:ROADV.map(rv=>rv.tp.filter((_,i)=>i%2===0).map(p=>proj(p[0],hMesh(p[0],p[1])+.2,p[1])));
- const CMT=!!(window.CMP&&CMP.on&&LCUR!=='pooled'); // r7 U20: compare R-tags larger (13 px), colour-neutral, width from a fixed template so each tag keeps a fixed spot per road
+ const CMT=false; // r8 U29: compare mode no longer has per-road pp tags or leader lines (plain R-tags always); the r7 U20 compare-tag branch below is dormant
  if(!big)ROADV.forEach((rv,ri)=>{const tp=rv.tp;let k=Math.min(tp.length-1,7),x=0,y=0,box=null,bestS=-1,bestB=null;
   const CM=CMT;og.font=CM?`600 13px ${FM}`:`500 11px ${FM}`;const dd=CM?st.w[rv.r.id]-poolSt().w[rv.r.id]:0,rd=Math.round(dd),tt=CM?`${rv.r.id} ${rd>0?'▲ +'+rd:rd<0?'▽ −'+(-rd):'= 0'} pp`:rv.r.id,hw=CM?Math.ceil(og.measureText('R4 ▲ +00 pp').width/2)+9:13;
   const TH2=CM?11:8;
@@ -1796,7 +1774,7 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   el.classList.remove('cp');
   if(!m){el.style.display='none';continue;}const w=el.offsetWidth,h=el.offsetHeight;const right=m.x>=hubX-40;let x=right?m.x+26:m.x-26-w;x=clamp(x,8,W-w-8);el.style.transform=`translate(${x|0}px,${(m.y-h/2)|0}px)`;}
  if(HOV&&HOV.o){const m=MK.find(k=>k.o===HOV.o);if(m)siteTip(HOV.o,m.x,m.y,hubX);}
- const capT=`Futures Atlas · DESIGN SAMPLE v4.4 · look ${LOOKN} · lens: ${LENSI[LCUR].n} · ${isoW(day)} · method v4.0.0-sample`;const capE=document.getElementById('cap');if(capE&&capE.textContent!==capT)capE.textContent=capT;
+ const capT=`Futures Atlas · DESIGN SAMPLE v4.4 · lens: ${LENSI[LCUR].n} · ${isoW(day)} · method v4.0.0-sample`;const capE=document.getElementById('cap');if(capE&&capE.textContent!==capT)capE.textContent=capT;
 }
 
 // ======================= FRAME: always-on ambient loop (v4.1) =======================
@@ -1813,7 +1791,7 @@ function frame(n){if(document.hidden){rafOn=false;return;}requestAnimationFrame(
  if(PGE.style.display==='block')return;
  const busy=!!(OPT.anim||lastMv||LANIM||playing||n<activeUntil);const gap=busy?0:Math.max(n-lastInput>30000?1000/15:1000/30,FPS.ms*2.5);ambFps=busy?0:Math.round(1000/gap);
  if(n-lastF<gap-3)return;lastF=n;lastMv=render(busy);
- if(FPS.el){FPS.n++;if(n-FPS.t0>1000){const i=RD.info.render;FPS.el.textContent=`${(FPS.n*1000/(n-FPS.t0)).toFixed(1)} fps · ${FPS.ms.toFixed(0)} ms/frame · ${i.calls} calls · ${(i.triangles/1000).toFixed(0)}k tris · dpr ${PIXR} · bloom ${POST.on?'on':POST.why||'off'} · look ${LOOKN} · ${busy?'interactive':'ambient cap '+ambFps+' fps'}`;FPS.n=0;FPS.t0=n;}}}
+ if(FPS.el){FPS.n++;if(n-FPS.t0>1000){const i=RD.info.render;FPS.el.textContent=`${(FPS.n*1000/(n-FPS.t0)).toFixed(1)} fps · ${FPS.ms.toFixed(0)} ms/frame · ${i.calls} calls · ${(i.triangles/1000).toFixed(0)}k tris · dpr ${PIXR} · bloom ${POST.on?'on':POST.why||'off'} · ${busy?'interactive':'ambient cap '+ambFps+' fps'}`;FPS.n=0;FPS.t0=n;}}}
 function render(busy){const t0=performance.now(),t=tnow();frames++;TU.uT.value=t;const mv=camApply(t);
  if(LANIM){const k=clamp((t0-LANIM.t0)/LANIM.dur,0,1),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;curP=lerpP(LANIM.A,LANIM.B,e);setRoadWidths(curP);if(frames%2===0||k>=1)updPlaqueText(curP);if(k>=1){LANIM=null;curP=LANIM_END();setRoadWidths(curP);updPlaqueText();drawTL();}}
  for(const f of ANIM)f(t);for(const f of LOD.anim)f(t);if(GKE.fn)GKE.fn(t); // r5 U17: Gatekeeper eye (iris + blink clock)
@@ -1845,20 +1823,20 @@ function evHTML(ev,rids){let h=`<div style="margin:14px 0 4px" class="mono small
 function select(id){sel=id;selR=null;const o=byId[id],st=curP,c=st.p[id]||0,rg=rangeOf(c),src=st.src[id],dom=domRoad(src),col=RCOL[dom];const rows=siteState(st),me=rows.find(r=>r.o===o);
  const feeds=Object.entries(src).filter(e=>e[1]>.01).sort((a,b)=>b[1]-a[1]);
  let h=`<span class="x" onclick="closeCard()">×</span><span class="tag mono">${o.b==='C'?'OFF-MAP CLIFF':BASINS[o.b].n.toUpperCase()}</span>${me.lead?`<span class="tag mono" style="color:#ffe2a8;border-color:#ffe2a8">${me.contested?'LEADING, CONTESTED':'LEADING'}</span>`:''}
- <h2>${o.n}</h2><div class="al">${o.al}</div><div class="small">${o.def}</div>
+ <h2>${siteName(o,17)}</h2><div class="al">${glyphTxt(o.al)}</div><div class="small">${glyphTxt(o.def)}</div>
  <div class="row"><div class="big mono" style="color:${col}">${rstr(rg)}</div><div class="small">central ≈ ${c.toFixed(1)}% · <span class="nw">${lensTag()}</span><br>illustrative sample numbers, not a forecast</div></div>`;
- h+=`<div class="sub"><b>Where this comes from</b> <span class="small">(road share × editorial split of that road)</span>`+feeds.map(([rid,v])=>{const w=st.w[rid],f=FORKS[LCUR][rid][id]||0,er=RDI[rid].f[id];return `<div class="feed cl" onclick="openRoad('${rid}')"><i style="background:${RCOL[rid]}"></i><span><b style="color:${RCOL[rid]}">${rid}</b> ${RDI[rid].sh} ${fmtp(w)}% × ${Math.round(f*100)}%${er?` <span class="small">(editorial ${Math.round(er[1]*100)}–${Math.round(er[2]*100)}%)</span>`:''}</span><b class="mono">= ${v.toFixed(1)}%</b></div>`;}).join('')+`<div class="feed tot"><i></i><span><b>Total</b> = sum of all inflows (the site's share on the map)</span><b class="mono">= ${feeds.reduce((a,e)=>a+e[1],0).toFixed(1)}%</b></div><div class="small" style="margin-top:4px">The % colour on the map and the bar under each banner use the colour of the roads that feed it; the main colour is the biggest feeder (${dom}).</div></div><div class="lk"><b>Lock-in:</b> ${o.lock}</div>`;
+ h+=`<div class="sub"><b>Where this comes from</b> <span class="small">(road share × editorial split of that road)</span>`+feeds.map(([rid,v])=>{const w=st.w[rid],f=FORKS[LCUR][rid][id]||0,er=RDI[rid].f[id];return `<div class="feed cl" onclick="openRoad('${rid}')"><i style="background:${RCOL[rid]}"></i><span><b style="color:${RCOL[rid]}">${rid}</b> ${RDI[rid].sh} ${fmtp(w)}% × ${Math.round(f*100)}%${er?` <span class="small">(editorial ${Math.round(er[1]*100)}–${Math.round(er[2]*100)}%)</span>`:''}</span><b class="mono">= ${v.toFixed(1)}%</b></div>`;}).join('')+`<div class="feed tot"><i></i><span><b>Total</b> = sum of all inflows (the site's share on the map)</span><b class="mono">= ${feeds.reduce((a,e)=>a+e[1],0).toFixed(1)}%</b></div><div class="small" style="margin-top:4px">The % colour on the map and the bar under each banner use the colour of the roads that feed it; the main colour is the biggest feeder (${dom}).</div></div><div class="lk"><b>Lock-in:</b> ${glyphTxt(o.lock)}</div>`;
  if(!o.cliff&&WELFARE_LIGHT)h+=`<div class="sub"><b>Light</b> = how well humans fare here (editorial, 0–5): <b>${o.W}</b>${liteHTML(o.W)}<span class="small">Brightness never changes with the lens or the week. Width of the roads does.</span></div>`;
- h+=`<div class="sub"><b>What you see</b><br>${SCENE_TXT[id]}</div>`;
+ h+=`<div class="sub"><b>What you see</b><br>${glyphTxt(SCENE_TXT[id])}</div>`;
  if(o.twin)h+=`<div class="sub"><b style="color:#ffe2a8">Inside this site</b><br>Two pits, Bloc A and Bloc B, separated by a ridge of mutual deterrence. Identical architecture on both sides; only the colour of the caged core differs (teal vs magenta). No country is named on the map.<br>Road R1 carries two lanes: <b>broad accountability</b> and <b>narrow masters (technofeudal)</b>, ≈${Math.round(R1Q*100)}% of R1 (illustrative).</div>`;
  const rids=feeds.map(f=>f[0]);h+=evHTML(evForRoads(rids),rids);
  const cd=document.getElementById('card');cd.innerHTML=h;cd.style.display='block';cd.scrollTop=0;fitCard();setNav();}
 function openRoad(rid){const r=RDI[rid],st=curP,w=st.w[rid];sel=null;selR=rid;const fk=FORKS[LCUR][rid];
  let h=`<span class="x" onclick="closeCard()">×</span><span class="tag mono" style="color:${r.c};border-color:${r.c}">ROAD ${rid}</span>
- <h2>${r.n}</h2><div class="small">${r.d}</div>
+ <h2>${r.n}</h2><div class="small">${glyphTxt(r.d)}</div>
  <div class="row"><div class="big mono" style="color:${r.c}">${rstr(rangeOf(w,'road',rid))}</div><div class="small">central ≈ ${w.toFixed(1)}% · ${lensTag()}<br>road width on the map = this share</div></div>
  <div class="sub"><b>By lens</b> <span class="small">(placeholder lenses; parameters by maintainer)</span>`+LENS.map(l=>`<div class="feed"><i style="background:${l.id===LCUR?'#f3ead8':'rgba(255,255,255,.18)'}"></i><span>${l.n}</span><b class="mono">${l.s[rid].toFixed(0)}%</b></div>`).join('')+`</div>
- <div class="sub"><b>Where this road leads</b> <span class="small">(all destinations; editorial splits sum to 100%, shown as dashed spurs)</span>`+Object.entries(fk).sort((a,b)=>b[1]-a[1]).map(([sid,f])=>{const er=r.f[sid];return `<div class="feed cl" onclick="enterO(byId['${sid}'])"><i style="background:${r.c}"></i><span>${byId[sid].n} ${Math.round(f*100)}% <span class="small">(${Math.round(er[1]*100)}–${Math.round(er[2]*100)}%)</span></span><b class="mono">${(w*f).toFixed(1)}%</b></div>`;}).join('')+`</div>`;
+ <div class="sub"><b>Where this road leads</b> <span class="small">(all destinations; editorial splits sum to 100%, shown as dashed spurs)</span>`+Object.entries(fk).sort((a,b)=>b[1]-a[1]).map(([sid,f])=>{const er=r.f[sid];return `<div class="feed cl" onclick="enterO(byId['${sid}'])"><i style="background:${r.c}"></i><span>${siteName(byId[sid],14)} ${Math.round(f*100)}% <span class="small">(${Math.round(er[1]*100)}–${Math.round(er[2]*100)}%)</span></span><b class="mono">${(w*f).toFixed(1)}%</b></div>`;}).join('')+`</div>`;
  h+=evHTML(evForRoads([rid]),[rid]);
  const cd=document.getElementById('card');cd.innerHTML=h;cd.style.display='block';cd.scrollTop=0;fitCard();applyFocus();kick();}
 function openNow(){sel=null;selR=null;const st=curP;let h=`<span class="x" onclick="closeCard()">×</span><span class="tag mono">THE CROSSROADS</span><h2>Now · ${isoW(day)}</h2>
@@ -1900,7 +1878,7 @@ function cmpToggle(v){if(LCUR==='pooled'&&v==null)return;CMP.on=v==null?!CMP.on:
 function cmpShow(p){cmpToggle(p);} // r2 test API kept: cmpShow(true|false)
 function cmpBtn(cls,lbl){const b=document.createElement('button');b.className='cmpt '+(cls||'');b.innerHTML=`${lbl} <span class="st">OFF</span>`;b.setAttribute('aria-pressed','false');
  b.onclick=e=>{e.stopPropagation();if(LCUR==='pooled')return;cmpToggle();};
- b.onmouseenter=e=>showTip(e,LCUR==='pooled'?'<div class="h">Compare with Pooled</div>Pick a lens to compare':'<div class="h">Compare with Pooled</div>ON: on each road, a brass band on both sides = width this lens ADDS vs Pooled; a hatched band with a dashed edge = width it LOSES (out to the Pooled width). Site rings: outer thin arc = Pooled share, inner bold arc = this lens. ▲/▽ tags give the difference in pp. While Compare is on, all roads (lens and Pooled alike) are drawn 1.5x wider so the difference is visible; proportions are unchanged. Key: C.');b.onmousemove=e=>moveTip(e);b.onmouseleave=hideTip;return b;}
+ b.onmouseenter=e=>showTip(e,LCUR==='pooled'?'<div class="h">Compare with Pooled</div>Pick a lens to compare':'<div class="h">Compare with Pooled</div>ON: roads stay at their Pooled width; each site gets a small ▲/▽ pill = this lens minus Pooled, in pp. Site rings: outer thin arc = Pooled share, inner bold arc = this lens. Key: C.');b.onmousemove=e=>moveTip(e);b.onmouseleave=hideTip;return b;}
 {const box=document.getElementById('lens'),b=cmpBtn('','⇄ Compare with Pooled');b.id='cmpb';box.appendChild(b);
  addEventListener('keydown',e=>{if((e.key==='c'||e.key==='C')&&!e.repeat&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName))cmpToggle();});
  const st=document.createElement('style');st.textContent=`.cmpt{cursor:pointer;font:500 10px var(--f2);letter-spacing:.12em;color:var(--t2);background:transparent;border:1px solid #3A4250;padding:2px 6px;text-transform:uppercase;pointer-events:auto}.cmpt .st{color:var(--t3);margin-left:4px}.cmpt.on{border-color:var(--acc);color:#F1ECE0}.cmpt.on .st{color:var(--acc)}.cmpt.dis{cursor:not-allowed;opacity:.42}
@@ -2127,7 +2105,8 @@ var VIDEOS={
 // horizontal strip of up to 3 ranked thumbnails (small title + vote button each). It follows the plate's screen position every frame (visFollow,
 // called from layoutLabels), clamped inside the safe zones (left of the site card, below the nav, above the timeline) and pushed off the diorama's
 // focal centre (ground point). Clicking a thumbnail expands the player in place under the title (16:9, <= 480 px wide, close + Esc -> list).
-// Player = youtube-nocookie iframe created only on click (no autoplay, no YouTube JS API); removed on close / leaving the close-up (stops playback).
+// Player = standard youtube.com/embed iframe (r8 U25; was youtube-nocookie) created only on click (no autoplay, no YouTube JS API); removed on close / leaving the close-up (stops playback).
+// r8 U25: every thumbnail and the player bar carry an 'Open on YouTube' link (new tab) for viewers whom YouTube asks to sign in.
 // The right-column site card is back to its full height (VIS.H stays 0).
 var VIS={el:null,site:null,play:null,H:0,collapsed:false,pos:''}; // var (not const): setNav() may call visSync() before this file runs (TDZ)
 function visKey(s,v){return 'fa_vote:'+s+':'+v.id+':'+(v.start||0);}
@@ -2136,6 +2115,7 @@ function visCount(s,v){return (v.seed||0)+(visVoted(s,v)?1:0);}
 function visList(s){const L=((window.VIDEOS&&VIDEOS.sites)||{})[s]||[];return L.map((v,i)=>({v,i,n:visCount(s,v)})).sort((a,b)=>b.n-a.n||a.i-b.i).slice(0,3);}
 function visEsc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function visT(s){s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function visW(v){return 'https://www.youtube.com/watch?v='+encodeURIComponent(v.id)+(v.start?'&t='+(v.start|0)+'s':'');} // r8 U25: watch link (new tab)
 function visInit(){if(VIS.el)return VIS.el;const st=document.createElement('style');st.textContent=`
 #vis{position:fixed;left:0;top:0;box-sizing:border-box;z-index:13;display:none;background:rgba(10,14,19,.86);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(130,140,160,.22);border-left:2px solid var(--acc,#C9A45C);color:var(--t1,#E9E4D8);padding:6px 9px 6px;font:400 12px/16px var(--f3);will-change:transform}
 #vis.list{width:388px}#vis.ply{width:480px}
@@ -2171,6 +2151,12 @@ function visInit(){if(VIS.el)return VIS.el;const st=document.createElement('styl
 #vis .vk{font:400 10.5px/14px var(--f2);color:#A8A498;letter-spacing:.03em}#vis .vk b{font-weight:500;color:var(--acc,#C9A45C);text-transform:uppercase;letter-spacing:.1em}
 #vis .vsub{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:3px;font:400 10.5px/14px var(--f2);color:#B8B3A7}
 #vis .vsub a{color:var(--acc,#C9A45C);text-decoration:none;border-bottom:1px dotted var(--accD,#7D6638);white-space:nowrap}
+#vis .vi{position:relative}
+#vis .yt{position:absolute;right:3px;top:3px;z-index:2;background:rgba(10,14,19,.9);border:1px solid var(--acc,#C9A45C);color:var(--accH,#EBCB8B);font:500 9.5px/13px var(--f2);letter-spacing:.04em;padding:0 4px;text-decoration:none;white-space:nowrap}
+#vis .yt:hover,#vis .yt:focus-visible{background:var(--acc,#C9A45C);color:#0A0E13;outline:none}
+#vis .yb{flex:0 0 auto;border:1px solid var(--acc,#C9A45C)!important;background:rgba(201,164,92,.14);color:var(--accH,#EBCB8B)!important;padding:1px 7px;font:500 11px/15px var(--f2);letter-spacing:.06em!important;text-transform:none;white-space:nowrap;text-decoration:none}
+#vis .yb:hover,#vis .yb:focus-visible{background:var(--acc,#C9A45C);color:#0A0E13!important;outline:none}
+#vis .vhint{margin-top:4px;font:400 11px/14px var(--f2);color:#C4BFB3}#vis .vhint a{color:var(--accH,#EBCB8B);text-decoration:none;border-bottom:1px dotted var(--acc,#C9A45C)}
 #vis.col .vbody{display:none}#vis.col{width:auto}
 #vis .vb,#vis .vt,#vis .vv{transition:border-color .15s,color .15s}
 @media (prefers-reduced-motion: reduce){#vis *{transition:none!important}}
@@ -2181,17 +2167,20 @@ function visInit(){if(VIS.el)return VIS.el;const st=document.createElement('styl
 function visRender(){const d=visInit(),s=VIS.site,o=byId[s];if(!o){d.style.display='none';return;}
  d.classList.toggle('col',VIS.collapsed);d.classList.toggle('ply',!!VIS.play);d.classList.toggle('list',!VIS.play);
  let h=`<div class="vh"><span>VISIONS</span>`;
- if(VIS.play)h+=`<span class="vs">· ${visEsc(o.n)}</span><button class="vb" data-a="back" title="Back to the list (stops the video)">◀ LIST</button><button class="vb" data-a="stop" aria-label="Close player" title="Close player (Esc)">✕</button>`;
+ if(VIS.play)h+=`<span class="vs">· ${visEsc(o.n)}</span><a class="yb" href="${visW(VIS.play.v)}" target="_blank" rel="noopener" title="Open this video on youtube.com in a new tab (uses your YouTube sign-in)">Open on YouTube ↗</a><button class="vb" data-a="back" title="Back to the list (stops the video)">◀ LIST</button><button class="vb" data-a="stop" aria-label="Close player" title="Close player (Esc)">✕</button>`;
  else h+=`<span class="vs">· ranked by votes</span><a href="#contribute" data-a="sub" title="Coming: submissions and votes via GitHub Discussions">Submit a vision ↗</a><button class="vb" data-a="col" aria-expanded="${!VIS.collapsed}" title="${VIS.collapsed?'Show':'Hide'} Visions">${VIS.collapsed?'▸':'▾'}</button>`;
  h+=`</div><div class="vbody">`;
- if(VIS.play){const v=VIS.play.v,src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?${v.start?'start='+(v.start|0)+'&':''}rel=0&modestbranding=1`;
-  h+=`<div class="vp"><div class="ld">Loading YouTube player…<br>(needs network; youtube-nocookie.com)</div><iframe src="${src}" title="${visEsc(v.title)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+ // r8 U25: standard youtube.com embed (carries the viewer's own YouTube session; youtube-nocookie did not, so signed-in viewers still got
+ // 'Sign in to confirm you're not a bot'). Still created only on click, no autoplay, no JS API; origin = this page (omitted under file://).
+ if(VIS.play){const v=VIS.play.v,og=(location.origin&&location.origin!=='null')?'&origin='+encodeURIComponent(location.origin):'',src=`https://www.youtube.com/embed/${encodeURIComponent(v.id)}?${v.start?'start='+(v.start|0)+'&':''}rel=0&playsinline=1&enablejsapi=0${og}`;
+  h+=`<div class="vp"><div class="ld">Loading YouTube player…<br>(needs network; youtube.com)</div><iframe src="${src}" title="${visEsc(v.title)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+  <div class="vhint">If YouTube asks you to sign in, <a href="${visW(v)}" target="_blank" rel="noopener">open it on YouTube ↗</a>.</div>
   <div class="vpt">${visEsc(v.title)}</div><div class="vk"><b>${visEsc(v.kind)}</b> · ${visEsc(v.ch||'')}${v.start?' · from '+visT(v.start)+(v.startv?'':' (start approx)'):''}</div>
-  <div class="vsub"><span>${location.protocol==='file:'?'Embeds need an http(s) page (file:// gives Error 153)':'Privacy-enhanced embed · no autoplay'}</span><a href="https://www.youtube.com/watch?v=${encodeURIComponent(v.id)}${v.start?'&t='+(v.start|0)+'s':''}" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></div>`;}
+  <div class="vsub"><span>${location.protocol==='file:'?'Embeds need an http(s) page (file:// gives Error 153)':'Standard YouTube embed · loads only on click · no autoplay'}</span><a href="${visW(v)}" target="_blank" rel="noopener">Watch on YouTube ↗</a></div>`;}
  else{const L=visList(s);h+=`<div class="vr">`;
   if(!L.length)h+=`<div class="vk">No visions submitted yet for this outcome.</div>`;
   L.forEach(({v,i,n},r)=>{const on=visVoted(s,v);
-   h+=`<div class="vi"><button class="vt" data-a="play" data-i="${i}" aria-label="Play: ${visEsc(v.title)}"><img src="https://i.ytimg.com/vi/${encodeURIComponent(v.id)}/hqdefault.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"><span class="rk">#${r+1}</span><span class="pl">▶</span>${v.start?`<span class="tm">from ${visT(v.start)}</span>`:''}</button>
+   h+=`<div class="vi"><button class="vt" data-a="play" data-i="${i}" aria-label="Play: ${visEsc(v.title)}"><img src="https://i.ytimg.com/vi/${encodeURIComponent(v.id)}/hqdefault.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"><span class="rk">#${r+1}</span><span class="pl">▶</span>${v.start?`<span class="tm">from ${visT(v.start)}</span>`:''}</button><a class="yt" href="${visW(v)}" target="_blank" rel="noopener" title="Watch on YouTube (new tab)" aria-label="Watch on YouTube: ${visEsc(v.title)}">YouTube ↗</a>
    <div class="vm" data-a="play" data-i="${i}" title="${visEsc(v.title+' · '+(v.ch||''))}"><div class="tt">${visEsc(v.title)}</div></div>
    <div class="vq"><span class="kd" title="${visEsc(v.kind+' · '+(v.ch||''))}">${visEsc(v.kind)}${v.start&&!v.startv?' · start approx':''}</span><button class="vv${on?' on':''}" data-a="vote" data-i="${i}" aria-pressed="${on}" title="${on?'Remove your vote':'Up-vote (one vote per video, this browser)'}"><span class="ar">${on?'▲':'△'}</span><span>${n}</span></button></div></div>`;});
   h+=`</div><div class="vf">Demo voting - local only · seed counts are illustrative</div>`;}
