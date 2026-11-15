@@ -106,7 +106,33 @@ const STYLES=FA.STYLES={
   Object.assign(A.ter.P,{lo:'#56545E',mid:'#5B5961',hi:'#63606E',rock:'#5A5866',bank:'#6A6474',bed:'#1E2434',snow:'#7A7890',heath:'#5D5961'}); // violet-grey albedo: the blue IBL supplies the hue
   Object.assign(A.water,{sh:'#22344A',dp:'#0A1220',foam:'#7E8CA0',env:.7});
   Object.assign(A.post,{thr:1.15,knee:.35,k:.52,vig:.20});
-  A.gk=Object.assign({},A.gk);}
+  A.gk=Object.assign({},A.gk);
+  // C2 (owner: 'reference the CURRENT v4.4 environment lighting'): v4.4 look 1 'Cinematic dusk' environment ported 1:1.
+  // v4.4 runs legacy colour (hex numbers used as linear, no output encoding, NoToneMapping). Here colour management is ON:
+  // hexes are kept as written (albedo x light products commute through the ~2.2 gamma), light INTENSITIES are converted
+  // I_cm = I_v44^2.2, the Neutral toe crush + magenta pull + shadow grade are disabled (v4.4 has no curve or grade), and the
+  // v4.4 screen-space atmosphere layers (CSS sky gradient, warm horizon vignette, screen-blended glow) are reproduced as overlays.
+  Object.assign(A,{exposure:1.0,exposureWorld:1.10,
+   // legacy v4.4 sums lights in display space, CM sums them in linear space (the warm key then swamps the blue sky term),
+   // so the per-light conversion I^2.2 is the start point and the final split was matched by world-frame readback vs v4.4:
+   hemi:['#8494D8','#120F2C',1.60],  // fa4_looks.js:11 hemi ['#8494D8','#120F2C',.62] (I^2.2 = .35 -> 1.60 by readback)
+   sun:['#FFB070',.90],              // fa4_looks.js:11 sun ['#FFB070',1.25] (I^2.2 = 1.63 -> .90 by readback)
+   fill:['#6A8EE6',.50,1],           // fa4_looks.js:11 fill ['#6A8EE6',.48] (I^2.2 = .20 -> .50; 3rd elem = enable, the C1 fill was never added)
+   sunV:[-70,110,45],fillV:[80,40,-60], // fa4_build.js:235 sun at target+(-70,110,45) (53 deg, west-front); fa4_world.js:36 fill at (80,40,-60)
+   table:'#161C38',                  // fa4_looks.js:8 bg 58 % stop (what v4.4 shows past the map edge)
+   smokeK:.5,                        // C2 item 4: Reversion chimney smoke opacity -50 %
+   overlay:{                         // fa4_looks.js:9-10 + :39-41 (90 s horizon drift, off under reduced motion), world view only
+    vig:'linear-gradient(180deg,rgba(8,10,26,.55) 0%,rgba(255,160,90,.30) 7%,rgba(230,130,120,.12) 15%,rgba(150,110,190,.04) 26%,rgba(0,0,0,0) 34%,rgba(0,0,0,0) 62%,rgba(4,6,18,.42) 100%),radial-gradient(ellipse 92% 88% at 55% 40%,rgba(4,6,18,0) 52%,rgba(4,6,18,.55) 100%)',
+    glow:'radial-gradient(ellipse 30% 22% at 57.5% 40%,rgba(255,180,110,.20) 0%,rgba(255,140,100,.07) 45%,rgba(0,0,0,0) 100%),radial-gradient(ellipse 70% 20% at 50% 2%,rgba(255,150,80,.40) 0%,rgba(230,110,110,.10) 55%,rgba(0,0,0,0) 100%),radial-gradient(ellipse 30% 26% at 92% 20%,rgba(200,110,170,.12) 0%,rgba(0,0,0,0) 100%)'}});
+  // sky = v4.4 CSS bg gradient (fa4_looks.js:8 #0A0F22/#18203F/#35294E/#161C38) composited with its vig + glow layers at the horizon:
+  // #35294E + vig rgba(255,160,90,.30) + screen rgba(255,150,80,.40) -> #AA7768 (horizon); #35294E + rgba(230,130,120,.12) -> #3A3060 (mid)
+  Object.assign(A.sky,{zen:'#141A38',mid:'#3A3060',hor:'#AA7768',glow:'#FFA060',low:'#161C38',hbK:.04,bw:.10});
+  A.fog={c:'#3E3C78',near:244,far:535,hk:.22,ha:.06}; // fa4_looks.js:11 fog ['#3E3C78',210,460] at v4.4 world d 258 -> x1.16 for the pilot world d 300
+  Object.assign(A.ibl,{amb:.15,cap:3.6,bounce:'#120F2C'});A.envTer=.45; // IBL kept for reflections; ambient now mostly the ported hemi
+  Object.assign(A.ter.P,{lo:'#0E1430',mid:'#1C2550',heath:'#2A3468',hi:'#3C4986',rock:'#474A76',bank:'#2A3560',bed:'#0A1230',snow:'#4C5284'}); // fa4_looks.js:12 T LO/MID/HI/ROCK/SHORE/WAT (heath = MID-HI mid, snow = ROCK lifted)
+  Object.assign(A.water,{sh:'#2A3560',dp:'#0A1230',foam:'#6E78A8',env:.7}); // fa4_looks.js:12 SHORE / WAT
+  Object.assign(A.post,{thr:.80,knee:.30,k:.62,vig:0,sc:0,toe:0,mg:0,sh:[1,1,1],hi:[1,1,1],lift:[0,0,0]}); // fa4_looks.js:16 bloom th .70 (sRGB) ~ linear .46 -> .80 keeps lit terrain out; no grade
+  }
  if(Q.get('mood')==='day'){A.name='Arch-viz (day haze)';Object.assign(A,{exposure:.80,exposureWorld:.84,glowK:.15,sun:['#FFF2E0',1.15],sunEl:40,kitWarm:null});
   Object.assign(A.sky,{zen:'#6F9BC8',mid:'#A9C6DF',hor:'#E4E6E2',glow:'#FFF0DC',low:'#B9C0C4',hbK:.03});
   Object.assign(A.fog,{c:'#C9D6E2',ha:.10});Object.assign(A.ibl,{amb:.9,bounce:'#9A9C98'});
@@ -161,9 +187,16 @@ const CAM=FA.CAM=new THREE.PerspectiveCamera(28,innerWidth/innerHeight,.5,1000);
 const hemi=new THREE.HemisphereLight(LOOK.hemi[0],LOOK.hemi[1],LOOK.hemi[2]);SC.add(hemi);
 const SUNDIR=FA.SUNDIR=new THREE.Vector3(-1,.36,-.42).normalize(); // low warm key from the west, slightly behind (long shadows toward the viewer)
 if(LOOK.sunEl!=null){const el=LOOK.sunEl*Math.PI/180,az=new THREE.Vector2(-1,-.42).normalize();SUNDIR.set(az.x*Math.cos(el),Math.sin(el),az.y*Math.cos(el));} // style: same azimuth, new elevation
+if(LOOK.sunV)SUNDIR.set(LOOK.sunV[0],LOOK.sunV[1],LOOK.sunV[2]).normalize(); // C2: v4.4 key direction (fa4_build.js:235)
 const sun=FA.sun=new THREE.DirectionalLight(LOOK.sun[0],LOOK.sun[1]);sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0004;sun.shadow.normalBias=.04;SC.add(sun,sun.target);
-if(LOOK.fill[2]>0){const fill=new THREE.DirectionalLight(LOOK.fill[0],LOOK.fill[1]);fill.position.set(80,50,90);SC.add(fill);} // cool rim/fill, no shadow (off when IBL is the only ambient)
+if(LOOK.fill[2]>0){const fill=new THREE.DirectionalLight(LOOK.fill[0],LOOK.fill[1]);const fv=LOOK.fillV||[80,50,90];fill.position.set(fv[0],fv[1],fv[2]);SC.add(fill);} // cool rim/fill, no shadow (off when IBL is the only ambient); C2: v4.4 rim position
+// C2: v4.4 screen-space atmosphere layers (fa4_looks.js:9-10, :39-41) as two fixed overlays above the canvas, below labels/HUD; world view only
+FA.RMOT=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(LOOK.overlay){const st=document.createElement('style');st.textContent='#faVig,#faGlow{position:fixed;inset:0;pointer-events:none;transition:opacity .6s}#faVig{background:'+LOOK.overlay.vig+'}#faGlow{mix-blend-mode:screen;background:'+LOOK.overlay.glow+
+ ';animation:faHz 90s ease-in-out infinite alternate;transform-origin:50% 0}@keyframes faHz{0%{opacity:1;transform:translateX(0) scale(1.04)}35%{opacity:.84;transform:translateX(-2.2%) scale(1.04)}70%{opacity:.93;transform:translateX(1.6%) scale(1.06)}100%{opacity:.8;transform:translateX(2.6%) scale(1.04)}}'+
+ '@media (prefers-reduced-motion:reduce){#faGlow{animation:none}}body.faClose #faVig,body.faClose #faGlow{opacity:0;animation:none}';document.head.appendChild(st);
+ for(const id of['faVig','faGlow']){const d=document.createElement('div');d.id=id;document.getElementById('stage').appendChild(d);}}
 FA.fitShadow=function(cx,cz,half){sun.target.position.set(cx,0,cz);sun.position.set(cx+SUNDIR.x*220,SUNDIR.y*220,cz+SUNDIR.z*220);
  const s=sun.shadow.camera;s.left=-half;s.right=half;s.top=half;s.bottom=-half;s.near=20;s.far=480;s.updateProjectionMatrix();sun.target.updateMatrixWorld();FA.shadowDirty=true;};
 
@@ -210,14 +243,14 @@ FA.puffTex=(function(){const c=document.createElement('canvas');c.width=c.height
 // ---------------- batched VFX: all glows = 1 instanced draw, all smoke = 1 instanced draw ----------------
 // glow handles keep the old sprite API (h.material.opacity) so animations stay unchanged; opacities are copied per frame.
 FA.GLOWS=[];FA.SMOKES=[];
-FA.glow=function(x,y,z,size,hex,k){const h={x,y,z,size,c:C(hex).multiplyScalar((k==null?.6:k)*LOOK.glowK),material:{opacity:1}};FA.GLOWS.push(h);return h;};
+FA.glow=function(x,y,z,size,hex,k,an){const h={x,y,z,size,c:C(hex).multiplyScalar((k==null?.6:k)*LOOK.glowK),material:{opacity:1},an:an||null};FA.GLOWS.push(h);return h;}; // C2: an = [amp, period, phase, switch] (shader breath)
 FA.smoke=function(x,y,z,period,phase,hex){FA.SMOKES.push({x,y,z,period,phase,c:C(hex||'#C9C5D0')});};
 FA.buildFx=function(){const out=[];
  if(FA.GLOWS.length){const N=FA.GLOWS.length,g=new THREE.InstancedBufferGeometry();const b=new THREE.PlaneGeometry(1,1);g.index=b.index;g.setAttribute('position',b.attributes.position);g.setAttribute('uv',b.attributes.uv);
-  const P=new Float32Array(N*3),Cc=new Float32Array(N*4),O=new Float32Array(N);FA.GLOWS.forEach((h,i)=>{P.set([h.x,h.y,h.z],i*3);Cc.set([h.c.r,h.c.g,h.c.b,h.size],i*4);O[i]=1;});
-  g.setAttribute('iP',new THREE.InstancedBufferAttribute(P,3));g.setAttribute('iC',new THREE.InstancedBufferAttribute(Cc,4));const oa=new THREE.InstancedBufferAttribute(O,1);oa.setUsage(THREE.DynamicDrawUsage);g.setAttribute('iO',oa);g.instanceCount=N;
-  const m=new THREE.ShaderMaterial({uniforms:{map:{value:FA.glowTex}},transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
-   vertexShader:'attribute vec3 iP;attribute vec4 iC;attribute float iO;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vU=uv;vC=iC.rgb;vO=iO;vec4 mv=modelViewMatrix*vec4(iP,1.);mv.xy+=position.xy*iC.a;gl_Position=projectionMatrix*mv;}',
+  const P=new Float32Array(N*3),Cc=new Float32Array(N*4),O=new Float32Array(N),BA=new Float32Array(N*4);FA.GLOWS.forEach((h,i)=>{P.set([h.x,h.y,h.z],i*3);Cc.set([h.c.r,h.c.g,h.c.b,h.size],i*4);O[i]=1;if(h.an)BA.set(h.an,i*4);});
+  g.setAttribute('iP',new THREE.InstancedBufferAttribute(P,3));g.setAttribute('iC',new THREE.InstancedBufferAttribute(Cc,4));g.setAttribute('iB',new THREE.InstancedBufferAttribute(BA,4));const oa=new THREE.InstancedBufferAttribute(O,1);oa.setUsage(THREE.DynamicDrawUsage);g.setAttribute('iO',oa);g.instanceCount=N;
+  const m=new THREE.ShaderMaterial({uniforms:{map:{value:FA.glowTex},uT:FA.TU.uT,uAn:FA.TU.uAn},transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+   vertexShader:'uniform float uT;'+FA.BREATH_GLSL+'attribute vec3 iP;attribute vec4 iC;attribute vec4 iB;attribute float iO;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vU=uv;vC=iC.rgb;vO=iO*faBr(iB,uT);vec4 mv=modelViewMatrix*vec4(iP,1.);mv.xy+=position.xy*iC.a;gl_Position=projectionMatrix*mv;}',
    fragmentShader:'uniform sampler2D map;varying vec2 vU;varying vec3 vC;varying float vO;void main(){float t=texture2D(map,vU).a;float a=t*vO;'+
     (LOOK.post?'gl_FragColor=vec4(vC*(1.+t*t*'+LOOK.post.glowHDR.toFixed(2)+'),a);':'gl_FragColor=vec4(vC,a);')+'\n#include <encodings_fragment>\n}'}); // A2: HDR hot core -> threshold bloom on lamps/hearths only
   const me=new THREE.Mesh(g,m);me.frustumCulled=false;me.renderOrder=8;SC.add(me);FA.anims.push(()=>{let ch=false;FA.GLOWS.forEach((h,i)=>{const v=h.material.opacity;if(O[i]!==v){O[i]=v;ch=true;}});if(ch)oa.needsUpdate=true;});out.push(me);}
@@ -226,7 +259,7 @@ FA.buildFx=function(){const out=[];
   g.setAttribute('iP',new THREE.InstancedBufferAttribute(P,3));g.setAttribute('iS',new THREE.InstancedBufferAttribute(S,2));g.setAttribute('iC',new THREE.InstancedBufferAttribute(Cc,3));g.instanceCount=N;
   const m=new THREE.ShaderMaterial({uniforms:{map:{value:FA.puffTex},uT:FA.TU.uT},transparent:true,depthWrite:false,
    vertexShader:'uniform float uT;attribute vec3 iP;attribute vec2 iS;attribute vec3 iC;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vU=uv;vC=iC;float u=fract(uT/iS.x+iS.y);'+
-    'vec3 p=iP+vec3(u*1.6+sin(u*6.+iS.y*9.)*.12,u*3.4,u*.5);float sc=.4+u*1.7;vO=.6*(1.-u)*smoothstep(0.,.08,u);vec4 mv=modelViewMatrix*vec4(p,1.);mv.xy+=position.xy*sc;gl_Position=projectionMatrix*mv;}',
+    'vec3 p=iP+vec3(u*1.6+sin(u*6.+iS.y*9.)*.12,u*3.4,u*.5);float sc=.4+u*1.7;vO='+(.6*(LOOK.smokeK||1)).toFixed(3)+'*(1.-u)*smoothstep(0.,.08,u);vec4 mv=modelViewMatrix*vec4(p,1.);mv.xy+=position.xy*sc;gl_Position=projectionMatrix*mv;}',
    fragmentShader:'uniform sampler2D map;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vec4 t=texture2D(map,vU);gl_FragColor=vec4(vC*t.rgb,t.a*vO);\n#include <encodings_fragment>\n}'});
   const me=new THREE.Mesh(g,m);me.frustumCulled=false;me.renderOrder=7;SC.add(me);out.push(me);}
  return out;};
@@ -319,7 +352,11 @@ FA.single=function(k,x,z,o){o=o||{};const y=o.y!=null?o.y:FA.H(x,z)-.05;const r=
    return a=>{rot.makeRotationAxis(ax,a);q.me.matrix.multiplyMatrices(q.base,q.p.m).multiply(rot);};}};};
 
 // ---------------- terrain mesh (slope/height/moisture colour, baked AO, detail normals, cloud shadows) ----------------
-FA.TU={uT:{value:0}};
+FA.TU={uT:{value:0},uAn:{value:FA.RMOT?0:1}}; // C2: uAn = light animation on/off (prefers-reduced-motion -> 0)
+// C2 calm light animation (pools, lamp glows): b = (amplitude, period s, phase, switch flag). Breathes 1 +- amp; switchers go dark
+// ~28 % of their slots (slot = 2.7 periods), as a few street lamps occasionally switching. Pure function of uT -> no CPU per frame.
+FA.BREATH_GLSL='uniform float uAn;float faBr(vec4 b,float t){if(uAn<.5||b.y<=0.)return 1.;float w=1.+b.x*sin(6.2832*t/b.y+b.z);'+
+ 'if(b.w>0.){float s=floor(t/(b.y*2.7)+b.z);float h=fract(sin(s*91.7+b.z*37.1)*4375.85);w*=1.-.88*step(.72,h);}return w;}\n';
 const TER_COMMON='#include <common>\nuniform float uT;\nfloat cH2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\nfloat cN2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(cH2(i),cH2(i+vec2(1,0)),f.x),mix(cH2(i+vec2(0,1)),cH2(i+vec2(1,1)),f.x),f.y);}';
 const CLOUD='{vec2 q=vFogWP.xz*.028+vec2(uT*.012,uT*.004);float cl=cN2(q)*.6+cN2(q*2.1+3.)*.4;outgoingLight*=1.-.16*smoothstep(.52,.78,cl);}\n';
 function terrainMat(T){const mat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.93,metalness:0,envMapIntensity:LOOK.envTer!=null?LOOK.envTer:LOOK.env*.7,flatShading:!!T.flat});
@@ -483,15 +520,17 @@ FA.setView=function(){const c=FA.CITY==='gatekeeper'?GK:RV;const rg=FA.rig;
  if(FA.VIEW==='world'&&LOOK.worldCam){const k=LOOK.worldCam;Object.assign(rg,{tx:c===GK?-k.tx:k.tx,ty:0,tz:k.tz,d:k.d,pitch:k.pitch,yaw:c===GK?.08:-.08,fov:k.fov||28});FA.fitShadow(0,-6,135);} // A2: pulled back so the instrument-table rim + scale read in the world view
  if(FA.VIEW==='close'&&LOOK.closeCam&&LOOK.closeCam[FA.CITY]){const k=LOOK.closeCam[FA.CITY];Object.assign(rg,{yaw:k.yaw,pitch:k.pitch,d:k.d,ty:k.ty,fov:k.fov||28,shift:k.shift||0});if(k.eye!=null)FA.eyeBase=k.eye;FA.shadowDirty=true;if(LOOK.archviz&&c===GK)FA.fitShadow(c.x,c.z,27);} // A2: lower close-up, lens shift up -> a strip of graded sky + horizon glow in frame
  if(LOOK.exposureWorld)R.toneMappingExposure=FA.VIEW==='world'?LOOK.exposureWorld:LOOK.exposure;  // fixed exposure per view, no auto-exposure
+ document.body.classList.toggle('faClose',FA.VIEW!=='world');FA.kick&&FA.kick(1500); // C2: v4.4 overlays only in world view
  FA.applyCam();FA.ui&&FA.ui();};
 FA.applyCam=function(){const r=FA.rig;CAM.position.set(r.tx+Math.sin(r.yaw)*Math.cos(r.pitch)*r.d,r.ty+Math.sin(r.pitch)*r.d,r.tz+Math.cos(r.yaw)*Math.cos(r.pitch)*r.d);CAM.lookAt(r.tx,r.ty,r.tz);
  const nr=Math.min(4,Math.max(.5,r.d*.02));let up=false;if(Math.abs(CAM.near-nr)>.01){CAM.near=nr;up=true;}
  const fv=r.fov||28,sh=r.shift||0;if(CAM.fov!==fv){CAM.fov=fv;up=true;}if(sh>0){if(!CAM.view||!CAM.view.enabled||Math.abs(CAM.view.offsetY+innerHeight*sh)>.5||CAM.view.fullWidth!==innerWidth||CAM.view.fullHeight!==innerHeight){CAM.setViewOffset(innerWidth,innerHeight,0,-innerHeight*sh,innerWidth,innerHeight);up=false;}}else if(CAM.view&&CAM.view.enabled){CAM.clearViewOffset();up=false;}
  if(up)CAM.updateProjectionMatrix();};   // near grows with distance: depth precision at world zoom; A2 close-up fov + vertical lens shift (sky strip)
-{let drag=null;const el=R.domElement;el.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:FA.rig.yaw,pitch:FA.rig.pitch};});
- addEventListener('pointerup',()=>drag=null);addEventListener('pointermove',e=>{if(!drag)return;FA.rig.yaw=drag.yaw-(e.clientX-drag.x)*.005;FA.rig.pitch=Math.min(1.35,Math.max(.12,drag.pitch+(e.clientY-drag.y)*.004));FA.applyCam();});
- el.addEventListener('wheel',e=>{e.preventDefault();FA.rig.d=Math.min(330,Math.max(14,FA.rig.d*Math.exp(e.deltaY*.0012)));FA.applyCam();},{passive:false});}
-addEventListener('resize',()=>{CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);});
+{let drag=null;const el=R.domElement;el.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:FA.rig.yaw,pitch:FA.rig.pitch};FA.kick();});
+ addEventListener('pointerup',()=>drag=null);addEventListener('pointermove',e=>{if(!drag)return;FA.rig.yaw=drag.yaw-(e.clientX-drag.x)*.005;FA.rig.pitch=Math.min(1.35,Math.max(.12,drag.pitch+(e.clientY-drag.y)*.004));FA.applyCam();FA.kick();});
+ el.addEventListener('wheel',e=>{e.preventDefault();FA.rig.d=Math.min(330,Math.max(14,FA.rig.d*Math.exp(e.deltaY*.0012)));FA.applyCam();FA.kick();},{passive:false});
+ addEventListener('keydown',()=>FA.kick());}
+addEventListener('resize',()=>{CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);FA.kick();});
 
 // ---------------- markers (world: drop line + disc + brass ring + plate; close-up: current site plate only) ----------------
 FA.markers=[];
@@ -519,7 +558,7 @@ FA.TS=TS;
 FA.anims=[];const clock=new THREE.Clock();let fr=0,acc=0,lastInfo='',lastSh=-1;FA.T=0;
 FA.perf={steady:null,shadow:null};
 const fpsEl=document.getElementById('fps');if(Q.get('fps')==='1')fpsEl.style.display='block';
-FA.frame=function(){const dt=Math.min(.05,clock.getDelta());FA.T=FA.TFIX!=null?FA.TFIX:FA.T+dt;FA.TU.uT.value=FA.T;
+FA.frame=function(){const dt=Math.min(.1,clock.getDelta());FA.T=FA.TFIX!=null?FA.TFIX:FA.T+dt;FA.TU.uT.value=FA.T; // C2: clamp .05 -> .1 so the 15-30 fps ambient cap keeps real-time animation speed
  if(FA.waterN){FA.waterN.offset.set(FA.T*.006,FA.T*.011);}
  for(const a of FA.anims)a(FA.T,dt);sky.position.copy(CAM.position);
  // on-demand shadow map: after a view change, and at ~10 Hz in close-up where the wheel / fan / eyelids move (world zoom: they are sub-pixel)
@@ -531,9 +570,20 @@ FA.frame=function(){const dt=Math.min(.05,clock.getDelta());FA.T=FA.TFIX!=null?F
  else R.render(SC,CAM);FA.placeMarkers();
  {const i=R.info.render;FA.perf[sh?'shadow':'steady']={calls:i.calls,tris:i.triangles};}
  fr++;acc+=dt;if(acc>.5&&fpsEl.style.display==='block'){const i=R.info,P=FA.perf;lastInfo='fps '+(fr/acc).toFixed(0)+' · '+(acc/fr*1000).toFixed(1)+' ms · calls '+(P.steady?P.steady.calls:i.render.calls)+' · tris '+((P.steady?P.steady.tris:i.render.triangles)/1000).toFixed(0)+'k'+
-  (P.shadow?' (shadow-refresh frame '+P.shadow.calls+' / '+(P.shadow.tris/1000).toFixed(0)+'k)':'')+' · geo '+i.memory.geometries+' · tex '+i.memory.textures+' · dpr '+R.getPixelRatio();fpsEl.textContent=lastInfo;fr=0;acc=0;}
+  (P.shadow?' (shadow-refresh frame '+P.shadow.calls+' / '+(P.shadow.tris/1000).toFixed(0)+'k)':'')+' · geo '+i.memory.geometries+' · tex '+i.memory.textures+' · dpr '+R.getPixelRatio()+' · '+(FA.ambFps?'ambient cap '+FA.ambFps+' fps':'interactive');fpsEl.textContent=lastInfo;fr=0;acc=0;}
  if(FA.wantClip){FA.wantClip=false;FA.clip=FA.measureClip();}};
-FA.loop=function(){requestAnimationFrame(FA.loop);FA.frame();};
+// C2: v4.4-style render loop (fa4_labels.js:308-320): full display rate while the user interacts (kick), ~30 fps ambient,
+// ~15 fps after 30 s without input, nothing while the tab is hidden. All light animation is a pure function of uT in shaders,
+// so the ambient ticks cost one frame each and no per-frame CPU work beyond the existing anims.
+FA.activeUntil=0;FA.lastInput=performance.now();FA.ambFps=0;let lastF=0;
+FA.kick=function(ms){const n=performance.now();FA.lastInput=n;FA.activeUntil=Math.max(FA.activeUntil,n+(ms||900));};
+// C2 wrap-up: idle no longer renders at 30/15 fps (a headless SwiftShader tab sat at ~290 % CPU idle). The light animation is slow
+// (breath periods 3-9 s, switch slots ~10-25 s), so idle ticks run at FA.IDLE_FPS[0] for 30 s after input, then FA.IDLE_FPS[1];
+// reduced motion (uAn 0) or ?idle=0 -> no idle frames at all (pure on-demand). Interaction (kick) still renders every rAF.
+FA.IDLE_FPS=Q.get('idle')==='0'?[0,0]:[10,5];
+FA.loop=function(n){requestAnimationFrame(FA.loop);if(document.hidden)return;n=n||performance.now();const busy=n<FA.activeUntil||Q.get('anim')==='1';
+ const f=busy?0:(FA.TU.uAn.value<.5?0:FA.IDLE_FPS[n-FA.lastInput>30000?1:0]);if(!busy&&!f){FA.ambFps=0;return;}
+ const gap=busy?0:1000/f;FA.ambFps=busy?0:f;if(n-lastF<gap-3)return;lastF=n;FA.frame();};
 FA.info=()=>({calls:R.info.render.calls,tris:R.info.render.triangles,geometries:R.info.memory.geometries,textures:R.info.memory.textures,programs:(R.info.programs||[]).length,dpr:R.getPixelRatio(),perf:FA.perf,terrainTris:FA.terrainTris,waterTris:FA.waterTris,iblGain:FA.IBL_GAIN});
 // clipped-pixel check (P2): share of pixels with any channel > 240, measured right after a render
 FA.measureClip=function(){const cv=R.domElement,w=cv.width,h=cv.height;const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(cv,0,0);

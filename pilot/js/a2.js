@@ -136,11 +136,11 @@ A.makePost=function(){const P=L.post;if(!P)return null;
   {tI:{value:null},tB:{value:null},px:{value:new THREE.Vector2()}});
  const v3=a=>new THREE.Vector3(a[0],a[1],a[2]);
  const mComp=mk(['uniform sampler2D tS,tB;uniform float exposure,bk,vig,sat,sc;uniform vec3 shC,hiC,lift;varying vec2 vU;',
-  'vec3 neutral(vec3 color){const float sC=.76;const float dS=.15;float x=min(color.r,min(color.g,color.b));float off=x<.08?x-6.25*x*x:.04;color-=off;float pk=max(color.r,max(color.g,color.b));if(pk<sC)return color;float d=1.-sC;float np=1.-d*d/(pk+d-sC);color*=np/pk;float g=1.-1./(dS*(pk-np)+1.);return mix(color,vec3(np),g);}',
+  'vec3 neutral(vec3 color){const float sC=.76;const float dS=.15;float x=min(color.r,min(color.g,color.b));float off=x<.08?x-6.25*x*x:.04;color-=off*'+(P.toe!=null?P.toe:1).toFixed(3)+';float pk=max(color.r,max(color.g,color.b));if(pk<sC)return color;float d=1.-sC;float np=1.-d*d/(pk+d-sC);color*=np/pk;float g=1.-1./(dS*(pk-np)+1.);return mix(color,vec3(np),g);}',
   'float h12(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}',
   'void main(){vec3 c=texture2D(tS,vU).rgb+texture2D(tB,vU).rgb*bk;c=neutral(max(c*exposure,0.));',
   ' float l=dot(c,vec3(.2126,.7152,.0722));c*=mix(shC,vec3(1.),smoothstep(0.,.25,l));c*=mix(vec3(1.),hiC,smoothstep(.5,.85,l));c+=lift*(1.-smoothstep(0.,.3,l));',
-  ' l=dot(c,vec3(.2126,.7152,.0722));float mg=max(min(c.r,c.b)-c.g,0.);c.r-=mg*.9;c.b+=mg*.1;c=max(mix(vec3(l),c,sat),0.);vec2 q=(vU-.5)*vec2(1.5,1.);c*=1.-vig*smoothstep(.35,1.05,length(q));', // A2: magenta pull (lavender -> violet-blue)
+  ' l=dot(c,vec3(.2126,.7152,.0722));float mg=max(min(c.r,c.b)-c.g,0.);c.r-=mg*.9*'+(P.mg!=null?P.mg:1).toFixed(3)+';c.b+=mg*.1*'+(P.mg!=null?P.mg:1).toFixed(3)+';c=max(mix(vec3(l),c,sat),0.);vec2 q=(vU-.5)*vec2(1.5,1.);c*=1.-vig*smoothstep(.35,1.05,length(q));', // A2: magenta pull (lavender -> violet-blue)
   ' c=mix(c*12.92,1.055*pow(c,vec3(1./2.4))-.055,step(.0031308,c));c=mix(c,c*c*(3.-2.*c),sc);c+=(h12(gl_FragCoord.xy)-.5)/255.;gl_FragColor=vec4(clamp(c,0.,1.),1.);}'].join('\n'),
   {tS:{value:null},tB:{value:null},exposure:{value:1},bk:{value:P.k},vig:{value:P.vig},sat:{value:P.sat},sc:{value:P.sc},shC:{value:v3(P.sh)},hiC:{value:v3(P.hi)},lift:{value:v3(P.lift)}});
  const ps=new THREE.Scene(),pc=new THREE.OrthographicCamera(-1,1,1,-1,0,1),q=new THREE.Mesh(new THREE.PlaneGeometry(2,2),mComp);q.frustumCulled=false;ps.add(q);

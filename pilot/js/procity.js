@@ -56,7 +56,7 @@ function bake(){const t0=performance.now(),sc=new THREE.Scene(),cam=new THREE.Or
 // ======================= (2) world-space materials =======================
 // The baked family is sampled in the fragment shader from the world position (vFogWP, provided by the patched fog chunks,
 // instancing-aware): vertical faces use (distance along the face tangent, height above deck), horizontal faces use xz.
-const WS_HEAD='uniform sampler2D pcT;uniform vec4 pcS;uniform vec2 pcO;uniform vec3 pcC;\nfloat pcH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n'+
+const WS_HEAD='uniform sampler2D pcT;uniform vec4 pcS;uniform vec2 pcO;uniform vec3 pcC;uniform float uT,uAn;\nfloat pcH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n'+
  'float pcBand(float rr,float ang,float rc,float hw,float fw){float dr=abs(rr-rc);float e=1.-smoothstep(.025,.025+fw,abs(dr-(hw-.12)));float d=step(fract(ang*rc/1.3),.45)*(1.-smoothstep(.022,.022+fw,dr));return max(e,d)*step(dr,hw);}\n';
 const WS_PRE='vec3 nW=inverseTransformDirection(normal,viewMatrix);vec3 wp=vFogWP;wp.xz-=pcO;wp.y-=pcS.z;float tp=step(.6,abs(nW.y));vec2 tg=normalize(vec2(-nW.z,nW.x)+vec2(1e-4,0.));\n'+
  'vec2 q=mix(vec2(dot(wp.xz,tg),wp.y),wp.xz,tp);vec4 tx=texture2D(pcT,q*pcS.xy);float ao=mix(.5+.5*smoothstep(0.,1.2,wp.y),1.,tp);\n#ifdef USE_COLOR\nvec3 vc=vColor.rgb;\n#else\nvec3 vc=vec3(1.);\n#endif\n';
@@ -77,14 +77,16 @@ const WS_KIND={
  // amber 2700-3000 K (linear rgb), far-field value keeps the floor mask instead of a uniform 0.34 glow (which read as 100 % lit)
  glass:'vec2 cs=vec2('+f2(BAY)+','+f2(FLR)+');vec2 cid=floor(q/cs);float sd=floor(vc.r*997.);float face=pcH(floor(nW.xz*4.+.5)+sd);\n'+
   'float frac=.40+.30*pcH(vec2(sd*.37+1.3,7.1));float hF=pcH(vec2(cid.y*1.13+.7,sd*.71));float hC=pcH(cid+vec2(sd*1.7,face*57.));float on=step(hF,frac);float lit=step(hC,mix(.10,.64,on));\n'+
+  // C2: sparse window life - each unit re-rolls every 6 s (staggered phase); ~0.05 % flip on/off at any moment -> a change every few seconds in frame
+  'lit=abs(lit-step(.9995,pcH(cid*vec2(.37,.91)+vec2(sd,floor(uT*uAn/6.+hC*11.)))*uAn));\n'+
   'float fwq=max(fwidth(q.x)/cs.x,fwidth(q.y)/cs.y);float kk=smoothstep(.7,.3,fwq);float fr=tx.r;float inten=tx.g*(.6+.8*pcH(cid.yx+sd));\n'+
   'float em=mix(on*.30+.04,lit*inten,kk)*(1.-fr)*pcS.w*(1.-tp);vec3 warm='+(P.mood!=='day'?'mix(vec3(1.,.44,.14),vec3(1.,.52,.21),pcH(cid+sd+3.))':'mix(vec3(1.,.62,.32),vec3(1.,.74,.48),pcH(cid+sd+3.))')+';\n'+
   'vec3 gl=pcC*vc.g*mix(1.,.7,tx.b);diffuseColor.rgb=mix(gl,vec3(.30,.31,.33),fr)*ao;metalnessFactor=mix(.92,.4,fr)*(1.-.6*lit*kk*pcS.w);roughnessFactor=mix(.08+.1*tx.a,.45,fr);\n'+
-  'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.10,.105,.12),tp);metalnessFactor=mix(metalnessFactor,0.,tp);roughnessFactor=mix(roughnessFactor,.8,tp);totalEmissiveRadiance+=warm*em*'+(P.mood!=='day'?'3.0':'3.4')+';'
+  'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.10,.105,.12),tp);metalnessFactor=mix(metalnessFactor,0.,tp);roughnessFactor=mix(roughnessFactor,.8,tp);totalEmissiveRadiance+=warm*em*'+(P.mood!=='day'?'2.4':'3.4')+';'
 };
 function wsMat(kind,ti,hex,tile,o){o=o||{};const m=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:o.rough!=null?o.rough:.7,metalness:o.metal||0,envMapIntensity:o.env!=null?o.env:1,flatShading:true,side:o.side||THREE.FrontSide});
  if(o.po){m.polygonOffset=true;m.polygonOffsetFactor=-o.po;m.polygonOffsetUnits=-2*o.po;}
- const U={pcT:{value:TEX[ti]},pcS:{value:new THREE.Vector4(1/tile[0],1/tile[1],FA.GK.top,P.lit)},pcO:{value:new THREE.Vector2(FA.GK.x,FA.GK.z)},pcC:{value:C(hex)}};
+ const U={pcT:{value:TEX[ti]},pcS:{value:new THREE.Vector4(1/tile[0],1/tile[1],FA.GK.top,P.lit)},pcO:{value:new THREE.Vector2(FA.GK.x,FA.GK.z)},pcC:{value:C(hex)},uT:FA.TU.uT,uAn:FA.TU.uAn};
  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+WS_HEAD)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n#ifdef USE_FOG\n{'+WS_PRE+WS_KIND[kind]+'}\n#endif\n');};
  m.customProgramCacheKey=()=>'pc_'+kind;return m;}
@@ -109,9 +111,15 @@ function mats(){const blue=P.mood!=='day',E=P.env!=null?P.env:(blue?.85:1),A=P.a
  M.paint=std({color:tone('#ffffff'),roughness:.45,metalness:.1});
  M.tree=std({color:tone('#ffffff',blue?.5:1),vertexColors:true,roughness:.9,flatShading:true,envMapIntensity:.7});
  M.solar=std({color:tone('#ffffff'),vertexColors:true,roughness:.3,metalness:.3,flatShading:true});
- M.plate=std({color:'#090B10',roughness:.16,metalness:.8,envMapIntensity:blue?.8:1.3}); // C1: was 2.6 (read as a glowing cobalt rim once the IBL gain cap and E were fixed)
+ M.plate=std({color:'#090B10',roughness:blue?.62:.16,metalness:blue?.45:.8,envMapIntensity:blue?.8:1.3}); // C1: was 2.6 (read as a glowing cobalt rim once the IBL gain cap and E were fixed)
+ // C2 wrap-up: blue hour roughness .16 -> .62, metal .8 -> .45: the ported v4.4 cool fill (#6A8EE6, world.js A.fill) put a grazing specular
+ // streak on the glossy apron ring that saturated (~(130,155,242), >240 blue) over ~17k px at the bottom of the close-up - more than the spire
  // C1: amber 2700-3000 K light lines / crowns with HDR headroom (> bloom threshold 1.15) in blue hour; day keeps the old cream
- M.warm=blue?hot('#FFB468',1.7*P.line):hot('#FFE0B4',1.25*P.line);M.cool=hot(L.ai,.4+1.1*P.lit);M.crown=blue?hot('#FFA858',2.3*P.lit):hot('#FFD9A8',.35+2.3*P.lit);
+ // C2 lighting hierarchy (blue hour): tier 1 = spire collars / spire crown / eye (M.collar, M.spireW, iris), tier 2 = windows,
+ // street lamps, building crowns (M.crown 2.3 -> 1.8, glass x3.0 -> x2.4), tier 3 = ring / road / canal light lines (M.warm 1.7 -> 1.0,
+ // M.cool 1.5 -> .9). Bloom threshold is .80 (world.js), so tier 3 barely blooms and tier 1 blooms most.
+ M.warm=blue?hot('#FFB468',1.0*P.line):hot('#FFE0B4',1.25*P.line);M.cool=hot(L.ai,(.4+1.1*P.lit)*(blue?.6:1));M.crown=blue?hot('#FFA858',1.8*P.lit):hot('#FFD9A8',.35+2.3*P.lit);
+ M.collar=blue?hot('#E2F7FF',5.0):M.cool;M.spireW=blue?hot('#FFC27E',4.2):M.warm;
  SIL=[.62,.64,.67];DARK=[.05,.055,.07];}
 
 // ======================= (3) geometry helpers: statics (merged per material) + instanced batches =======================
@@ -143,14 +151,23 @@ let TC=0;const POOLS=[];
 function tree(x,z,s,y){const blue=P.mood!=='day';const g=col((blue?GREENS_B:GREENS)[(rnd()*4)|0],.85+.3*rnd());const sy=s*(.9+.3*rnd()),ry=rnd()*TAU;
  if(blue&&(TC++&1))return;B.tree.add(x,y==null?Y:y,z,s,sy,s,ry,g);}
 // C1: warm light-pool decal on the deck (additive, 1 instanced draw for all of them; built in buildPools)
-function pool(x,z,r,k,y){if(P.mood==='day')return;POOLS.push([x,y==null?Y+.06:y,z,r,k]);}
-function lamp(x,z,h,sz){B.metal.add(x,Y,z,.03,h,.03,0,DARK);FA.glow(x,Y+h+.05,z,sz||.8,L.human,.36);pool(x,z,(.9+1.7*(sz||.8))*(.85+.3*FA.hash(x*3.1,z*1.7)),.62*(.7+.6*FA.hash(z*2.3,x*.9)));}
+// C2: every pool breathes (an = [amp .10-.15, period 4-9 s, phase, switch]); lamp pools share their lamp's glow params
+const anOf=(x,z,sw)=>{const h1=FA.hash(x*1.7+.3,z*2.9),h2=FA.hash(z*.7,x*3.3+1.1),h3=FA.hash(x+z*1.3,x-z);return[.10+.05*h1,4+5*h2,h3*6.2832,sw&&h1>.9?1:0];};
+function pool(x,z,r,k,y,an,hex){if(P.mood==='day')return;POOLS.push([x,y==null?Y+.06:y,z,r,k,an||anOf(x,z,false),hex||null]);}
+const LAMPC=['#FFB866','#FFC47E','#FFAA5A']; // C2: three lamp temperatures (~2700-3300 K), picked by position hash
+function lamp(x,z,h,sz){B.metal.add(x,Y,z,.03,h,.03,0,DARK);const hv=FA.hash(x*.71+2.,z*1.31),hx=LAMPC[(hv*3)|0],an=anOf(x,z,true);
+ FA.glow(x,Y+h+.05,z,sz||.8,hx,.36*(.85+.3*FA.hash(z*3.7,x*.3)),an);pool(x,z,(.9+1.7*(sz||.8))*(.85+.3*FA.hash(x*3.1,z*1.7)),.62*(.7+.6*FA.hash(z*2.3,x*.9)),null,an,hx);}
 function poolTex(){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);
  [[0,1],[.22,.62],[.5,.22],[.78,.05],[1,0]].forEach(s=>gr.addColorStop(s[0],'rgba(255,255,255,'+s[1]+')'));g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);}
 function buildPools(){if(!POOLS.length)return 0;const g=new THREE.PlaneGeometry(1,1);g.rotateX(-Math.PI/2);
  const m=new THREE.MeshBasicMaterial({color:'#ffffff',map:poolTex(),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8});
- const im=new THREE.InstancedMesh(g,m,POOLS.length),w=C('#FFA45C'),cc=new THREE.Color();
- POOLS.forEach((p,i)=>{m4.compose(v3.set(p[0],p[1],p[2]),q4.identity(),s3.set(p[3]*2,1,p[3]*2));im.setMatrixAt(i,m4);im.setColorAt(i,cc.copy(w).multiplyScalar(p[4]));});
+ const im=new THREE.InstancedMesh(g,m,POOLS.length),w=C('#FFA45C'),cc=new THREE.Color(),BA=new Float32Array(POOLS.length*4);
+ POOLS.forEach((p,i)=>{m4.compose(v3.set(p[0],p[1],p[2]),q4.identity(),s3.set(p[3]*2,1,p[3]*2));im.setMatrixAt(i,m4);im.setColorAt(i,cc.copy(p[6]?C(p[6]):w).multiplyScalar(p[4]));BA.set(p[5],i*4);});
+ g.setAttribute('aB',new THREE.InstancedBufferAttribute(BA,4));
+ m.onBeforeCompile=sh=>{sh.uniforms.uT=FA.TU.uT;sh.uniforms.uAn=FA.TU.uAn;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uT;'+FA.BREATH_GLSL+'attribute vec4 aB;varying float vBr;').replace('#include <begin_vertex>','#include <begin_vertex>\nvBr=faBr(aB,uT);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vBr;').replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=vBr;');};
+ m.customProgramCacheKey=()=>'pcPool';
  im.renderOrder=3;im.frustumCulled=false;im.castShadow=im.receiveShadow=false;SC.add(im);return POOLS.length;}
 
 // ======================= (4) ground, roads, base, light lines =======================
@@ -177,7 +194,7 @@ function canal(){const blue=P.mood!=='day',yw=Y-.45,wn=FA.noiseNormal(128,1.8,37
   for(const s of[-1,1]){const o=AW+.22;S(new THREE.BoxGeometry(len,.14,.04),M.shell,cx+Math.cos(a)*rm-Math.sin(a)*o*s,Y+.07,cz+Math.sin(a)*rm+Math.cos(a)*o*s,true,-a);}}
  const BC=['#D8D6D0','#AEB4BC','#2E3A4E','#C9C3B6'];
  for(let k=0;k<8;k++){const a=k*Math.PI/4+Math.PI/8,rm=RC1-.55;S(new THREE.BoxGeometry(1.15,.12,.32),M.comp,cx+Math.cos(a)*rm,Y-.31,cz+Math.sin(a)*rm,true,-a);
-  FA.glow(cx+Math.cos(a)*(RC1-1.05),Y-.1,cz+Math.sin(a)*(RC1-1.05),.55,L.human,.3);
+  FA.glow(cx+Math.cos(a)*(RC1-1.05),Y-.1,cz+Math.sin(a)*(RC1-1.05),.55,L.human,.3,anOf(cx+Math.cos(a)*RC1,cz+Math.sin(a)*RC1,false));
    for(const s of[-1,1]){const bc=col(BC[(rnd()*4)|0]),bx=cx+Math.cos(a)*rm-Math.sin(a)*.34*s,bz=cz+Math.sin(a)*rm+Math.cos(a)*.34*s;
    B.paint.add(bx,yw-.02,bz,.62,.1,.2,-a,bc);B.paint.add(bx+Math.cos(a)*.08,yw+.08,bz+Math.sin(a)*.08,.24,.07,.14,-a,[.8,.8,.78]);}}}
 
@@ -191,7 +208,7 @@ function spire(){const sy=Y+.44,Hs=12.6,pr=[],cr=t=>.5-.2*t;
  for(let i=0;i<=28;i++){const t=i/28,r=cr(t),y=t*Hs;pr.push(new THREE.Vector2(r,y));
   if(i%4===3)pr.push(new THREE.Vector2(r-.035,y+.02),new THREE.Vector2(r-.035,y+.07),new THREE.Vector2(r-.01,y+.09));} // hairline grooves
  pr.push(new THREE.Vector2(0,Hs));S(new THREE.LatheGeometry(pr,32),M.shell,cx,sy,cz,true);
- for(const i of[7,15,23]){const t=i/28;tor(cr(t)-.022,.016,sy+t*Hs+.045,M.cool);}                           // cool light seams in three grooves
+ for(const i of[7,15,23]){const t=i/28;tor(cr(t)-.022,.016,sy+t*Hs+.045,M.collar);}                           // cool light seams in three grooves (C2: tier-1 collar)
  // diagrid: two counter-wound strut families on a hyperboloid (waist at 60 % height), hoops at every node level
  const NL=9,NS=10,Hd=Hs-.25,rad=t=>.74+.8*(t-.6)*(t-.6)/.36,node=(j,i,d)=>pt(rad(j/NL),(i+d*j*.5)*TAU/NS,sy+j/NL*Hd);
  for(let j=0;j<NL;j++)for(let i=0;i<NS;i++)for(const d of[-1,1])strut(node(j,i,d),node(j+1,i,d),.038,M.shell);
@@ -202,11 +219,12 @@ function spire(){const sy=Y+.44,Hs=12.6,pr=[],cr=t=>.5-.2*t;
  tor(r1,.03,y1,M.shell,true);
  // waist lens deck (instrument platform) with a cool hairline rim
  const yd=sy+6/NL*Hd,dk=[[.5,-.05],[1.22,0],[1.26,.05],[.5,.1]].map(p=>new THREE.Vector2(p[0],p[1]));
- S(new THREE.LatheGeometry(dk,40),M.shell,cx,yd,cz,true);tor(1.27,.014,yd+.03,M.cool);
+ S(new THREE.LatheGeometry(dk,40),M.shell,cx,yd,cz,true);tor(1.27,.014,yd+.03,M.collar);
  const ys=sy+Hs,sp=[[.34,-.12],[1.45,.12],[1.5,.2],[.55,.4],[0,.42]].map(p=>new THREE.Vector2(p[0],p[1]));
- S(new THREE.LatheGeometry(sp,48),M.shell,cx,ys,cz,true);tor(1.515,.018,ys+.16,M.cool);
+ S(new THREE.LatheGeometry(sp,48),M.shell,cx,ys,cz,true);tor(1.515,.018,ys+.16,M.collar);
  // C1 spire top light crown: amber hairline under the saucer rim + a ring of small warm sprites (the eye itself stays cool)
- if(P.mood!=='day'){tor(1.44,.02,ys+.05,M.warm);for(let i=0;i<12;i++){const a=i*TAU/12;FA.glow(cx+Math.cos(a)*1.47,ys+.06,cz+Math.sin(a)*1.47,.55,L.human,.32);}
+ // C2: crown = tier 1 (M.spireW 4.2, sprites .32 -> .55, steady - no breath); waist/skirt hairlines stay tier 3 (M.warm)
+ if(P.mood!=='day'){tor(1.44,.02,ys+.05,M.spireW);for(let i=0;i<12;i++){const a=i*TAU/12;FA.glow(cx+Math.cos(a)*1.47,ys+.06,cz+Math.sin(a)*1.47,.55,'#FFC27E',.55);}
   tor(1.24,.012,yd-.03,M.warm);tor(r1,.012,y1-.05,M.warm);pool(cx,cz,4.6,.22,Y+.47);}
  return ys+.42;}
 
@@ -226,10 +244,10 @@ function buildEye(yb){const E=new THREE.Vector3(cx,yb+1.3,cz);FA.eyePos=E;const 
  const ball=new THREE.Group();ball.position.copy(E);SC.add(ball);
  ball.add(new THREE.Mesh(new THREE.SphereGeometry(.93,40,28),std({color:'#D2CFC8',roughness:.3,envMapIntensity:.8})));
  const it=irisTex(),ig=new THREE.SphereGeometry(.936,40,10,0,TAU,0,.6);ig.rotateX(Math.PI/2);
- ball.add(new THREE.Mesh(ig,std({map:it,emissiveMap:it,emissive:C('#9FE6F0'),emissiveIntensity:P.mood!=='day'?.7:.32,roughness:.35})));
+ ball.add(new THREE.Mesh(ig,std({map:it,emissiveMap:it,emissive:C('#9FE6F0'),emissiveIntensity:P.mood!=='day'?1.6:.32,roughness:.35}))); // C2: iris .7 -> 1.6 (tier 1)
  const cg=new THREE.SphereGeometry(.975,40,12,0,TAU,0,.75);cg.rotateX(Math.PI/2);
  ball.add(new THREE.Mesh(cg,std({color:'#ffffff',transparent:true,opacity:.14,roughness:.04,envMapIntensity:1.5,depthWrite:false})));
- const halo=FA.glow(E.x,E.y,E.z,3.2,L.ai,.12);
+ const halo=FA.glow(E.x,E.y,E.z,3.2,L.ai,P.mood!=='day'?.22:.12); // C2: halo .12 -> .22 in blue hour
  // attention clock: new target every 4-7 s, blink every 8-14 s (0.32 s), lids open again at once
  const rr=FA.rng(77),sched=[];let t0=0;while(t0<4000){sched.push({t:t0,yaw:(rr()-.5)*1.5,pitch:-.12-rr()*.42});t0+=4+rr()*3;}
  const blinks=[];t0=2.2;while(t0<4000){blinks.push(t0);t0+=8+rr()*6;}
@@ -276,7 +294,7 @@ function icons(){const a=.75*Math.PI,bx=cx+Math.cos(a)*12.5,bz=cz+Math.sin(a)*12
  for(const p of[[Math.PI+.52,13.3],[Math.PI+1.05,13.6],[.5*Math.PI+.35,13.3],[Math.PI-.3,13.5]]){const x=cx+Math.cos(p[0])*p[1],z=cz+Math.sin(p[0])*p[1],h=fl(2.9+rnd()*.9);KO.push([x,z,1.15]);
   B.paint.add(x,Y,z,.14,h,.14,0,[.8,.8,.79]);B.gHex.add(x,Y+h-.4,z,.5,.4,.5,0,gseed());B.cHex.add(x,Y+h,z,1.05,.07,1.05,0);
   for(let i=0;i<4;i++)B.rib.add(x,Y+h+.07,z,1.0,.5,1.0,i*Math.PI/4);
-  FA.glow(x,Y+h-.55,z,1.1,L.human,.3);pool(x,z,1.6,.3);}}
+  FA.glow(x,Y+h-.55,z,1.1,L.human,.3,anOf(x,z,false));pool(x,z,1.6,.3);}}
 // -x/+z : honeycomb pavilions (a quarter grow into stacked hex towers), hex parks, solar trees
 function honey(){const p=1.34;for(let i=0;i<14;i++)for(let j=0;j<14;j++){const lx=-(1.6+i*p*.866),lz=1.6+(j+(i%2)*.5)*p,r=Math.hypot(lx,lz);if(!okR(r))continue;
   const x=cx+lx,z=cz+lz,u=rnd();if(!free(x,z,.7))continue;
