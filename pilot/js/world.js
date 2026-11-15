@@ -87,6 +87,30 @@ const STYLES=FA.STYLES={
   props:{sat:.4},gk:{stone:'#D3DAE0',stone2:'#DFE5EA',wall:'#D9E0E5',tower:'#C9D1D8',spire:'#F3F5F6',pod:'#D6DDE2',metal:'#A8B2BA',lid:'#C4CCD3'},
   water:{c:'#6F94A8',r:.9},skirt:'#9FB2BF',tuft:'#C5D0C8',clump:true,ts:0,aoK:.9,glowK:.6}
 };
+// Checkpoint B0: archviz = bluefacet/A2 base (post chain, table frame, facet terrain) + blue-hour masterplan-model look; ?mood=day optional
+{const A=STYLES.archviz=JSON.parse(JSON.stringify(STYLES.bluefacet));
+ Object.assign(A,{name:'Arch-viz (blue hour)',pitch:'Procedural master-planned future city as a lit masterplan model at blue hour.',archviz:true,exposure:.82,exposureWorld:.86,glowK:1.2,sun:['#FFB07A',.30],sunEl:8});
+ Object.assign(A.sky,{zen:'#0B1B48',mid:'#2A4E96',hor:'#B39A90',glow:'#FFA25E',hbK:.10});
+ Object.assign(A.fog,{c:'#4E5D80',near:150,far:1000,ha:.16});A.ibl.amb=.62; // B2: fog desaturated to blue-grey, far fog -30 % (Fable crit knob)
+ A.closeCam.gatekeeper={yaw:-1.18,pitch:.24,d:76,ty:9.5,fov:31,shift:.08,eye:-1.22};
+ A.pc={R:21.5,lit:1,line:1,mood:'blue'};
+ if(Q.get('mood')!=='day'){
+  // C1 (lighting + colour only): the city is the only warm light. Environment 1-2 stops down to deep cool blue-violet,
+  // IBL gain capped (was saturating at 14 -> daylight-level ambient that procity had to crush), luminous cool upper sky
+  // with a narrow peach-amber horizon band, darker desaturated trees, threshold bloom tuned so only emissives bloom.
+  Object.assign(A,{exposure:.80,exposureWorld:1.08,sun:['#93A3DC',.55],kitWarm:[1.04,1.0,.92],props:{sat:.45,white:null},table:'#0E111C',
+   farTree:{c:'#2E3E38',b:'#38453A'},thin:.5});
+  Object.assign(A.sky,{zen:'#173576',mid:'#3A6CC4',hor:'#D89C84',glow:'#F09A60',low:'#121726',hbK:.04,bw:.06});
+  Object.assign(A.fog,{c:'#273360',near:140,far:1000,ha:.12});
+  Object.assign(A.ibl,{amb:.62,cap:3.6,bounce:'#20263A'});A.envTer=.55;A.env=.7;
+  Object.assign(A.ter.P,{lo:'#56545E',mid:'#5B5961',hi:'#63606E',rock:'#5A5866',bank:'#6A6474',bed:'#1E2434',snow:'#7A7890',heath:'#5D5961'}); // violet-grey albedo: the blue IBL supplies the hue
+  Object.assign(A.water,{sh:'#22344A',dp:'#0A1220',foam:'#7E8CA0',env:.7});
+  Object.assign(A.post,{thr:1.15,knee:.35,k:.52,vig:.20});
+  A.gk=Object.assign({},A.gk);}
+ if(Q.get('mood')==='day'){A.name='Arch-viz (day haze)';Object.assign(A,{exposure:.80,exposureWorld:.84,glowK:.15,sun:['#FFF2E0',1.15],sunEl:40,kitWarm:null});
+  Object.assign(A.sky,{zen:'#6F9BC8',mid:'#A9C6DF',hor:'#E4E6E2',glow:'#FFF0DC',low:'#B9C0C4',hbK:.03});
+  Object.assign(A.fog,{c:'#C9D6E2',ha:.10});Object.assign(A.ibl,{amb:.9,bounce:'#9A9C98'});
+  Object.assign(A.post,{sh:[1,1,1],lift:[0,0,0],vig:.08});A.pc={R:21.5,lit:0,line:.22,mood:'day'};}}
 FA.DEFAULT_STYLE='bluefacet'; // A2: side-by-side vision judged A2 bluefacet clearly better than A1 (blue-hour 8 vs 4); ?style=pilot keeps the old look
 FA.STYLE=STYLES[(Q.get('style')||'').toLowerCase()]?(Q.get('style')||'').toLowerCase():FA.DEFAULT_STYLE;
 (function merge(dst,src){for(const k in src){const v=src[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&dst[k]&&typeof dst[k]==='object'&&!Array.isArray(dst[k]))merge(dst[k],v);else dst[k]=v;}})(LOOK,STYLES[FA.STYLE]);
@@ -152,17 +176,17 @@ function skyMat(capture,gain){const I=LOOK.ibl;return new THREE.ShaderMaterial({
  defines:capture&&I?{CAPTURE:1}:{},
  vertexShader:'varying vec3 vD;void main(){vD=position;vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_Position=vec4(p.xy,p.w*.99999,p.w);}',
  fragmentShader:'uniform vec3 cZ,cM,cH,cG,cL,cB,sunD;uniform float gain,clampV;varying vec3 vD;void main(){vec3 d=normalize(vD);float y=d.y;'+
- 'vec3 c=y>0.?mix(cH,cM,smoothstep(0.,.20,y)):mix(cH,cL,smoothstep(0.,-.10,y));c=mix(c,cZ,smoothstep(.20,.80,y));'+
+ 'vec3 c=y>0.?mix(cH,cM,smoothstep(0.,'+(LOOK.sky.bw||.20).toFixed(3)+',y)):mix(cH,cL,smoothstep(0.,-.10,y));c=mix(c,cZ,smoothstep(.20,.80,y));'+
  'float s=max(dot(d,normalize(sunD)),0.);float hb=exp(-abs(y-.02)*8.);\n'+
  '#ifdef CAPTURE\n c+=cG*(pow(s,5.)*.42*hb+hb*.07);c=mix(c,cB*.5,smoothstep(0.,-.08,y));c=min(c*gain,vec3(clampV));\n#else\n c+=cG*(pow(s,5.)*.42*hb+pow(s,60.)*.35+hb*'+(LOOK.sky.hbK!=null?LOOK.sky.hbK:.07).toFixed(3)+');\n#endif\n'+ // A2: all-round warm band .025 (the .07 band over blue read lavender)
  'gl_FragColor=vec4(c,1.);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}'});}
 // JS mirror of the capture sky (no gain) to solve the IBL gain
 function skyCapJS(d){const P=k=>C(LOOK.sky[k]);const H0=P('hor'),M=P('mid'),Z=P('zen'),G=P('glow'),y=d.y;
- const c=H0.clone().lerp(M,smooth(0,.2,y));c.lerp(Z,smooth(.2,.8,y));const s=Math.max(0,d.dot(SUNDIR)),hb=Math.exp(-Math.abs(y-.02)*8);
+ const c=H0.clone().lerp(M,smooth(0,LOOK.sky.bw||.2,y));c.lerp(Z,smooth(.2,.8,y));const s=Math.max(0,d.dot(SUNDIR)),hb=Math.exp(-Math.abs(y-.02)*8);
  c.add(G.clone().multiplyScalar(Math.pow(s,5)*.42*hb+hb*.07));return c;}
 let IBL_GAIN=1;
 if(LOOK.ibl){const r=FA.rng(31),v=new THREE.Vector3();let sum=0,n=0;for(let i=0;i<1500;i++){const u1=r(),u2=r(),rr=Math.sqrt(u1),ph=u2*6.2832;v.set(rr*Math.cos(ph),Math.sqrt(1-u1),rr*Math.sin(ph));
-  const c=skyCapJS(v);sum+=.2126*c.r+.7152*c.g+.0722*c.b;n++;}IBL_GAIN=Math.min(14,Math.max(1,LOOK.ibl.amb/(sum/n)));}
+  const c=skyCapJS(v);sum+=.2126*c.r+.7152*c.g+.0722*c.b;n++;}IBL_GAIN=Math.min(LOOK.ibl.cap||14,Math.max(1,LOOK.ibl.amb/(sum/n)));}
 FA.IBL_GAIN=IBL_GAIN;
 const sky=new THREE.Mesh(new THREE.SphereGeometry(900,48,24),skyMat(false));sky.renderOrder=-10;sky.frustumCulled=false;SC.add(sky);FA.sky=sky;
 {const ss=new THREE.Scene();ss.add(new THREE.Mesh(new THREE.SphereGeometry(100,32,16),skyMat(true,IBL_GAIN)));
@@ -246,7 +270,7 @@ function riverFacet(x,z,h){const k=smooth(-75,-30,z);if(k<=0)return h;const rc=F
  else{const t=ad-rw-.75,W=side?.6:3.6;y=lerp(WL+.06,land,smooth(0,W,t));if(!side)y=Math.min(y,lerp(WL+.06,land,smooth(W*.5,W*1.6,t)));}
  return lerp(land,y,k);}
 FA.H=function(x,z){let h=Hraw(x,z);
- let d=Math.hypot(x-GK.x,z-GK.z);h=lerp(h,2.6,smooth(17,11.5,d));                       // Gatekeeper plinth bed
+ let d=Math.hypot(x-GK.x,z-GK.z);h=lerp(h,2.6,LOOK.archviz?smooth(31,24,d):smooth(17,11.5,d));                       // Gatekeeper plinth bed
  d=Math.hypot(x-RV.x,z-RV.z);h=lerp(h,1.0+(fbm(x*.09,z*.09,3)-.5)*.7,smooth(24,10,d));    // Reversion valley floor (low banks so the wheel reaches the stream)
  const wm=Math.hypot(x-(RV.x-12),z-(RV.z-8));h+=1.6*smooth(5,1.5,wm)*smooth(24,10,d);      // windmill knoll
  if(LOOK.ter.facet)return riverFacet(x,z,h);
@@ -366,7 +390,7 @@ function buildFacetTerrain(colorHook){const T=LOOK.ter;const xs=axis(-TW/2,TW/2,
  for(let j=0;j<NZ-1;j++)for(let i=0;i<NX-1;i++){const k00=j*NX+i,k10=k00+1,k01=k00+NX,k11=k01+1;
   if(Math.abs(VH[k00]-VH[k11])<=Math.abs(VH[k10]-VH[k01])){face(k00,k01,k11);face(k00,k11,k10);}else{face(k00,k01,k10);face(k10,k01,k11);}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.computeVertexNormals();
- const m=new THREE.Mesh(g,terrainMat(T));m.receiveShadow=true;m.castShadow=true;SC.add(m);FA.terrainTris=pos.length/9;
+ const m=new THREE.Mesh(g,terrainMat(T));m.receiveShadow=true;m.castShadow=!LOOK.archviz;SC.add(m);FA.terrainTris=pos.length/9;
  addSkirtTable();
  // water: only the cells below the waterline, depth per vertex -> depth tint (shallow->deep), stepped foam lines at the shore
  const wn=FA.noiseNormal(128,2.2,23);wn.repeat.set(36,27);FA.waterN=wn;const W=LOOK.water;
@@ -420,7 +444,7 @@ FA.FARTREES=[];
 FA.buildFarTrees=function(){const L=FA.FARTREES;if(!L.length)return null;const r=FA.rng(57);
  const con=new THREE.ConeGeometry(.42,1.0,6,1,true);con.translate(0,.5,0);const con2=new THREE.ConeGeometry(.32,.75,6,1,true);con2.translate(0,1.05,0);
  const geoC=mergeSimple([con,con2]);const bl=new THREE.ConeGeometry(.5,.62,6,1,true);bl.translate(0,.62,0);const bl2=new THREE.ConeGeometry(.5,.38,6,1,true);bl2.rotateX(Math.PI);bl2.translate(0,.12,0);
- const geoB=mergeSimple([bl,bl2]);const base=LOOK.a2?{c:C('#48633F'),b:C('#728244')}:{c:C('#41604C'),b:C('#677D46')};const out=[]; // A2: less blue in the far-tree greens (teal under the violet IBL)
+ const geoB=mergeSimple([bl,bl2]);const base=LOOK.farTree?{c:C(LOOK.farTree.c),b:C(LOOK.farTree.b)}:LOOK.a2?{c:C('#48633F'),b:C('#728244')}:{c:C('#41604C'),b:C('#677D46')};const out=[]; // A2: less blue in the far-tree greens (teal under the violet IBL)
  for(const kind of['c','b']){const S=[];for(const t of L){const n=2+((r()*3)|0);for(let i=0;i<n;i++){const a=r()*6.283,d=r()*t.w*.42;if((kind==='c')!==(r()<.62))continue;S.push([t.x+Math.cos(a)*d,t.z+Math.sin(a)*d,t.w,1-d/(t.w*.42+.01)]);}}
   if(!S.length)continue;const im=new THREE.InstancedMesh(kind==='c'?geoC:geoB,new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.88,flatShading:true,envMapIntensity:LOOK.env}),S.length);
   const M=new THREE.Matrix4(),q=new THREE.Quaternion(),ql=new THREE.Quaternion(),s=new THREE.Vector3(),p=new THREE.Vector3(),ax=new THREE.Vector3(),cc=new THREE.Color(),hsl={};base[kind].getHSL(hsl);
@@ -457,7 +481,7 @@ FA.setView=function(){const c=FA.CITY==='gatekeeper'?GK:RV;const rg=FA.rig;
  else{Object.assign(rg,{tx:c.x+1.5,ty:1.8,tz:c.z,d:46,pitch:.50,yaw:-.30});FA.fitShadow(c.x+1,c.z,22);}
  rg.fov=28;rg.shift=0;FA.eyeBase=-.22;
  if(FA.VIEW==='world'&&LOOK.worldCam){const k=LOOK.worldCam;Object.assign(rg,{tx:c===GK?-k.tx:k.tx,ty:0,tz:k.tz,d:k.d,pitch:k.pitch,yaw:c===GK?.08:-.08,fov:k.fov||28});FA.fitShadow(0,-6,135);} // A2: pulled back so the instrument-table rim + scale read in the world view
- if(FA.VIEW==='close'&&LOOK.closeCam&&LOOK.closeCam[FA.CITY]){const k=LOOK.closeCam[FA.CITY];Object.assign(rg,{yaw:k.yaw,pitch:k.pitch,d:k.d,ty:k.ty,fov:k.fov||28,shift:k.shift||0});if(k.eye!=null)FA.eyeBase=k.eye;FA.shadowDirty=true;} // A2: lower close-up, lens shift up -> a strip of graded sky + horizon glow in frame
+ if(FA.VIEW==='close'&&LOOK.closeCam&&LOOK.closeCam[FA.CITY]){const k=LOOK.closeCam[FA.CITY];Object.assign(rg,{yaw:k.yaw,pitch:k.pitch,d:k.d,ty:k.ty,fov:k.fov||28,shift:k.shift||0});if(k.eye!=null)FA.eyeBase=k.eye;FA.shadowDirty=true;if(LOOK.archviz&&c===GK)FA.fitShadow(c.x,c.z,27);} // A2: lower close-up, lens shift up -> a strip of graded sky + horizon glow in frame
  if(LOOK.exposureWorld)R.toneMappingExposure=FA.VIEW==='world'?LOOK.exposureWorld:LOOK.exposure;  // fixed exposure per view, no auto-exposure
  FA.applyCam();FA.ui&&FA.ui();};
 FA.applyCam=function(){const r=FA.rig;CAM.position.set(r.tx+Math.sin(r.yaw)*Math.cos(r.pitch)*r.d,r.ty+Math.sin(r.pitch)*r.d,r.tz+Math.cos(r.yaw)*Math.cos(r.pitch)*r.d);CAM.lookAt(r.tx,r.ty,r.tz);

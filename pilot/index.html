@@ -17,6 +17,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0B1230;color:var(--t1
 #ctl button.on{border-color:var(--acc);color:var(--t1)}#ctl .sep{width:1px;background:rgba(130,140,160,.3);margin:2px 4px}
 #foot{position:fixed;right:12px;bottom:12px;padding:5px 10px;font:400 11px var(--f3);color:var(--t3)}
 #fps{position:fixed;left:50%;top:10px;transform:translateX(-50%);padding:4px 10px;font:400 11px var(--f3);color:var(--t2);display:none;z-index:9}
+#fps:empty{display:none!important} /* C1: the empty perf box was the small black rectangle at top centre */
 #labels{position:fixed;inset:0;pointer-events:none}
 .mk{position:absolute;left:0;top:0;will-change:transform}
 .mk i{position:absolute;left:-9px;top:-9px;width:14px;height:14px;border-radius:50%;background:rgba(10,14,19,.88);border:2px solid rgba(230,224,210,.85)}
@@ -38,5 +39,6 @@ body.ready #load{display:none}
 <script src="js/GLTFLoader.js"></script>
 <script src="js/world.js"></script>
 <script src="js/a2.js"></script>
+<script src="js/procity.js"></script>
 <script src="js/cities.js"></script>
 </body></html>

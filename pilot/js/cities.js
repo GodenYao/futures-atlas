@@ -36,7 +36,7 @@ function pavingTex(R,builds){const N=512,c=document.createElement('canvas');c.wi
  const gr=g.createRadialGradient(N/2,N/2,7.2*s,N/2,N/2,7.9*s);gr.addColorStop(0,'rgba(10,10,18,0)');gr.addColorStop(1,'rgba(10,10,18,.5)');g.fillStyle=gr;g.fillRect(0,0,N,N);
  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
 
-FA.buildGK=function(){const c=FA.GK,r=FA.rng(15),top=c.top,cx=c.x,cz=c.z;
+FA.buildGK=function(){if(L.archviz&&FA.PROCITY){FA.PROCITY.build();return;}const c=FA.GK,r=FA.rng(15),top=c.top,cx=c.x,cz=c.z;
  const CR=!!L.contact,EM=L.cm?1.6:1; // CR: crease bands (darker wall bases); EM: env gain where the sky IBL is the only ambient
  const A=FA.A2; // A2: GPU-baked world-space material families (js/a2.js, style=bluefacet only)
  const stone=A?A.mat(0,G.stone,{vc:CR,env:.5*EM}):new THREE.MeshStandardMaterial({color:G.stone,roughness:.85,envMapIntensity:.5*EM,vertexColors:CR});
@@ -171,12 +171,13 @@ FA.colorHook=function(x,z,h,sl,c){const rv=FA.RV;if(Math.abs(x-rv.x)>26||Math.ab
 // ======================= scatter (forests, rocks, grass) =======================
 FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
  for(let i=0;i<5200;i++){const x=(r()-.5)*(FA.TW-12),z=(r()-.5)*(FA.TD-12);const h=H(x,z);const dg=Math.hypot(x-gk.x,z-gk.z),dr=Math.hypot(x-rv.x,z-rv.z);
-  if(dg<19||Math.abs(x-FA.riverX(z))<3.3||h>21)continue;if(dr<23&&!(z<rv.z-12&&dr>13))continue;const sl=FA.slope(x,z);
+  if(dg<(L.archviz?26:19)||Math.abs(x-FA.riverX(z))<3.3||h>21)continue;if(dr<23&&!(z<rv.z-12&&dr>13))continue;const sl=FA.slope(x,z);
   const forest=FA.fbm(x*.045+7,z*.045+3,3);
   if(FA.LOOK.clump){ // style: forest clumps with clearings (low-frequency mask x cluster cells), no lone-sapling confetti
    const big=FA.fbm(x*.022+21,z*.022-8,3),cell=FA.fbm(x*.11+3,z*.11+17,2);
    if(big>.55&&cell>.47&&sl<.6&&r()<.8){const k=r(),w=k<.85?1.4+r()*.8:.8+r()*.3;
-    if(FA.LOOK.ter.facet&&dg>34&&dr>36){FA.FARTREES.push({x,z,w});FA.AOS.push({x,z,r:w*.62+.3,k:.3});} // far field: cheap facet archetypes
+    if(L.thin&&dg<70&&FA.hash(x*.31,z*.17)<L.thin){} // C1 archviz blue hour: thin the forest ~50 % around the city (hash, so the RNG stream is unchanged)
+    else if(FA.LOOK.ter.facet&&dg>34&&dr>36){FA.FARTREES.push({x,z,w});FA.AOS.push({x,z,r:w*.62+.3,k:.3});} // far field: cheap facet archetypes
     else FA.put(k<.5?'treesA':k<.85?'treesB':'treeA',x,z,{w,ry:r()*6.3,aok:.34});}
    else if(sl>.38&&sl<.9&&r()<.03)FA.put('rock',x,z,{w:.7+r()*1.1,ry:r()*6.3,sink:.15});}
   else if(forest>.56&&sl<.75&&r()<.42){const k=r();FA.put(k<.45?'treesA':k<.75?'treesB':k<.9?'treeA':'treeB',x,z,{w:k<.75?1.35+r()*.8:.7+r()*.3,ry:r()*6.3,aok:.3});}
@@ -197,6 +198,6 @@ FA.start=async function(){const t0=performance.now();if(FA.A2&&document.fonts)aw
  FA.buildGK();FA.buildRV();FA.scatter();FA.buildTerrain(FA.colorHook);FA.tufts(FA.tuftList);const n=FA.buildInstances();
  const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();
  FA.marker('gatekeeper','Gatekeeper','eye on the spire',FA.GK.x,FA.GK.top,FA.GK.z);FA.marker('reversion','Reversion','water wheel, windmill',FA.RV.x-1.5,H(FA.RV.x-1.5,FA.RV.z),FA.RV.z);
- FA.setView();FA.frame();FA.loop();FA.boot={loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
+ FA.setView();FA.frame();FA.loop();FA.boot={loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
 FA.start().catch(e=>window.__errs.push('start:'+e.message));
 })();
