@@ -124,7 +124,7 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  for(let i=0;i<11;i++){const a=i/11*6.283+r()*.35+.2,rr=3.6+r()*3.2;let x=vx+Math.cos(a)*rr*1.2,z=vz+Math.sin(a)*rr;if(x>FA.riverX(z)-3.3)x=FA.riverX(z)-3.3-r()*.8;
   const ry=Math.atan2(vx-x,vz-z)+(r()-.5)*.5;const q=FA.put(r()<.55?'homeA':'homeB',x,z,{w:1.55+r()*.35,ry,aok:.45});homes.push({x,z,h:q?q.h:1.4,ry});FA.lanes.push([vx,vz,x,z]);}
  // sparse fire light (hearths / lanterns) + chimney smoke
- homes.forEach((h,i)=>{if(i%2===0){const f=FA.glow(h.x+Math.sin(h.ry)*.75,H(h.x,h.z)+.42,h.z+Math.cos(h.ry)*.75,.55,'#FF9040',.34);const ph=i*1.7;FA.anims.push(T=>{f.material.opacity=.75+.25*Math.sin(T*9+ph)*Math.sin(T*3.1+ph*2);});}});
+ homes.forEach((h,i)=>{if(L.archviz?i%3===0:i%2===0){const f=FA.glow(h.x+Math.sin(h.ry)*.75,H(h.x,h.z)+.42,h.z+Math.cos(h.ry)*.75,L.archviz?.36:.55,'#FF9040',L.archviz?.26:.34);const ph=i*1.7;FA.anims.push(T=>{f.material.opacity=.75+.25*Math.sin(T*9+ph)*Math.sin(T*3.1+ph*2);});}});
  homes.filter((h,i)=>i%4===1).forEach((h,j)=>{for(let k=0;k<10;k++)FA.smoke(h.x+.22,H(h.x,h.z)+h.h*.92,h.z-.1,5.5+j*.7,k/10,'#C9C5D0');}); // batched: rise/fade in the vertex shader
  // bonfire on the green: the only real point light, small radius, flickering
  const bfx=vx+2.2,bfz=vz+2.6;FA.put('lumber',bfx,bfz,{w:.7});const bf=new THREE.PointLight('#FF9548',1.3,8,2);bf.position.set(bfx,H(bfx,bfz)+.7,bfz);SC.add(bf);
@@ -142,6 +142,11 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  const wmx=c.x-12,wmz=c.z-8;const wd=FA.single('windmill',wmx,wmz,{w:2.6,ry:.5});if(wd){const sp=wd.spinner('fan');if(sp)FA.anims.push(T=>sp(T*.55));}
  FA.lanes.push([vx,vz,wmx,wmz]);
  // fields: rotated parcels west/south of the village (crops in vertex colour + furrows, wheat kit pieces, wood fences)
+ // C2b: style=archviz -> procedural farmland (js/profarm.js) replaces parcels / rows / haystacks / kit fences + kit orchard
+ const PFon=!!(L.archviz&&FA.PROFARM);
+ if(PFon){FA.PROFARM.build({vx,vz,wmx,wmz,lanes:FA.lanes.slice(),road:[[c.x-46,c.z+80],[c.x-24,c.z+38],[c.x-11,c.z+16],[vx-3.2,vz+4.2]]});
+  homes.forEach((h,i)=>{if(i%4===1){const a=h.ry+1.3;FA.glow(h.x+Math.sin(a)*.8,H(h.x,h.z)+.5,h.z+Math.cos(a)*.8,.2,'#FFA050',.24);}});} // sparse warm windows (Tegmark Reversion: sparse fire light)
+ else{
  const ang=.32,ux=Math.cos(ang),uz=Math.sin(ang),wxv=-uz,wzv=ux;const types=['wheat','olive','fallow','pasture','wheat','olive'];const rows=[],stacks=[],walls=[];
  for(let i=-4;i<=2;i++)for(let j=-2;j<=3;j++){const px=vx-3+ux*i*4.6+wxv*j*3.6,pz=vz+uz*i*4.6+wzv*j*3.6;const dv=Math.hypot(px-vx,pz-vz);
   if(dv<8.6||dv>21||px>FA.riverX(pz)-4.2)continue;if(Math.hypot(px-wmx,pz-wmz)<4)continue;const ty=types[(r()*types.length)|0];FA.fields.push({x:px,z:pz,ux,uz,wx:wxv,wz:wzv,ty});
@@ -154,8 +159,9 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  {const g=A2?new THREE.BoxGeometry(3.8,.08,.11):new THREE.BoxGeometry(3.9,.22,.2);g.translate(0,A2?.09:.11,0);const im=new THREE.InstancedMesh(g,new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.92,envMapIntensity:.4}),rows.length);const m=new THREE.Matrix4(),cc=new THREE.Color(); // A2: low crop ridges on the pad, not trays
   rows.forEach((q,i)=>{m.makeRotationY(q[2]);m.setPosition(q[0],H(q[0],q[1])-.03,q[1]);im.setMatrixAt(i,m);im.setColorAt(i,cc.set(q[3]).multiplyScalar(.9+r()*.2));});im.castShadow=im.receiveShadow=true;im.frustumCulled=false;SC.add(im);
   const hm=new THREE.MeshStandardMaterial({color:'#9C8550',roughness:.95});for(const s of stacks){const y=H(s[0],s[1])+(A2?.05:0);const a=new THREE.Mesh(new THREE.CylinderGeometry(.34,.38,.42,10),hm),b=new THREE.Mesh(new THREE.ConeGeometry(.36,.36,10),hm);a.position.set(s[0],y+.2,s[1]);b.position.set(s[0],y+.59,s[1]);[a,b].forEach(q=>{q.castShadow=q.receiveShadow=true;FA.addStatic(q);});if(!A2)FA.AOS.push({x:s[0],z:s[1],r:.5,k:.4});}}
+ } // C2b: end of legacy fields (non-archviz)
  // orchard + yard props
- for(let i=0;i<4;i++)for(let j=0;j<3;j++){const x=vx-1+i*1.5,z=vz-9.5-j*1.5;FA.put('treeA',x,z,{w:1.0+r()*.2,ry:r()*6});}
+ if(!PFon)for(let i=0;i<4;i++)for(let j=0;j<3;j++){const x=vx-1+i*1.5,z=vz-9.5-j*1.5;FA.put('treeA',x,z,{w:1.0+r()*.2,ry:r()*6});}
  for(const h of homes){if(r()<.6)FA.put(r()<.5?'barrel':'sack',h.x+Math.cos(h.ry)*.9,h.z-Math.sin(h.ry)*.9,{w:.28,ao:false});}
  FA.put('barrow',wx-1.3,z0+1.2,{w:.55,ry:1.2});FA.put('sack',wx-.9,z0-1.3,{w:.3});FA.put('sack',wx-1.2,z0-1.1,{w:.28});FA.put('lumber',wmx+1.8,wmz+1.0,{w:.9});
  // road stub (data layer) from the south-west into the green
@@ -166,6 +172,7 @@ const CF={wheat:C('#8C7A48'),olive:C('#66733F'),fallow:C('#5E5038'),pasture:C('#
 FA.colorHook=function(x,z,h,sl,c){const rv=FA.RV;if(Math.abs(x-rv.x)>26||Math.abs(z-rv.z)>26)return;
  for(const f of FA.fields){const dx=x-f.x,dz=z-f.z,a=dx*f.ux+dz*f.uz,b=dx*f.wx+dz*f.wz;if(Math.abs(a)<2.05&&Math.abs(b)<1.55){c.lerp(CF[f.ty],.85);if(f.ty!=='pasture')c.multiplyScalar(.9+.1*Math.sin(b*10));return;}}
  for(const l of FA.lanes){const ax=l[2]-l[0],az=l[3]-l[1],ll=ax*ax+az*az;let t=((x-l[0])*ax+(z-l[1])*az)/ll;t=Math.max(0,Math.min(1,t));const d=Math.hypot(x-l[0]-ax*t,z-l[1]-az*t);if(d<.55){c.lerp(DIRT,.75*smooth(.55,.25,d));return;}}
+ if(FA.PROFARM&&FA.PROFARM.hook(x,z,c))return; // C2b: balks / ditch banks
  if(Math.hypot(x-(rv.x-1.5),z-rv.z)<2.4)c.lerp(DIRT,.55);};
 
 // ======================= scatter (forests, rocks, grass) =======================
@@ -184,7 +191,7 @@ FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
   else if(sl>.38&&sl<.9&&r()<.05)FA.put('rock',x,z,{w:.7+r()*1.1,ry:r()*6.3,sink:.15});
   if((dg<34||dr<34)&&sl<.4&&r()<.45)tufts.push([x+(r()-.5)*2,z+(r()-.5)*2]);}
  for(let i=0;i<450;i++){const a=r()*6.283,d=8+r()*20,x=rv.x+Math.cos(a)*d,z=rv.z+Math.sin(a)*d;if(Math.abs(x-FA.riverX(z))>2.8)tufts.push([x,z]);}
- FA.tuftList=tufts;};
+ FA.tuftList=FA.PROFARM&&FA.PROFARM.on?tufts.filter(t=>!FA.PROFARM.inField(t[0],t[1],.1)):tufts;};
 
 // ======================= HUD + start =======================
 const TXT={gatekeeper:['Gatekeeper','one superintelligence whose only goal is to block any other'],reversion:['Reversion','technology rolled back to a pre-industrial level']};
@@ -198,6 +205,6 @@ FA.start=async function(){const t0=performance.now();if(FA.A2&&document.fonts)aw
  FA.buildGK();FA.buildRV();FA.scatter();FA.buildTerrain(FA.colorHook);FA.tufts(FA.tuftList);const n=FA.buildInstances();
  const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();
  FA.marker('gatekeeper','Gatekeeper','eye on the spire',FA.GK.x,FA.GK.top,FA.GK.z);FA.marker('reversion','Reversion','water wheel, windmill',FA.RV.x-1.5,H(FA.RV.x-1.5,FA.RV.z),FA.RV.z);
- FA.setView();FA.frame();FA.loop();FA.boot={loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
+ FA.setView();FA.frame();FA.loop();FA.boot={farm:FA.PROFARM&&FA.PROFARM.on?FA.PROFARM.info:null,loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
 FA.start().catch(e=>window.__errs.push('start:'+e.message));
 })();

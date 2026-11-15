@@ -132,6 +132,18 @@ const STYLES=FA.STYLES={
   Object.assign(A.ter.P,{lo:'#0E1430',mid:'#1C2550',heath:'#2A3468',hi:'#3C4986',rock:'#474A76',bank:'#2A3560',bed:'#0A1230',snow:'#4C5284'}); // fa4_looks.js:12 T LO/MID/HI/ROCK/SHORE/WAT (heath = MID-HI mid, snow = ROCK lifted)
   Object.assign(A.water,{sh:'#2A3560',dp:'#0A1230',foam:'#6E78A8',env:.7}); // fa4_looks.js:12 SHORE / WAT
   Object.assign(A.post,{thr:.80,knee:.30,k:.62,vig:0,sc:0,toe:0,mg:0,sh:[1,1,1],hi:[1,1,1],lift:[0,0,0]}); // fa4_looks.js:16 bloom th .70 (sRGB) ~ linear .46 -> .80 keeps lit terrain out; no grade
+  // C2b (art-director review: off-platform terrain read muddy mauve-violet, trees black blobs, no depth):
+  // terrain albedo shifted from violet toward cooler slate-blue (same value), warm key -15 % (it turned the blue albedo mauve),
+  // a cool moon-rim light from behind/above (no shadow), fog colour cooler + a second aerial-perspective layer and valley mist,
+  // kit/far trees get a cool fill instead of crushing to black, Reversion kit props dimmed (roofs bloomed), smoke tinted to the fog.
+  Object.assign(A.ter.P,{lo:'#0C1630',mid:'#16284E',heath:'#203464',hi:'#2D457A',rock:'#374670',bank:'#22355A',bed:'#0A1430',snow:'#405284'});
+  A.sun=['#FFB878',.76];A.hemi=['#8A9EDC','#101A34',1.35];A.exposureWorld=1.02;
+  A.moon=['#A9C2F2',.40,[30,160,-110]]; // high (el ~54 deg): rim on terrain/trees, its water specular falls below the frame
+  A.fog=Object.assign(A.fog,{c:'#2C3A6A',hk:.20,ha:.10,l2:{c:'#46589A',d:.0042,s:55,k:.15}});
+  A.farTree={c:'#3A5064',b:'#465C6C'};A.kitTree={dim:.82,fill:[.030,.042,.070]};A.kitDim=.58;
+  A.smokeK=.34;A.smokeC='#5E6890';A.smokeS=1.5;
+  A.water=Object.assign({},A.water,{env:.36}); // river: grazing sky reflection -> .7 -> .36
+  A.fill=[A.fill[0],.30,A.fill[2]];A.fillV=[60,120,-50]; // ported v4.4 cool rim at el 21 deg put a clipped specular on the river (RV close 5.2k px >240, 53 with it off) -> higher + weaker; the moon carries the rim
   }
  if(Q.get('mood')==='day'){A.name='Arch-viz (day haze)';Object.assign(A,{exposure:.80,exposureWorld:.84,glowK:.15,sun:['#FFF2E0',1.15],sunEl:40,kitWarm:null});
   Object.assign(A.sky,{zen:'#6F9BC8',mid:'#A9C6DF',hor:'#E4E6E2',glow:'#FFF0DC',low:'#B9C0C4',hbK:.03});
@@ -177,7 +189,9 @@ document.getElementById('stage').appendChild(R.domElement);
 THREE.ShaderChunk.fog_pars_vertex='#ifdef USE_FOG\n varying float vFogDepth;\n varying vec3 vFogWP;\n#endif';
 THREE.ShaderChunk.fog_vertex='#ifdef USE_FOG\n vFogDepth = - mvPosition.z;\n vec4 fogWP = vec4( transformed, 1.0 );\n #ifdef USE_INSTANCING\n  fogWP = instanceMatrix * fogWP;\n #endif\n vFogWP = ( modelMatrix * fogWP ).xyz;\n#endif';
 THREE.ShaderChunk.fog_pars_fragment='#ifdef USE_FOG\n uniform vec3 fogColor;\n varying float vFogDepth;\n varying vec3 vFogWP;\n uniform float fogNear;\n uniform float fogFar;\n#endif';
-THREE.ShaderChunk.fog_fragment='#ifdef USE_FOG\n float fogFactor = smoothstep( fogNear, fogFar, vFogDepth );\n float fogH = exp( - max( vFogWP.y - 0.5, 0.0 ) * '+LOOK.fog.hk.toFixed(3)+' );\n fogFactor = clamp( fogFactor + fogH * '+LOOK.fog.ha.toFixed(3)+' * smoothstep( 20.0, 260.0, vFogDepth ), 0.0, 1.0 );\n gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif';
+THREE.ShaderChunk.fog_fragment='#ifdef USE_FOG\n float fogFactor = smoothstep( fogNear, fogFar, vFogDepth );\n float fogH = exp( - max( vFogWP.y - 0.5, 0.0 ) * '+LOOK.fog.hk.toFixed(3)+' );\n fogFactor = clamp( fogFactor + fogH * '+LOOK.fog.ha.toFixed(3)+' * smoothstep( 20.0, 260.0, vFogDepth ), 0.0, 1.0 );\n gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n'+
+ (LOOK.fog.l2?' gl_FragColor.rgb = mix( gl_FragColor.rgb, vec3('+C(LOOK.fog.l2.c).toArray().map(v=>v.toFixed(4)).join(',')+'), '+LOOK.fog.l2.k.toFixed(3)+' * ( 1.0 - exp( - max( vFogDepth - '+LOOK.fog.l2.s.toFixed(1)+', 0.0 ) * '+LOOK.fog.l2.d.toFixed(4)+' ) ) * ( 0.55 + 0.45 * fogH ) );\n':'')+ // C2b: aerial-perspective layer 2 (cool, exponential, stronger in the valleys)
+ '#endif';
 
 const SC=FA.SC=new THREE.Scene();
 SC.fog=new THREE.Fog(C(LOOK.fog.c),LOOK.fog.near,LOOK.fog.far);
@@ -191,6 +205,7 @@ if(LOOK.sunV)SUNDIR.set(LOOK.sunV[0],LOOK.sunV[1],LOOK.sunV[2]).normalize(); // 
 const sun=FA.sun=new THREE.DirectionalLight(LOOK.sun[0],LOOK.sun[1]);sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0004;sun.shadow.normalBias=.04;SC.add(sun,sun.target);
 if(LOOK.fill[2]>0){const fill=new THREE.DirectionalLight(LOOK.fill[0],LOOK.fill[1]);const fv=LOOK.fillV||[80,50,90];fill.position.set(fv[0],fv[1],fv[2]);SC.add(fill);} // cool rim/fill, no shadow (off when IBL is the only ambient); C2: v4.4 rim position
+if(LOOK.moon){const mo=new THREE.DirectionalLight(LOOK.moon[0],LOOK.moon[1]);mo.position.set(LOOK.moon[2][0],LOOK.moon[2][1],LOOK.moon[2][2]);SC.add(mo);FA.moon=mo;} // C2b: cool moon rim from behind (terrain relief + tree crowns), no shadow
 // C2: v4.4 screen-space atmosphere layers (fa4_looks.js:9-10, :39-41) as two fixed overlays above the canvas, below labels/HUD; world view only
 FA.RMOT=matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(LOOK.overlay){const st=document.createElement('style');st.textContent='#faVig,#faGlow{position:fixed;inset:0;pointer-events:none;transition:opacity .6s}#faVig{background:'+LOOK.overlay.vig+'}#faGlow{mix-blend-mode:screen;background:'+LOOK.overlay.glow+
@@ -244,7 +259,7 @@ FA.puffTex=(function(){const c=document.createElement('canvas');c.width=c.height
 // glow handles keep the old sprite API (h.material.opacity) so animations stay unchanged; opacities are copied per frame.
 FA.GLOWS=[];FA.SMOKES=[];
 FA.glow=function(x,y,z,size,hex,k,an){const h={x,y,z,size,c:C(hex).multiplyScalar((k==null?.6:k)*LOOK.glowK),material:{opacity:1},an:an||null};FA.GLOWS.push(h);return h;}; // C2: an = [amp, period, phase, switch] (shader breath)
-FA.smoke=function(x,y,z,period,phase,hex){FA.SMOKES.push({x,y,z,period,phase,c:C(hex||'#C9C5D0')});};
+FA.smoke=function(x,y,z,period,phase,hex){FA.SMOKES.push({x,y,z,period,phase,c:C(LOOK.smokeC||hex||'#C9C5D0')});}; // C2b: LOOK.smokeC tints smoke toward the fog
 FA.buildFx=function(){const out=[];
  if(FA.GLOWS.length){const N=FA.GLOWS.length,g=new THREE.InstancedBufferGeometry();const b=new THREE.PlaneGeometry(1,1);g.index=b.index;g.setAttribute('position',b.attributes.position);g.setAttribute('uv',b.attributes.uv);
   const P=new Float32Array(N*3),Cc=new Float32Array(N*4),O=new Float32Array(N),BA=new Float32Array(N*4);FA.GLOWS.forEach((h,i)=>{P.set([h.x,h.y,h.z],i*3);Cc.set([h.c.r,h.c.g,h.c.b,h.size],i*4);O[i]=1;if(h.an)BA.set(h.an,i*4);});
@@ -259,7 +274,7 @@ FA.buildFx=function(){const out=[];
   g.setAttribute('iP',new THREE.InstancedBufferAttribute(P,3));g.setAttribute('iS',new THREE.InstancedBufferAttribute(S,2));g.setAttribute('iC',new THREE.InstancedBufferAttribute(Cc,3));g.instanceCount=N;
   const m=new THREE.ShaderMaterial({uniforms:{map:{value:FA.puffTex},uT:FA.TU.uT},transparent:true,depthWrite:false,
    vertexShader:'uniform float uT;attribute vec3 iP;attribute vec2 iS;attribute vec3 iC;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vU=uv;vC=iC;float u=fract(uT/iS.x+iS.y);'+
-    'vec3 p=iP+vec3(u*1.6+sin(u*6.+iS.y*9.)*.12,u*3.4,u*.5);float sc=.4+u*1.7;vO='+(.6*(LOOK.smokeK||1)).toFixed(3)+'*(1.-u)*smoothstep(0.,.08,u);vec4 mv=modelViewMatrix*vec4(p,1.);mv.xy+=position.xy*sc;gl_Position=projectionMatrix*mv;}',
+    'vec3 p=iP+vec3(u*1.6+sin(u*6.+iS.y*9.)*.12,u*3.4,u*.5);float sc=(.4+u*1.7)*'+(LOOK.smokeS||1).toFixed(2)+';vO='+(.6*(LOOK.smokeK||1)).toFixed(3)+'*(1.-u)*smoothstep(0.,.08,u);vec4 mv=modelViewMatrix*vec4(p,1.);mv.xy+=position.xy*sc;gl_Position=projectionMatrix*mv;}',
    fragmentShader:'uniform sampler2D map;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vec4 t=texture2D(map,vU);gl_FragColor=vec4(vC*t.rgb,t.a*vO);\n#include <encodings_fragment>\n}'});
   const me=new THREE.Mesh(g,m);me.frustumCulled=false;me.renderOrder=7;SC.add(me);out.push(me);}
  return out;};
@@ -320,11 +335,13 @@ FA.warmIndirect='';if(LOOK.kitWarm)FA.warmIndirect='\nreflectedLight.indirectDif
 // A2 window glow (Gatekeeper kit buildings only): blue glass texels darken to night glass; ~45 % of windows lit warm 2900 K (HDR -> bloom)
 const WIN_GLSL='\n#ifdef USE_FOG\n{vec3 tc=diffuseColor.rgb/max(vColor,vec3(.2));float w=smoothstep(.02,.08,tc.b-tc.r)*step(tc.g*.9,tc.b)*(1.-smoothstep(.35,.6,abs(dot(normal,(viewMatrix*vec4(0.,1.,0.,0.)).xyz))));vec3 hp=floor(vFogWP*vec3(2.6,3.2,2.6));float hh=fract(sin(dot(hp,vec3(12.9898,78.233,37.719)))*43758.5453);'+
  'float lit=step(.5,hh);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.035,.04,.06),w*.8);totalEmissiveRadiance+=vec3(1.,.58,.26)*w*lit*(1.5+1.7*fract(hh*7.13))'+(Q.has('dbgwin')?'+vec3(0.,4.,0.)*w*lit+vec3(4.,0.,4.)*w*(1.-lit)':'')+';}\n#endif\n';
-function kitMat(m,key){const win=!!(LOOK.a2&&key&&/^b[A-F]$/.test(key));const ck=m.uuid+(win?'w':'');if(matCache[ck])return matCache[ck];const W=LOOK.props.white;const n=new THREE.MeshStandardMaterial({map:W?null:m.map,color:W?C(W):(m.color||C('#fff')),roughness:.82,metalness:0,vertexColors:true,envMapIntensity:LOOK.env});
+function kitMat(m,key){const win=!!(LOOK.a2&&key&&/^b[A-F]$/.test(key));const isT=!!(key&&/^tree/.test(key)),dim=isT?(LOOK.kitTree?LOOK.kitTree.dim:1):(LOOK.kitDim||1),tf=isT&&LOOK.kitTree?LOOK.kitTree.fill:null; // C2b: kit dim (RV roofs bloomed) + cool tree fill
+ const ck=m.uuid+(win?'w':'')+(isT?'t':'');if(matCache[ck])return matCache[ck];const W=LOOK.props.white;const n=new THREE.MeshStandardMaterial({map:W?null:m.map,color:W?C(W):(m.color||C('#fff')),roughness:.82,metalness:0,vertexColors:true,envMapIntensity:LOOK.env});
  const sat=LOOK.props.sat,doSat=!W&&sat!==1;
- if(doSat||win||FA.warmIndirect){n.onBeforeCompile=sh=>{let f=sh.fragmentShader;if(doSat)f=f.replace('#include <map_fragment>','#include <map_fragment>\n{float l=dot(diffuseColor.rgb,vec3(.299,.587,.114));diffuseColor.rgb=mix(vec3(l),diffuseColor.rgb,'+sat.toFixed(3)+');}');
-  if(win)f=f.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>'+WIN_GLSL);if(FA.warmIndirect)f=f.replace('#include <lights_fragment_end>','#include <lights_fragment_end>'+FA.warmIndirect);sh.fragmentShader=f;};
-  n.customProgramCacheKey=()=>'kit'+(doSat?sat:1)+(win?'w':'')+(FA.warmIndirect?'k':'');} // style: prop desaturation, A2 window glow + indirect warm
+ const xtra=(dim!==1?'diffuseColor.rgb*='+dim.toFixed(3)+';':'');const tfS=tf?'\nreflectedLight.indirectDiffuse+=vec3('+tf.map(v=>v.toFixed(3)).join(',')+')*(.5+diffuseColor.g*2.);':'';
+ if(doSat||win||FA.warmIndirect||xtra||tfS){n.onBeforeCompile=sh=>{let f=sh.fragmentShader;if(doSat||xtra)f=f.replace('#include <map_fragment>','#include <map_fragment>\n{float l=dot(diffuseColor.rgb,vec3(.299,.587,.114));diffuseColor.rgb=mix(vec3(l),diffuseColor.rgb,'+(doSat?sat:1).toFixed(3)+');'+xtra+'}');
+  if(win)f=f.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>'+WIN_GLSL);if(FA.warmIndirect||tfS)f=f.replace('#include <lights_fragment_end>','#include <lights_fragment_end>'+FA.warmIndirect+tfS);sh.fragmentShader=f;};
+  n.customProgramCacheKey=()=>'kit'+(doSat?sat:1)+(win?'w':'')+(FA.warmIndirect?'k':'')+dim.toFixed(2)+(tf?'f':'');} // style: prop desaturation, A2 window glow + indirect warm
  if(n.map){n.map.encoding=THREE.sRGBEncoding;n.map.anisotropy=4;}matCache[ck]=n;return n;}
 FA.load=function(list){const L=new THREE.GLTFLoader();return Promise.all(Object.entries(list).map(([k,u])=>new Promise((res)=>{
  L.load(u,g=>{const root=g.scene;root.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(root);const parts=[];const hgt=Math.max(.001,box.max.y-box.min.y);

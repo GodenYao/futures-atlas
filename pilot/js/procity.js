@@ -57,6 +57,7 @@ function bake(){const t0=performance.now(),sc=new THREE.Scene(),cam=new THREE.Or
 // The baked family is sampled in the fragment shader from the world position (vFogWP, provided by the patched fog chunks,
 // instancing-aware): vertical faces use (distance along the face tangent, height above deck), horizontal faces use xz.
 const WS_HEAD='uniform sampler2D pcT;uniform vec4 pcS;uniform vec2 pcO;uniform vec3 pcC;uniform float uT,uAn;\nfloat pcH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n'+
+ 'float pcN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(pcH(i),pcH(i+vec2(1.,0.)),f.x),mix(pcH(i+vec2(0.,1.)),pcH(i+vec2(1.,1.)),f.x),f.y);}\n'+
  'float pcBand(float rr,float ang,float rc,float hw,float fw){float dr=abs(rr-rc);float e=1.-smoothstep(.025,.025+fw,abs(dr-(hw-.12)));float d=step(fract(ang*rc/1.3),.45)*(1.-smoothstep(.022,.022+fw,dr));return max(e,d)*step(dr,hw);}\n';
 const WS_PRE='vec3 nW=inverseTransformDirection(normal,viewMatrix);vec3 wp=vFogWP;wp.xz-=pcO;wp.y-=pcS.z;float tp=step(.6,abs(nW.y));vec2 tg=normalize(vec2(-nW.z,nW.x)+vec2(1e-4,0.));\n'+
  'vec2 q=mix(vec2(dot(wp.xz,tg),wp.y),wp.xz,tp);vec4 tx=texture2D(pcT,q*pcS.xy);float ao=mix(.5+.5*smoothstep(0.,1.2,wp.y),1.,tp);\n#ifdef USE_COLOR\nvec3 vc=vColor.rgb;\n#else\nvec3 vc=vec3(1.);\n#endif\n';
@@ -71,25 +72,31 @@ const WS_KIND={
   'float b1=step(abs(rr-'+f2((RB0+RB1)/2)+'),'+f2((RB1-RB0)/2)+');float b2=step(abs(rr-'+f2((RD+RO1)/2)+'),'+f2((RO1-RD)/2)+');\n'+
   'float mk=max(pcBand(rr,ang,'+f2((RB0+RB1)/2)+','+f2((RB1-RB0)/2)+',fw),pcBand(rr,ang,'+f2((RD+RO1)/2)+','+f2((RO1-RD)/2)+',fw));\n'+
   'float ax=min(abs(wp.x),abs(wp.z));float al=max(abs(wp.x),abs(wp.z));float av=max(1.-smoothstep(.025,.025+fw,abs(ax-'+f2(AW-.1)+')),step(fract(al/1.3),.45)*(1.-smoothstep(.022,.022+fw,ax)))*(1.-max(b1,b2));\n'+
-  'mk=max(mk,av)*(.07/(.07+fw))*tp;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.72,.73,.74),mk);roughnessFactor=mix(roughnessFactor,.6,mk);',
+  'mk=max(mk,av)*(.07/(.07+fw))*tp;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.72,.73,.74),mk);roughnessFactor=mix(roughnessFactor,.6,mk);'+
+  // C2b (blue hour) wet asphalt: low roughness with puddle-like low-frequency patches -> sky + lamp pools land with a soft sheen
+  (P.mood!=='day'?'{float wn=pcN(wp.xz*.55)*.65+pcN(wp.xz*2.3+7.)*.35;float wt=smoothstep(.40,.72,wn)*(1.-mk);roughnessFactor=mix(.46,.17,wt);metalnessFactor=mix(.10,.30,wt);diffuseColor.rgb*=mix(1.,.74,wt);}':''),
  // curtain wall: mullions/transoms, sky-reflecting glass, hashed warm interiors per floor + per unit (seed = instance colour r)
  // C1: per-building lit-floor share hashed 40-70 % (whole floors on/off around the building), a few units lit on dark floors,
  // amber 2700-3000 K (linear rgb), far-field value keeps the floor mask instead of a uniform 0.34 glow (which read as 100 % lit)
  glass:'vec2 cs=vec2('+f2(BAY)+','+f2(FLR)+');vec2 cid=floor(q/cs);float sd=floor(vc.r*997.);float face=pcH(floor(nW.xz*4.+.5)+sd);\n'+
-  'float frac=.40+.30*pcH(vec2(sd*.37+1.3,7.1));float hF=pcH(vec2(cid.y*1.13+.7,sd*.71));float hC=pcH(cid+vec2(sd*1.7,face*57.));float on=step(hF,frac);float lit=step(hC,mix(.10,.64,on));\n'+
+  'float frac=(.26+.28*pcH(vec2(sd*.37+1.3,7.1)))*mix(1.,.30,step(pcH(vec2(sd*.13,3.7)),.20))*(1.-.45*smoothstep(2.4,6.5,wp.y));float hF=pcH(vec2(cid.y*1.13+.7,sd*.71));float hC=pcH(cid+vec2(sd*1.7,face*57.));float on=step(hF,frac);float lit=step(hC,mix(.05,.52,on));\n'+
   // C2: sparse window life - each unit re-rolls every 6 s (staggered phase); ~0.05 % flip on/off at any moment -> a change every few seconds in frame
   'lit=abs(lit-step(.9995,pcH(cid*vec2(.37,.91)+vec2(sd,floor(uT*uAn/6.+hC*11.)))*uAn));\n'+
   'float fwq=max(fwidth(q.x)/cs.x,fwidth(q.y)/cs.y);float kk=smoothstep(.7,.3,fwq);float fr=tx.r;float inten=tx.g*(.6+.8*pcH(cid.yx+sd));\n'+
   'float em=mix(on*.30+.04,lit*inten,kk)*(1.-fr)*pcS.w*(1.-tp);vec3 warm='+(P.mood!=='day'?'mix(vec3(1.,.44,.14),vec3(1.,.52,.21),pcH(cid+sd+3.))':'mix(vec3(1.,.62,.32),vec3(1.,.74,.48),pcH(cid+sd+3.))')+';\n'+
   'vec3 gl=pcC*vc.g*mix(1.,.7,tx.b);diffuseColor.rgb=mix(gl,vec3(.30,.31,.33),fr)*ao;metalnessFactor=mix(.92,.4,fr)*(1.-.6*lit*kk*pcS.w);roughnessFactor=mix(.08+.1*tx.a,.45,fr);\n'+
-  'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.10,.105,.12),tp);metalnessFactor=mix(metalnessFactor,0.,tp);roughnessFactor=mix(roughnessFactor,.8,tp);totalEmissiveRadiance+=warm*em*'+(P.mood!=='day'?'2.4':'3.4')+';'
+  'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.10,.105,.12),tp);metalnessFactor=mix(metalnessFactor,0.,tp);roughnessFactor=mix(roughnessFactor,.8,tp);totalEmissiveRadiance+=warm*em*'+(P.mood!=='day'?'1.55':'3.4')+';', // C2b: x2.4 -> x1.55 (-35 %)
+ // C2b plaza paving: hex tones + low-frequency mottle + ~6 % replaced slabs, so the deck is not one uniform tone
+ pave:'float pm=pcN(q*.42)*.6+pcN(q*1.7+3.1)*.4;float rp=step(.94,pcH(floor(q*1.15)+.5));diffuseColor.rgb=pcC*vc*tx.rgb*ao*(.84+.26*pm)*mix(1.,.86,rp);roughnessFactor=mix(.86,.62,pm);'
 };
 function wsMat(kind,ti,hex,tile,o){o=o||{};const m=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:o.rough!=null?o.rough:.7,metalness:o.metal||0,envMapIntensity:o.env!=null?o.env:1,flatShading:true,side:o.side||THREE.FrontSide});
  if(o.po){m.polygonOffset=true;m.polygonOffsetFactor=-o.po;m.polygonOffsetUnits=-2*o.po;}
  const U={pcT:{value:TEX[ti]},pcS:{value:new THREE.Vector4(1/tile[0],1/tile[1],FA.GK.top,P.lit)},pcO:{value:new THREE.Vector2(FA.GK.x,FA.GK.z)},pcC:{value:C(hex)},uT:FA.TU.uT,uAn:FA.TU.uAn};
  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+WS_HEAD)
-  .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n#ifdef USE_FOG\n{'+WS_PRE+WS_KIND[kind]+'}\n#endif\n');};
- m.customProgramCacheKey=()=>'pc_'+kind;return m;}
+  .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n#ifdef USE_FOG\n{'+WS_PRE+WS_KIND[kind]+'}\n#endif\n');
+  // C2b: o.spec = [direct, indirect] specular scale (ground decks: the ported cool fill + moon rim made grazing blue glare on the wet road / paving)
+  if(o.spec)sh.fragmentShader=sh.fragmentShader.replace('#include <lights_fragment_end>','#include <lights_fragment_end>\nreflectedLight.directSpecular*='+o.spec[0].toFixed(3)+';reflectedLight.indirectSpecular*='+o.spec[1].toFixed(3)+';');};
+ m.customProgramCacheKey=()=>'pc_'+kind+(o.spec?'_s'+o.spec.join('_'):'');return m;}
 // B2 (Fable crit fix 1): mood-aware palette - blue hour scales IBL (E) and albedo (A) so facades sit below sky luminance
 // C1: world.js now caps the blue-hour IBL gain (LOOK.ibl.cap 3.6 instead of 14), so the crush factors are relaxed (E .34 -> .85, A .6 -> .85)
 function mats(){const blue=P.mood!=='day',E=P.env!=null?P.env:(blue?.85:1),A=P.alb!=null?P.alb:(blue?.85:1);
@@ -100,16 +107,16 @@ function mats(){const blue=P.mood!=='day',E=P.env!=null?P.env:(blue?.85:1),A=P.a
  M.comp=wsMat('comp',0,tone('#D6D3CD'),[4,4],{rough:.6,env:E});
  M.glass=wsMat('glass',1,tone('#5F7690',blue?.75:1),[4,4],{rough:.12,metal:.9,env:blue?.5:1.15});
  M.pv=wsMat('flat',2,tone('#FFFFFF',blue?.8:1),[2,2],{rough:.25,metal:.5,env:blue?.5:1.2,side:THREE.DoubleSide});
- M.asph=wsMat('asph',3,tone('#34373E',blue?.7:1),[4,4],{rough:.85,po:1,env:E});
+ M.asph=wsMat('asph',3,tone('#34373E',blue?.7:1),[4,4],{rough:blue?.4:.85,po:1,env:blue?1.25*E:E,spec:blue?[.12,.75]:null}); // C2b: wet sheen in blue hour (env sheen, direct glare cut)
  M.turf=wsMat('flat',4,tone('#5E7A48'),[4,4],{rough:.95,env:.6*E,po:2});
- M.pave=wsMat('flat',5,tone('#A9A6A2',blue?.5:1),[3,3.4641016],{rough:.8,env:.8*E});
+ M.pave=wsMat(blue?'pave':'flat',5,tone('#A9A6A2',blue?.5:1),[3,3.4641016],{rough:.8,env:.8*E,spec:blue?[.25,.8]:null}); // C2b: 'pave' = mottled tones
  M.shell=std({color:tone('#D0CDC8',blue?.72:1),roughness:.38,metalness:.05});
  M.base=std({color:tone('#8E9098',blue?.38:.8),roughness:.5,metalness:.1});
  M.quay=std({color:tone('#7C7F88'),roughness:.7,side:THREE.DoubleSide});
  M.metal=std({color:tone('#ffffff'),roughness:.36,metalness:.65,envMapIntensity:1.1});
  M.dome=std({color:tone('#8FA6C0',blue?.8:1),roughness:.1,metalness:.9,envMapIntensity:blue?1.5:1.2});
  M.paint=std({color:tone('#ffffff'),roughness:.45,metalness:.1});
- M.tree=std({color:tone('#ffffff',blue?.5:1),vertexColors:true,roughness:.9,flatShading:true,envMapIntensity:.7});
+ M.tree=std({color:tone('#ffffff',blue?.72:1),vertexColors:true,roughness:.9,flatShading:true,envMapIntensity:blue?1.0:.7}); // C2b: .5 -> .72 + more cool env fill (trees no longer black blobs)
  M.solar=std({color:tone('#ffffff'),vertexColors:true,roughness:.3,metalness:.3,flatShading:true});
  M.plate=std({color:'#090B10',roughness:blue?.62:.16,metalness:blue?.45:.8,envMapIntensity:blue?.8:1.3}); // C1: was 2.6 (read as a glowing cobalt rim once the IBL gain cap and E were fixed)
  // C2 wrap-up: blue hour roughness .16 -> .62, metal .8 -> .45: the ported v4.4 cool fill (#6A8EE6, world.js A.fill) put a grazing specular
@@ -118,8 +125,9 @@ function mats(){const blue=P.mood!=='day',E=P.env!=null?P.env:(blue?.85:1),A=P.a
  // C2 lighting hierarchy (blue hour): tier 1 = spire collars / spire crown / eye (M.collar, M.spireW, iris), tier 2 = windows,
  // street lamps, building crowns (M.crown 2.3 -> 1.8, glass x3.0 -> x2.4), tier 3 = ring / road / canal light lines (M.warm 1.7 -> 1.0,
  // M.cool 1.5 -> .9). Bloom threshold is .80 (world.js), so tier 3 barely blooms and tier 1 blooms most.
- M.warm=blue?hot('#FFB468',1.0*P.line):hot('#FFE0B4',1.25*P.line);M.cool=hot(L.ai,(.4+1.1*P.lit)*(blue?.6:1));M.crown=blue?hot('#FFA858',1.8*P.lit):hot('#FFD9A8',.35+2.3*P.lit);
+ M.warm=blue?hot('#FFB468',.75*P.line):hot('#FFE0B4',1.25*P.line);M.cool=hot(L.ai,(.4+1.1*P.lit)*(blue?.6:1));M.crown=blue?hot('#FFA858',1.25*P.lit):hot('#FFD9A8',.35+2.3*P.lit); // C2b: warm 1.0 -> .75, crown 1.8 -> 1.25
  M.collar=blue?hot('#E2F7FF',5.0):M.cool;M.spireW=blue?hot('#FFC27E',4.2):M.warm;
+ M.eyeRim=blue?hot('#CFF6FF',9.0):hot('#CFF6FF',1.4); // C2b: self-luminous iris rim + socket hairline = tier 0 (hottest point)
  SIL=[.62,.64,.67];DARK=[.05,.055,.07];}
 
 // ======================= (3) geometry helpers: statics (merged per material) + instanced batches =======================
@@ -156,13 +164,16 @@ const anOf=(x,z,sw)=>{const h1=FA.hash(x*1.7+.3,z*2.9),h2=FA.hash(z*.7,x*3.3+1.1
 function pool(x,z,r,k,y,an,hex){if(P.mood==='day')return;POOLS.push([x,y==null?Y+.06:y,z,r,k,an||anOf(x,z,false),hex||null]);}
 const LAMPC=['#FFB866','#FFC47E','#FFAA5A']; // C2: three lamp temperatures (~2700-3300 K), picked by position hash
 function lamp(x,z,h,sz){B.metal.add(x,Y,z,.03,h,.03,0,DARK);const hv=FA.hash(x*.71+2.,z*1.31),hx=LAMPC[(hv*3)|0],an=anOf(x,z,true);
- FA.glow(x,Y+h+.05,z,sz||.8,hx,.36*(.85+.3*FA.hash(z*3.7,x*.3)),an);pool(x,z,(.9+1.7*(sz||.8))*(.85+.3*FA.hash(x*3.1,z*1.7)),.62*(.7+.6*FA.hash(z*2.3,x*.9)),null,an,hx);}
+ FA.glow(x,Y+h+.05,z,sz||.8,hx,.36*(.85+.3*FA.hash(z*3.7,x*.3)),an);
+ // C2b: fewer, larger, softer pools with varied size (~40 % of lamps cast none -> no bead strings); radius x1.5 / k x.5
+ const hp=FA.hash(x*2.3+.7,z*.37+5.1);if(P.mood!=='day'&&hp<.40)return;
+ pool(x,z,(1.35+2.6*(sz||.8))*(.65+.7*FA.hash(x*3.1,z*1.7)),.33*(.6+.8*FA.hash(z*2.3,x*.9)),null,an,hx);}
 function poolTex(){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);
- [[0,1],[.22,.62],[.5,.22],[.78,.05],[1,0]].forEach(s=>gr.addColorStop(s[0],'rgba(255,255,255,'+s[1]+')'));g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);}
+ [[0,1],[.12,.84],[.28,.52],[.46,.26],[.66,.09],[.84,.02],[1,0]].forEach(s=>gr.addColorStop(s[0],'rgba(255,255,255,'+s[1]+')'));g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);} // C2b: gaussian-like falloff (softer edge)
 function buildPools(){if(!POOLS.length)return 0;const g=new THREE.PlaneGeometry(1,1);g.rotateX(-Math.PI/2);
  const m=new THREE.MeshBasicMaterial({color:'#ffffff',map:poolTex(),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8});
  const im=new THREE.InstancedMesh(g,m,POOLS.length),w=C('#FFA45C'),cc=new THREE.Color(),BA=new Float32Array(POOLS.length*4);
- POOLS.forEach((p,i)=>{m4.compose(v3.set(p[0],p[1],p[2]),q4.identity(),s3.set(p[3]*2,1,p[3]*2));im.setMatrixAt(i,m4);im.setColorAt(i,cc.copy(p[6]?C(p[6]):w).multiplyScalar(p[4]));BA.set(p[5],i*4);});
+ POOLS.forEach((p,i)=>{m4.compose(v3.set(p[0],p[1],p[2]),q4.identity(),s3.set(p[3]*2,1,p[3]*2));im.setMatrixAt(i,m4);im.setColorAt(i,cc.copy(p[6]?C(p[6]):w).multiplyScalar(p[4]*.72));BA.set(p[5],i*4);}); // C2b: all pools x.72
  g.setAttribute('aB',new THREE.InstancedBufferAttribute(BA,4));
  m.onBeforeCompile=sh=>{sh.uniforms.uT=FA.TU.uT;sh.uniforms.uAn=FA.TU.uAn;
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uT;'+FA.BREATH_GLSL+'attribute vec4 aB;varying float vBr;').replace('#include <begin_vertex>','#include <begin_vertex>\nvBr=faBr(aB,uT);');
@@ -185,7 +196,15 @@ function ground(){ring(0,RC0,Y,M.pave);ring(RC1,RB0,Y,M.pave);ring(RB0,RB1,Y,M.a
 // ======================= (5) ring canal: water, quay walls, bridges, piers, boats =======================
 // B2 (Fable crit fix 7): dark sky-mirror water, calmer normals, waterline light seams
 function canal(){const blue=P.mood!=='day',yw=Y-.45,wn=FA.noiseNormal(128,1.8,37);wn.repeat.set(11,11);
- const wm=new THREE.MeshStandardMaterial({color:blue?'#07111A':'#0F2233',roughness:.05,metalness:.7,normalMap:wn,normalScale:new THREE.Vector2(.1,.1),envMapIntensity:blue?.8:1.5});
+ const wm=new THREE.MeshStandardMaterial({color:blue?'#0C1826':'#0F2233',roughness:blue?.08:.05,metalness:.7,normalMap:wn,normalScale:new THREE.Vector2(.1,.1),envMapIntensity:blue?1.5:1.5});
+ // C2b moat: no black void - sky gradient by view angle (fresnel) + broken vertical streaks of the warm city lights on the far quay,
+ // rippled by time; all in the emissive slot (cheap, no reflection pass)
+ if(blue){wm.onBeforeCompile=sh=>{sh.uniforms.uT=FA.TU.uT;sh.uniforms.pcO={value:new THREE.Vector2(cx,cz)};
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uT;uniform vec2 pcO;float mH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}')
+   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n#ifdef USE_FOG\n{vec2 d=vFogWP.xz-pcO;float ang=atan(d.y,d.x);float rr=length(d);vec3 V=normalize(vFogWP-cameraPosition);float fr=pow(1.-abs(V.y),3.);'+
+   'float a=ang*38.;float id=floor(a);float st=smoothstep(.5,.0,abs(fract(a)-.5)-.18)*step(.45,mH(vec2(id,3.1)));float rip=.55+.45*sin(rr*34.+uT*1.1+mH(vec2(id,1.))*6.)*sin(rr*11.-uT*.7);'+
+   'totalEmissiveRadiance+=mix(vec3(.10,.13,.24),vec3(.30,.24,.30),fr)*(.35+.65*fr)+vec3(1.,.55,.24)*st*rip*.30*(.5+.5*mH(vec2(id,7.)));}\n#endif');};
+  wm.customProgramCacheKey=()=>'pcMoat';}
  const wg=new THREE.RingGeometry(RC0-.05,RC1+.05,128,1);wg.rotateX(-Math.PI/2);const w=new THREE.Mesh(wg,wm);w.position.set(cx,yw,cz);w.receiveShadow=true;SC.add(w);
  FA.anims.push(T=>{wn.offset.set(T*.008,T*.013);});
  for(const r of[RC0,RC1])S(new THREE.CylinderGeometry(r,r,1,96,1,true),M.quay,cx,Y-.5,cz,false);
@@ -242,9 +261,12 @@ function buildEye(yb){const E=new THREE.Vector3(cx,yb+1.3,cz);FA.eyePos=E;const 
  const up=new THREE.Mesh(new THREE.SphereGeometry(1.0,40,16,0,TAU,0,Math.PI/2),lidM),lo=new THREE.Mesh(new THREE.SphereGeometry(1.0,40,16,0,TAU,Math.PI/2,Math.PI/2),lidM);
  up.castShadow=lo.castShadow=true;sock.add(up,lo);
  const ball=new THREE.Group();ball.position.copy(E);SC.add(ball);
- ball.add(new THREE.Mesh(new THREE.SphereGeometry(.93,40,28),std({color:'#D2CFC8',roughness:.3,envMapIntensity:.8})));
+ ball.add(new THREE.Mesh(new THREE.SphereGeometry(.93,40,28),std({color:'#D2CFC8',roughness:.3,envMapIntensity:.8,emissive:C('#DCEAF0'),emissiveIntensity:P.mood!=='day'?.32:0}))); // C2b: sclera faintly self-lit
  const it=irisTex(),ig=new THREE.SphereGeometry(.936,40,10,0,TAU,0,.6);ig.rotateX(Math.PI/2);
- ball.add(new THREE.Mesh(ig,std({map:it,emissiveMap:it,emissive:C('#9FE6F0'),emissiveIntensity:P.mood!=='day'?1.6:.32,roughness:.35}))); // C2: iris .7 -> 1.6 (tier 1)
+ ball.add(new THREE.Mesh(ig,std({map:it,emissiveMap:it,emissive:C('#9FE6F0'),emissiveIntensity:P.mood!=='day'?4.8:.32,roughness:.35}))); // C2: iris .7 -> 1.6; C2b: 1.6 -> 4.8 (tier 0)
+ // C2b: luminous limbal rim around the iris (on the ball, follows the gaze) + hairline on the socket ring
+ const rim=new THREE.Mesh(new THREE.TorusGeometry(.936*Math.sin(.6),.022,6,48),M.eyeRim);rim.position.z=.936*Math.cos(.6)+.006;ball.add(rim);
+ const sr=new THREE.Mesh(new THREE.TorusGeometry(.955,.016,6,64),M.eyeRim);sr.position.z=.25;sock.add(sr);
  const cg=new THREE.SphereGeometry(.975,40,12,0,TAU,0,.75);cg.rotateX(Math.PI/2);
  ball.add(new THREE.Mesh(cg,std({color:'#ffffff',transparent:true,opacity:.14,roughness:.04,envMapIntensity:1.5,depthWrite:false})));
  const halo=FA.glow(E.x,E.y,E.z,3.2,L.ai,P.mood!=='day'?.22:.12); // C2: halo .12 -> .22 in blue hour
