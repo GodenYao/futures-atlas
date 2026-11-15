@@ -142,6 +142,7 @@ body.axanim .axi.wy{transition:left .3s ease-out,top .3s ease-out,transform .3s 
 .sub b{font:500 11px var(--f2);letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
 .feed{display:grid;grid-template-columns:12px 1fr auto;gap:6px;align-items:center;font-size:13px;margin:3px 0}
 .feed i{width:10px;height:2px;display:block}
+.feed.nd{grid-template-columns:1fr auto} /* r9 U30: road-card destinations start with the site glyph (no road-colour dash before it) */
 .feed b.mono{font:500 13px var(--f2);color:var(--t1);letter-spacing:0;text-transform:none}
 .feed.cl{cursor:pointer}.feed.cl:hover{color:var(--acc)}
 .feed.tot{border-top:1px solid var(--pline);padding-top:3px;margin-top:5px}
@@ -961,26 +962,15 @@ const CASE=null; // (v4.1 dark casing replaced by a per-road neon glow halo)
 const GHOST_F42=`(vU.y-.5)*2.;float e=smoothstep(.72,.78,x)*(1.-smoothstep(.95,.99,x));float hl=smoothstep(.62,.68,x)*(1.-smoothstep(.72,.76,x));float d=fract(vU.x/2.4);if(e>.05&&d<.55){gl_FragColor=vec4(vec3(.95,.98,1.),e*uOp);return;}if(hl>.05){gl_FragColor=vec4(vec3(0.,.01,.03),hl*.55*uOp);return;}discard;}`; // r6 (final): white dash edge + thin dark inner halo (r5 zebra = hazard tape, r6a too faint)
 const GHOST_F=`uniform float uOp;varying vec2 vU;void main(){float fy=max(fwidth(vU.y),1e-5);float ypx=abs(vU.y-.5)/fy,hw=.5/fy;float e=1.-smoothstep(1.,2.2,abs(hw-ypx-1.4));float d=fract(vU.x/1.2);if(e>.05&&d<.55){gl_FragColor=vec4(vec3(.96,.94,.89),e*uOp);return;}discard;}`; // v4.4 V1d: stronger ghost (2 px, brighter, uOp .95); v4.3: delta.ghost = dashed 1 px bone outline of the Pooled width
 const GHM=()=>new THREE.ShaderMaterial({uniforms:{uOp:{value:.95}},vertexShader:NEON_V,fragmentShader:GHOST_F,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-8,polygonOffsetUnits:-8});
-// v4.4 r7 U20: Compare = the WIDTH DIFFERENCE between lens and Pooled drawn as its own band. Ribbon at max(lens,pooled) width, uIn = min/max (inner edge).
-// gain (uG 1): brass fill on both sides outside the Pooled width, light-brass outer edge, thin dark line at the Pooled edge.
-// loss (uG 0): the lost width = hollow hatched band out to the Pooled width with a dashed bone outer edge. True widths (no exaggeration); |d| < 1 pp -> no band.
-const BAND_F=`uniform float uOp,uIn,uOut,uG;varying vec2 vU;void main(){float fy=max(fwidth(vU.y),1e-5);float ypx=abs(vU.y-.5)/fy,hw0=.5/fy,hw=uOut*hw0,ipx=uIn*hw0;
- if(ypx<ipx-.6)discard;if(ypx>hw+.4){gl_FragColor=vec4(vec3(.02,.03,.05),.85*uOp);return;} // dark casing just outside the band (fixed ~2 px, not part of the delta)
- float oe=1.-smoothstep(.6,1.6,hw-ypx);
- if(uG>.5){if(ypx<ipx+.7){gl_FragColor=vec4(vec3(.03,.03,.04),.85*uOp);return;}if(oe>.05){gl_FragColor=vec4(vec3(1.,.90,.66),.98*uOp);return;}gl_FragColor=vec4(vec3(.88,.70,.38),.96*uOp);return;}
- if(oe>.05){if(fract(vU.x/1.0)<.55){gl_FragColor=vec4(vec3(.98,.96,.91),uOp);return;}gl_FragColor=vec4(vec3(.02,.03,.05),.85*uOp);return;}
- if(fract((gl_FragCoord.x+gl_FragCoord.y)/4.)<.5){gl_FragColor=vec4(vec3(.95,.93,.88),.9*uOp);return;}gl_FragColor=vec4(vec3(.02,.03,.05),.75*uOp);}`;
-const BANDM=()=>new THREE.ShaderMaterial({uniforms:{uOp:{value:1},uIn:{value:1},uOut:{value:1},uG:{value:1}},vertexShader:NEON_V,fragmentShader:BAND_F,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-9,polygonOffsetUnits:-9});
-const BANDC=.34; // casing margin per side (world units, ~2 px at world zoom)
-const CMPK=1.5; // r7 U20: compare view draws EVERY trunk (lens and Pooled alike) at 1.5x the normal width scale so the true difference is visible; ratios unchanged
+// r9 U33: the r7 U20 compare gain/loss band (BAND_F/BANDM/BANDC) and the 1.5x compare widening (CMPK) were superseded by r8 U29 and are deleted.
 const SPROF=u=>(1.35-.35*sm(0,.25,u))*(1-.3*sm(.85,1,u)); // spurs start as wide as the tapered trunk end, then narrow
 const ROADV=[];   // render objects per road: {r,trunk,tcase,lane,ghost,spurs:[{site,half,rib,cas,cliff,pts}]}
 const ROADPTS=[]; // for traffic: {a,b,pts}
 for(const r of RD6){const ri=RD6.indexOf(r),A=[NOW.X,NOW.Z],B=FP[r.id],dx=B[0]-A[0],dz=B[1]-A[1],L=Math.hypot(dx,dz),ux=dx/L,uz=dz/L;
  const A2=[A[0]+ux*1.1,A[1]+uz*1.1];const C=[(A2[0]+B[0])/2-uz*L*.06,(A2[1]+B[1])/2+ux*L*.06]; // r3 O5: trunks converge on the single Now ground dot
  const tp=bez(A2,C,B,.5);const fill=neonMat(r.c,0,1,r.cl),halo_=neonMat(r.c,1,1,r.cl);const LF=.10+ri*.012; // per-road lift: crossing ribbons never z-fight
- const rv={r,tp,tcase:ribbon(tp,halo_,.05),trunk:ribbon(tp,fill,LF,null,4),lane:r.id==='R1'?ribbon(tp,new THREE.MeshBasicMaterial({color:'#080B0F',transparent:true,opacity:.6,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6}),LF+.03,null,5):null,ghost:ribbon(tp,GHM(),LF+.05,null,6),band:ribbon(tp,BANDM(),LF+.06,null,7),spurs:[],fill,mats:[fill,halo_],endR:1};
- const tprof=u=>u<.86?1:1-(1-rv.endR)*sm(.86,1,u);rv.trunk.prof=rv.tcase.prof=rv.ghost.prof=rv.band.prof=tprof;if(rv.lane)rv.lane.prof=tprof;
+ const rv={r,tp,tcase:ribbon(tp,halo_,.05),trunk:ribbon(tp,fill,LF,null,4),lane:r.id==='R1'?ribbon(tp,new THREE.MeshBasicMaterial({color:'#080B0F',transparent:true,opacity:.6,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6}),LF+.03,null,5):null,ghost:ribbon(tp,GHM(),LF+.05,null,6),spurs:[],fill,mats:[fill,halo_],endR:1};
+ const tprof=u=>u<.86?1:1-(1-rv.endR)*sm(.86,1,u);rv.trunk.prof=rv.tcase.prof=rv.ghost.prof=tprof;if(rv.lane)rv.lane.prof=tprof;
  ROADPTS.push({a:'NOW',b:r.id,pts:tp});
  const ex=B[0]+ux*6,ez=B[1]+uz*6; // spur control point continues the trunk direction
  for(const sid in r.f){const o=byId[sid];const tg=[];
@@ -1000,13 +990,11 @@ const nearRoad=(X,Z)=>RDGRID.has(rk(X,Z));
 const RW=w=>Math.max(.48,.145*w),SW=v=>v<.6?0:Math.max(.17,.145*v);
 const PWC={d:-1,st:null};function poolSt(){if(PWC.d!==day){PWC.d=day;PWC.st=pulls(day,'pooled');}return PWC.st;}
 // r8 U29 (owner): compare ON = roads at their plain POOLED width (no gain/loss band, no hatching, no 1.5x widening, no dashed ghost);
-// the lens difference is carried only by the site pp pills (fa4_post.js POSTO) and the site dual arcs. CMPK/BAND_F kept only as dormant code.
-function setRoadWidths(st){const CM=!!(window.CMP&&CMP.on&&LCUR!=='pooled'),KC=1;if(CM)st=poolSt();for(const rv of ROADV){const w=st.w[rv.r.id];const tw=RW(w)*KC;let mx=0;
+// the lens difference is carried only by the site pp pills (fa4_post.js POSTO) and the site dual arcs.
+function setRoadWidths(st){const CM=!!(window.CMP&&CMP.on&&LCUR!=='pooled');if(CM)st=poolSt();for(const rv of ROADV){const w=st.w[rv.r.id];const tw=RW(w);let mx=0;
  for(const S of rv.spurs){const v=(st.src[S.site][rv.r.id]||0)*S.half;const sw=SW(v);S.rib.set(sw);S.cas.set(0);mx=Math.max(mx,sw*1.35);}
- rv.endR=clamp(mx/tw,.3,1);rv.tcase.set(RW(rangeOf(w,'road',rv.r.id)[1])*KC);rv.trunk.set(tw);if(rv.lane)rv.lane.set(.06,(R1Q-.5)*tw);
- const pw0=poolSt().w[rv.r.id],pw=RW(pw0)*KC;
- rv.ghost.set(LCUR!=='pooled'&&!CM?pw:0);
- if(rv.band)rv.band.set(0);}}
+ rv.endR=clamp(mx/tw,.3,1);rv.tcase.set(RW(rangeOf(w,'road',rv.r.id)[1]));rv.trunk.set(tw);if(rv.lane)rv.lane.set(.06,(R1Q-.5)*tw);
+ rv.ghost.set(LCUR!=='pooled'&&!CM?RW(poolSt().w[rv.r.id]):0);}}
 // v4.3 r2: runtime per-road calibration at the default world camera (whatever FOV/pose WORLDV has): measure the projected trunk width
 // in px per world unit (median over the middle of each trunk) and scale each road's compensation so px/unit is identical for all six roads
 // -> on-screen trunk width is strictly proportional (hence monotonic) in share. Called once at init (fa4_app.js).
@@ -1015,7 +1003,7 @@ function calibRoads(){const V=new THREE.Vector3(),K=6,W=innerWidth,H=innerHeight
   for(let i=Math.floor(n*.15);i<Math.floor(n*.8);i++){const a=i*(K+1)*3,b=(i*(K+1)+K)*3;V.set(g[a],g[a+1],g[a+2]).project(CAM);const ax=V.x*W/2,ay=V.y*H/2;V.set(g[b],g[b+1],g[b+2]).project(CAM);ws.push(Math.hypot(ax-V.x*W/2,ay-V.y*H/2));}
   ws.sort((x,y)=>x-y);rs.push([rv,ws[ws.length>>1]/R.w]);}
  if(!rs.length)return;const tgt=rs.reduce((s,e)=>s+e[1],0)/rs.length;
- for(const[rv,k]of rs){const f=tgt/k;for(const R of[rv.trunk,rv.tcase,rv.ghost,rv.band,rv.lane])if(R&&R.cf){for(let i=0;i<R.cf.length;i++)R.cf[i]*=f;}rv.kc=f;}
+ for(const[rv,k]of rs){const f=tgt/k;for(const R of[rv.trunk,rv.tcase,rv.ghost,rv.lane])if(R&&R.cf){for(let i=0;i<R.cf.length;i++)R.cf[i]*=f;}rv.kc=f;}
  setRoadWidths(curP);}
 // v4.3 hover/selection focus (Fable §3): focused road lit, the other five dimmed to #3A4048 at 40%; 150 ms transition
 const RFOC={ids:null};function setRoadFocus(ids){RFOC.ids=ids&&ids.length?ids:null;kick(400);}
@@ -1360,15 +1348,15 @@ function badge(g,x,y,d,al,big,pre,pill){const up=d>0,z=Math.round(d)===0,txt=(pr
   g.fillStyle=z?'#C4BFB3':up?'#F1ECE0':'#8D8A80';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,x+7,y+.5);return[x0,y0,x0+w,y0+h];}
  g.globalAlpha=al*.88;g.fillStyle='rgba(5,7,10,.86)';g.fillRect(x-w/2,y-h/2,w,h);g.globalAlpha=al;g.strokeStyle=z?'#ADA99F':up?'#F1ECE0':'#5A5D60';g.lineWidth=1;g.strokeRect(x-w/2+.5,y-h/2+.5,w-1,h-1);
  g.fillStyle=z?'#C4BFB3':up?'#F1ECE0':'#8D8A80';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,x,y+.5);return[x-w/2,y-h/2,x+w/2,y+h/2];}
-const WSP={list:[],next:1.2};
+var WSP={list:[],next:1.2}; // r9 U31: var (window.WSP) so drawMarker (fa4_labels.js) can read each whisper's fade envelope for the icon showcase
 function POSTO(g,t,placed,big,tlT){const fx=LFX.fx;g.save();
  if(fx&&!big){const e=(performance.now()-fx.t0)/1000;const al=(window.CMP&&CMP.on&&LCUR!=='pooled'&&fx.to===LCUR)?Math.min(1,e/.3):e<.3?e/.3:e<6?1:Math.max(0,1-(e-6)/1);if(al>0){
   const hitP=b=>placed.some(a=>b[0]<a[2]+4&&b[2]>a[0]-4&&b[1]<a[3]+3&&b[3]>a[1]-3);const bw=d=>(String(Math.abs(Math.round(d))).length+6)*7+12;
   const CMN=!!(window.CMP&&CMP.on&&LCUR!=='pooled');
   if(CMN){ // r8 U29: compare = one small pp pill floating above EVERY site marker (live delta vs Pooled), gentle bob (3.5 px, 2.4 s, random phase; off under reduced motion)
-   const PS=poolSt();let np=0;for(const S of fx.sites){const m=MK.find(k=>k.o===S.o);if(!m)continue;const d=(curP.p[S.o.id]||0)-(PS.p[S.o.id]||0),w=bw(d)+14,bob=RMOT?3.5*Math.sin(t*2.618+S.ph):0;
-    for(const[ox,oy]of[[0,-30],[0,-47],[18,-30],[-18,-30],[0,-64],[24,-47],[-24,-47],[0,30]]){const x=m.x+ox,y=m.y+oy+bob;if(y>tlT-12||y<40||x-w/2<4||x+w/2>innerWidth-4)continue;if(hitP([x-w/2,y-9-Math.abs(bob),x+w/2,y+9+Math.abs(bob)])||[rectOf('menu'),rectOf('hud'),rectOf('legend')].some(R=>R&&x+w/2>R.left-6&&x-w/2<R.right+6&&y+10>R.top-4&&y-10<R.bottom+4))continue;placed.push(badge(g,x,y,d,al,false,'',true));np++;S.pl=1;break;}
-    if(!S.pl){const x=clamp(m.x,w/2+4,innerWidth-w/2-4),y=m.y-30+bob;if(y<tlT-12&&y>40&&![rectOf('menu'),rectOf('hud'),rectOf('legend')].some(R=>R&&x+w/2>R.left-6&&x-w/2<R.right+6&&y+10>R.top-4&&y-10<R.bottom+4)){placed.push(badge(g,x,y,d,al,false,'',true));np++;}}S.pl=0;}LFX.np=np;} // last resort: every visible site keeps its pill, even if it grazes a neighbour
+   const PS=poolSt();for(const S of fx.sites){const m=MK.find(k=>k.o===S.o);if(!m)continue;const d=(curP.p[S.o.id]||0)-(PS.p[S.o.id]||0),w=bw(d)+14,bob=RMOT?3.5*Math.sin(t*2.618+S.ph):0;
+    for(const[ox,oy]of[[0,-30],[0,-47],[18,-30],[-18,-30],[0,-64],[24,-47],[-24,-47],[0,30]]){const x=m.x+ox,y=m.y+oy+bob;if(y>tlT-12||y<40||x-w/2<4||x+w/2>innerWidth-4)continue;if(hitP([x-w/2,y-9-Math.abs(bob),x+w/2,y+9+Math.abs(bob)])||[rectOf('menu'),rectOf('hud'),rectOf('legend')].some(R=>R&&x+w/2>R.left-6&&x-w/2<R.right+6&&y+10>R.top-4&&y-10<R.bottom+4))continue;placed.push(badge(g,x,y,d,al,false,'',true));S.pl=1;break;}
+    if(!S.pl){const x=clamp(m.x,w/2+4,innerWidth-w/2-4),y=m.y-30+bob;if(y<tlT-12&&y>40&&![rectOf('menu'),rectOf('hud'),rectOf('legend')].some(R=>R&&x+w/2>R.left-6&&x-w/2<R.right+6&&y+10>R.top-4&&y-10<R.bottom+4)){placed.push(badge(g,x,y,d,al,false,'',true));}}S.pl=0;}} // last resort: every visible site keeps its pill, even if it grazes a neighbour (r9 U33: LFX.np test hook removed)
   else for(const R of fx.roads){const tp=R.rv.tp;let done=false;
    if(!done)for(const f of[.62,.5,.74,.42,.84,.34]){const p=tp[Math.floor(tp.length*f)];const[x,y,ok]=proj(p[0],hMesh(p[0],p[1])+.3,p[1]);if(!ok||y>tlT-14)continue;const w=bw(R.d);if(hitP([x-w/2,y-10,x+w/2,y+10]))continue;placed.push(badge(g,x,y,R.d,al,true));done=true;break;}}
   if(!CMN)for(const S of fx.sites){const m=MK.find(k=>k.o===S.o);if(!m)continue;const pre='';g.font=`500 11px ${FM}`;const w=bw(S.d);
@@ -1610,21 +1598,56 @@ const GD={
  rev:['M6.5 3.5 L17.5 14.5 M17.5 3.5 L6.5 14.5','M8.5 21 L12 9 L15.5 21 M5.5 21 L18.5 21'],
  sel:['M6.5 21 C10 18 10.5 14.5 10 10.5 C8.5 12 6.5 12.5 4.5 10.5 C4.5 6 8 3 12 3 C16 3 19.5 6 19.5 10.5 C17.5 12.5 15.5 12 14 10.5 C13.5 14.5 14 18 17.5 21 M7.6 15.6 C9.6 17 14.4 17 16.4 15.6','M3.5 21 L20.5 21'], // r5: skirt ring across the stem (Fable's fix so it does not read as a tree/mushroom)
  nor:['M4 3.5 L4 20 L20.5 20','M6.5 17.5 C11.5 17.5 10.5 6.5 16 6.5','M18.5 4 L21 6.5 L18.5 9 L16 6.5 Z']};
+// r9 U31: sub-paths split out for the showcase flourishes (same geometry as GD.ens[0] / GD.sel[0], which the static inline SVG keeps using)
+GD.ensB='M4 9 L20 9 L20 22 L4 22 Z';GD.ensS='M8 9 L8 6.5 A4 4 0 0 1 16 6.5 L16 9';GD.zooA='M5 21 L5 13 A7 7 0 0 1 19 13 L19 21 M3.5 21 L20.5 21';
+GD.selC='M6.5 21 C10 18 10.5 14.5 10 10.5 C8.5 12 6.5 12.5 4.5 10.5 C4.5 6 8 3 12 3 C16 3 19.5 6 19.5 10.5 C17.5 12.5 15.5 12 14 10.5 C13.5 14.5 14 18 17.5 21';GD.selR='M7.6 15.6 C9.6 17 14.4 17 16.4 15.6';
+const cl01=v=>v<0?0:v>1?1:v,ss01=v=>{v=cl01(v);return v*v*(3-2*v);},bmp=(p,c,w)=>{const d=Math.abs(p-c);return d<w?.5+.5*Math.cos(Math.PI*d/w):0;};
 const GLYPH={
- libertarian:(g,t,a)=>{const d=.6*a*tri(t,6);g.save();g.translate(-d,0);gS(g,GD.lib[0]);g.restore();g.save();g.translate(d,0);gS(g,GD.lib[1]);g.restore();}, // machine | mixed | human zones; the two shapes drift a little apart and back (6 s)
- benevolent:(g,t,a)=>{gS(g,GD.ben[0]);gS(g,GD.ben[1]);const k=Math.floor(t)%3;for(let i=0;i<3;i++)gS(g,GD.ben[2+i],i===k?1:1-.55*a);}, // diamond hub, unequal sectors; dividers brighten in turn (1 s each)
- egalitarian:(g,t,a)=>{if(a>0){const n=Math.floor(t/8),k=Math.min(1,(t%8)/1.4);g.save();gRot(g,12,12.5,(n+eOut(k))*2.0944);g.stroke(pth(GD.ega));g.restore();}else g.stroke(pth(GD.ega));}, // three equal circles on one ring, empty centre; turns 120 deg every 8 s (looks identical after each step)
- gatekeeper:(g,t,a)=>{const op=typeof gkOpen==='function'?gkOpen(t):1,sy=.15+.85*op;g.save();gScl(g,12,10.5,1,sy);gS(g,GD.gat[0]);g.restore();g.save();gScl(g,12,10.5,1,Math.max(.45,sy));gS(g,GD.gat[1]);g.restore();gS(g,GD.gat[2]);}, // AI eye (diamond pupil) over a barrier bar; blink on the shared Gatekeeper clock (gkOpen, fa4_scenes.js)
- protector:(g,t,a)=>{g.save();g.globalAlpha*=1-.75*a*tri(t,5);gDots(g,GD.pro[0]);g.restore();gS(g,GD.pro[1]);}, // person inside a ghosted (dotted) diamond = unseen but all around; the dots fade 100 -> 25 % (5 s). r5 sheet pass 2: Fable's corner chevrons read as a D-pad
- enslaved:(g,t,a)=>{gS(g,GD.ens[0]);g.save();gScl(g,12,15.5,1-.1*a*tri(t,3));gS(g,GD.ens[1]);g.restore();}, // padlock with a diamond inside; the diamond presses against the box (3 s)
- conquerors:(g,t,a)=>{g.save();gScl(g,12,13.5,1+.04*a*tri(t,8));gS(g,GD.con[0]);g.restore();g.save();g.globalAlpha*=1-.6*a*tri(t,8);gDots(g,GD.con[1]);g.restore();}, // AI diamond over a ghosted human circle; the ghost fades while the diamond swells slightly (8 s)
- descendants:(g,t,a)=>{gS(g,GD.des[0],1-.5*a*tri(t,6));gS(g,GD.des[1]);gS(g,GD.des[2]);}, // two circles (parents) -> bracket -> one diamond (heir); parents ease to 50 % (6 s)
- zookeeper:(g,t,a)=>{gS(g,GD.zoo[0]);g.save();g.translate(.8*a*Math.sin(t/4*6.2832),0);gS(g,GD.zoo[1]);g.restore();gS(g,GD.zoo[2]);}, // barred enclosure, circle inside, diamond keeper on top; circle paces between the bars (4 s)
- o1984:(g,t,a)=>{g.save();gRot(g,8.1,11.2,.105*a*Math.sin(t/8*6.2832));gS(g,GD.o84[0]);const on=Math.floor(t)%2===0;g.globalAlpha*=on?1:1-.85*a;g.fill(pth(GD.o84[2]));g.restore();gS(g,GD.o84[1]);}, // wall-mounted CCTV camera (human-built apparatus); LED blinks 1 s on / 1 s off, body pans +-6 deg (8 s)
- reversion:(g,t,a)=>{const ph=gAcc('rev',t,a*.5236);g.save();gRot(g,12,9,ph);gS(g,GD.rev[0]);g.restore();gS(g,GD.rev[1]);}, // four-sail windmill (pre-industrial tech); sails turn about the hub (1 turn / 12 s at full)
- selfdestruct:(g,t,a)=>{g.save();gScl(g,12,21,1-.06*a*(1-tri(t,5)));gS(g,GD.sel[0]);g.restore();gS(g,GD.sel[1]);}, // mushroom cloud on a ground line (e.g. nuclear or bio war); slow billow 0.94 -> 1.0 (5 s)
- normaltech:(g,t,a)=>{gS(g,GD.nor[0]);const p=t%9,f=p<3?eOut(p/3):1;gDash(g,GD.nor[1],15.5,1-a*(1-f));gS(g,GD.nor[2],1-.6*a*(1-f));}}; // S-curve adoption on axes, diamond at its end; curve draws in (3 s), holds 6 s
-function drawGlyph(g,id,t,a){const fn=GLYPH[id];if(!fn)return;g.save();g.scale(GS,GS);g.translate(-12,-12);g.lineWidth=1.75;g.lineCap='round';g.lineJoin='round';fn(g,t,a);g.restore();}
+ // r9 U31: every fn is (g,t,a,S). S = showcase state {s: 0..1 envelope that follows the floating title's fade-in / hold / fade-out, p: seconds since the
+ // showcase began, D: its total length}. s = 0 -> exactly the r5 idle animation. Flourishes are descriptive, slow (nothing toggles faster than ~1.5 Hz).
+ libertarian:(g,t,a,S)=>{const d=.6*a*tri(t,6)+1.8*S.s*tri(S.p,2.8);g.save();g.translate(-d,0);gS(g,GD.lib[0]);g.restore();g.save();g.translate(d,0);gS(g,GD.lib[1]);g.restore();}, // machine | mixed | human zones drift apart (showcase: the zones slide clearly apart and back, 2.8 s)
+ benevolent:(g,t,a,S)=>{const s=S.s;if(s>.01){const q=S.p/.8,k=Math.floor(q)%3,e=Math.sin((q%1)*Math.PI),A=[[-1.5708,0],[0,2.3562],[2.3562,4.7124]][k];g.save();g.globalAlpha*=.45*s*e;g.beginPath();g.arc(12,12,7.9,A[0]+.1,A[1]-.1);g.arc(12,12,5.4,A[1]-.14,A[0]+.14,true);g.closePath();g.fill();g.restore();} // showcase: the AI-run sectors light up one after another around the hub (0.8 s each)
+  gS(g,GD.ben[0]);g.save();gScl(g,12,12,1+.07*s*Math.sin(S.p*3.93));gS(g,GD.ben[1]);g.restore();const k=Math.floor(t)%3;for(let i=0;i<3;i++)gS(g,GD.ben[2+i],i===k?1:1-.55*a);},
+ egalitarian:(g,t,a,S)=>{const s=S.s;g.save();if(a>0){const n=Math.floor(t/8),k=Math.min(1,(t%8)/1.4);gRot(g,12,12.5,(n+eOut(k))*2.0944);}
+  if(s>.01)gRot(g,12,12.5,4.1888*ss01(S.p/Math.max(1,S.D))); // showcase: the shared ring turns 240 deg across the whole showcase (identical shape at both ends)
+  g.stroke(pth(GD.ega));if(s>.01){const k=Math.floor(S.p/.75)%3,e=Math.sin((S.p/.75%1)*Math.PI),N=[[12,5.5],[18.05,16],[5.95,16]][k];g.globalAlpha*=s*e;g.beginPath();g.arc(N[0],N[1],1.35,0,6.2832);g.fill();} // nodes pulse in turn
+  g.restore();},
+ gatekeeper:(g,t,a,S)=>{const s=S.s;let op=typeof gkOpen==='function'?gkOpen(t):1;let dx=0;
+  if(s>.01){op*=1-s*Math.max(bmp(S.p,.95,.2),bmp(S.p,2.75,.2)); // showcase: a deliberate blink (eye closes and opens, ~0.4 s) twice; never rests closed
+   const T=[[0,0],[1.35,2.5],[2.05,-2.5],[3.25,1.3],[4.1,0]];
+   let pv=0,nx=0,tt=0;for(let i=T.length-1;i>=0;i--)if(S.p>=T[i][0]){pv=i>0?T[i-1][1]:0;nx=T[i][1];tt=T[i][0];break;}dx=s*(pv+(nx-pv)*eOut(cl01((S.p-tt)/.16)));} // the diamond iris darts between targets (160 ms saccades)
+  const sy=.15+.85*op;if(s>.01&&op<.22){gS(g,'M2 10.5 C7 13.2 17 13.2 22 10.5');gS(g,'M4.5 12.6 L3.4 14.2 M12 13.6 L12 15.4 M19.5 12.6 L20.6 14.2',.7);gS(g,GD.gat[2]);return;} // showcase blink: the eye shows as a closed lid with lashes (no hairline squash)
+  g.save();gScl(g,12,10.5,1,sy);gS(g,GD.gat[0]);g.restore();g.save();g.translate(dx,0);gScl(g,12+0,10.5,1,Math.max(.45,sy));gS(g,GD.gat[1]);g.restore();gS(g,GD.gat[2]);}, // AI eye (diamond pupil) over a barrier bar; blink on the shared Gatekeeper clock (gkOpen, fa4_scenes.js)
+ protector:(g,t,a,S)=>{const s=S.s,ga=1-.75*a*tri(t,5),gh=.1+.9*(1-tri(S.p,2.6));g.save();g.globalAlpha*=(1-s)*ga+s*gh;gScl(g,12,12,1+.05*s*tri(S.p,2.6));gDots(g,GD.pro[0]);g.restore();gS(g,GD.pro[1]);}, // person inside a ghosted (dotted) diamond; showcase: the diamond fades out and back in like a ghost (2.6 s)
+ enslaved:(g,t,a,S)=>{const s=S.s,q=S.p%3.2,lift=s*(q<.9?2.6*eOut(q/.9):q<1?2.6*(1-(q-.9)/.1):0);gS(g,GD.ensB);g.save();g.translate(0,-lift);gS(g,GD.ensS);g.restore(); // showcase: the shackle lifts, then clicks shut (100 ms snap), every 3.2 s
+  if(s>.01&&q>=1&&q<1.3){g.save();g.globalAlpha*=s*(1-(q-1)/.3);gS(g,'M5.4 6.6 L3.6 5 M18.6 6.6 L20.4 5');g.restore();} // tiny click ticks
+  g.save();gScl(g,12,15.5,1-.1*a*tri(t,3)+.16*s*bmp(q,1.35,.45));gS(g,GD.ens[1]);g.restore();}, // padlock with a diamond inside; the diamond presses against the box (3 s); showcase: it pulses right after the click
+ conquerors:(g,t,a,S)=>{const s=S.s;g.save();gScl(g,12,13.5,1+.04*a*tri(t,8)+.11*s*tri(S.p,1.5));gS(g,GD.con[0]);g.restore();const b=1-.6*a*tri(t,8);
+  for(let i=0;i<9;i++){const an=Math.PI+i/9*6.2832,f=cl01((S.p-.35-i*.28)/.35);g.save();g.globalAlpha*=b*(1-.9*s*f);g.beginPath();g.arc(12+5*Math.cos(an),17+5*Math.sin(an),1.25,0,6.2832);g.fill();g.restore();}}, // AI diamond over a ghosted (dotted) human circle; showcase: the diamond pulses and the dots fade out one by one
+ descendants:(g,t,a,S)=>{const s=S.s,q=S.p%2.8,f=ss01((q-.1)/1.7);gS(g,GD.des[0],(1-s)*(1-.5*a*tri(t,6))+s);gS(g,GD.des[1],1-.85*s);
+  if(s>.01){g.save();g.globalAlpha*=s;g.lineWidth=2.1;gDash(g,'M6 8.75 L6 12 L12 12 L12 14.5',11.75,f);gDash(g,'M18 8.75 L18 12 L12 12 L12 14.5',11.75,f);g.restore();} // showcase: the lineage lines draw in from the two parent circles to the heir
+  g.save();gScl(g,12,18,1+.14*s*bmp(q,2.0,.45));gS(g,GD.des[2]);g.restore();}, // two circles (parents) -> bracket -> one diamond (heir); the diamond swells as the lines arrive
+ zookeeper:(g,t,a,S)=>{const s=S.s;if(s>.01){gS(g,GD.zooA);const q=S.p%2.6;for(let i=0;i<2;i++){const B=i?'M16 21 L16 7.3':'M8 21 L8 7.3';gS(g,B,1-.85*s);g.save();g.globalAlpha*=s;gDash(g,B,13.7,ss01((q-i*.3)/1.5));g.restore();}}else gS(g,GD.zoo[0]); // showcase: the cage bars draw themselves up from the ground, one after the other (2.6 s)
+  g.save();g.translate((.8*a+.6*s)*Math.sin(t/4*6.2832),0);gS(g,GD.zoo[1]);g.restore();gS(g,GD.zoo[2]);}, // barred enclosure, circle inside, diamond keeper on top; circle paces between the bars (4 s)
+ o1984:(g,t,a,S)=>{const s=S.s;g.save();gRot(g,8.1,11.2,.105*a*Math.sin(t/8*6.2832)+.21*s*Math.sin(S.p/2.6*6.2832));gS(g,GD.o84[0]);
+  const on=s>.5?Math.floor(S.p/.35)%2===0:Math.floor(t)%2===0;g.globalAlpha*=on?1:1-.85*Math.max(a,s);g.fill(pth(GD.o84[2]));if(on&&s>.01){g.globalAlpha*=.3*s;g.beginPath();g.arc(7.7,7.8,2.1,0,6.2832);g.fill();}g.restore(); // LED blinks 1 s / 1 s (showcase: 0.35 s / 0.35 s = 1.4 Hz, with a faint halo)
+  gS(g,GD.o84[1]);if(s>.01){const q=(S.p%1.3)/.9;if(q<1){const L=q*10.9,X=L<5.1?3+L:8.1,Y=L<5.1?17:17-(L-5.1);g.save();g.globalAlpha*=s*Math.sin(q*Math.PI);g.fillStyle='rgba(5,7,10,.9)';g.beginPath();g.arc(X,Y,2.3,0,6.2832);g.fill();g.fillStyle=g.strokeStyle;g.beginPath();g.arc(X,Y,1.55,0,6.2832);g.fill();g.restore();}}}, // wall-mounted CCTV camera; showcase: it pans wider (+-12 deg) and a signal bead (dark-cased) runs along the mount from the wall to the camera every 1.3 s
+ reversion:(g,t,a,S)=>{const ph=gAcc('rev',t,a*.5236+S.s*2.4);g.save();gRot(g,12,9,ph);gS(g,GD.rev[0]);g.restore();gS(g,GD.rev[1]);}, // four-sail windmill; sails turn about the hub (1 turn / 12 s at full); showcase: spins up to ~0.4 turn/s and winds down with the fade-out
+ selfdestruct:(g,t,a,S)=>{const s=S.s,b=s*(S.p<1.2?eOut(S.p/1.2):.35+.65*Math.exp(-(S.p-1.2)/.9));g.save();gScl(g,12,21,(1-.06*a*(1-tri(t,5)))*(1+.16*b),(1-.06*a*(1-tri(t,5)))*(1+.12*b));gS(g,GD.selC);g.restore(); // showcase: the cloud billows up (cap +16 %) then settles
+  g.save();g.translate(0,-3*b);gScl(g,12,16.5,1+.25*b,1);gS(g,GD.selR);g.restore();g.save();gScl(g,12,21,1+.1*b,1);gS(g,GD.sel[1]);g.restore();}, // the skirt ring rises and widens with the billow; ground line spreads a little
+ normaltech:(g,t,a,S)=>{const s=S.s;gS(g,GD.nor[0]);const p=t%9,f0=p<3?eOut(p/3):1,q=S.p%3.4,f1=ss01(q/2.2),fr=Math.min(1-a*(1-f0),1-s*(1-f1));gS(g,GD.nor[1],.15*s);gDash(g,GD.nor[1],15.5,fr);
+  if(s>.01&&q<2.6){const u=f1,v=1-u,X=v*v*v*6.5+3*v*v*u*11.5+3*v*u*u*10.5+u*u*u*16,Y=v*v*v*17.5+3*v*v*u*17.5+3*v*u*u*6.5+u*u*u*6.5;g.save();g.globalAlpha*=s*(1-ss01((f1-.8)/.17));g.beginPath();g.arc(X,Y,1.45,0,6.2832);g.fill();g.restore();} // showcase: the adoption curve draws along, a dot riding its tip
+  g.save();gScl(g,18.5,6.5,1+.16*s*bmp(q,2.35,.3));gS(g,GD.nor[2],1-.6*(1-Math.min(fr,1)));g.restore();}}; // S-curve adoption on axes, diamond at its end (pops when the curve arrives)
+const S0={s:0,p:0,D:1};
+function drawGlyph(g,id,t,a,S){const fn=GLYPH[id];if(!fn)return;g.save();g.scale(GS,GS);g.translate(-12,-12);g.lineWidth=1.75;g.lineCap='round';g.lineJoin='round';fn(g,t,a,S||S0);g.restore();}
+// r9 U31: showcase envelope per site. A floating whisper title (fa4_post.js WSP) drives it: s follows the title's fade-in -> hold -> fade-out (smoothstep).
+// The leading site's label is always on, so it gets a slow periodic showcase instead: 5.1 s out of every 9 s (U32). Off under reduced motion.
+const SHL={L:9,fi:.8,h:3.4,fo:.9};
+function shEnv(e,fi,h,fo){return ss01(e<fi?e/fi:e<fi+h?1:1-(e-fi-h)/fo);}
+function showOf(o,t){if(!RMOT)return S0;if(view==='world'&&window.WSP){const w=WSP.list.find(w=>w.o===o);if(w){const e=t-w.t0,D=w.fi+w.h+w.fo;if(e>=0&&e<D)return{s:shEnv(e,w.fi,w.h,w.fo),p:e,D};}}
+ if(o._lead&&!(view!=='world'&&focusO)){const p=t%SHL.L,D=SHL.fi+SHL.h+SHL.fo;if(p<D)return{s:shEnv(p,SHL.fi,SHL.h,SHL.fo),p,D};}return S0;}
+// r9 U32: the leading site's marker is 1.25x at world and region zoom (disc, ring, gauge, glyph); 0.4 s smoothstep when the lead changes
+function leadK(o,t){const on=!!o._lead&&!(view!=='world'&&focusO);if(o._lk==null){o._lk=on?1:0;o._lkt=t;}const dt=cl01(t-(o._lkt||t));o._lkt=t;o._lk=RMOT?(on?Math.min(1,o._lk+dt/.4):Math.max(0,o._lk-dt/.4)):(on?1:0);return 1+.25*ss01(o._lk);}
 // r8 U28: the same glyph set as small static inline SVG (from the GD path data) for site names in the right-panel text (site card, hover card,
 // road card destinations). currentColor, vertical-align middle. Parts: s = stroke, d = ghosted dotted outline (as gDots), f = fill (1984 LED).
 const GSV={libertarian:[['s',GD.lib[0]],['s',GD.lib[1]]],benevolent:GD.ben.map(p=>['s',p]),egalitarian:[['s',GD.ega]],gatekeeper:GD.gat.map(p=>['s',p]),
@@ -1635,13 +1658,17 @@ function glyphSVG(id,px){const P=GSV[id];if(!P)return '';px=px||14;return `<svg 
 function siteName(o,px){return `<span class="gn">${glyphSVG(o.id,px)}${o.n}</span>`;} // glyph + outcome name, kept together on one line
 // glyphTxt: prefix every outcome name found in a prose string (text nodes only, never inside tags) with its glyph
 let GNRX=null;function glyphTxt(s){if(!s)return s;if(!GNRX){const L=O.filter(o=>GSV[o.id]).sort((a,b)=>b.n.length-a.n.length);GNRX=new RegExp('(?<![\\w-])('+L.map(o=>o.n.replace(/[-]/g,'\\-')).join('|')+')(?![\\w-])','g');}
- return String(s).split(/(<[^>]*>)/).map(p=>p[0]==='<'?p:p.replace(GNRX,m=>{const o=O.find(q=>q.n===m);return o?siteName(o,13):m;})).join('');}
-{const st=document.createElement('style');st.textContent='.gi{display:inline-block;vertical-align:middle;margin:-3px .32em 0 0;flex:none;overflow:visible}.gn{white-space:nowrap}h2 .gi{margin-top:-4px}';document.head.appendChild(st);}
+ return String(s).split(/(<[^>]*>)/).map(p=>p[0]==='<'?p:p.replace(GNRX,m=>{const o=O.find(q=>q.n===m);return o?siteName(o,GPX):m;})).join('');}
+// r9 U30: inline glyphs 16 px (was 13-14 px) next to 13-14 px text: the 24-grid ink (~82 % of the box) is then ~13 px tall, i.e. text cap height + descender room,
+// so the thin 1.9-unit line icons carry the same visual weight as the letters; vertical-align:middle (no negative margin) puts the glyph's optical centre
+// (grid y 12) on the text x-height middle. Card title glyph 20 px (was 17) for 22 px text.
+const GPX=16,GPXH=20;
+{const st=document.createElement('style');st.textContent='.gi{display:inline-block;vertical-align:middle;margin:0 .3em 0 0;flex:none;overflow:visible;position:relative;top:-.5px}.gn{white-space:nowrap}';document.head.appendChild(st);}
 const MK=[]; // screen markers of this frame: {o,x,y}
 function drawMarker(g,o,x,y,t,st){const lead=o._lead,hov=HOV&&HOV.o===o,sel_=sel===o.id;const f=focusRoads();const fed=!f.length||f.some(r=>(st.src[o.id]||{})[r]>.3)||hov;
  const br=RMOT?(.85+.15*Math.sin(t*1.0472+o.ph)):.85; // 6 s breathe, 70..100 %
  const col=hov||sel_?TK.acc:lead?TK.lead:TK.mk;const al=(fed?1:.4)*(hov||sel_?1:br);
- g.save();g.translate(x,y);g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1.5;g.lineCap='round';g.lineJoin='round';
+ g.save();g.translate(x,y);{const LK=leadK(o,t);o._LK=LK;if(LK!==1)g.scale(LK,LK);}g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1.5;g.lineCap='round';g.lineJoin='round'; // r9 U32: leading site 1.25x (disc/ring/gauge/glyph)
  // stem + ground dot (close-up only; world zoom draws the M2 drop line in layoutLabels)
  if(o._stem>0){g.globalAlpha=al*.55;gLine(g,[0,16,0,o._stem-2]);gDot(g,0,o._stem,2);}
  // share gauge (r2 U8): track + 10 faint ticks every 10 %; arc = central share of 100 % (min ~4 deg when non-zero); faint outer arc = range low..high
@@ -1657,10 +1684,10 @@ function drawMarker(g,o,x,y,t,st){const lead=o._lead,hov=HOV&&HOV.o===o,sel_=sel
  // v4.4 M1: every marker sends a soft ripple ring every 7 s (staggered phase per site; the leading site's ripple is stronger)
  if(RMOT){const q=((t+o.ph*1.115)%7)/2.2;if(q<1){g.save();g.lineWidth=1;g.globalAlpha=(lead?.42:.26)*(1-q)*al;gRing(g,0,0,16*(1+1.3*q));g.restore();}}
  if(sel_){g.globalAlpha=1;g.strokeStyle=TK.accH;g.lineWidth=1;for(const[sx,sy]of[[-1,-1],[1,-1],[-1,1],[1,1]])gLine(g,[sx*24,sy*18,sx*24,sy*24,sx*18,sy*24]);g.strokeStyle=col;}
- g.globalAlpha=al;g.lineWidth=1.5;{const ga=!RMOT?0:(hov||sel_)?1:view!=='world'?.6:.3;drawGlyph(g,o.id,t,ga);}g.restore();} // r5 U16: Fable icon set, per-icon animation (subtle at world zoom, full on hover/selection, off for reduced motion)
+ g.globalAlpha=al;g.lineWidth=1.5;{const SH=showOf(o,t);o._sh=SH.s;const ga=!RMOT?0:Math.max(SH.s,(hov||sel_)?1:lead&&!(view!=='world'&&focusO)?.7:view!=='world'?.6:.3);drawGlyph(g,o.id,t,ga,SH);}g.restore();} // r5 U16: per-icon animation (subtle at world zoom, full on hover/selection, off for reduced motion); r9 U31/U32: full strength + flourish during its title showcase, leader idles at .7
 // ---- site tooltip (brass, chamfered, slides out 6 px on the side away from the hub)
 function siteTip(o,x,y,hubX){const st=curP,fd=feeders(o),lz=LCUR!=='pooled';
- TIP.className='stip';TIP.innerHTML=`<div class="h">${siteName(o,14)}</div><div class="m"><span class="t1">${rstr(o._rg||rangeOf(o._c||0))}</span> <span class="t2">CENTRAL ≈${(o._c||0).toFixed(0)}%</span>${lz?' '+dlt(o._d):''}${o._lead?' · <span class="t2">LEADING'+(o._con?', CONTESTED':'')+'</span>':''}</div>`+
+ TIP.className='stip';TIP.innerHTML=`<div class="h">${siteName(o,GPX)}</div><div class="m"><span class="t1">${rstr(o._rg||rangeOf(o._c||0))}</span> <span class="t2">CENTRAL ≈${(o._c||0).toFixed(0)}%</span>${lz?' '+dlt(o._d):''}${o._lead?' · <span class="t2">LEADING'+(o._con?', CONTESTED':'')+'</span>':''}</div>`+
  `<div class="f">${fd.map(r=>`<span><i style="background:${RDI[r].c}"></i>${r} ${(st.src[o.id][r]).toFixed(0)}%</span>`).join('')}</div>${o.note?`<div class="s">${glyphTxt(o.note)}</div>`:''}<div class="s" style="opacity:.75">ring = central share of 100%</div>`;
  TIP.style.display='block';const w=TIP.offsetWidth,h=TIP.offsetHeight;const right=x>=hubX;let tx=right?x+28:x-28-w,ty=y-h/2;
  tx=clamp(tx,8,innerWidth-w-8);ty=clamp(ty,56,innerHeight-h-80);
@@ -1670,7 +1697,7 @@ function roadTip(r,e){const w=curP.w[r.id],lz=LCUR!=='pooled';TIP.className='sti
  TIP.innerHTML=`<div class="h"><i class="sw" style="background:${r.cl}"></i>${r.id} · ${r.n}</div><div class="m"><span class="t1">${rstr(rangeOf(w,'road',r.id))}</span> <span class="t2">CENTRAL ≈${w.toFixed(0)}%</span>${lz?' '+dlt(w-poolSt().w[r.id]):''}</div><div class="s">${r.d}</div>`;
  TIP.style.display='block';moveTip(e);}
 // ---- pointer hover on the map canvas: markers first (44 px hit area), then roads (projected samples)
-function pickAt(mx,my){let best=null,bd=1e9;for(const m of MK){const d=Math.hypot(mx-m.x,my-m.y),lim=m.rg?32:22;if(d<lim&&d<bd){bd=d;best={o:m.o};}}if(best)return best;
+function pickAt(mx,my){let best=null,bd=1e9;for(const m of MK){const d=Math.hypot(mx-m.x,my-m.y),lim=(m.rg?32:22)*(m.o._LK||1);if(d<lim&&d<bd){bd=d;best={o:m.o};}}if(best)return best;
  if(view!=='world')return null;let br=null,b2=9;for(const rv of ROADV){const pts=rv.tp;for(let k=0;k<pts.length;k+=2){const p=pts[k];const[a,b,ok]=proj(p[0],hMesh(p[0],p[1])+.2,p[1]);if(!ok)continue;const d=Math.hypot(mx-a,my-b);if(d<b2){b2=d;br={r:rv.r.id};}}
   for(const S of rv.spurs){if(S.rib.w<.05)continue;for(let k=0;k<S.pts.length;k+=3){const p=S.pts[k];const[a,b,ok]=proj(p[0],hMesh(p[0],p[1])+.2,p[1]);if(!ok)continue;const d=Math.hypot(mx-a,my-b);if(d<b2*.8){b2=d/.8;br={r:rv.r.id};}}}}
  return br;}
@@ -1694,8 +1721,9 @@ function mkWorld(tlT){let top=-1e9;for(const o of O){const h=(o.gy||0)+(AH[o.id]
  for(let it=0;it<10;it++){let mv=false;for(let i=0;i<r.length;i++){const a=r[i];
    {const dx=a.x-n0[0];if(Math.abs(a.y-n0[1])<30&&Math.abs(dx)<26){const x0=a.x;a.x+=(dx>=0?1:-1)*((26-Math.abs(dx))+.5);cl(a);if(a.x!==x0)mv=true;}}
    for(let j=i+1;j<r.length;j++){const b=r[j];const dx=b.x-a.x;const stem=(p,q)=>Math.abs(q.x-p.x)<22&&q.y>p.y+10&&q.y<p.gy+6; // r2: an icon may not sit on another site's drop line
-    if((Math.abs(b.y-a.y)<38&&Math.abs(dx)<40)||stem(a,b)||stem(b,a)){const p=Math.max((40-Math.abs(dx))/2,(23-Math.abs(dx))/2)+.5,s=dx>=0?1:-1;const ax=a.x,bx=b.x;a.x-=s*p;b.x+=s*p;cl(a);cl(b);if(a.x!==ax||b.x!==bx)mv=true;}}}if(!mv)break;}
- for(let it=0;it<6;it++){let mv=false;for(let i=0;i<r.length;i++)for(let j=i+1;j<r.length;j++){const a=r[i],b=r[j];if(Math.abs(b.y-a.y)<38&&Math.abs(b.x-a.x)<40){const up=a.y<=b.y?a:b,dn=up===a?b:a;up.y=dn.y-38.5;mv=true;}}if(!mv)break;}
+    const kk=((a.o._LK||1)+(b.o._LK||1))/2,TX=40*kk,TY=38*kk; // r9 U32: the 1.25x leader needs proportionally more room
+    if((Math.abs(b.y-a.y)<TY&&Math.abs(dx)<TX)||stem(a,b)||stem(b,a)){const p=Math.max((TX-Math.abs(dx))/2,(23-Math.abs(dx))/2)+.5,s=dx>=0?1:-1;const ax=a.x,bx=b.x;a.x-=s*p;b.x+=s*p;cl(a);cl(b);if(a.x!==ax||b.x!==bx)mv=true;}}}if(!mv)break;}
+ for(let it=0;it<6;it++){let mv=false;for(let i=0;i<r.length;i++)for(let j=i+1;j<r.length;j++){const a=r[i],b=r[j],kk=((a.o._LK||1)+(b.o._LK||1))/2;if(Math.abs(b.y-a.y)<38*kk&&Math.abs(b.x-a.x)<40*kk){const up=a.y<=b.y?a:b,dn=up===a?b:a;up.y=dn.y-38.5*kk;mv=true;}}if(!mv)break;}
  for(const m of r){if(m.x!==m.g0){const k=(m.x-m.g0)/((m.xr-m.xl)||1)*2*m.R,X=m.o.X+k;const g=proj(X,m.gy0,m.o.Z);m.gy=g[1];}m.gx=m.x;}
  return r;}
 let lastBig=null;
@@ -1721,28 +1749,24 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   og.fillStyle='#F4EFE3';og.beginPath();og.arc(g0[0],g0[1],3.6,0,6.2832);og.fill();og.strokeStyle='rgba(8,12,22,.9)';og.lineWidth=1.5;og.stroke();og.restore();placed.push([g0[0]-6,g0[1]-6,g0[0]+6,g0[1]+6],[Math.min(hx,g0[0])-5,hy,Math.max(hx,g0[0])+5,g0[1]]);}for(const m of MKB)placed.push([m[0]-17,m[1]-17,m[0]+17,m[1]+17]); // r4 (item 8): R-tags also keep clear of site icons
  const ovl=(a)=>placed.some(b=>a[0]-10<b[2]&&a[2]+10>b[0]&&a[1]-7<b[3]&&a[3]+7>b[1]); // r3: 8/6 px clearance between tags and from the NOW text (r4: 10/7 px)
  const PRJ=big?null:ROADV.map(rv=>rv.tp.filter((_,i)=>i%2===0).map(p=>proj(p[0],hMesh(p[0],p[1])+.2,p[1])));
- const CMT=false; // r8 U29: compare mode no longer has per-road pp tags or leader lines (plain R-tags always); the r7 U20 compare-tag branch below is dormant
+ // r9 U33: the r7 U20 compare-tag branch (pp tags at fork ends + leader lines) is deleted; R-tags are always the plain road id
  if(!big)ROADV.forEach((rv,ri)=>{const tp=rv.tp;let k=Math.min(tp.length-1,7),x=0,y=0,box=null,bestS=-1,bestB=null;
-  const CM=CMT;og.font=CM?`600 13px ${FM}`:`500 11px ${FM}`;const dd=CM?st.w[rv.r.id]-poolSt().w[rv.r.id]:0,rd=Math.round(dd),tt=CM?`${rv.r.id} ${rd>0?'▲ +'+rd:rd<0?'▽ −'+(-rd):'= 0'} pp`:rv.r.id,hw=CM?Math.ceil(og.measureText('R4 ▲ +00 pp').width/2)+9:13;
-  const TH2=CM?11:8;
-  rv._le=null;if(CM){const e=tp[tp.length-1],q=tp[Math.max(0,tp.length-8)],E=proj(e[0],hMesh(e[0],e[1])+.2,e[1]),Q=proj(q[0],hMesh(q[0],q[1])+.2,q[1]);let dx=E[0]-Q[0],dy=E[1]-Q[1];const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl; // r7 U20: compare tags sit just beyond the trunk's fork end (fixed spot per road), so the gain/loss band on the trunk stays visible
-   const ext=Math.abs(dx)*hw+Math.abs(dy)*TH2;for(let s=ext+6;s<ext+90;s+=6){const cx=E[0]+dx*s,cy=E[1]+dy*s,b=[cx-hw,cy-TH2,cx+hw,cy+TH2];if(!ovl(b)){box=b;break;}if(!bestB)bestB=b;}if(box)rv._le=E;}
-  if(!CM||!box)for(;k<tp.length*.7;k+=2){const p=tp[k];const s=proj(p[0],hMesh(p[0],p[1])+.2,p[1]);x=s[0];y=s[1];const b=[x-hw,y-TH2,x+hw,y+TH2];if(ovl(b))continue;
+  og.font=`500 11px ${FM}`;const tt=rv.r.id,hw=13,TH2=8;
+  for(;k<tp.length*.7;k+=2){const p=tp[k];const s=proj(p[0],hMesh(p[0],p[1])+.2,p[1]);x=s[0];y=s[1];const b=[x-hw,y-TH2,x+hw,y+TH2];if(ovl(b))continue;
    let md=1e9;PRJ.forEach((pp,rj)=>{if(rj===ri)return;for(const q of pp){const d=Math.hypot(q[0]-x,q[1]-y);if(d<md)md=d;}});
    if(md>36){box=b;break;}if(md>bestS){bestS=md;bestB=b;}}
   if(!box)box=bestB||[x-hw,y-TH2,x+hw,y+TH2];x=box[0]+hw;y=box[1]+TH2;placed.push(box);
-  const on=f.includes(rv.r.id),dm=f.length&&!on;og.globalAlpha=dm?.45:1;if(CM&&rv._le){og.strokeStyle='rgba(244,239,227,.8)';og.lineWidth=1.2;og.setLineDash([2,2]);og.beginPath();og.moveTo(rv._le[0],rv._le[1]);og.lineTo(x,y);og.stroke();og.setLineDash([]);} // leader from the fork end to its tag
-  og.fillStyle=CM?'rgba(5,7,10,.92)':'rgba(5,7,10,.86)';og.fillRect(box[0],box[1]+(CM?0:2),2*hw,CM?22:12);og.strokeStyle=CM?(dm?TK.dimR:'#C4BFB3'):(dm?TK.dimR:rv.r.c);og.lineWidth=1;og.strokeRect(box[0]+.5,box[1]+(CM?.5:2.5),2*hw-1,CM?21:11);
-  if(CM){og.fillStyle=dm?TK.dimR:rv.r.c;og.fillRect(box[0]+2,box[1]+2,3,18);} // road identity swatch only; the delta text itself is colour-neutral
-  og.fillStyle=CM?(dm?TK.dimR:'#F4EFE3'):(dm?TK.dimR:on?rv.r.cl:TK.t1);og.fillText(tt,x+(CM?2:0),y+.5);og.font=`500 11px ${FM}`;
+  const on=f.includes(rv.r.id),dm=f.length&&!on;og.globalAlpha=dm?.45:1;
+  og.fillStyle='rgba(5,7,10,.86)';og.fillRect(box[0],box[1]+2,2*hw,12);og.strokeStyle=dm?TK.dimR:rv.r.c;og.lineWidth=1;og.strokeRect(box[0]+.5,box[1]+2.5,2*hw-1,11);
+  og.fillStyle=dm?TK.dimR:on?rv.r.cl:TK.t1;og.fillText(tt,x,y+.5);
   if(selR===rv.r.id){og.strokeStyle=TK.acc;og.lineWidth=1;for(const[sx,sy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){og.beginPath();og.moveTo(x+sx*13,y+sy*5);og.lineTo(x+sx*13,y+sy*10);og.lineTo(x+sx*8,y+sy*10);og.stroke();}}og.globalAlpha=1;});
  // in-scene SAMPLE watermark at 6 % text.1 (drawn under the markers)
  og.save();og.globalAlpha=.06;og.fillStyle=TK.t1;og.font=`600 26px ${FS}`;og.textAlign='left';og.translate(W/2,H/2);og.rotate(-.33);og.fillText('SAMPLE · ILLUSTRATIVE DATA',-200,0);og.restore();og.textAlign='center';og.font=`500 11px ${FM}`;
  // site markers (constant screen size, billboarded); close-up: only the focused basin, focused site gets its title instead
  MK.length=0;const ord=[...O].sort((a,b)=>(a._lead?1:0)-(b._lead?1:0));
  // v4.4 M2: world zoom = every marker on one altitude plane; NOW-style drop line (dark casing + thin bone line, dimmer than NOW) to a ground dot inside its diorama
- if(!big&&MWK){og.save();og.lineCap='round';for(const m of MWK){if(!m.ok||m.x<-40||m.x>W+40||m.y<40)continue;const ey=Math.min(m.gy,tlT+6),f=focusRoads(),fed=!f.length||f.some(r=>(st.src[m.o.id]||{})[r]>.3);const a=fed?1:.4;
-  og.globalAlpha=a;og.strokeStyle='rgba(8,12,22,.7)';og.lineWidth=3;og.beginPath();og.moveTo(m.x,m.y+17);og.lineTo(m.gx,ey);og.stroke();og.strokeStyle=TK.mk;og.globalAlpha=a*.62;og.lineWidth=1.1;og.beginPath();og.moveTo(m.x,m.y+17);og.lineTo(m.gx,ey);og.stroke();
+ if(!big&&MWK){og.save();og.lineCap='round';for(const m of MWK){if(!m.ok||m.x<-40||m.x>W+40||m.y<40)continue;const ey=Math.min(m.gy,tlT+6),f=focusRoads(),fed=!f.length||f.some(r=>(st.src[m.o.id]||{})[r]>.3);const a=fed?1:.4,y0=m.y+17*(m.o._LK||1);
+  og.globalAlpha=a;og.strokeStyle='rgba(8,12,22,.7)';og.lineWidth=3;og.beginPath();og.moveTo(m.x,y0);og.lineTo(m.gx,ey);og.stroke();og.strokeStyle=TK.mk;og.globalAlpha=a*.62;og.lineWidth=1.1;og.beginPath();og.moveTo(m.x,y0);og.lineTo(m.gx,ey);og.stroke();
   if(m.gy<tlT){og.globalAlpha=a*.85;og.fillStyle=TK.mk;og.beginPath();og.arc(m.gx,m.gy,2.6,0,6.2832);og.fill();og.strokeStyle='rgba(8,12,22,.85)';og.lineWidth=1.2;og.stroke();}}og.restore();}
  const RG=big&&!focusO,RGL=[]; // r4 U11: region (basin) view = every site of the basin gets the close-up marker treatment
  for(const o of ord){o.el.style.display='none';if(big&&(focusO?o!==focusO:o.b!==focus))continue; // r2 U6: in a site close-up only that site's marker is drawn
@@ -1756,23 +1780,23 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   o._stem=lift;const x=gx,y=gy-lift;MK.push({o,x,y});drawMarker(og,o,x,y,t,st);}
  if(RG&&RGL.length){ // discs (r 30) never overlap: push apart sideways first, then vertically; drop line stays on the true ground point (may slant a little)
   for(let it=0;it<12;it++){let mv=false;for(let i=0;i<RGL.length;i++)for(let j=i+1;j<RGL.length;j++){const a=RGL[i],b=RGL[j],dx=b.x-a.x,dy=b.y-a.y;if(Math.abs(dx)<70&&Math.abs(dy)<70){mv=true;if(Math.abs(dx)>=Math.abs(dy)*.6){const p=(70-Math.abs(dx))/2+.5,s=dx>=0?1:-1;a.x-=s*p;b.x+=s*p;}else{const p=(70-Math.abs(dy))/2+.5,s=dy>=0?1:-1;a.y-=s*p;b.y+=s*p;}a.x=clamp(a.x,44,W-44);b.x=clamp(b.x,44,W-44);}}if(!mv)break;}
-  const K=1.5;for(const m of RGL){const o=m.o,x=m.x,y=m.y;MK.push({o,x,y,rg:1});
-   og.save();og.lineCap='round';og.globalAlpha=.85;og.strokeStyle='rgba(8,12,22,.75)';og.lineWidth=3;gLine(og,[x,y+30,m.gx,m.gy-2]);og.globalAlpha=.7;og.strokeStyle=TK.acc;og.lineWidth=1.2;gLine(og,[x,y+30,m.gx,m.gy-2]);og.fillStyle=TK.acc;gDot(og,m.gx,m.gy,2.6);
-   og.globalAlpha=1;og.fillStyle='rgba(10,14,19,.85)';og.beginPath();og.arc(x,y,30,0,6.2832);og.fill();og.strokeStyle=TK.acc;og.lineWidth=1.5;og.stroke();og.globalAlpha=.35;og.lineWidth=1;gRing(og,x,y,34);og.restore();
+  const K=1.5;for(const m of RGL){const o=m.o,x=m.x,y=m.y,LK=o._LK||1;MK.push({o,x,y,rg:1});
+   og.save();og.lineCap='round';og.globalAlpha=.85;og.strokeStyle='rgba(8,12,22,.75)';og.lineWidth=3;gLine(og,[x,y+30*LK,m.gx,m.gy-2]);og.globalAlpha=.7;og.strokeStyle=TK.acc;og.lineWidth=1.2;gLine(og,[x,y+30*LK,m.gx,m.gy-2]);og.fillStyle=TK.acc;gDot(og,m.gx,m.gy,2.6);
+   og.globalAlpha=1;og.fillStyle='rgba(10,14,19,.85)';og.beginPath();og.arc(x,y,30*LK,0,6.2832);og.fill();og.strokeStyle=TK.acc;og.lineWidth=1.5;og.stroke();og.globalAlpha=.35;og.lineWidth=1;gRing(og,x,y,34*LK);og.restore(); // r9 U32: the leader's disc + brass ring scale with its 1.25x marker
    o._stem=0;og.save();og.translate(x,y);og.scale(K,K);drawMarker(og,o,0,0,t,st);og.restore();}}
  POSTO(og,t,placed,big,tlT); // v4.4 V1b lens delta badges + M1 whisper titles
  // name tags: the leading site (always), plus the hovered site; in close-up the focused site's title
  const hubX=hok?hx:W/2;const tags=[];if(!big&&LEAD)tags.push(LEAD.o);if(big&&focusO)tags.push(focusO);if(RG)for(const m of RGL)tags.push(m.o);const PLB=[];
  for(const o of tags){const el=o.el;const m=MK.find(k=>k.o===o);el.style.display='block';el.classList.toggle('lead',!!o._lead);el.classList.toggle('big',big);el.classList.toggle('rg',RG);
   if(RG&&m){const w=el.offsetWidth,h=el.offsetHeight;el.classList.add('cp');const hit=(x,y)=>x<8||x+w>W-8||RGL.some(q=>x<q.x+33&&x+w>q.x-33&&y<q.y+33&&y+h>q.y-33)||PLB.some(b=>x<b[2]+6&&x+w>b[0]-6&&y<b[3]+4&&y+h>b[1]-4); // r4 U11: short name plate always on, beside its disc, never on another disc/plate
-   let px=m.x+38,py=m.y-h/2;for(const[cx,cy]of[[m.x+38,m.y-h/2],[m.x-38-w,m.y-h/2],[m.x-w/2,m.y+36],[m.x-w/2,m.y-36-h]]){if(!hit(cx,cy)){px=cx;py=cy;break;}}
+   const LO=33*(o._LK||1)+5;let px=m.x+LO,py=m.y-h/2;for(const[cx,cy]of[[m.x+LO,m.y-h/2],[m.x-LO-w,m.y-h/2],[m.x-w/2,m.y+LO-2],[m.x-w/2,m.y-LO+2-h]]){if(!hit(cx,cy)){px=cx;py=cy;break;}}
    px=clamp(px,8,W-w-8);py=clamp(py,60,tlT-h-8);PLB.push([px,py,px+w,py+h]);el.style.transform=`translate(${px|0}px,${py|0}px)`;continue;}
   if(big){if(m){const w=el.offsetWidth,h=el.offsetHeight;el.classList.add('cp');const px_=clamp(m.x+44,8,W-w-8)|0,py_=clamp(m.y-h/2,60,tlT-h-8)|0;el.style.transform=`translate(${px_}px,${py_}px)`;
     if(o===focusO&&window.VIS&&VIS.site===o.id&&typeof visFollow==='function'){const gp=proj(o.X,o.gy+.6,o.Z);visFollow(px_,py_,w,h,gp[0],gp[1]);} // r7 U23: Visions strip hangs under this name plate
     continue;} // U6: name plate beside the enlarged marker
    const nav=rectOf('nav');el.style.transform=`translate(${24}px,${((nav?nav.bottom:110)+10)|0}px)`;continue;}
   el.classList.remove('cp');
-  if(!m){el.style.display='none';continue;}const w=el.offsetWidth,h=el.offsetHeight;const right=m.x>=hubX-40;let x=right?m.x+26:m.x-26-w;x=clamp(x,8,W-w-8);el.style.transform=`translate(${x|0}px,${(m.y-h/2)|0}px)`;}
+  if(!m){el.style.display='none';continue;}const w=el.offsetWidth,h=el.offsetHeight;const right=m.x>=hubX-40;const LG=26*(o._LK||1);let x=right?m.x+LG:m.x-LG-w;x=clamp(x,8,W-w-8);el.style.transform=`translate(${x|0}px,${(m.y-h/2)|0}px)`;}
  if(HOV&&HOV.o){const m=MK.find(k=>k.o===HOV.o);if(m)siteTip(HOV.o,m.x,m.y,hubX);}
  const capT=`Futures Atlas · DESIGN SAMPLE v4.4 · lens: ${LENSI[LCUR].n} · ${isoW(day)} · method v4.0.0-sample`;const capE=document.getElementById('cap');if(capE&&capE.textContent!==capT)capE.textContent=capT;
 }
@@ -1823,7 +1847,7 @@ function evHTML(ev,rids){let h=`<div style="margin:14px 0 4px" class="mono small
 function select(id){sel=id;selR=null;const o=byId[id],st=curP,c=st.p[id]||0,rg=rangeOf(c),src=st.src[id],dom=domRoad(src),col=RCOL[dom];const rows=siteState(st),me=rows.find(r=>r.o===o);
  const feeds=Object.entries(src).filter(e=>e[1]>.01).sort((a,b)=>b[1]-a[1]);
  let h=`<span class="x" onclick="closeCard()">×</span><span class="tag mono">${o.b==='C'?'OFF-MAP CLIFF':BASINS[o.b].n.toUpperCase()}</span>${me.lead?`<span class="tag mono" style="color:#ffe2a8;border-color:#ffe2a8">${me.contested?'LEADING, CONTESTED':'LEADING'}</span>`:''}
- <h2>${siteName(o,17)}</h2><div class="al">${glyphTxt(o.al)}</div><div class="small">${glyphTxt(o.def)}</div>
+ <h2>${siteName(o,GPXH)}</h2><div class="al">${glyphTxt(o.al)}</div><div class="small">${glyphTxt(o.def)}</div>
  <div class="row"><div class="big mono" style="color:${col}">${rstr(rg)}</div><div class="small">central ≈ ${c.toFixed(1)}% · <span class="nw">${lensTag()}</span><br>illustrative sample numbers, not a forecast</div></div>`;
  h+=`<div class="sub"><b>Where this comes from</b> <span class="small">(road share × editorial split of that road)</span>`+feeds.map(([rid,v])=>{const w=st.w[rid],f=FORKS[LCUR][rid][id]||0,er=RDI[rid].f[id];return `<div class="feed cl" onclick="openRoad('${rid}')"><i style="background:${RCOL[rid]}"></i><span><b style="color:${RCOL[rid]}">${rid}</b> ${RDI[rid].sh} ${fmtp(w)}% × ${Math.round(f*100)}%${er?` <span class="small">(editorial ${Math.round(er[1]*100)}–${Math.round(er[2]*100)}%)</span>`:''}</span><b class="mono">= ${v.toFixed(1)}%</b></div>`;}).join('')+`<div class="feed tot"><i></i><span><b>Total</b> = sum of all inflows (the site's share on the map)</span><b class="mono">= ${feeds.reduce((a,e)=>a+e[1],0).toFixed(1)}%</b></div><div class="small" style="margin-top:4px">The % colour on the map and the bar under each banner use the colour of the roads that feed it; the main colour is the biggest feeder (${dom}).</div></div><div class="lk"><b>Lock-in:</b> ${glyphTxt(o.lock)}</div>`;
  if(!o.cliff&&WELFARE_LIGHT)h+=`<div class="sub"><b>Light</b> = how well humans fare here (editorial, 0–5): <b>${o.W}</b>${liteHTML(o.W)}<span class="small">Brightness never changes with the lens or the week. Width of the roads does.</span></div>`;
@@ -1836,7 +1860,7 @@ function openRoad(rid){const r=RDI[rid],st=curP,w=st.w[rid];sel=null;selR=rid;co
  <h2>${r.n}</h2><div class="small">${glyphTxt(r.d)}</div>
  <div class="row"><div class="big mono" style="color:${r.c}">${rstr(rangeOf(w,'road',rid))}</div><div class="small">central ≈ ${w.toFixed(1)}% · ${lensTag()}<br>road width on the map = this share</div></div>
  <div class="sub"><b>By lens</b> <span class="small">(placeholder lenses; parameters by maintainer)</span>`+LENS.map(l=>`<div class="feed"><i style="background:${l.id===LCUR?'#f3ead8':'rgba(255,255,255,.18)'}"></i><span>${l.n}</span><b class="mono">${l.s[rid].toFixed(0)}%</b></div>`).join('')+`</div>
- <div class="sub"><b>Where this road leads</b> <span class="small">(all destinations; editorial splits sum to 100%, shown as dashed spurs)</span>`+Object.entries(fk).sort((a,b)=>b[1]-a[1]).map(([sid,f])=>{const er=r.f[sid];return `<div class="feed cl" onclick="enterO(byId['${sid}'])"><i style="background:${r.c}"></i><span>${siteName(byId[sid],14)} ${Math.round(f*100)}% <span class="small">(${Math.round(er[1]*100)}–${Math.round(er[2]*100)}%)</span></span><b class="mono">${(w*f).toFixed(1)}%</b></div>`;}).join('')+`</div>`;
+ <div class="sub"><b>Where this road leads</b> <span class="small">(all destinations; editorial splits sum to 100%, shown as dashed spurs)</span>`+Object.entries(fk).sort((a,b)=>b[1]-a[1]).map(([sid,f])=>{const er=r.f[sid];return `<div class="feed cl nd" onclick="enterO(byId['${sid}'])"><span>${siteName(byId[sid],GPX)} ${Math.round(f*100)}% <span class="small">(${Math.round(er[1]*100)}–${Math.round(er[2]*100)}%)</span></span><b class="mono">${(w*f).toFixed(1)}%</b></div>`;}).join('')+`</div>`;
  h+=evHTML(evForRoads([rid]),[rid]);
  const cd=document.getElementById('card');cd.innerHTML=h;cd.style.display='block';cd.scrollTop=0;fitCard();applyFocus();kick();}
 function openNow(){sel=null;selR=null;const st=curP;let h=`<span class="x" onclick="closeCard()">×</span><span class="tag mono">THE CROSSROADS</span><h2>Now · ${isoW(day)}</h2>
