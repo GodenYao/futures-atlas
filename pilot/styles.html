@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Futures Atlas · v4.5 pilot · style exploration</title>
+<style>
+@font-face{font-family:'Barlow SC';src:url(assets/fonts/BarlowSemiCondensed-Medium.ttf);font-weight:500}
+@font-face{font-family:'Plex Mono';src:url(assets/fonts/IBMPlexMono-Regular.ttf);font-weight:400}
+:root{--acc:#C9A45C;--t1:#F1ECE0;--t2:#C4BFB3;--t3:#9C988F;--bg:#0E1218;--pn:#151A22;--ln:rgba(130,140,160,.22);--f2:'Barlow SC','Barlow Semi Condensed',system-ui,sans-serif;--f3:'Plex Mono',ui-monospace,monospace}
+html,body{margin:0;background:var(--bg);color:var(--t1);font-family:var(--f2)}
+header{padding:28px 32px 10px;max-width:1500px;margin:auto}
+h1{font:500 30px/1.1 var(--f2);letter-spacing:.02em;margin:0 0 6px}
+.k{font:500 12px var(--f2);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+p.lead{font:400 13px/20px var(--f3);color:var(--t2);max-width:980px}
+main{max-width:1500px;margin:auto;padding:0 32px 60px}
+section{background:var(--pn);border:1px solid var(--ln);margin:22px 0;padding:18px 20px 20px}
+section h2{font:500 22px var(--f2);margin:0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+section h2 code{font:400 12px var(--f3);color:var(--acc);border:1px solid rgba(201,164,92,.5);padding:1px 7px}
+section h2 .fit{font:400 12px var(--f3);color:var(--t2)}
+.pitch{font:400 13px/19px var(--f3);color:var(--t2);margin:6px 0 12px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row figure{margin:0}.row img{width:100%;display:block;border:1px solid var(--ln)}
+figcaption{font:400 11px var(--f3);color:var(--t3);margin-top:4px}
+.sw{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}
+.sw span{display:flex;flex-direction:column;align-items:center;font:400 10px var(--f3);color:var(--t3)}
+.sw i{display:block;width:44px;height:26px;border:1px solid rgba(255,255,255,.15);margin-bottom:3px}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 22px;margin-top:10px;font:400 12px/18px var(--f3);color:var(--t2)}
+.notes b{display:block;font:500 11px var(--f2);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);margin-bottom:2px}
+.links{margin-top:12px;font:400 12px/20px var(--f3);color:var(--t3)}
+.links a{color:var(--t1);text-decoration:none;border-bottom:1px solid rgba(201,164,92,.5)}
+.live{display:inline-block;margin-top:10px;font:500 12px var(--f2);letter-spacing:.14em;text-transform:uppercase;color:var(--t1);border:1px solid var(--acc);padding:5px 10px;text-decoration:none;margin-right:6px}
+.rec{border-left:2px solid var(--acc)}
+.na{font:400 12px var(--f3);color:var(--t3);border:1px dashed var(--ln);padding:30px;text-align:center}
+@media (max-width:900px){.row,.notes{grid-template-columns:1fr}}
+</style></head><body>
+<header>
+<div class="k">Futures Atlas · v4.5 pilot · style exploration</div>
+<h1>Choose a rendering style before the engine fixes</h1>
+<p class="lead">Six candidate directions from an external art-direction review (Fable 5.2, Nov 2026), plus the current pilot look for comparison. Every image on this page is our own render of the pilot scene, with props from KayKit (CC0). Each one is a <b>quick parameter-level approximation</b> made with the <code>?style=</code> switch: palette, light, fog, tone mapping, flat or terraced terrain, prop desaturation, tree clumping and a cheap tilt-shift.<br>The switch does <b>not</b> change geometry: there is no tiered plinth, river banks, SSAO or bloom yet. Judge each direction by its colour, light and terrain language, not by finish.<br>Reference works are given as text links to their sources only.</p>
+</header>
+<main id="m"></main>
+<script>
+const S=[
+ {k:'pilot',n:'Current pilot · blue hour',fit:'baseline · scored 5.5-7/10',p:'The current v4.5 pilot: blue-hour sky, low warm key light, ACES, noisy fbm terrain with a detail normal map.',
+  pal:[['sky','#25305E'],['fog','#4A4878'],['ground','#55683F'],['rock','#55506A'],['water','#1C2E3C'],['human','#FFB866'],['AI','#BFEFFF']],
+  L:'Low warm directional key (≈17°), cool hemi + fill, PCF soft shadows, sky PMREM env.',T:'Sculpted 5-octave fbm terrain, noise normal map, uniform forest scatter.',P:'Height + distance fog, glow sprites only.',
+  perf:'≈480k tris incl. shadow pass (2× budget).',risk:'Noisy semi-real terrain clashes with low-poly props; flat big surfaces.',refs:[]},
+ {k:'maquette',n:'Maquette',fit:'Fable fit 9/10 · ceiling 8 · fallback pick',p:"Architect's white model on a pale table. Form and light do the work; colour appears only as light and in the brass data layer.",
+  pal:[['sky','#EDF1F4'],['fog','#F2EEE7'],['ground A','#EBE6DD'],['ground B','#DAD4C8'],['rock','#C6C0B5'],['water','#A9BEC8'],['props','#F5F2EB'],['human','#FFD7A0'],['AI','#DDEBFF']],
+  L:'Sun 50°, warm-white; strong hemi so shadows stay cool grey, never black; Linear tone map (ACES greys the whites).',T:'Smooth, 2-octave terrain, no normal map; one white material for all props; chamfered tiers with shadow gaps on plinth/wall/spire.',P:'Half-res SAO ≈0.6, mild tilt-shift, no bloom, far fog only.',
+  perf:'Low-med (SAO); single material cuts draw calls.',risk:'13 cities look alike; Reversion loses its timber charm; can read as unfinished greybox.',
+  refs:[['SANAA / Herzog & de Meuron competition models',''],['Manifold Garden','https://store.steampowered.com/app/473950/'],['Monument Valley','https://store.steampowered.com/app/1927720/'],['Mirror\'s Edge (2008)',''],['Alex Hogrefe · clay massing diagram','https://visualizingarchitecture.com/philly-diagram-study/'],['James Arkwright · UE4 lighting studies','https://jamesarkwright.artstation.com/projects/3onwgD']]},
+ {k:'clay',n:'Clay diorama',fit:'Fable fit 7.5/10 · ceiling 8.5',p:'A hand-made matte clay model shot with a macro lens: soft edges, deep soft occlusion, strong miniature blur.',
+  pal:[['sky','#CFE0EA'],['fog','#E4EAE8'],['ground A','#B9C2A0'],['ground B','#D8CBAA'],['rock','#A79C90'],['water','#7FA9B8'],['props','#D9D2C6'],['human','#FFCF8F'],['AI','#E6F0FF']],
+  L:'Sun 40° ×2.0, hemi ×1.0, VSM wide penumbra, RoomEnvironment env ×0.3, ACES 1.1.',T:'Low-passed rounded terrain, faint thumbprint normal, kit desaturated 35%, bevelled big surfaces, rounded tree blobs in clumps, glossy resin water with sand lip.',P:'SAO 1.0, strong tilt-shift (sharp middle 35%), bloom 0.9/0.2, light height fog, lifted blacks.',
+  perf:'Medium (SAO, tilt-shift, VSM blur).',risk:'Toy-like cuteness undercuts the subject; world view goes mushy; needs bevels the kit lacks.',
+  refs:[['Lumino City','https://store.steampowered.com/app/205020/'],['Dorfromantik','https://store.steampowered.com/app/1455840/'],['Zrinko Kozlica · BANG clay render','https://www.artstation.com/artwork/k4lOnd'],['Cameron Matheson · clay house diorama','https://www.artstation.com/artwork/dLyexK'],['Link\'s Awakening (2019) · Captain Toad','']]},
+ {k:'facet',n:'Faceted low-poly',fit:'Fable fit 8/10 · ceiling 8.5 · PRIMARY pick',rec:1,p:'Bad North / Islanders discipline: terraced flat-shaded terrain in the same language as the KayKit props, muted daylight palette.',
+  pal:[['sky','#BFD9EC'],['fog','#DDE9EE'],['ground A','#A9C08A'],['ground B','#C9CF9C'],['high','#E2D9B8'],['rock','#9AA0A8'],['water','#5E9DB5'],['foam','#F2F7F6'],['human','#FFD08A'],['AI','#EAF4FF']],
+  L:'Sun 45° (shadows ≈ one object-height), hemi sky/ground, PCF soft 2048, no env map, Linear/Neutral tone map so palette hexes survive.',T:'~25k-tri terraced grid (8-10 steps), flatShading, banded per-face colour, rock >35°; kit −25% saturation; tiered faceted plinth/wall/spire; Poisson tree clumps, no lone saplings; banked river with foam ribbon.',P:'Baked AO + blob contact shadows (SAO optional), mild tilt-shift, no bloom, linear fog.',
+  perf:'Low (tilt-shift only pass) — fixes the 480k-tri problem by style.',risk:'Can read as a generic low-poly game; too much kit saturation tips it toy-like.',
+  refs:[['Bad North','https://store.steampowered.com/app/688420/'],['ISLANDERS','https://store.steampowered.com/app/1046030/'],['Townscaper','https://store.steampowered.com/app/1291340/'],['Mini Motorways','https://store.steampowered.com/app/1127500/'],['Dorfromantik','https://store.steampowered.com/app/1455840/']]},
+ {k:'porcelain',n:'Porcelain product render',fit:'Fable fit 7/10 · ceiling 9 with custom props, 7 with kit',na:1,p:"A studio shot of a collector's model: glazed ceramic AI structures, flocked terrain, softbox light on a seamless backdrop.",
+  pal:[['backdrop','#E9ECEF'],['fog','#E3E6EA'],['ground A','#C7CDBF'],['ground B','#B5B9A6'],['rock','#8E9296'],['water','#3F6F82'],['porcelain','#F2F0EB'],['human','#FFC98A'],['AI','#F0F6FF']],
+  L:'Studio HDRI / RoomEnvironment ×1.0, sun 55° ×1.5, ACES 1.0.',T:'Flock micro-normal terrain cut as a slab; clearcoat spire; satin panel-seam plinth; brass-inlay roads (the single accent); resin water.',P:'SAO 0.5, mild tilt-shift, bloom 0.95/0.15, almost no fog.',
+  perf:'Med-high (env PBR, clearcoat, HDRI 0.3-1 MB).',risk:'Flat-atlas kit props look cheap next to real materials; gloss drifts from the matte brand.',
+  refs:[['LEGO Builder\'s Journey','https://store.steampowered.com/app/1544360/'],['Tiny Glade','https://store.steampowered.com/app/2198150/'],['Clarisse Gaucher · Snowy Tavern diorama','https://www.artstation.com/artwork/AoooKy'],['Astro\'s Playroom · Teenage Engineering product photos · Nendo','']]},
+ {k:'dusk',n:'Golden hour',fit:'Fable fit 6/10 · ceiling 7.5',p:'The current pilot, polished: low warm sun, long shadows, layered haze and light shafts, exposed bright.',
+  pal:[['sky','#8FB4D9'],['horizon','#F6D9B8'],['fog','#E9D3BF'],['ground A','#9DAA7A'],['ground B','#C8B98A'],['rock','#8A8494'],['water','#4F7FA6'],['human','#FFB45E'],['AI','#DDE8FF']],
+  L:'Sun 14° ×3.0 warm, hemi ×0.8, tight PCF frustum, ACES 1.25; emissive windows, no point lights.',T:'Smooth terrain, detail normal removed, 3 bands; clumped trees; fresnel water with sun-glint streak and wet bank.',P:'SAO 0.6, warm exp height fog, 3-5 light-shaft cards, bloom 0.85/0.35, warm-highlight / cool-shadow grade.',
+  perf:'Med-high (bloom, fog, long-shadow resolution).',risk:'Does not fix the prop/terrain clash; half of each diorama in shadow; drifts dark; warm vs cool mood can read as a verdict.',
+  refs:[['Firewatch','https://store.steampowered.com/app/383870/'],['Journey','https://store.steampowered.com/app/638230/'],['Yari Lute · Unreal City Reveal','https://www.artstation.com/artwork/39nVog'],['Alto\'s Odyssey · Breath of the Wild at dusk','']]},
+ {k:'contour',n:'Survey table',fit:'Fable fit 9/10 brand, weakest cinematic · ceiling 7',p:'A matte topographic table: terrain as stacked laser-cut layers with engraved contour lines, cities as precise pale miniatures on a map.',
+  pal:[['sky','#E8EEF2'],['fog','#E2E9EE'],['ground A','#D5DEE3'],['ground B','#BFCDD6'],['high','#9FB2BF'],['water','#6F94A8'],['props','#F3F5F6'],['line','#44525C'],['human','#FFD9A0']],
+  L:'Sun 60° white, strong hemi, short shadows, Linear 1.0.',T:'14-18 hard-quantised layers, contour line per step (every 5th heavier), kit −60% saturation, canopy slabs instead of trees, cut-out water with offset shorelines.',P:'No tilt-shift (a map should be sharp), no bloom, pale far fog, optional 1px outline.',
+  perf:'Low (one shader line).',risk:'Reads as data-viz, not a miniature world; dioramas sit like stickers; river and fields lose life.',
+  refs:[['Mini Metro','https://store.steampowered.com/app/287980/'],['Nate Loper · Grand Canyon topo map (CC BY)','https://sketchfab.com/3d-models/b1ab692bf61f424e802f3c13aa0201e0'],['Brusova3Dmodels · topographic maps','https://www.artstation.com/artwork/Aow68X'],['Eduard Imhof relief maps · laser-cut bathymetric maps','']]}
+];
+const m=document.getElementById('m');
+for(const s of S){const el=document.createElement('section');if(s.rec)el.className='rec';
+ const img=(c,v,t)=>'<figure><img loading="lazy" src="shots/style_'+s.k+'_'+c+'_'+v+'.png" alt="'+s.n+' · '+t+'"><figcaption>'+t+' · 1440×900 · own render</figcaption></figure>';
+ el.innerHTML='<h2>'+s.n+' <code>?style='+s.k+'</code><span class="fit">'+s.fit+'</span></h2><div class="pitch">'+s.p+'</div>'+
+  (s.na?'<div class="na">Not rendered: the quick switch cannot approximate this direction (needs clearcoat, studio HDRI, brass inlay roads and custom props). Judge it from the notes.</div>':
+  '<div class="row">'+img('gatekeeper','close','Gatekeeper · close-up')+img('gatekeeper','world','World view')+'</div>')+
+  '<div class="sw">'+s.pal.map(p=>'<span><i style="background:'+p[1]+'"></i>'+p[0]+'<br>'+p[1]+'</span>').join('')+'</div>'+
+  '<div class="notes"><div><b>Lighting</b>'+s.L+'</div><div><b>Terrain + materials</b>'+s.T+'</div><div><b>Post</b>'+s.P+'</div><div><b>Perf</b>'+s.perf+'</div><div><b>Risk</b>'+s.risk+'</div><div><b>Palette</b>Fable target hexes (the quick render tunes intensities for r149 legacy lights).</div></div>'+
+  (s.refs.length?'<div class="links">References (links only): '+s.refs.map(r=>r[1]?'<a href="'+r[1]+'" target="_blank" rel="noopener">'+r[0]+'</a>':r[0]).join(' · ')+'</div>':'')+
+  (s.na?'':'<a class="live" href="index.html?style='+s.k+'&city=gatekeeper&view=close">Live · Gatekeeper close-up</a><a class="live" href="index.html?style='+s.k+'&city=reversion&view=close">Live · Reversion</a><a class="live" href="index.html?style='+s.k+'&view=world">Live · World</a>');
+ m.appendChild(el);}
+const f=document.createElement('section');f.innerHTML='<h2>Reviewer recommendation</h2><div class="pitch"><b>Primary: Faceted low-poly. Fallback: Maquette.</b> Facet is the only direction that fixes the terrain clash, uniform scatter, cut-channel river and the triangle budget through the style itself, and it is the cheapest to render. Maquette reuses the same geometry work and is mostly a material override plus a light preset.<br>Next five changes in that style:<br>(1) terraced flat-shaded terrain, ~25k tris;<br>(2) kit −25% saturation, sun to 45°, Linear/Neutral tone map;<br>(3) tiered, chamfered, two-tone plinth/wall/spire, with one off-white ceramic for all AI-built structures;<br>(4) tree clumps with clearings, plus a banked river with foam;<br>(5) tilt-shift, blob contact shadows, merged meshes and static shadow map, aiming for &lt;250k tris and &lt;100 calls.<br>The owner decides; the reviewer\'s pick is advice, not a rule.</div>';m.appendChild(f);
+</script>
+</body></html>
