@@ -489,7 +489,7 @@ FA.tufts=function(cands){if(LOOK.cm)cands=cands.filter((c,i)=>i%5<2); // bluefac
  const im=new THREE.InstancedMesh(g,new THREE.MeshStandardMaterial({color:LOOK.cm?'#ffffff':LOOK.tuft,roughness:.9,envMapIntensity:.4*(LOOK.cm?2:1),side:LOOK.a2?THREE.DoubleSide:THREE.FrontSide}),cands.length); // cm: white base so instance colour is not squared
  const m=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),pv=new THREE.Vector3(),cc=new THREE.Color();
  cands.forEach((c,i)=>{const k=.7+Math.random()*.9;s.set(k,k*(.8+Math.random()*.7),k);q.setFromAxisAngle(new THREE.Vector3(0,1,0),Math.random()*6.28);pv.set(c[0],FA.H(c[0],c[1])-.03,c[1]);m.compose(pv,q,s);im.setMatrixAt(i,m);
-  cc.setHSL(.20+Math.random()*.06,.22+Math.random()*.12,.36+Math.random()*.12);if(FA.STYLE!=='pilot'){const hsl={};C(LOOK.tuft).getHSL(hsl);cc.setHSL(hsl.h+(Math.random()-.5)*.04,hsl.s*(.8+Math.random()*.4),hsl.l*(.9+Math.random()*.2));}im.setColorAt(i,cc);});
+  cc.setHSL(.20+Math.random()*.06,.22+Math.random()*.12,.36+Math.random()*.12);if(FA.STYLE!=='pilot'){const hsl={};C(LOOK.tuft).getHSL(hsl);cc.setHSL(hsl.h+(Math.random()-.5)*.04,hsl.s*(.8+Math.random()*.4),hsl.l*(.9+Math.random()*.2));}if(c[2])cc.set(c[2]).multiplyScalar(.82+Math.random()*.3);im.setColorAt(i,cc);});
  im.receiveShadow=true;im.frustumCulled=false;SC.add(im);return im;};
 
 // ---------------- facet far-field trees (bluefacet): 2 archetypes (stacked hex cones = conifer, 6-sided bicone = broadleaf), 12 tris each,

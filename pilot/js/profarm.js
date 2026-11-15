@@ -29,6 +29,7 @@ function valid(x,z,clr){const vx=O.vx,vz=O.vz,RV=FA.RV;clr=clr||0;
  if(x>FA.riverX(z)-3.6)return false;if(Math.hypot(x-O.wmx,z-O.wmz)<4.6+clr)return false;
  for(const l of O.lanes){if(Math.hypot(l[2]-l[0],l[3]-l[1])>4&&segD(x,z,l[0],l[1],l[2],l[3])<.55+clr)return false;}
  if(polyD(x,z,O.road)<1.4+clr)return false;if(DITCH.length&&polyD(x,z,DITCH)<.45+clr)return false;
+ if(O.keepOut)for(const k of O.keepOut)if(Math.hypot(x-k.x,z-k.z)<k.r+.6+clr)return false; // C3: procottage hamlet footprint (FA.RVSITE.keepOut)
  if(FA.slope(x,z)>.42)return false;if(H(x,z)<FA.WL+.3)return false;return true;}
 function rectOK(u0,u1,w0,w1){const N=4;for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const p=toW(u0+(u1-u0)*i/N,w0+(w1-w0)*j/N);if(!valid(p[0],p[1]))return false;}return true;}
 
@@ -114,6 +115,8 @@ function ribbon(P,cross,yOff,step){const pts=[];for(let i=0;i+1<P.length;i++){co
   const vn=.92+.16*FA.hash(p[0]*3.1,p[1]*2.7);
   for(const c of cross){const x=p[0]+nx*c[0],z=p[1]+nz*c[0];pos.push(x,(yOff==null?H(x,z):yOff(p,x,z))+c[1],z);col.push(c[2]*vn,c[3]*vn,c[4]*vn,c[5]);}});
  for(let i=0;i+1<pts.length;i++)for(let k=0;k+1<NC;k++){const a=i*NC+k,b=a+NC;idx.push(a,b,a+1,a+1,b,b+1);}
+ // C3 fix: wind every triangle counter-clockwise seen from above (all 174 ditch-water tris faced down -> back-face culled, the ditch never drew)
+ for(let t=0;t<idx.length;t+=3){const A=idx[t]*3,B=idx[t+1]*3,Cc=idx[t+2]*3;const cy=(pos[Cc]-pos[A])*(pos[B+2]-pos[A+2])-(pos[Cc+2]-pos[A+2])*(pos[B]-pos[A]);if(cy<0){const s=idx[t+1];idx[t+1]=idx[t+2];idx[t+2]=s;}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,4));g.setIndex(idx);g.computeVertexNormals();
  const n=g.attributes.normal;for(let i=0;i<n.count;i++)if(n.getY(i)<0)n.setXYZ(i,-n.getX(i),-n.getY(i),-n.getZ(i));return g;}
 function mergeRibbons(gs){const pos=[],col=[],nor=[],idx=[];for(const g of gs){const b=pos.length/3;pos.push(...g.attributes.position.array);col.push(...g.attributes.color.array);nor.push(...g.attributes.normal.array);for(const i of g.index.array)idx.push(i+b);}
@@ -169,20 +172,20 @@ function build(opts){const t0=performance.now();O=opts;rnd=FA.rng(91);ox=O.vx;oz
  const rk1=new THREE.CylinderGeometry(1,1.05,1,9);rk1.translate(0,.5,0);const rk2=new THREE.ConeGeometry(1.02,.95,9);rk2.translate(0,1.45,0);
  tris+=inst(mergeG([[rk1,[1,1,1]],[rk2,[.92,.9,.86]]]),new THREE.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.95,flatShading:true,envMapIntensity:.8}),RK,true);
  // footpaths + cart tracks: soft-edged earth ribbons (vertex alpha), worn centre lighter
- const PA=[];for(const p of B.PL){const w=p.w;PA.push(ribbon(p.P,[[-w*1.9,0,...rgb('#5E5644',0)],[-w,0,...rgb('#6A5E4B',.9)],[0,0,...rgb('#75684F',1)],[w,0,...rgb('#6A5E4B',.9)],[w*1.9,0,...rgb('#5E5644',0)]],(c,x,z)=>H(x,z)+.06,.35));}
+ const PA=[];for(const p of B.PL){const w=p.w;PA.push(ribbon(p.P,[[-w*1.9,0,...rgb('#4A4436',0)],[-w,0,...rgb('#544B3C',.75)],[0,0,...rgb('#5C5241',.85)],[w,0,...rgb('#544B3C',.75)],[w*1.9,0,...rgb('#4A4436',0)]],(c,x,z)=>H(x,z)+.06,.35));} // C3: darker + softer (now that ribbons face up they drew as pale 'light ray' fans)
  if(PA.length){const pm=new THREE.MeshStandardMaterial({color:'#ffffff',vertexColors:true,transparent:true,depthWrite:false,roughness:.95,envMapIntensity:.5,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});
   const m=new THREE.Mesh(mergeRibbons(PA),pm);m.receiveShadow=true;m.renderOrder=2;SC.add(m);tris+=m.geometry.index.count/3;}
  // irrigation ditch: earthen banks (raised lips, wet inner faces) + a level water strip, sluice gate at the river
  let dl=0;if(DITCH.length>2){for(let i=0;i+1<DITCH.length;i++)dl+=Math.hypot(DITCH[i+1][0]-DITCH[i][0],DITCH[i+1][1]-DITCH[i][1]);
   const yC=(c,x,z)=>H(c[0],c[1]);
-  const bk=ribbon(DITCH,[[-.36,0,...rgb('#4C5437')],[-.22,.05,...rgb('#544C3A')],[-.12,-.02,...rgb('#2E2A24')],[.12,-.02,...rgb('#2E2A24')],[.22,.05,...rgb('#544C3A')],[.36,0,...rgb('#4C5437')]],
+  const bk=ribbon(DITCH,[[-.42,0,...rgb('#4C5437')],[-.26,.10,...rgb('#544C3A')],[-.15,.01,...rgb('#1E1C1A')],[.15,.01,...rgb('#1E1C1A')],[.26,.10,...rgb('#544C3A')],[.42,0,...rgb('#4C5437')]], // C3: higher lips; trough kept above the coarse terrain mesh
    (c,x,z)=>Math.max(H(x,z),H(c[0],c[1])-.02),.3);
   const bm=new THREE.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.95,envMapIntensity:.6,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
   const bmesh=new THREE.Mesh(bk,bm);bmesh.receiveShadow=true;SC.add(bmesh);tris+=bk.index.count/3;
-  const wa=ribbon(DITCH,[[-.13,0,...rgb('#ffffff')],[.13,0,...rgb('#ffffff')]],(c)=>H(c[0],c[1])+.035,.3);
-  const wn=FA.noiseNormal?FA.noiseNormal(64,1.6,41):null;
-  const wmat=new THREE.MeshStandardMaterial({color:'#142238',roughness:.08,metalness:.55,envMapIntensity:1.4,emissive:C('#1C2846'),emissiveIntensity:.6,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});
-  if(wn){wn.repeat.set(8,8);wmat.normalMap=wn;wmat.normalScale=new THREE.Vector2(.08,.08);}
+  const wa=ribbon(DITCH,[[-.17,0,...rgb('#ffffff')],[.17,0,...rgb('#ffffff')]],(c,x,z)=>Math.max(H(x,z),H(c[0],c[1]))+.06,.3); // C3: was H(c)+.035 -> hidden under the coarse terrain mesh (only the brown hook band showed)
+  const wn=FA.noiseNormal?FA.noiseNormal(64,1.6,41):null; // C3: read as water at blue hour = dark glassy body + sky-tinted sheen (was a grey metal slab)
+  const W=FA.LOOK.water||{c:'#3A5A6E'},wmat=new THREE.MeshStandardMaterial({color:W.c,roughness:.22,metalness:0,envMapIntensity:.55,emissive:C('#2C4C78'),emissiveIntensity:.32,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6}); // C3: river palette (teal-slate), not a mirror
+  if(wn){wn.repeat.set(8,8);wmat.normalMap=wn;wmat.normalScale=new THREE.Vector2(.14,.14);FA.anims.push(T=>{wn.offset.set(T*.01,-T*.03);});}
   const wm=new THREE.Mesh(wa,wmat);wm.receiveShadow=true;wm.renderOrder=2;SC.add(wm);tris+=wa.index.count/3;
   const wood=new THREE.MeshStandardMaterial({color:'#5A4632',roughness:.9});const p0=DITCH[0],p1=DITCH[1],da=Math.atan2(-(p1[1]-p0[1]),p1[0]-p0[0]),yb=H(p0[0],p0[1]);
   const nx=-(p1[1]-p0[1]),nz=p1[0]-p0[0],nl=Math.hypot(nx,nz)||1;
