@@ -28,7 +28,7 @@ function valid(x,z,clr){const vx=O.vx,vz=O.vz,RV=FA.RV;clr=clr||0;
  const dr=Math.hypot(x-RV.x,z-RV.z);if(dr>22.6||(z<RV.z-12&&dr>12.6))return false;             // stay inside the scatter keep-out (no forest on fields)
  if(x>FA.riverX(z)-3.6)return false;if(Math.hypot(x-O.wmx,z-O.wmz)<4.6+clr)return false;
  for(const l of O.lanes){if(Math.hypot(l[2]-l[0],l[3]-l[1])>4&&segD(x,z,l[0],l[1],l[2],l[3])<.55+clr)return false;}
- if(polyD(x,z,O.road)<1.4+clr)return false;if(DITCH.length&&polyD(x,z,DITCH)<.45+clr)return false;
+ if(polyD(x,z,O.road)<1.4+clr)return false;if(O.polys&&FA.PROROAD&&FA.PROROAD.dist(x,z)<.45+clr)return false;if(DITCH.length&&polyD(x,z,DITCH)<.45+clr)return false;
  if(O.keepOut)for(const k of O.keepOut)if(Math.hypot(x-k.x,z-k.z)<k.r+.6+clr)return false; // C3: procottage hamlet footprint (FA.RVSITE.keepOut)
  if(FA.slope(x,z)>.42)return false;if(H(x,z)<FA.WL+.3)return false;return true;}
 function rectOK(u0,u1,w0,w1){const N=4;for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const p=toW(u0+(u1-u0)*i/N,w0+(w1-w0)*j/N);if(!valid(p[0],p[1]))return false;}return true;}
@@ -88,7 +88,7 @@ function fieldMat(){const m=new THREE.MeshStandardMaterial({color:'#ffffff',roug
    .replace('#include <begin_vertex>','#include <begin_vertex>\nvR=aR;vTy=aT;vWQ=(modelMatrix*vec4(transformed,1.)).xyz;');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+HEAD).replace('#include <color_fragment>','#include <color_fragment>\n'+BODY)
    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=fRo;')
-   .replace('#include <normal_fragment_maps>','#include <normal_fragment_maps>\nnormal=pfN(-vViewPosition,normal,vec2(dFdx(fH),dFdy(fH))*.02);');};
+   .replace('#include <normal_fragment_maps>','#include <normal_fragment_maps>\nnormal=pfN(-vViewPosition,normal,vec2(dFdx(fH),dFdy(fH))*.045);');}; // C4: .02 -> .045 (row relief at the tighter close-up)
  m.customProgramCacheKey=()=>'pfField';return m;}
 function fieldMesh(F){const pos=[],aR=[],aT=[],idx=[];const st=.5;
  for(const f of F){const nu=Math.max(2,Math.ceil((f.u1-f.u0)/st)),nw=Math.max(2,Math.ceil((f.w1-f.w0)/st)),base=pos.length/3,nx=-f.tz,nz=f.tx;
@@ -126,24 +126,25 @@ const rgb=(h,a)=>{const c=C(h);return[c.r,c.g,c.b,a==null?1:a];};
 // ---------------- boundaries: hedgerows, dry-stone walls, paths ----------------
 function nearLane(x,z,d){for(const l of O.lanes)if(Math.hypot(l[2]-l[0],l[3]-l[1])>4&&segD(x,z,l[0],l[1],l[2],l[3])<d)return true;return false;}
 function besideField(u,w,du,dw){const a=toW(u+du,w+dw),b=toW(u-du,w-dw);return inField(a[0],a[1],.05)||inField(b[0],b[1],.05);}
-function boundaries(lay){const HB=[],TR=[],ST=[],PL=[];const HG=['#33412F','#3A4833','#2F3D30','#414B35'],SC2=['#8A8577','#7E796C','#857E70'];
- const hedgeAt=(x,z,k)=>{const y=H(x,z);const c=CC.set(HG[(rnd()*4)|0]).multiplyScalar(.85+.3*rnd()).clone();const s=.13+.06*rnd();
-  HB.push([x,y+s*.55,z,s*1.1,s*(1.1+.5*rnd()),s*1.1,rnd()*TAU,0,0,c]);HB.push([x+(rnd()-.5)*.12,y+s*1.5,z+(rnd()-.5)*.12,s*.8,s*.9,s*.8,rnd()*TAU,0,0,c.clone().multiplyScalar(1.08)]);
+function boundaries(lay){const HB=[],TR=[],ST=[],PL=[];const HG=['#475A3E','#506340','#43553D','#56633F'],SC2=['#8A8577','#7E796C','#857E70']; // C4: lifted off near-black
+ // C4: continuous shrub masses - each step lays one elongated, line-aligned lump (overlapping its neighbours at the .30 step) + a crown lump
+ const hedgeAt=(x,z,k,ang)=>{const y=H(x,z);const c=CC.set(HG[(rnd()*4)|0]).multiplyScalar(.85+.3*rnd()).clone();const s=.13+.06*rnd();const r1=rnd(),r2=rnd(),r3=rnd(),r4=rnd(),r5=rnd();
+  HB.push([x,y+s*.62,z,.25+.05*r1,s*(1.2+.45*r2),s*1.12,(ang||0)+(r3-.5)*.25,0,0,c]);HB.push([x+(r4-.5)*.1,y+s*1.42,z+(r5-.5)*.1,.18+.06*r1,s*(.8+.35*r2),s*.85,(ang||0)+(r3-.5)*.7,0,0,c.clone().multiplyScalar(1.1)]);
   if(rnd()<(k?.16:.10)){const ts=.42+.25*rnd();TR.push([x,y,z,ts,ts*(1.0+.3*rnd()),ts,rnd()*TAU,0,0,CC.set(HG[(rnd()*4)|0]).multiplyScalar(.9+.25*rnd()).clone()]);}};
  const wallAt=(x,z,ang)=>{const y=H(x,z);for(let c=0;c<3;c++){if(c===2&&rnd()<.35)continue;const k=c===2?.8:1;
   ST.push([x+(rnd()-.5)*.03,y+.035+c*.05,z+(rnd()-.5)*.03,(.085+rnd()*.035)*k,(.032+rnd()*.012)*k,(.06+rnd()*.02)*k,ang+(rnd()-.5)*.5,(rnd()-.5)*.3,(rnd()-.5)*.3,CC.set(SC2[(rnd()*3)|0]).multiplyScalar(.78+.3*rnd()).clone()]);}};
- const okB=(x,z)=>!nearLane(x,z,.7)&&!(DITCH.length&&polyD(x,z,DITCH)<.5)&&polyD(x,z,O.road)>1.5&&x<FA.riverX(z)-3.4&&Math.hypot((x-O.vx)/1.25,z-O.vz)>7.8;
+ const okB=(x,z)=>!nearLane(x,z,.7)&&!(O.polys&&FA.PROROAD&&FA.PROROAD.dist(x,z)<.45)&&!(DITCH.length&&polyD(x,z,DITCH)<.5)&&polyD(x,z,O.road)>1.5&&x<FA.riverX(z)-3.4&&Math.hypot((x-O.vx)/1.25,z-O.vz)>7.8;
  const angU=Math.atan2(-uz,ux),angW=Math.atan2(-wz,wx);let hedgeLen=0,wallLen=0;const pathLines=[];
  // column boundaries (long lines along w): 50 % hedgerow, 22 % wall, rest open balk (some carry a footpath)
  for(let i=1;i<lay.cols.length;i++){const ub=lay.cols[i][0],k=rnd(),kind=k<.5?'h':k<.72?'s':'n';const gate=-20+rnd()*40;let run=[];
   const step=kind==='h'?.30:kind==='s'?.19:.35;
   for(let w=-26;w<=26;w+=step){const p=toW(ub,w);const ok=besideField(ub,w,.45,0)&&okB(p[0],p[1])&&Math.abs(w-gate)>.7;
    if(kind==='n'){if(ok)run.push(p);else{if(run.length>6)pathLines.push(run);run=[];}continue;}
-   if(!ok)continue;if(kind==='h'){hedgeAt(p[0],p[1],true);hedgeLen+=step;}else{wallAt(p[0],p[1],angW);wallLen+=step;}}
+   if(!ok)continue;if(kind==='h'){hedgeAt(p[0],p[1],true,angW);hedgeLen+=step;}else{wallAt(p[0],p[1],angW);wallLen+=step;}}
   if(run.length>6)pathLines.push(run);}
  // cut lines inside a column (short lines along u): 30 % wall, 15 % hedge
  lay.cuts.forEach((cl,ci)=>{const c=lay.cols[ci];for(let j=1;j<cl.length;j++){const wb=cl[j][0],k=rnd(),kind=k<.30?'s':k<.62?'h':'n';if(kind==='n')continue;const step=kind==='h'?.30:.19;
-  for(let u=c[0]+.2;u<=c[1]-.2;u+=step){const p=toW(u,wb);if(!besideField(u,wb,0,.45)||!okB(p[0],p[1]))continue;if(kind==='h'){hedgeAt(p[0],p[1],false);hedgeLen+=step;}else{wallAt(p[0],p[1],angU);wallLen+=step;}}}});
+  for(let u=c[0]+.2;u<=c[1]-.2;u+=step){const p=toW(u,wb);if(!besideField(u,wb,0,.45)||!okB(p[0],p[1]))continue;if(kind==='h'){hedgeAt(p[0],p[1],false,angU);hedgeLen+=step;}else{wallAt(p[0],p[1],angU);wallLen+=step;}}}});
  // footpaths: up to 3 open balks + the cart tracks (lanes) out to the bridge and the windmill
  pathLines.sort((a,b)=>b.length-a.length).slice(0,3).forEach(r=>PL.push({P:r,w:.07}));
  for(const l of O.lanes)if(Math.hypot(l[2]-l[0],l[3]-l[1])>4)PL.push({P:[[l[0],l[1]],[l[2],l[3]]],w:.15});
@@ -155,7 +156,7 @@ function build(opts){const t0=performance.now();O=opts;rnd=FA.rng(91);ox=O.vx;oz
  const lay=layout();PF.fields=lay.F;PF.on=true;let tris=fieldMesh(lay.F);
  const B=boundaries(lay);
  const hedgeM=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.92,flatShading:true,envMapIntensity:1.0});
- tris+=inst(new THREE.IcosahedronGeometry(1,0),hedgeM,B.HB,true);
+ tris+=inst(new THREE.IcosahedronGeometry(1,1),hedgeM,B.HB,true); // C4: detail 0 -> 1 (rounder shrub masses at the close-up distance)
  const stoneM=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.93,flatShading:true,envMapIntensity:.9});
  tris+=inst(new THREE.IcosahedronGeometry(1,0),stoneM,B.ST,false); // stones ~1.3 m: shadow pass not worth 20k tris
  // trees: hedgerow oaks + orchard rows (one merged crown+trunk geometry, instance colour)
@@ -168,6 +169,18 @@ function build(opts){const t0=performance.now();O=opts;rnd=FA.rng(91);ox=O.vx;oz
   if((f.t===3||f.t===0)&&rnd()<.35){const n=2+((rnd()*3)|0);for(let k=0;k<n;k++){const u=f.u0+.6+rnd()*(f.u1-f.u0-1.2),w=f.w0+.6+rnd()*(f.w1-f.w0-1.2),p=toW(u,w);
     RK.push([p[0],H(p[0],p[1])+.02,p[1],.15+.03*rnd(),.15+.04*rnd(),.15+.03*rnd(),rnd()*TAU,0,0,CC.set('#8C7A4C').multiplyScalar(.8+.25*rnd()).clone()]);}}}
  const treeM=new THREE.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.9,flatShading:true,envMapIntensity:1.0});
+ // C4: crop relief on the near fields (within 16 of the hamlet): wheat = low ridged drill strips, veg = leafy clumps on the ridges,
+ // fallow = clod ridges. Real geometry so rows catch light and cast/receive at the close-up distance; density by quality tier (FA.QK).
+ const CS=[],CL=[],QK=FA.QK||1,cxv=O.vx,czv=O.vz;
+ for(const f of lay.F){if(f.t>2||Math.hypot(f.x-cxv,f.z-czv)>16)continue;const P=PER[f.t],nx=-f.tz,nz=f.tx,R=Math.hypot(f.u1-f.u0,f.w1-f.w0)/2,ang=Math.atan2(-f.tz,f.tx);
+  const rs=QK<1&&f.t===0?2:1;for(let k=Math.ceil(-R/P);k*P<R;k+=rs){const s=k*P,sl=f.t===1?.2:.7;
+   for(let r=-R;r<R;r+=sl){const x=f.x+f.tx*(r+sl/2)+nx*s,z=f.z+f.tz*(r+sl/2)+nz*s,lc=toL(x,z);const e=Math.min(lc[0]-f.u0,f.u1-lc[0],lc[1]-f.w0,f.w1-lc[1]);if(e<.3)continue;
+    if(f.t===0)CS.push([x,H(x,z)+.02,z,sl*.97,.05+.02*rnd(),P*.46,ang,0,0,CC.set(rnd()<.5?'#9A8A58':'#A39260').multiplyScalar(.8+.3*rnd()).clone()]);
+    else if(f.t===2)CS.push([x,H(x,z)+.02,z,sl*.97,.022+.01*rnd(),P*.5,ang,0,0,CC.set('#5E503E').multiplyScalar(.85+.3*rnd()).clone()]);
+    else if(rnd()<.85*QK){const sc=.045+.02*rnd();CL.push([x,H(x,z)+.05+sc*.3,z,sc,sc*.8,sc,rnd()*TAU,0,0,CC.set(rnd()<.5?'#56663E':'#62703F').multiplyScalar(.85+.3*rnd()).clone()]);}}}}
+ const bx1=new THREE.BoxGeometry(1,1,1);bx1.translate(0,.5,0);const crM=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.9,flatShading:true,envMapIntensity:.8});
+ const nC0=SC.children.length;tris+=inst(bx1,crM,CS,false);tris+=inst(new THREE.IcosahedronGeometry(1,0),crM,CL,true);PF.crop={strips:CS.length,clumps:CL.length};
+ for(const o of SC.children.slice(nC0))if(o.isInstancedMesh){(FA.closeOnly=FA.closeOnly||[]).push(o);o.visible=FA.VIEW==='close';} // C4: close-up extras hidden in the world view (keeps world budget)
  tris+=inst(treeG,treeM,B.TR.concat(OT),true);
  const rk1=new THREE.CylinderGeometry(1,1.05,1,9);rk1.translate(0,.5,0);const rk2=new THREE.ConeGeometry(1.02,.95,9);rk2.translate(0,1.45,0);
  tris+=inst(mergeG([[rk1,[1,1,1]],[rk2,[.92,.9,.86]]]),new THREE.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.95,flatShading:true,envMapIntensity:.8}),RK,true);

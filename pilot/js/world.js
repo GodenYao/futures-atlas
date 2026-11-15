@@ -13,7 +13,7 @@ addEventListener('unhandledrejection',e=>window.__errs.push('rej:'+String(e.reas
 {const ce=console.error.bind(console);console.error=(...a)=>{window.__errs.push('console: '+String(a[0]).slice(0,300));ce(...a);};} // shader compile errors land here too
 const FA=window.FA={};
 const Q=new URLSearchParams(location.search);
-FA.Q=Q;
+FA.Q=Q;FA.QS=Q; // C4: FA.Q becomes the quality tier string after the renderer exists (FA.QS keeps the URL params)
 FA.CITY=(['gatekeeper','reversion'].includes((Q.get('city')||'').toLowerCase()))?Q.get('city').toLowerCase():'gatekeeper';
 FA.VIEW=Q.get('view')==='close'?'close':'world';
 FA.TFIX=Q.has('t')?parseFloat(Q.get('t')):null;
@@ -93,6 +93,7 @@ const STYLES=FA.STYLES={
  Object.assign(A.sky,{zen:'#0B1B48',mid:'#2A4E96',hor:'#B39A90',glow:'#FFA25E',hbK:.10});
  Object.assign(A.fog,{c:'#4E5D80',near:150,far:1000,ha:.16});A.ibl.amb=.62; // B2: fog desaturated to blue-grey, far fog -30 % (Fable crit knob)
  A.closeCam.gatekeeper={yaw:-1.18,pitch:.24,d:76,ty:9.5,fov:31,shift:.08,eye:-1.22};
+ A.closeCam.reversion={yaw:-.6,pitch:.42,d:22,ty:.35,fov:31,shift:.05}; // C4: target = hamlet centroid (setView); from the south-west over the entrance lane toward river, wheel + bridge (was d 40 aimed 3 u east of the hamlet)
  A.pc={R:21.5,lit:1,line:1,mood:'blue'};
  if(Q.get('mood')!=='day'){
   // C1 (lighting + colour only): the city is the only warm light. Environment 1-2 stops down to deep cool blue-violet,
@@ -142,6 +143,9 @@ const STYLES=FA.STYLES={
   A.fog=Object.assign(A.fog,{c:'#2C3A6A',hk:.20,ha:.10,l2:{c:'#46589A',d:.0042,s:55,k:.15}});
   A.farTree={c:'#3A5064',b:'#465C6C'};A.kitTree={dim:.82,fill:[.030,.042,.070]};A.kitDim=.58;
   A.smokeK=.34;A.smokeC='#5E6890';A.smokeS=1.5;
+  // C4: the 'vertical light shafts above the roofs' were the chimney smoke columns (6 x 9 lilac puffs rising 34 m, 1.5x size, lighter than
+  // the dark slopes behind them in the lower close-up). Shorter, thinner, darker, more drift; procottage also halves the chimney count.
+  A.smokeK=.16;A.smokeC='#3C4566';A.smokeS=.85;A.smokeRise=1.7;
   A.water=Object.assign({},A.water,{env:.36}); // river: grazing sky reflection -> .7 -> .36
   A.fill=[A.fill[0],.30,A.fill[2]];A.fillV=[60,120,-50]; // ported v4.4 cool rim at el 21 deg put a clipped specular on the river (RV close 5.2k px >240, 53 with it off) -> higher + weaker; the moon carries the rim
   }
@@ -184,6 +188,14 @@ if(LOOK.post){R.toneMapping=THREE.NoToneMapping;R.info.autoReset=false;} // A2: 
 R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
 R.shadowMap.autoUpdate=false;FA.shadowDirty=true;                   // shadows on demand: view change + ~10 Hz in close-up (moving wheel/fan/lids)
 document.getElementById('stage').appendChild(R.domElement);
+// C4 quality tier: FA.Q = 'high' (desktop, discrete / decent GPU) | 'low' (mobile, integrated or software GL, or ?q=low); ?q=high forces high.
+// Low drops only close-up extras: 4096 close-up shadow map -> 2048, lane weeds / gravel / crop relief density x.4.
+FA.Q=(function(){const q=(Q.get('q')||'').toLowerCase();let rs='';try{const gl=R.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');rs=String(ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER));}catch(e){}
+ FA.GPU=rs;if(q==='low'||q==='high')return q;
+ const mob=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent));
+ const weak=/SwiftShader|llvmpipe|softpipe|Microsoft Basic|Mali|Adreno|PowerVR|Intel|Iris|UHD Graphics|HD Graphics/i.test(rs)&&!/Arc/i.test(rs);
+ return(mob||weak||R.capabilities.maxTextureSize<8192)?'low':'high';})();
+FA.QK=FA.Q==='high'?1:.4;
 
 // height + distance fog: patch the shared fog chunks once (world position varying; valleys get extra haze)
 THREE.ShaderChunk.fog_pars_vertex='#ifdef USE_FOG\n varying float vFogDepth;\n varying vec3 vFogWP;\n#endif';
@@ -214,6 +226,7 @@ if(LOOK.overlay){const st=document.createElement('style');st.textContent='#faVig
  for(const id of['faVig','faGlow']){const d=document.createElement('div');d.id=id;document.getElementById('stage').appendChild(d);}}
 FA.fitShadow=function(cx,cz,half){sun.target.position.set(cx,0,cz);sun.position.set(cx+SUNDIR.x*220,SUNDIR.y*220,cz+SUNDIR.z*220);
  const s=sun.shadow.camera;s.left=-half;s.right=half;s.top=half;s.bottom=-half;s.near=20;s.far=480;s.updateProjectionMatrix();sun.target.updateMatrixWorld();FA.shadowDirty=true;};
+FA.setShadowRes=function(n){if(sun.shadow.mapSize.x===n)return;sun.shadow.mapSize.set(n,n);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}FA.shadowDirty=true;}; // C4: 4096 in close-up on the high tier
 
 // ---------------- sky + PMREM environment ----------------
 // display sky: gradient + horizon glow lobes + small sun lobe. capture sky (IBL): no narrow sun lobe (the key light is the sun),
@@ -274,7 +287,7 @@ FA.buildFx=function(){const out=[];
   g.setAttribute('iP',new THREE.InstancedBufferAttribute(P,3));g.setAttribute('iS',new THREE.InstancedBufferAttribute(S,2));g.setAttribute('iC',new THREE.InstancedBufferAttribute(Cc,3));g.instanceCount=N;
   const m=new THREE.ShaderMaterial({uniforms:{map:{value:FA.puffTex},uT:FA.TU.uT},transparent:true,depthWrite:false,
    vertexShader:'uniform float uT;attribute vec3 iP;attribute vec2 iS;attribute vec3 iC;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vU=uv;vC=iC;float u=fract(uT/iS.x+iS.y);'+
-    'vec3 p=iP+vec3(u*1.6+sin(u*6.+iS.y*9.)*.12,u*3.4,u*.5);float sc=(.4+u*1.7)*'+(LOOK.smokeS||1).toFixed(2)+';vO='+(.6*(LOOK.smokeK||1)).toFixed(3)+'*(1.-u)*smoothstep(0.,.08,u);vec4 mv=modelViewMatrix*vec4(p,1.);mv.xy+=position.xy*sc;gl_Position=projectionMatrix*mv;}',
+    'vec3 p=iP+vec3(u*1.6+sin(u*6.+iS.y*9.)*.12,u*'+(LOOK.smokeRise||3.4).toFixed(2)+',u*.5);float sc=(.4+u*1.7)*'+(LOOK.smokeS||1).toFixed(2)+';vO='+(.6*(LOOK.smokeK||1)).toFixed(3)+'*(1.-u)*smoothstep(0.,.08,u);vec4 mv=modelViewMatrix*vec4(p,1.);mv.xy+=position.xy*sc;gl_Position=projectionMatrix*mv;}',
    fragmentShader:'uniform sampler2D map;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vec4 t=texture2D(map,vU);gl_FragColor=vec4(vC*t.rgb,t.a*vO);\n#include <encodings_fragment>\n}'});
   const me=new THREE.Mesh(g,m);me.frustumCulled=false;me.renderOrder=7;SC.add(me);out.push(me);}
  return out;};
@@ -488,7 +501,7 @@ FA.tufts=function(cands){if(LOOK.cm)cands=cands.filter((c,i)=>i%5<2); // bluefac
   :new THREE.ConeGeometry(.09,.32,3);if(!LOOK.a2)g.translate(0,.16,0);
  const im=new THREE.InstancedMesh(g,new THREE.MeshStandardMaterial({color:LOOK.cm?'#ffffff':LOOK.tuft,roughness:.9,envMapIntensity:.4*(LOOK.cm?2:1),side:LOOK.a2?THREE.DoubleSide:THREE.FrontSide}),cands.length); // cm: white base so instance colour is not squared
  const m=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),pv=new THREE.Vector3(),cc=new THREE.Color();
- cands.forEach((c,i)=>{const k=.7+Math.random()*.9;s.set(k,k*(.8+Math.random()*.7),k);q.setFromAxisAngle(new THREE.Vector3(0,1,0),Math.random()*6.28);pv.set(c[0],FA.H(c[0],c[1])-.03,c[1]);m.compose(pv,q,s);im.setMatrixAt(i,m);
+ cands.forEach((c,i)=>{const k=(.7+Math.random()*.9)*(c[3]||1);s.set(k,k*(.8+Math.random()*.7),k);q.setFromAxisAngle(new THREE.Vector3(0,1,0),Math.random()*6.28);pv.set(c[0],FA.H(c[0],c[1])-.03,c[1]);m.compose(pv,q,s);im.setMatrixAt(i,m);
   cc.setHSL(.20+Math.random()*.06,.22+Math.random()*.12,.36+Math.random()*.12);if(FA.STYLE!=='pilot'){const hsl={};C(LOOK.tuft).getHSL(hsl);cc.setHSL(hsl.h+(Math.random()-.5)*.04,hsl.s*(.8+Math.random()*.4),hsl.l*(.9+Math.random()*.2));}if(c[2])cc.set(c[2]).multiplyScalar(.82+Math.random()*.3);im.setColorAt(i,cc);});
  im.receiveShadow=true;im.frustumCulled=false;SC.add(im);return im;};
 
@@ -536,6 +549,11 @@ FA.setView=function(){const c=FA.CITY==='gatekeeper'?GK:RV;const rg=FA.rig;
  rg.fov=28;rg.shift=0;FA.eyeBase=-.22;
  if(FA.VIEW==='world'&&LOOK.worldCam){const k=LOOK.worldCam;Object.assign(rg,{tx:c===GK?-k.tx:k.tx,ty:0,tz:k.tz,d:k.d,pitch:k.pitch,yaw:c===GK?.08:-.08,fov:k.fov||28});FA.fitShadow(0,-6,135);} // A2: pulled back so the instrument-table rim + scale read in the world view
  if(FA.VIEW==='close'&&LOOK.closeCam&&LOOK.closeCam[FA.CITY]){const k=LOOK.closeCam[FA.CITY];Object.assign(rg,{yaw:k.yaw,pitch:k.pitch,d:k.d,ty:k.ty,fov:k.fov||28,shift:k.shift||0});if(k.eye!=null)FA.eyeBase=k.eye;FA.shadowDirty=true;if(LOOK.archviz&&c===GK)FA.fitShadow(c.x,c.z,27);} // A2: lower close-up, lens shift up -> a strip of graded sky + horizon glow in frame
+ // C4: Reversion close-up deep-link framed empty terraces (target sat 3 u east of the village, 40 u out): aim at the hamlet centroid, tighter
+ if(FA.VIEW==='close'&&c===RV&&LOOK.archviz&&FA.RVSITE){const S=FA.RVSITE;let x=0,z=0;S.homes.forEach(h=>{x+=h.x;z+=h.z;});x/=S.homes.length;z/=S.homes.length;x=x*.8+S.vx*.2;z=z*.8+S.vz*.2;
+  Object.assign(rg,{tx:x,tz:z,ty:FA.H(x,z)+(LOOK.closeCam.reversion.ty||.4)});FA.fitShadow(x,z,15);}
+ FA.setShadowRes(FA.VIEW==='close'&&FA.Q==='high'?4096:2048);
+ if(FA.closeOnly)for(const o of FA.closeOnly)o.visible=FA.VIEW==='close'; // C4: lane weeds / gravel / ground pools / crop relief only in close-up
  if(LOOK.exposureWorld)R.toneMappingExposure=FA.VIEW==='world'?LOOK.exposureWorld:LOOK.exposure;  // fixed exposure per view, no auto-exposure
  document.body.classList.toggle('faClose',FA.VIEW!=='world');FA.kick&&FA.kick(1500); // C2: v4.4 overlays only in world view
  FA.applyCam();FA.ui&&FA.ui();};
@@ -545,7 +563,7 @@ FA.applyCam=function(){const r=FA.rig;CAM.position.set(r.tx+Math.sin(r.yaw)*Math
  if(up)CAM.updateProjectionMatrix();};   // near grows with distance: depth precision at world zoom; A2 close-up fov + vertical lens shift (sky strip)
 {let drag=null;const el=R.domElement;el.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:FA.rig.yaw,pitch:FA.rig.pitch};FA.kick();});
  addEventListener('pointerup',()=>drag=null);addEventListener('pointermove',e=>{if(!drag)return;FA.rig.yaw=drag.yaw-(e.clientX-drag.x)*.005;FA.rig.pitch=Math.min(1.35,Math.max(.12,drag.pitch+(e.clientY-drag.y)*.004));FA.applyCam();FA.kick();});
- el.addEventListener('wheel',e=>{e.preventDefault();FA.rig.d=Math.min(330,Math.max(14,FA.rig.d*Math.exp(e.deltaY*.0012)));FA.applyCam();FA.kick();},{passive:false});
+ el.addEventListener('wheel',e=>{e.preventDefault();FA.rig.d=Math.min(330,Math.max(FA.VIEW==='close'?6:14,FA.rig.d*Math.exp(e.deltaY*.0012)));FA.applyCam();FA.kick();},{passive:false});
  addEventListener('keydown',()=>FA.kick());}
 addEventListener('resize',()=>{CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);FA.kick();});
 

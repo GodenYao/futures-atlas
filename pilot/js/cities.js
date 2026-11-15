@@ -121,6 +121,8 @@ FA.fields=[];FA.lanes=[];
 FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  // C3: style=archviz -> procedural hamlet (js/procottage.js); KayKit village stays as fallback (build() -> null) and for other presets
  const PKV=FA.RVSITE=(L.archviz&&FA.PROCOTTAGE)?FA.PROCOTTAGE.build({}):null;
+ // C4: procedural lane network (js/proroad.js) replaces procottage's straight radial lanes (they painted light spokes from the plaza) + the grey road stub
+ const RDP=(PKV&&FA.PROROAD)?(FA.lanes.length=0,FA.PROROAD.plan(PKV)):null;
  let homes=[],z0=vz+2.5,wx=0,wmx=c.x-12,wmz=c.z-8;
  if(PKV){homes=PKV.homes;wx=PKV.wheel.x;z0=PKV.wheel.z;wmx=PKV.mill.x;wmz=PKV.mill.z;}else{
  FA.put('well',vx,vz,{w:1.0});
@@ -148,8 +150,9 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  // fields: rotated parcels west/south of the village (crops in vertex colour + furrows, wheat kit pieces, wood fences)
  // C2b: style=archviz -> procedural farmland (js/profarm.js) replaces parcels / rows / haystacks / kit fences + kit orchard
  const PFon=!!(L.archviz&&FA.PROFARM);
- if(PFon){FA.PROFARM.build({vx,vz,wmx,wmz,keepOut:PKV?PKV.keepOut:null,lanes:FA.lanes.slice(),road:[[c.x-46,c.z+80],[c.x-24,c.z+38],[c.x-11,c.z+16],[vx-3.2,vz+4.2]]});
-  if(PKV){ // C3: a few hand lanterns on posts along the cart tracks (sparse fire light, glow sprites only; the cottages carry lit windows)
+ if(PFon){FA.PROFARM.build({vx,vz,wmx,wmz,keepOut:PKV?PKV.keepOut:null,lanes:FA.lanes.slice(),polys:RDP,road:RDP?RDP[0].P:[[c.x-46,c.z+80],[c.x-24,c.z+38],[c.x-11,c.z+16],[vx-3.2,vz+4.2]]});
+  if(RDP)FA.boot_rd=FA.PROROAD.finish(); // C4: gates, lane mesh, weeds, gravel, ground pools, lanterns
+  else if(PKV){ // C3: a few hand lanterns on posts along the cart tracks (sparse fire light, glow sprites only; the cottages carry lit windows)
    PKV.lanes.filter(l=>Math.hypot(l[2]-l[0],l[3]-l[1])>4).slice(0,5).forEach((l,i)=>{const t=.55+.1*(i%2),x=l[0]+(l[2]-l[0])*t+.35,z=l[1]+(l[3]-l[1])*t;
     FA.glow(x,H(x,z)+.62,z,.30,'#FFA050',.30,[.10,2.2+.6*i,i*1.3,0]);});}
   else homes.forEach((h,i)=>{if(i%4===1){const a=h.ry+1.3;FA.glow(h.x+Math.sin(a)*.8,H(h.x,h.z)+.5,h.z+Math.cos(a)*.8,.2,'#FFA050',.24);}});} // sparse warm windows (Tegmark Reversion: sparse fire light)
@@ -172,7 +175,7 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  if(!PKV){for(const h of homes){if(r()<.6)FA.put(r()<.5?'barrel':'sack',h.x+Math.cos(h.ry)*.9,h.z-Math.sin(h.ry)*.9,{w:.28,ao:false});}
  FA.put('barrow',wx-1.3,z0+1.2,{w:.55,ry:1.2});FA.put('sack',wx-.9,z0-1.3,{w:.3});FA.put('sack',wx-1.2,z0-1.1,{w:.28});FA.put('lumber',wmx+1.8,wmz+1.0,{w:.9});} // C3: procottage builds its own yard props
  // road stub (data layer) from the south-west into the green
- FA.road([[c.x-46,c.z+80],[c.x-24,c.z+38],[c.x-11,c.z+16],[vx-3.2,vz+4.2]],.9,L.road);
+ if(!RDP)FA.road([[c.x-46,c.z+80],[c.x-24,c.z+38],[c.x-11,c.z+16],[vx-3.2,vz+4.2]],.9,L.road); // C4: archviz Reversion: the entrance lane follows this route instead
 };
 // terrain colour hook: Reversion parcels + dirt lanes (Gatekeeper sits on its paved plinth)
 const CF={wheat:C('#8C7A48'),olive:C('#66733F'),fallow:C('#5E5038'),pasture:C('#5F7048')},DIRT=C('#6E604A');
@@ -180,6 +183,7 @@ FA.colorHook=function(x,z,h,sl,c){const rv=FA.RV;if(Math.abs(x-rv.x)>26||Math.ab
  for(const f of FA.fields){const dx=x-f.x,dz=z-f.z,a=dx*f.ux+dz*f.uz,b=dx*f.wx+dz*f.wz;if(Math.abs(a)<2.05&&Math.abs(b)<1.55){c.lerp(CF[f.ty],.85);if(f.ty!=='pasture')c.multiplyScalar(.9+.1*Math.sin(b*10));return;}}
  for(const l of FA.lanes){const ax=l[2]-l[0],az=l[3]-l[1],ll=ax*ax+az*az;let t=((x-l[0])*ax+(z-l[1])*az)/ll;t=Math.max(0,Math.min(1,t));const d=Math.hypot(x-l[0]-ax*t,z-l[1]-az*t);if(d<.55){c.lerp(DIRT,.75*smooth(.55,.25,d));return;}}
  if(FA.PROFARM&&FA.PROFARM.hook(x,z,c))return; // C2b: balks / ditch banks
+ if(FA.PROROAD&&FA.PROROAD.polys.length){const d=FA.PROROAD.dist(x,z);if(d<.5)c.lerp(DIRT,.45*smooth(.5,-.1,d));} // C4: faint worn ground under the lane mesh edges (no radial spokes)
  if(Math.hypot(x-(rv.x-1.5),z-rv.z)<2.4)c.lerp(DIRT,.55);};
 
 // ======================= scatter (forests, rocks, grass) =======================
@@ -201,7 +205,10 @@ FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
  FA.tuftList=FA.PROFARM&&FA.PROFARM.on?tufts.filter(t=>!FA.PROFARM.inField(t[0],t[1],.1)):tufts;
  if(FA.RVSITE){const KO=FA.RVSITE.keepOut,RR=36; // C3: no tufts inside the hamlet; around Reversion keep ~1/3, tinted to the dark balk green (were yellow confetti / black spikes)
   FA.tuftList=FA.tuftList.filter(t=>!KO.some(k=>Math.hypot(t[0]-k.x,t[1]-k.z)<k.r)).filter(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)>RR||FA.hash(t[0]*.37,t[1]*.53)<.34)
-   .map(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)<RR?[t[0],t[1],'#56603F']:t);}};
+   .map(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)<RR?[t[0],t[1],'#56603F']:t);
+  // C4: no tufts on the lanes; around Reversion tufts shrink to knee-high clumps (were house-sized black spikes at the close-up distance) and lift off near-black
+  if(FA.PROROAD&&FA.PROROAD.polys.length)FA.tuftList=FA.tuftList.filter(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)>40||FA.PROROAD.dist(t[0],t[1])>.12)
+   .map(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)<75?[t[0],t[1],'#66704A',.28+.2*FA.hash(t[0]*.71,t[1]*.29)]:t);}};
 
 // ======================= HUD + start =======================
 const TXT={gatekeeper:['Gatekeeper','one superintelligence whose only goal is to block any other'],reversion:['Reversion','technology rolled back to a pre-industrial level']};

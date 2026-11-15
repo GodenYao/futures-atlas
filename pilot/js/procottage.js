@@ -61,24 +61,27 @@ function bake(){const t0=performance.now(),R=FA.R,sc=new THREE.Scene(),cam=new T
 // (so roof courses / thatch layers stay level on any building yaw); flat faces use xz. Height channel bumps the normal, fwidth-faded.
 const WS_FRAG='#ifdef USE_FOG\n{vec3 nW=inverseTransformDirection(normal,viewMatrix);float tp=step(.93,abs(nW.y));vec2 tg=normalize(vec2(-nW.z,nW.x)+vec2(1e-4,0.));\n'+
  'vec2 q=mix(vec2(dot(vFogWP.xz,tg),vFogWP.y),vFogWP.xz,tp)*pkS.xy;vec4 tx=texture2D(pkT,q);float kk=smoothstep(.6,.12,max(fwidth(q.x),fwidth(q.y))*pkS.w);\n'+
- 'diffuseColor.rgb*=pkC*mix(vec3(.84),tx.rgb,.35+.65*kk);roughnessFactor=clamp(roughnessFactor+(.5-tx.a)*.18*kk,.3,1.);\n'+
+ 'diffuseColor.rgb*=pkC*mix(vec3(.84),tx.rgb,.35+.65*kk);roughnessFactor=clamp(roughnessFactor+(.5-tx.a)*pkX.x*kk+pkRV(pkX.y,vFogWP),.3,1.);\n'+
  'vec3 sX=dFdx(-vViewPosition),sY=dFdy(-vViewPosition);vec3 r1=cross(sY,normal),r2=cross(normal,sX);float det=dot(sX,r1);\n'+
  'vec2 dh=vec2(dFdx(tx.a),dFdy(tx.a))*pkS.z*kk;normal=normalize(abs(det)*normal-sign(det)*(dh.x*r1+dh.y*r2));}\n#else\ndiffuseColor.rgb*=pkC*.84;\n#endif\n';
+// C4: patchy weathering on roughness (thatch: damp / moss / fresh patches at ~3 m), world-space value noise
+const PKRV='float pkRH(vec2 p){return fract(sin(dot(p,vec2(41.3,17.9)))*4375.85);}float pkRV(float k,vec3 wp){if(k<=0.)return 0.;vec2 p=wp.xz*3.1+wp.y*1.7;vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);'+
+ 'float n=mix(mix(pkRH(i),pkRH(i+vec2(1.,0.)),f.x),mix(pkRH(i+vec2(0.,1.)),pkRH(i+vec2(1.,1.)),f.x),f.y);return (n-.5)*k*2.;}';
 function ws(fam,tile,bump,freq,rough,o){o=o||{};const m=new THREE.MeshStandardMaterial({color:'#ffffff',vertexColors:true,flatShading:true,roughness:rough,metalness:0,envMapIntensity:P.env});
  if(o.po){m.polygonOffset=true;m.polygonOffsetFactor=-o.po;m.polygonOffsetUnits=-2*o.po;}
- const U={pkT:{value:TEX[fam]},pkS:{value:new THREE.Vector4(1/tile,1/tile,bump,freq)},pkC:{value:new THREE.Vector3(1.12*P.alb,1.12*P.alb,1.12*P.alb)}};
- m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D pkT;uniform vec4 pkS;uniform vec3 pkC;')
+ const U={pkT:{value:TEX[fam]},pkS:{value:new THREE.Vector4(1/tile,1/tile,bump,freq)},pkC:{value:new THREE.Vector3(1.12*P.alb,1.12*P.alb,1.12*P.alb)},pkX:{value:new THREE.Vector2(o.rv!=null?o.rv:.18,o.rb||0)}}; // C4: pkX = (strand roughness variation, patchy weathering)
+ m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D pkT;uniform vec4 pkS;uniform vec3 pkC;uniform vec2 pkX;'+PKRV)
   .replace('#include <normal_fragment_maps>','#include <normal_fragment_maps>\n'+WS_FRAG);};
  m.customProgramCacheKey=()=>'pk_ws';return m;}
 // window panes: dark glazing; vertex colour = (lit gain, phase, tint). Fire-light emissive flickers in the shader (uT), master gain uFlick.
 function glazeMat(){const m=new THREE.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.25,metalness:0,envMapIntensity:.9});
- const U={uT:FA.TU.uT,uAn:FA.TU.uAn||{value:1},pkF:PK.uFlick,pkL:{value:2.1*P.lit}}; // C3: 1.5 -> 2.1 (lit panes read ~10 % at close-up distance)
+ const U={uT:FA.TU.uT,uAn:FA.TU.uAn||{value:1},pkF:PK.uFlick,pkL:{value:2.8*P.lit}}; // C3: 1.5 -> 2.1 (lit panes read ~10 % at close-up distance); C4: 2.1 -> 2.8 (owner: slightly stronger window glow)
  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uT,uAn,pkF,pkL;')
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n#ifdef USE_COLOR\n{float ph=vColor.g*6.2832;float fl=.8+.2*uAn*(sin(uT*7.3+ph*5.)*sin(uT*2.9+ph*3.)+.35*sin(uT*13.1+ph*9.));\n'+
    'totalEmissiveRadiance+=mix(vec3(1.,.27,.03),vec3(1.,.36,.07),vColor.b)*vColor.r*fl*pkF*pkL;diffuseColor.rgb=vec3(.02,.024,.032);}\n#endif\n');};
  m.customProgramCacheKey=()=>'pk_glaze';return m;}
 function mats(){const std=o=>new THREE.MeshStandardMaterial(Object.assign({color:'#ffffff',vertexColors:true,flatShading:true,roughness:.85,metalness:0,envMapIntensity:P.env},o||{}));
- M.plaster=ws(0,1.6,.006,24,.9);M.oak=ws(1,.8,.008,12,.82);M.thatch=ws(2,1.2,.03,12,.95);M.slate=ws(3,1.4,.02,16,.7);
+ M.plaster=ws(0,1.6,.006,24,.9);M.oak=ws(1,.8,.008,12,.82);M.thatch=ws(2,1.2,.04,12,.93,{rv:.42,rb:.16});M.slate=ws(3,1.4,.02,16,.7);
  M.stone=ws(4,1.3,.03,9,.88);M.boards=ws(5,1.0,.012,8,.84);M.canvas=ws(6,.5,.003,20,.9);M.dirt=ws(7,2.5,.015,24,.96,{po:2});
  M.plain=std();M.spin=std({roughness:.82});M.glaze=glazeMat();}
 
@@ -129,26 +132,45 @@ function gables(e,rh,bk,c,oak){for(const s of[-1,1]){add(bk,gPrism(),s*(DL/2-.03
 // gable roof, ridge along local x: thatch = thick slabs + rounded eave rolls + ridge roll; slate/shingle = thin slabs + barge boards + ridge tiles
 function roof(e,pit,bk,c,t,oh){const og=.1,m=(DW/2+oh)/2,sl=(DW/2+oh)/Math.cos(pit),yr=e+DW/2*Math.tan(pit),len=DL+2*og,yc=yr-m*Math.tan(pit)+t*.5/Math.cos(pit)-.01;
  for(const s of[-1,1]){box(bk,len,t,sl,0,yc,s*m,c,s*pit);
-  if(bk==='thatch')cyl(bk,t*.62,len,0,yr-2*m*Math.tan(pit)+t*.55,s*(2*m-.02),tn(c,.86),8,0,Math.PI/2);
+  if(bk==='thatch'){cyl(bk,t*.62,len,0,yr-2*m*Math.tan(pit)+t*.55,s*(2*m-.02),tn(c,.86),8,0,Math.PI/2);
+   // C4 thatch craft: stepped eave courses (darker weathered drip edge), sedge ridge saddle with hazel liggers + spars
+   const sp=Math.sin(pit),cp=Math.cos(pit),at=(u,v)=>[yc-sp*u+cp*v,s*(m+cp*u+sp*v)];let q;
+   q=at(sl*.37,t*.72);box(bk,len+.05,t*.44,sl*.26,0,q[0],q[1],tn(c,.72),s*pit);
+   q=at(sl*.14,t*.62);box(bk,len+.025,t*.24,sl*.22,0,q[0],q[1],tn(c,.88),s*pit);
+   q=at(-sl*.37,t*.75);box(bk,len+.08,t*.5,sl*.27,0,q[0],q[1],tn(c,.64),s*pit);
+   for(const u of[-sl*.44,-sl*.28]){q=at(u,t*1.02);box('oak',len+.08,.014,.016,0,q[0],q[1],tn(OAK,1.15),s*pit);}
+   q=at(-sl*.36,t*1.0);for(let x=-len/2+.07;x<len/2-.03;x+=.14)box('oak',.012,.012,sl*.2,x,q[0],q[1],tn(OAK,1.1),s*pit);}
   else for(const g of[-1,1])box('oak',.03,.06,sl,g*len/2,yc-.03,s*m,OAK,s*pit);}
- if(bk==='thatch')cyl(bk,.1,len+.03,0,yr+t*1.15,0,tn(c,.8),8,0,Math.PI/2);else box(bk,len+.02,.07,.07,0,yr+t+.012,0,tn(c,.75),Math.PI/4);
+ if(bk==='thatch')cyl(bk,.085,len+.09,0,yr+t*1.15,0,tn(c,.6),8,0,Math.PI/2);else box(bk,len+.02,.07,.07,0,yr+t+.012,0,tn(c,.75),Math.PI/4);
  return yr;}
 function door(f,s,dh,w,yb){w=w||.17;yb=yb==null?.12:yb;f(s,yb+dh/2,w,dh,0,'boards',tn(BRD,.8),.03,.012);
  f(s-w/2-.02,yb+dh/2,.04,dh+.04);f(s+w/2+.02,yb+dh/2,.04,dh+.04);f(s,yb+dh+.02,w+.12,.045);}
 // small framed window: dark pane (lit 20-35 %, hashed by id) + proud oak frame, sill and mullions
-function win(id,f,s,y,w,h,dark){const lit=!dark&&FA.hash(id*.731+3.1,id*1.37+7.7)<P.share;WINS++;if(lit)LIT++;
+function win(id,f,s,y,w,h,dark){const lit=!dark&&FA.hash(id*.731+3.1,id*1.37+7.7)<P.share;WINS++;if(lit){LIT++;if(CURH)CURH.lit=(CURH.lit||0)+1;}
  f(s,y,w,h,0,'glaze',[lit?.55+.45*FA.hash(id,3.3):0,FA.hash(id*1.3,9.1),FA.hash(id*2.1,1.7)],.012,.008);
  f(s,y+h/2+.012,w+.06,.03);f(s,y-h/2-.014,w+.08,.035);f(s-w/2-.012,y,.03,h);f(s+w/2+.012,y,.03,h);f(s,y,.014,h,0,'oak',OAK,.03);f(s,y,w,.012,0,'oak',OAK,.03);}
 function chimney(x,z,top){box('stone',.24,top+.3,.2,x,(top-.3)/2,z,STO);box('stone',.3,.05,.26,x,top+.025,z,tn(STO,.8));box('stone',.15,.07,.12,x,top+.085,z,tn(STO,.55));}
 
 // ======================= (5) cottages + yard extras =======================
-const OBST=[];
-function cottage(h,i){setF(h.x,h.g,h.z,h.ry);DL=h.L;DW=h.W;const e=h.e,th=h.roof===0,pit=th?.87:.74,id=i*16,pc=tn(PLA,.88+.16*rnd());
- box('stone',DL+.07,.36,DW+.07,0,-.04,0,tn(STO,.9+.2*rnd()));box('plaster',DL,e-.12,DW,0,(e+.12)/2,0,pc);timber(.14,e);
+const OBST=[];let CURH=null;
+// C4 grounding: small front yards (45 % of cottages) - wattle-grey oak paling posts + two rails on three sides, gap at the door
+function yard(h,i,ds){if(FA.hash(i*3.31,1.93)>.45)return;const z0=DW/2+.34,z1=DW/2+.92,x0=-DL/2-.04,x1=DL/2+.04,c=Math.cos(h.ry),s=Math.sin(h.ry),zc=(z0+z1)/2;
+ const cx=h.x+zc*s,cz=h.z+zc*c;if(cx>FA.riverX(cz)-3.0)return;for(const o of OBST)if(o!==h&&Math.hypot(cx-o.x,cz-o.z)<(o.r||1.3)+.55)return;
+ const PC=tn(OAKW,.95);let prev=null;const run=(ax,az,bx,bz,gap)=>{prev=null;const n=Math.max(1,Math.round(Math.hypot(bx-ax,bz-az)/.17));
+  for(let k=0;k<=n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n;if(gap&&Math.abs(x-ds)<.2){prev=null;continue;}const y=dyl(h,x,z);
+   box('oak',.022,.17+.02*FA.hash(x*9,z*7),.022,x,y+.07,z,PC);if(prev){for(const hy of[.06,.13])beam('oak',prev[0],prev[1]+hy,prev[2],x,y+hy,z,.012,PC);}prev=[x,y,z];}};
+ run(x0,z1,x1,z1,true);run(x0,z0,x0,z1,false);run(x1,z0,x1,z1,false);}
+function cottage(h,i){CURH=h;setF(h.x,h.g,h.z,h.ry);DL=h.L;DW=h.W;const e=h.e,th=h.roof===0,pit=th?.87:.74,id=i*16,pv=.88+.16*rnd();
+ // C4: per-house limewash tint (white / ochre / pink / buff / straw) and a night factor (plaster read too bright at blue hour)
+ const TW=[[1,1,1],[1.05,.96,.82],[1.04,.92,.87],[.95,.94,.90],[1.03,1,.84]],tw=TW[(FA.hash(i*1.73,4.21)*TW.length)|0],NK=(L.pc&&L.pc.mood!=='day')?.76:1,pc=[PLA[0]*pv*tw[0]*NK,PLA[1]*pv*tw[1]*NK,PLA[2]*pv*tw[2]*NK];
+ // C4 grounding: deeper stone plinth (digs into the downhill side) + projecting plinth course
+ let dmin=0;for(const a of[-1,1])for(const b of[-1,1])dmin=Math.min(dmin,dyl(h,a*DL/2,b*DW/2));const ph=.5+Math.max(0,-dmin-.3);
+ box('stone',DL+.16,ph,DW+.16,0,.14-ph/2,0,tn(STO,.9+.2*rnd()));box('stone',DL+.21,.045,DW+.21,0,.125,0,tn(STO,.72));box('plaster',DL,e-.12,DW,0,(e+.12)/2,0,pc);timber(.14,e);
  const rc=th?tn(THA,.85+.25*rnd()):h.roof===1?tn(SLA,.9+.25*rnd()):tn(SHI,.85+.3*rnd()),rh=DW/2*Math.tan(pit);
  gables(e,rh,'plaster',pc,true);const yr=roof(e,pit,th?'thatch':'slate',rc,th?.13:.05,th?.15:.12);
  const fz=face('z',1),bz=face('z',-1),ds=(rnd()-.5)*DL*.3,wy=.14+(e-.14)*.68;let k=0;
- door(fz,ds,.3,.17,.14);box('stone',.28,.06,.12,ds,.11,DW/2+.07,tn(STO,.8));
+ door(fz,ds,.3,.17,.14);box('stone',.32,.07,.13,ds,.105,DW/2+.165,tn(STO,.85));box('stone',.38,.2,.14,ds,-.035,DW/2+.30,tn(STO,.76)); // C4: two worn door steps
+ yard(h,i,ds);
  for(const s of[-1,1]){const sx=ds+s*(.34+.1*rnd());if(Math.abs(sx)<DL/2-.14)win(id+k++,fz,sx,wy,.13,.15);}
  for(const s of[-.27,.27])win(id+k++,bz,s*DL,wy,.13,.15);
  const cs=rnd()<.5?-1:1;win(id+k++,face('x',-cs),DW*.2,wy,.12,.14);chimney(cs*(DL/2+.09),0,yr+.24);
@@ -187,10 +209,11 @@ function cart(x,z,ry,o){setF(x,FA.H(x,z),z,ry);const l=o.len||.5,c=tn(BRD,.85+.2
  for(const s of[-1,1])beam('oak',l/2,.17,s*.09,l/2+.42,o.four?.17:.04,s*.09,.02,OAK);
  if(o.hay)add('plain',gIco(1),0,.33,0,HAY,0,0,0,l*.52,.17,.17);
  FA.AOS.push({x,z,r:l*.6+.15,k:.35});}
-function well(x,z){setF(x,FA.H(x,z),z,.4);cyl('stone',.21,.3,0,.08,0,STO,10);cyl('plain',.15,.01,0,.232,0,DARK,10);
+const WSC=new THREE.Matrix4().makeScale(.62,.62,.62); // C4: well was door-height (rim .3 = door .3); scaled to ~waist height vs the doors
+function well(x,z){setF(x,FA.H(x,z),z,.4);F.multiply(WSC);cyl('stone',.21,.3,0,.08,0,STO,10);cyl('plain',.15,.01,0,.232,0,DARK,10);
  for(const s of[-1,1])box('oak',.04,.52,.04,s*.2,.34,0,OAK);cyl('oak',.022,.46,0,.42,0,OAKW,6,0,Math.PI/2);
  box('plain',.012,.09,.012,.24,.385,0,IRON);box('plain',.006,.16,.006,0,.34,0,HAY);cyl('boards',.035,.06,.1,.265,.12,BRD,6,0,0,1.2);
- DL=.46;DW=.4;roof(.58,.7,'slate',tn(SHI,.9),.035,.08);FA.AOS.push({x,z,r:.5,k:.45});}
+ DL=.46;DW=.4;roof(.58,.7,'slate',tn(SHI,.9),.035,.08);FA.AOS.push({x,z,r:.32,k:.45});}
 function barrel(x,z,k){setF(x,FA.H(x,z),z,0);k=k||1;add('boards',gBarrel(),0,0,0,tn(BRD,.8+.3*rnd()),0,rnd()*3,0,.075*k,.18*k,.075*k);cyl('boards',.06*k,.012,0,.18*k,0,tn(BRD,.7),8);}
 function sack(x,z){setF(x,FA.H(x,z),z,0);add('canvas',gIco(1),0,.06,0,tn(CAN,.6+.2*rnd()),0,rnd()*3,.2,.075,.08,.055);}
 function lumber(x,z,ry){setF(x,FA.H(x,z),z,ry);for(let r=0;r<3;r++)for(let c=0;c<4-r;c++)box('boards',.8,.035,.07,(rnd()-.5)*.06,.03+r*.04,(c-1.5+r*.5)*.085,tn(BRD,.8+.4*rnd()));FA.AOS.push({x,z,r:.5,k:.3});}
@@ -246,14 +269,15 @@ function sails(w){use('sails');
 
 // ======================= (9) trestle bridge, green, bonfire =======================
 function bridge(b){const WL=FA.WL,yb=Math.max(FA.H(b.x-2.7,b.z),FA.H(b.x+2.7,b.z)),yd=Math.max(WL+.7,Math.min(WL+1.1,yb+.06));setF(b.x,0,b.z,0);gy=WL-.3;
- for(const s of[-1,1]){box('oak',5.3,.08,.08,0,yd-.08,s*.3,OAK);box('oak',5.2,.04,.04,0,yd+.42,s*.44,OAK);box('oak',5.2,.03,.03,0,yd+.23,s*.44,OAK);
-  for(let x=-2.4;x<=2.41;x+=.8)box('oak',.045,.5,.045,x,yd+.2,s*.44,OAK);
-  const xe=s*3.5,ye=FA.H(b.x+xe,b.z);beam('boards',s*2.6,yd-.02,0,xe,ye+.01,0,.03,tn(BRD,.8),.86);}
- for(let k=0;k<30;k++)box('boards',5.2/30-.012,.03,.92,-2.6+(k+.5)*5.2/30,yd-.025,0,tn(BRD,.75+.35*rnd()));
- for(const x of[-1.8,-.6,.6,1.8]){for(const s of[-1,1])beam('oak',x,yd-.12,s*.3,x,WL-.7,s*.5,.07,OAK);box('oak',.09,.07,1.05,x,yd-.155,0,OAK);beam('oak',x,yd-.2,-.33,x,WL+.05,.44,.035,OAK);}
+ // C4: deck narrowed .92 -> .62, rails .42 -> .26 high, 30 -> 64 planks (plank / rail scale was 2-3x the door scale)
+ for(const s of[-1,1]){box('oak',5.3,.07,.07,0,yd-.075,s*.21,OAK);box('oak',5.2,.035,.035,0,yd+.26,s*.30,OAK);box('oak',5.2,.022,.022,0,yd+.14,s*.30,OAK);
+  for(let x=-2.4;x<=2.41;x+=.6)box('oak',.035,.32,.035,x,yd+.12,s*.30,OAK);
+  const xe=s*3.5,ye=FA.H(b.x+xe,b.z);beam('boards',s*2.6,yd-.02,0,xe,ye+.01,0,.03,tn(BRD,.8),.6);}
+ for(let k=0;k<64;k++)box('boards',5.2/64-.01,.025,.62+.03*(rnd()-.5),-2.6+(k+.5)*5.2/64,yd-.022,0,tn(BRD,.72+.38*rnd()));
+ for(const x of[-1.8,-.6,.6,1.8]){for(const s of[-1,1])beam('oak',x,yd-.12,s*.21,x,WL-.7,s*.38,.06,OAK);box('oak',.08,.06,.74,x,yd-.145,0,OAK);beam('oak',x,yd-.2,-.24,x,WL+.05,.32,.03,OAK);}
  b.y=yd;}
 function green(vx,vz){F.identity();gy=-99;
- if(P.green){let g=new THREE.RingGeometry(.02,2.7,22,4);g.rotateX(-Math.PI/2);g=g.toNonIndexed();const p=g.attributes.position;
+ if(P.green&&!FA.PROROAD){let g=new THREE.RingGeometry(.02,2.7,22,4);g.rotateX(-Math.PI/2);g=g.toNonIndexed();const p=g.attributes.position;
   for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),k=1+.25*(FA.hash(Math.round(Math.atan2(z,x)*7)+.5,3.7)-.5)*Math.hypot(x,z)/2.7,wx=vx+x*k,wz=vz+z*k;p.setXYZ(i,wx,FA.H(wx,wz)+.05,wz);}
   add('dirt',g,0,0,0,tn(DIRTC,.6));}
  for(let k=0;k<9;k++){const a=.6+k*.09,d=1.2+k*.42;stone(vx+Math.cos(a)*d+(rnd()-.5)*.2,vz+Math.sin(a)*d+(rnd()-.5)*.2);}}
@@ -288,16 +312,19 @@ function props(D){const vx=D.vx,vz=D.vz,m=D.mill,b=D.barn,sx=Math.sin(b.ry),sz=M
  barrel(b.x+sx*1.3-sz*.9,b.z+sz*1.3+sx*.9);barrel(b.x+sx*1.3-sz*1.1,b.z+sz*1.3+sx*1.1,1.15);
  lumber(D.fire.x+1.3,D.fire.z+.6,.5);lumber(D.wind.x-.4,D.wind.z+2.1,.4);
  for(let i=0;i<4;i++)for(let j=0;j<3;j++){const x=vx-1+i*1.5+(rnd()-.5)*.3,z=vz-9.5-j*1.5+(rnd()-.5)*.3;if(x<FA.riverX(z)-2.2)tree(x,z);}}
-// two small door glows (shader breath, no CPU), smoke from 5 cottage chimneys + the mill (9 puffs each, staggered)
-function lights(D){let n=0;D.homes.forEach((h,i)=>{if(i%4===1&&n<3){n++;FA.glow(h.door.x,h.door.y+.02,h.door.z,.42,'#FF9040',.26,[.14,3+2*FA.hash(i,1.1),i*1.7,0]);}});
- const ch=D.homes.filter((h,i)=>i%2===0).slice(0,5).map(h=>h.chim);ch.push(D.mill.chim);
- ch.forEach((p,j)=>{for(let k=0;k<9;k++)FA.smoke(p.x,p.y,p.z,5.5+j*.7,k/9+j*.13,'#C9C5D0');});}
+// two small door glows (shader breath, no CPU), smoke from 3 cottage chimneys + the mill (7 puffs each, staggered)
+// C4: + warm ground pools (fire light at lit doors / the bonfire) handed to proroad's single additive pool mesh
+function lights(D){let n=0;const PO=[];D.homes.forEach((h,i)=>{if(i%4===1&&n<3){n++;FA.glow(h.door.x,h.door.y+.02,h.door.z,.42,'#FF9040',.26,[.14,3+2*FA.hash(i,1.1),i*1.7,0]);PO.push([h.door.x,h.door.z,.62,.30]);}
+  else if(h.lit>0)PO.push([h.door.x,h.door.z,.42,.10+.05*Math.min(2,h.lit)]);});
+ PO.push([D.fire.x,D.fire.z,1.5,.36]);if(FA.PROROAD)FA.PROROAD.pools=PO;
+ const ch=D.homes.filter((h,i)=>i%2===0).slice(0,3).map(h=>h.chim);ch.push(D.mill.chim);
+ ch.forEach((p,j)=>{for(let k=0;k<7;k++)FA.smoke(p.x,p.y,p.z,5.5+j*.7,k/7+j*.13,'#C9C5D0');});}
 function result(D){const vx=D.vx,vz=D.vz,b=D.barn,lanes=[],KO=[];
  D.homes.forEach(h=>{lanes.push([vx,vz,h.door.x,h.door.z]);KO.push({x:h.x,z:h.z,r:1.6});if(h.gard)KO.push({x:h.gard.x,z:h.gard.z,r:1.1});});
  lanes.push([vx,vz,D.mill.x-.3,D.mill.z+1.2],[vx,vz,D.bridge.x-2.7,D.bridge.z],[vx,vz,D.wind.x,D.wind.z],[vx,vz,b.x+Math.sin(b.ry)*1.6,b.z+Math.cos(b.ry)*1.6]);
  if(FA.lanes)for(const l of lanes)FA.lanes.push(l);
  KO.push({x:b.x,z:b.z,r:2.9},{x:D.mill.x,z:D.mill.z,r:1.9},{x:D.wheel.x,z:D.wheel.z,r:1.4},{x:D.wind.x,z:D.wind.z,r:2.8},{x:D.bridge.x-3,z:D.bridge.z,r:1.4},{x:vx,z:vz,r:2.9},{x:vx+1.25,z:vz-11,r:3.2});
- return{vx,vz,homes:D.homes.map(h=>({x:h.x,z:h.z,h:h.h,ry:h.ry})),wheel:{x:D.wheel.x,z:D.wheel.z},mill:{x:D.wind.x,z:D.wind.z},millHouse:{x:D.mill.x,z:D.mill.z},
+ return{vx,vz,homes:D.homes.map(h=>({x:h.x,z:h.z,h:h.h,ry:h.ry,door:{x:h.door.x,z:h.door.z},lit:h.lit||0})),wheel:{x:D.wheel.x,z:D.wheel.z},mill:{x:D.wind.x,z:D.wind.z},millHouse:{x:D.mill.x,z:D.mill.z},
   barn:{x:b.x,z:b.z,ry:b.ry},bridge:{x:D.bridge.x,z:D.bridge.z,y:D.bridge.y},lanes,keepOut:KO};}
 function build(opts){const t0=performance.now();
  try{const c=FA.RV,vx=c.x-1.5,vz=c.z;rnd=FA.rng(2031);SETS={main:{},wheel:{},sails:{}};TRIS=DRAWS=LIT=WINS=0;
