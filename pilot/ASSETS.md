@@ -26,3 +26,9 @@ Everything else is procedural code, with no files involved:
 - the landmark spire and eye, the wall and the plinth
 - terrain, water, sky, crop rows, haystacks and the footbridge
 - the textures for the iris, paving, glow and smoke
+
+Checkpoint A1 techniques in `style=bluefacet` were **independently re-implemented from a written spec**. These are the jittered terraced facet terrain, the river shelf with depth tint and foam, sky-only IBL with an auto-solved gain, the Neutral-type tone curve, contact AO decals with crease bands, on-demand shadows, and batched glow and smoke.
+- The spec is our own review, `site/review/fable_saltline_20261115_1725.md`, which describes the Saltline techniques in prose.
+- No Saltline source code was opened or copied. That source is unlicensed.
+- The tone curve follows the public Khronos PBR Neutral description.
+- All of this code is original to this project.

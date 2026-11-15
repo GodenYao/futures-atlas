@@ -37,11 +37,16 @@ function pavingTex(R,builds){const N=512,c=document.createElement('canvas');c.wi
  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
 
 FA.buildGK=function(){const c=FA.GK,r=FA.rng(15),top=c.top,cx=c.x,cz=c.z;
- const stone=new THREE.MeshStandardMaterial({color:G.stone,roughness:.85,envMapIntensity:.5});
- const s1=new THREE.Mesh(new THREE.CylinderGeometry(10.5,11.1,1.5,72),stone);s1.position.set(cx,top-.3-.75,cz);
- const s2=new THREE.Mesh(new THREE.CylinderGeometry(9.95,10.25,.3,72),new THREE.MeshStandardMaterial({color:G.stone2,roughness:.78,envMapIntensity:.5}));s2.position.set(cx,top-.15,cz);
- [s1,s2].forEach(m=>{m.castShadow=m.receiveShadow=true;SC.add(m);});
- FA.AOS.push({x:cx,z:cz,r:11.6,k:.55});
+ const CR=!!L.contact,EM=L.cm?1.6:1; // CR: crease bands (darker wall bases); EM: env gain where the sky IBL is the only ambient
+ const A=FA.A2; // A2: GPU-baked world-space material families (js/a2.js, style=bluefacet only)
+ const stone=A?A.mat(0,G.stone,{vc:CR,env:.5*EM}):new THREE.MeshStandardMaterial({color:G.stone,roughness:.85,envMapIntensity:.5*EM,vertexColors:CR});
+ let s1g=new THREE.CylinderGeometry(10.5,11.1,1.5,72);if(CR)FA.crease(s1g,2.6-(top-1.05),.7,.5);if(A)s1g=A.uvCyl(s1g,11.46);
+ const s1=new THREE.Mesh(s1g,stone);s1.position.set(cx,top-.3-.75,cz);
+ let s2g=new THREE.CylinderGeometry(9.95,10.25,.3,72);if(A)s2g=A.uvCyl(s2g,11.46);
+ const s2=new THREE.Mesh(s2g,A?A.mat(0,G.stone2,{env:.5*EM}):new THREE.MeshStandardMaterial({color:G.stone2,roughness:.78,envMapIntensity:.5*EM}));s2.position.set(cx,top-.15,cz);
+ [s1,s2].forEach(m=>{m.castShadow=m.receiveShadow=true;FA.addStatic(m);});
+ if(A){const ft=new THREE.Mesh(new THREE.CylinderGeometry(11.2,11.75,.5,72),new THREE.MeshStandardMaterial({color:'#2C2A36',roughness:.95,envMapIntensity:.4}));ft.position.set(cx,2.62,cz);ft.receiveShadow=true;FA.addStatic(ft);} // A2: dark plinth foot (base read too light)
+ FA.AOS.push({x:cx,z:cz,r:11.6,k:A?.8:.55});const towers=[];
  const builds=[];
  // town: ordinary low/mid-rise blocks on a grid (kit), facing the two avenues
  const keys=['bA','bB','bC','bD','bE','bF'];
@@ -54,29 +59,34 @@ FA.buildGK=function(){const c=FA.GK,r=FA.rng(15),top=c.top,cx=c.x,cz=c.z;
  for(const[x,z,ry]of[[.32,4.6,0],[-.32,-5.6,Math.PI],[5.0,-.3,Math.PI/2],[-4.2,.3,-Math.PI/2]])FA.put('car',cx+x,cz+z,{y:top,w:.62,ry,ao:false});
  for(let i=0;i<10;i++){const a=i/10*6.283+.3,x=Math.cos(a)*2.95,z=Math.sin(a)*2.95;if(Math.abs(x)<.9||Math.abs(z)<.9)continue;FA.put('bush',cx+x,cz+z,{y:top,w:.5+r()*.2,ao:false});builds.push([x,z,.4]);}
  for(const a of[.79,2.36,3.93,5.5])FA.put('bench',cx+Math.cos(a)*2.45,cz+Math.sin(a)*2.45,{y:top,w:.55,ry:-a+Math.PI/2,ao:false});
- const pav=new THREE.Mesh(new THREE.CircleGeometry(9.95,72),new THREE.MeshStandardMaterial({map:pavingTex(9.95,builds),roughness:.86,envMapIntensity:.55}));
- pav.rotation.x=-Math.PI/2;pav.position.set(cx,top+.003,cz);pav.receiveShadow=true;SC.add(pav);
+ const pav=new THREE.Mesh(new THREE.CircleGeometry(9.95,72),new THREE.MeshStandardMaterial({map:pavingTex(9.95,builds),roughness:.86,envMapIntensity:.55*EM,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2}));
+ pav.rotation.x=-Math.PI/2;pav.position.set(cx,top+.02,cz);pav.receiveShadow=true;SC.add(pav); // z-fight fix: lifted 0.02 + polygon offset (was 0.003 above the drum top)
  // ONE perimeter wall (4 arcs, gates on the avenues), chamfered top, faint cyan-white sensor line = the AI's only light
  const prof=[[7.38,0],[7.38,1.25],[7.48,1.42],[7.82,1.42],[7.92,1.25],[7.92,0]].map(p=>new THREE.Vector2(p[0],p[1]));
- const wallM=new THREE.MeshStandardMaterial({color:G.wall,roughness:.62,envMapIntensity:.7,side:THREE.DoubleSide});const senM=new THREE.MeshBasicMaterial({color:C(L.ai).multiplyScalar(.62),toneMapped:false,side:THREE.DoubleSide});
- const sen=[[7.925,.98],[7.935,.98],[7.935,1.04],[7.925,1.04]].map(p=>new THREE.Vector2(p[0],p[1]));const gap=.24;
- const twG=new THREE.CylinderGeometry(.42,.5,1,6),capG=new THREE.CylinderGeometry(.5,.44,.16,6),bandG=new THREE.CylinderGeometry(.505,.505,.05,6),twM=new THREE.MeshStandardMaterial({color:G.tower,roughness:.6,envMapIntensity:.7});
- const tower=(a,h)=>{const x=cx+Math.sin(a)*7.65,z=cz+Math.cos(a)*7.65;const t=new THREE.Mesh(twG,twM);t.scale.y=h;t.position.set(x,top+h/2,z);t.rotation.y=a;const cp=new THREE.Mesh(capG,twM);cp.position.set(x,top+h+.08,z);cp.rotation.y=a;
-  const b=new THREE.Mesh(bandG,senM);b.position.set(x,top+h-.25,z);b.rotation.y=a;[t,cp].forEach(m=>{m.castShadow=m.receiveShadow=true;});SC.add(t,cp,b);};
- for(let q=0;q<4;q++){const ph=q*Math.PI/2+gap/2,pl=Math.PI/2-gap;const w=new THREE.Mesh(new THREE.LatheGeometry(prof,40,ph,pl),wallM);w.position.set(cx,top,cz);w.castShadow=w.receiveShadow=true;SC.add(w);
-  const sn=new THREE.Mesh(new THREE.LatheGeometry(sen,40,ph,pl),senM);sn.position.set(cx,top,cz);SC.add(sn);
+ const wallM=A?A.mat(1,G.wall,{vc:CR,env:.7*EM,side:THREE.DoubleSide}):new THREE.MeshStandardMaterial({color:G.wall,roughness:.62,envMapIntensity:.7*EM,side:THREE.DoubleSide,vertexColors:CR});const senM=new THREE.MeshBasicMaterial({color:C(L.ai).multiplyScalar(.62),toneMapped:false,side:THREE.DoubleSide});
+ const sen=[[7.945,.98],[7.955,.98],[7.955,1.04],[7.945,1.04]].map(p=>new THREE.Vector2(p[0],p[1]));const gap=.24; // sensor line 0.025 proud of the wall face (was 0.005: z-fight)
+ const twG=new THREE.CylinderGeometry(.42,.5,1,6),capG0=new THREE.CylinderGeometry(.5,.44,.16,6),bandG=new THREE.CylinderGeometry(.505,.505,.05,6),twM=A?A.mat(1,G.tower,{vc:CR,flat:true,env:.7*EM}):new THREE.MeshStandardMaterial({color:G.tower,roughness:.6,envMapIntensity:.7*EM,vertexColors:CR});
+ const capG=A?A.uvCyl(capG0,.955):capG0,capM=A?A.mat(2,'#5A5C66',{metal:.6,flat:true,env:EM}):twM; // A2: caps + lintels = metal panel (crisp facet highlight)
+ if(CR)FA.crease(twG,-.5,.22,.24,2.0);const twGh={};const twGeo=h=>{if(!A)return twG;if(!twGh[h]){let g=new THREE.CylinderGeometry(.42,.5,h,6);if(CR)FA.crease(g,-h/2,.22,.24,1);twGh[h]=A.uvCyl(g,1.273);}return twGh[h];};
+ const tower=(a,h)=>{const x=cx+Math.sin(a)*7.65,z=cz+Math.cos(a)*7.65;const t=new THREE.Mesh(twGeo(h),twM);if(!A)t.scale.y=h;t.position.set(x,top+h/2,z);t.rotation.y=a;const cp=new THREE.Mesh(capG,capM);cp.position.set(x,top+h+.08,z);cp.rotation.y=a;towers.push({x,z,a,y:top+h+.16});
+  const b=new THREE.Mesh(bandG,senM);b.position.set(x,top+h-.25,z);b.rotation.y=a;[t,cp].forEach(m=>{m.castShadow=m.receiveShadow=true;});FA.addStatic(t,cp,b);};
+ for(let q=0;q<4;q++){const ph=q*Math.PI/2+gap/2,pl=Math.PI/2-gap;let wg=new THREE.LatheGeometry(prof,40,ph,pl);if(CR)FA.crease(wg,0,.24,.24);if(A)wg=A.uvCyl(wg,7.65);const w=new THREE.Mesh(wg,wallM);w.position.set(cx,top,cz);w.castShadow=w.receiveShadow=true;FA.addStatic(w);
+  const sn=new THREE.Mesh(new THREE.LatheGeometry(sen,40,ph,pl),senM);sn.position.set(cx,top,cz);FA.addStatic(sn);
   for(const a of[ph-.03,ph+pl+.03])tower(a,2.15);tower(ph+pl/2,1.75);}
  // spire: pale ceramic lathe with dark seams + thin AI rings, on a podium
- const pod=new THREE.Mesh(new THREE.CylinderGeometry(2.25,2.45,.36,48),new THREE.MeshStandardMaterial({color:G.pod,roughness:.6}));pod.position.set(cx,top+.18,cz);pod.castShadow=pod.receiveShadow=true;SC.add(pod);
+ let podG=new THREE.CylinderGeometry(2.25,2.45,.36,48);if(CR)FA.crease(podG,-.18,.14,.22);if(A)podG=A.uvCyl(podG,2.546);
+ const pod=new THREE.Mesh(podG,A?A.mat(1,G.pod,{vc:CR,env:EM}):new THREE.MeshStandardMaterial({color:G.pod,roughness:.6,envMapIntensity:EM,vertexColors:CR}));pod.position.set(cx,top+.18,cz);pod.castShadow=pod.receiveShadow=true;FA.addStatic(pod);
  const SYK=1.32;const sp=[[1.3,0],[1.3,.35],[1.05,.55],[.98,2.5],[1.04,2.62],[.86,2.8],[.82,4.9],[.88,5.0],[.70,5.18],[.64,6.9],[.58,7.05],[.42,7.3],[.40,7.45],[.0,7.46]].map(p=>new THREE.Vector2(p[0],p[1]*SYK));
- const spM=new THREE.MeshStandardMaterial({color:G.spire,roughness:.42,metalness:.08,envMapIntensity:.8});
- const spire=new THREE.Mesh(new THREE.LatheGeometry(sp,48),spM);const sy=top+.36;spire.position.set(cx,sy,cz);spire.castShadow=spire.receiveShadow=true;SC.add(spire);
+ const spM=A?A.mat(2,G.spire,{metal:.05,vc:CR,env:.9*EM,ns:.3}):new THREE.MeshStandardMaterial({color:G.spire,roughness:.42,metalness:.08,envMapIntensity:.8*EM,vertexColors:CR});
+ let spG=new THREE.LatheGeometry(sp,48);if(CR)FA.crease(spG,0,.26,.22);if(A)spG=A.uvCyl(spG,.955);
+ const spire=new THREE.Mesh(spG,spM);const sy=top+.36;spire.position.set(cx,sy,cz);spire.castShadow=spire.receiveShadow=true;FA.addStatic(spire);
+ // AI rings: radius sits proud of the lathe at that height (the upper ring used to cut into the taper and read as a stray arc)
  const ringM=new THREE.MeshBasicMaterial({color:C(L.ai).multiplyScalar(.55),toneMapped:false});
- for(const[y,rad]of[[2.7*SYK,.93],[5.08*SYK,.79]]){const t=new THREE.Mesh(new THREE.TorusGeometry(rad,.035,6,48),ringM);t.rotation.x=Math.PI/2;t.position.set(cx,sy+y,cz);SC.add(t);}
+ for(const[y,rad]of[[2.7*SYK,1.0],[5.08*SYK,.86]]){const t=new THREE.Mesh(new THREE.TorusGeometry(rad,.035,6,48),ringM);t.rotation.x=Math.PI/2;t.position.set(cx,sy+y,cz);FA.addStatic(t);}
  // eye: socket + collar, sclera, iris cap with radial fibres, cornea, two eyelids (blink, never rests closed)
- const E=new THREE.Vector3(cx,sy+7.46*SYK+1.1,cz);FA.eyePos=E;const metal=new THREE.MeshStandardMaterial({color:G.metal,roughness:.32,metalness:.75,envMapIntensity:1.0,side:THREE.DoubleSide});
- const collar=new THREE.Mesh(new THREE.CylinderGeometry(.62,.42,1.25,32),metal);collar.position.set(cx,sy+7.46*SYK+.2,cz);collar.castShadow=true;SC.add(collar);
- const sock=new THREE.Group();sock.position.copy(E);sock.rotation.y=-.22;SC.add(sock);
+ const E=new THREE.Vector3(cx,sy+7.46*SYK+1.1,cz);FA.eyePos=E;const metal=new THREE.MeshStandardMaterial({color:G.metal,roughness:.32,metalness:.75,envMapIntensity:1.0*EM,side:THREE.DoubleSide});
+ const collar=new THREE.Mesh(A?A.uvCyl(new THREE.CylinderGeometry(.62,.42,1.25,32),.955):new THREE.CylinderGeometry(.62,.42,1.25,32),A?A.mat(2,G.metal,{metal:.75,env:EM}):metal);collar.position.set(cx,sy+7.46*SYK+.2,cz);collar.castShadow=true;SC.add(collar);
+ const sock=new THREE.Group();sock.position.copy(E);sock.rotation.y=-.22;SC.add(sock);const EB=()=>FA.eyeBase!=null?FA.eyeBase:-.22; // A2: eye base yaw follows the view (close-up camera moved west)
  const tor=new THREE.Mesh(new THREE.TorusGeometry(1.06,.13,14,48),metal);tor.position.z=.12;tor.castShadow=true;sock.add(tor);
  const lidM=new THREE.MeshStandardMaterial({color:G.lid,roughness:.4,metalness:.55,envMapIntensity:1.0,side:THREE.DoubleSide});
  const up=new THREE.Mesh(new THREE.SphereGeometry(1.0,40,16,0,Math.PI*2,0,Math.PI/2),lidM),lo=new THREE.Mesh(new THREE.SphereGeometry(1.0,40,16,0,Math.PI*2,Math.PI/2,Math.PI/2),lidM);
@@ -89,16 +99,17 @@ FA.buildGK=function(){const c=FA.GK,r=FA.rng(15),top=c.top,cx=c.x,cz=c.z;
  ball.add(new THREE.Mesh(cg,new THREE.MeshStandardMaterial({color:'#ffffff',transparent:true,opacity:.14,roughness:.04,envMapIntensity:1.5,depthWrite:false})));
  const halo=FA.glow(E.x,E.y,E.z,3.2,L.ai,.12);
  // attention clock: new target every 4-7 s, blink every 8-14 s (0.32 s), lids open again at once
- const rr=FA.rng(77),sched=[];let t0=0;while(t0<4000){sched.push({t:t0,yaw:-.22+(rr()-.5)*1.5,pitch:-.12-rr()*.42});t0+=4+rr()*3;}
+ const rr=FA.rng(77),sched=[];let t0=0;while(t0<4000){sched.push({t:t0,yaw:(rr()-.5)*1.5,pitch:-.12-rr()*.42});t0+=4+rr()*3;}
  const blinks=[];t0=2.2;while(t0<4000){blinks.push(t0);t0+=8+rr()*6;}
  const qT=new THREE.Quaternion(),eul=new THREE.Euler(0,0,0,'YXZ');let bi=0;
- FA.anims.push((T,dt)=>{let i=0;while(i+1<sched.length&&sched[i+1].t<=T)i++;const s=sched[i];eul.set(-s.pitch*-1,s.yaw,0);eul.x=-s.pitch;qT.setFromEuler(eul);
+ FA.anims.push((T,dt)=>{let i=0;while(i+1<sched.length&&sched[i+1].t<=T)i++;const s=sched[i];eul.set(-s.pitch*-1,s.yaw+EB(),0);eul.x=-s.pitch;qT.setFromEuler(eul);sock.rotation.y=EB();
   ball.quaternion.slerp(qT,1-Math.exp(-dt*7));if(FA.TFIX!=null)ball.quaternion.copy(qT);
   while(bi+1<blinks.length&&blinks[bi+1]<=T)bi++;const bt=T-blinks[bi];const k=bt>=0&&bt<.32?Math.sin(Math.PI*bt/.32):0;
   up.rotation.x=-.56*(1-k);lo.rotation.x=.50*(1-k);halo.material.opacity=1-k*.8;});
  // gate lintels over the four avenue gaps (the wall is closed except where the Gatekeeper lets traffic through)
- const linG=new THREE.BoxGeometry(2.6,.34,.62);for(let q=0;q<4;q++){const a=q*Math.PI/2;const l=new THREE.Mesh(linG,twM);l.position.set(cx+Math.sin(a)*7.65,top+1.75,cz+Math.cos(a)*7.65);l.rotation.y=a;l.castShadow=true;SC.add(l);
-  const b=new THREE.Mesh(new THREE.BoxGeometry(2.62,.05,.64),senM);b.position.copy(l.position).y-=.1;b.rotation.y=l.rotation.y;SC.add(b);}
+ const linG=A?A.uvBox(new THREE.BoxGeometry(2.6,.34,.62)):new THREE.BoxGeometry(2.6,.34,.62);for(let q=0;q<4;q++){const a=q*Math.PI/2;const l=new THREE.Mesh(linG,capM);l.position.set(cx+Math.sin(a)*7.65,top+1.75,cz+Math.cos(a)*7.65);l.rotation.y=a;l.castShadow=true;FA.addStatic(l);
+  const b=new THREE.Mesh(new THREE.BoxGeometry(2.66,.05,.68),senM);b.position.copy(l.position).y-=.1;b.rotation.y=l.rotation.y;FA.addStatic(b);} // band 0.03 proud of the lintel (was 0.01: z-fight)
+ if(A)FA.A2.gkInfo=A.gkKit({cx,cz,top,towers,sy}); // A2 future-tech kit: brass inlays, sensor masts, drones
  // road stub (data layer) up to the plinth foot at the south gate
  FA.road([[cx+16,cz+92],[cx+7,cz+52],[cx+1.6,cz+24],[cx,cz+11.3]],.9,L.road);
 };
@@ -114,9 +125,7 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
   const ry=Math.atan2(vx-x,vz-z)+(r()-.5)*.5;const q=FA.put(r()<.55?'homeA':'homeB',x,z,{w:1.55+r()*.35,ry,aok:.45});homes.push({x,z,h:q?q.h:1.4,ry});FA.lanes.push([vx,vz,x,z]);}
  // sparse fire light (hearths / lanterns) + chimney smoke
  homes.forEach((h,i)=>{if(i%2===0){const f=FA.glow(h.x+Math.sin(h.ry)*.75,H(h.x,h.z)+.42,h.z+Math.cos(h.ry)*.75,.55,'#FF9040',.34);const ph=i*1.7;FA.anims.push(T=>{f.material.opacity=.75+.25*Math.sin(T*9+ph)*Math.sin(T*3.1+ph*2);});}});
- const puffs=[];homes.filter((h,i)=>i%4===1).forEach((h,j)=>{for(let k=0;k<10;k++){const m=new THREE.SpriteMaterial({map:FA.puffTex,color:C('#C9C5D0'),transparent:true,depthWrite:false,fog:false,opacity:0});
-  const s=new THREE.Sprite(m);SC.add(s);puffs.push({s,x:h.x+.22,y:H(h.x,h.z)+h.h*.92,z:h.z-.1,ph:k/10,sp:5.5+j*.7});}});
- FA.anims.push(T=>{for(const p of puffs){const u=((T/p.sp)+p.ph)%1;p.s.position.set(p.x+u*1.6+Math.sin(u*6+p.ph*9)*.12,p.y+u*3.4,p.z+u*.5);const sc=.4+u*1.7;p.s.scale.set(sc,sc,1);p.s.material.opacity=.6*(1-u)*smooth(0,.08,u);}});
+ homes.filter((h,i)=>i%4===1).forEach((h,j)=>{for(let k=0;k<10;k++)FA.smoke(h.x+.22,H(h.x,h.z)+h.h*.92,h.z-.1,5.5+j*.7,k/10,'#C9C5D0');}); // batched: rise/fade in the vertex shader
  // bonfire on the green: the only real point light, small radius, flickering
  const bfx=vx+2.2,bfz=vz+2.6;FA.put('lumber',bfx,bfz,{w:.7});const bf=new THREE.PointLight('#FF9548',1.3,8,2);bf.position.set(bfx,H(bfx,bfz)+.7,bfz);SC.add(bf);
  const bg=FA.glow(bfx,H(bfx,bfz)+.55,bfz,1.1,'#FF8438',.36);FA.anims.push(T=>{const f=.8+.2*Math.sin(T*11)*Math.sin(T*4.3);bf.intensity=1.3*f;bg.material.opacity=f;});
@@ -127,22 +136,24 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  const wx=FA.riverX(z0)-1.05-woff;const wm=FA.single('watermill',wx,z0,{w:2.7,ry:wry,y:H(wx,z0)-.45});
  if(wm){const sp=wm.spinner('wheel');if(sp)FA.anims.push(T=>sp(T*.9));}
  const bz=vz-7.5,bxc=FA.riverX(bz);{const wood=new THREE.MeshStandardMaterial({color:'#6B5038',roughness:.9});const deck=new THREE.Mesh(new THREE.BoxGeometry(5.6,.14,1.0),wood);deck.position.set(bxc,1.12,bz);
-  const r1=new THREE.Mesh(new THREE.BoxGeometry(5.6,.07,.07),wood),r2=r1.clone();r1.position.set(bxc,1.55,bz-.46);r2.position.set(bxc,1.55,bz+.46);[deck,r1,r2].forEach(m=>{m.castShadow=m.receiveShadow=true;SC.add(m);});
-  for(let i=-2;i<=2;i++)for(const s of[-.46,.46]){const p=new THREE.Mesh(new THREE.BoxGeometry(.09,1.3,.09),wood);p.position.set(bxc+i*1.35,.95,bz+s);p.castShadow=true;SC.add(p);}}
+  const r1=new THREE.Mesh(new THREE.BoxGeometry(5.6,.07,.07),wood),r2=r1.clone();r1.position.set(bxc,1.55,bz-.46);r2.position.set(bxc,1.55,bz+.46);[deck,r1,r2].forEach(m=>{m.castShadow=m.receiveShadow=true;FA.addStatic(m);});
+  for(let i=-2;i<=2;i++)for(const s of[-.46,.46]){const p=new THREE.Mesh(new THREE.BoxGeometry(.09,1.3,.09),wood);p.position.set(bxc+i*1.35,.95,bz+s);p.castShadow=true;p.receiveShadow=true;FA.addStatic(p);}}
  FA.lanes.push([vx,vz,bxc-2.6,bz]);
  const wmx=c.x-12,wmz=c.z-8;const wd=FA.single('windmill',wmx,wmz,{w:2.6,ry:.5});if(wd){const sp=wd.spinner('fan');if(sp)FA.anims.push(T=>sp(T*.55));}
  FA.lanes.push([vx,vz,wmx,wmz]);
  // fields: rotated parcels west/south of the village (crops in vertex colour + furrows, wheat kit pieces, wood fences)
- const ang=.32,ux=Math.cos(ang),uz=Math.sin(ang),wxv=-uz,wzv=ux;const types=['wheat','olive','fallow','pasture','wheat','olive'];const rows=[],stacks=[];
+ const ang=.32,ux=Math.cos(ang),uz=Math.sin(ang),wxv=-uz,wzv=ux;const types=['wheat','olive','fallow','pasture','wheat','olive'];const rows=[],stacks=[],walls=[];
  for(let i=-4;i<=2;i++)for(let j=-2;j<=3;j++){const px=vx-3+ux*i*4.6+wxv*j*3.6,pz=vz+uz*i*4.6+wzv*j*3.6;const dv=Math.hypot(px-vx,pz-vz);
   if(dv<8.6||dv>21||px>FA.riverX(pz)-4.2)continue;if(Math.hypot(px-wmx,pz-wmz)<4)continue;const ty=types[(r()*types.length)|0];FA.fields.push({x:px,z:pz,ux,uz,wx:wxv,wz:wzv,ty});
-  if(ty==='wheat'||ty==='olive'){const col=ty==='wheat'?'#86703C':'#5A6834';for(let b=-1.2;b<=1.21;b+=.4)rows.push([px+wxv*b,pz+wzv*b,-ang,col]);}
+  if((ty==='wheat'||ty==='olive')&&!FA.A2){const col=ty==='wheat'?'#86703C':'#5A6834';for(let b=-1.2;b<=1.21;b+=.4)rows.push([px+wxv*b,pz+wzv*b,-ang,col]);}
   if(ty==='fallow'&&r()<.6)for(const a of[-.9,.7])stacks.push([px+ux*a,pz+uz*a]);
-  if(r()<.5){const sgn=r()<.5?-1:1;for(let a=-1.85;a<=1.86;a+=.74)FA.put('fence',px+ux*a+wxv*sgn*1.75,pz+uz*a+wzv*sgn*1.75,{w:.78,along:Math.atan2(-uz,ux),ao:false});}}
+  if(r()<.5){const sgn=r()<.5?-1:1;for(let a=-1.85;a<=1.86;a+=.74)FA.put('fence',px+ux*a+wxv*sgn*1.75,pz+uz*a+wzv*sgn*1.75,{w:.78,along:Math.atan2(-uz,ux),ao:false});}
+  else if(FA.A2)walls.push({f:FA.fields[FA.fields.length-1],sgn:(i+j)&1?1:-1});} // A2: drystone wall on the unfenced parcels (no extra rng draws)
+ const A2=FA.A2;if(A2)FA.A2.rvInfo=A2.rvCraft(walls); // A2: furrowed parcel pads + drystone walls
  // crop rows (instanced, two crops) + haystacks: low 3D relief so the parcels read as farmland, not decals
- {const g=new THREE.BoxGeometry(3.9,.22,.2);g.translate(0,.11,0);const im=new THREE.InstancedMesh(g,new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.92,envMapIntensity:.4}),rows.length);const m=new THREE.Matrix4(),cc=new THREE.Color();
+ {const g=A2?new THREE.BoxGeometry(3.8,.08,.11):new THREE.BoxGeometry(3.9,.22,.2);g.translate(0,A2?.09:.11,0);const im=new THREE.InstancedMesh(g,new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.92,envMapIntensity:.4}),rows.length);const m=new THREE.Matrix4(),cc=new THREE.Color(); // A2: low crop ridges on the pad, not trays
   rows.forEach((q,i)=>{m.makeRotationY(q[2]);m.setPosition(q[0],H(q[0],q[1])-.03,q[1]);im.setMatrixAt(i,m);im.setColorAt(i,cc.set(q[3]).multiplyScalar(.9+r()*.2));});im.castShadow=im.receiveShadow=true;im.frustumCulled=false;SC.add(im);
-  const hm=new THREE.MeshStandardMaterial({color:'#9C8550',roughness:.95});for(const s of stacks){const y=H(s[0],s[1]);const a=new THREE.Mesh(new THREE.CylinderGeometry(.34,.38,.42,10),hm),b=new THREE.Mesh(new THREE.ConeGeometry(.36,.36,10),hm);a.position.set(s[0],y+.2,s[1]);b.position.set(s[0],y+.59,s[1]);[a,b].forEach(q=>{q.castShadow=q.receiveShadow=true;SC.add(q);});FA.AOS.push({x:s[0],z:s[1],r:.5,k:.4});}}
+  const hm=new THREE.MeshStandardMaterial({color:'#9C8550',roughness:.95});for(const s of stacks){const y=H(s[0],s[1])+(A2?.05:0);const a=new THREE.Mesh(new THREE.CylinderGeometry(.34,.38,.42,10),hm),b=new THREE.Mesh(new THREE.ConeGeometry(.36,.36,10),hm);a.position.set(s[0],y+.2,s[1]);b.position.set(s[0],y+.59,s[1]);[a,b].forEach(q=>{q.castShadow=q.receiveShadow=true;FA.addStatic(q);});if(!A2)FA.AOS.push({x:s[0],z:s[1],r:.5,k:.4});}}
  // orchard + yard props
  for(let i=0;i<4;i++)for(let j=0;j<3;j++){const x=vx-1+i*1.5,z=vz-9.5-j*1.5;FA.put('treeA',x,z,{w:1.0+r()*.2,ry:r()*6});}
  for(const h of homes){if(r()<.6)FA.put(r()<.5?'barrel':'sack',h.x+Math.cos(h.ry)*.9,h.z-Math.sin(h.ry)*.9,{w:.28,ao:false});}
@@ -164,7 +175,9 @@ FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
   const forest=FA.fbm(x*.045+7,z*.045+3,3);
   if(FA.LOOK.clump){ // style: forest clumps with clearings (low-frequency mask x cluster cells), no lone-sapling confetti
    const big=FA.fbm(x*.022+21,z*.022-8,3),cell=FA.fbm(x*.11+3,z*.11+17,2);
-   if(big>.55&&cell>.47&&sl<.6&&r()<.8){const k=r();FA.put(k<.5?'treesA':k<.85?'treesB':'treeA',x,z,{w:k<.85?1.4+r()*.8:.8+r()*.3,ry:r()*6.3,aok:.34});}
+   if(big>.55&&cell>.47&&sl<.6&&r()<.8){const k=r(),w=k<.85?1.4+r()*.8:.8+r()*.3;
+    if(FA.LOOK.ter.facet&&dg>34&&dr>36){FA.FARTREES.push({x,z,w});FA.AOS.push({x,z,r:w*.62+.3,k:.3});} // far field: cheap facet archetypes
+    else FA.put(k<.5?'treesA':k<.85?'treesB':'treeA',x,z,{w,ry:r()*6.3,aok:.34});}
    else if(sl>.38&&sl<.9&&r()<.03)FA.put('rock',x,z,{w:.7+r()*1.1,ry:r()*6.3,sink:.15});}
   else if(forest>.56&&sl<.75&&r()<.42){const k=r();FA.put(k<.45?'treesA':k<.75?'treesB':k<.9?'treeA':'treeB',x,z,{w:k<.75?1.35+r()*.8:.7+r()*.3,ry:r()*6.3,aok:.3});}
   else if(sl>.38&&sl<.9&&r()<.05)FA.put('rock',x,z,{w:.7+r()*1.1,ry:r()*6.3,sink:.15});
@@ -180,9 +193,10 @@ FA.go=function(city,view){if(city)FA.CITY=city;if(view)FA.VIEW=view;const q=new 
 document.querySelectorAll('[data-city]').forEach(b=>b.addEventListener('click',()=>FA.go(b.dataset.city)));
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>FA.go(null,b.dataset.view)));
 addEventListener('keydown',e=>{if(e.key==='1')FA.go('gatekeeper');if(e.key==='2')FA.go('reversion');if(e.key==='v')FA.go(null,FA.VIEW==='world'?'close':'world');});
-FA.start=async function(){const t0=performance.now();await FA.load(FA.LIST);const t1=performance.now();
+FA.start=async function(){const t0=performance.now();if(FA.A2&&document.fonts)await document.fonts.load('64px "Plex Mono"').catch(()=>{});await FA.load(FA.LIST);const t1=performance.now();
  FA.buildGK();FA.buildRV();FA.scatter();FA.buildTerrain(FA.colorHook);FA.tufts(FA.tuftList);const n=FA.buildInstances();
+ const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();
  FA.marker('gatekeeper','Gatekeeper','eye on the spire',FA.GK.x,FA.GK.top,FA.GK.z);FA.marker('reversion','Reversion','water wheel, windmill',FA.RV.x-1.5,H(FA.RV.x-1.5,FA.RV.z),FA.RV.z);
- FA.setView();FA.frame();FA.loop();FA.boot={loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n};document.body.classList.add('ready');window.__ready=true;};
+ FA.setView();FA.frame();FA.loop();FA.boot={loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
 FA.start().catch(e=>window.__errs.push('start:'+e.message));
 })();
