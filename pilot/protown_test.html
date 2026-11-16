@@ -34,17 +34,23 @@ const R=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performanc
 R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(W,H);R.outputEncoding=THREE.sRGBEncoding;
 R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=st.mood==='day'?1.0:.9;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
 document.body.appendChild(R.domElement);
-const SC=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(32,W/H,.1,900);
+const SC=new THREE.Scene(),CAM=new THREE.PerspectiveCamera(32,W/H,.1,4000);
+// B2 r4 test-page fix (?all=1 "salmon background / black octagon"): the sky sphere (r 800) was cut by the old far plane (900)
+// at the d=150 overview camera -> black clear colour showed through in a sphere-facet polygon; and the 140 u ground ended
+// inside the view, so the below-horizon sky (salmon horizon x .55) filled the frame. Now: far 4000, sky follows the camera,
+// below-horizon sky = ground tone, ground plane 2400 u in all-mode, fog pushed out, clear colour = horizon-dark.
+const ALLQ=new URLSearchParams(location.search).get('all')==='1';
 // ---- simple blue-hour rig (approximation of the archviz look; NOT the engine's) ----
 const blue=st.mood!=='day';
-const skyU={zen:{value:new THREE.Color(blue?'#173576':'#6F9ED8')},mid:{value:new THREE.Color(blue?'#3A6CC4':'#A9C8EA')},hor:{value:new THREE.Color(blue?'#D89C84':'#E6E2D8')}};
+const skyU={zen:{value:new THREE.Color(blue?'#173576':'#6F9ED8')},mid:{value:new THREE.Color(blue?'#3A6CC4':'#A9C8EA')},hor:{value:new THREE.Color(blue?'#D89C84':'#E6E2D8')},gnd:{value:new THREE.Color(blue?'#3E4250':'#7E8274')}};
+R.setClearColor(blue?'#2C3448':'#B8C8DA',1);
 const skyM=new THREE.ShaderMaterial({uniforms:skyU,side:THREE.BackSide,depthWrite:false,fog:false,
  vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
- fragmentShader:'uniform vec3 zen,mid,hor;varying vec3 vP;void main(){float y=vP.y;vec3 c=mix(hor,mid,smoothstep(0.,.08,y));c=mix(c,zen,smoothstep(.08,.6,y));if(y<0.)c=hor*.55;gl_FragColor=vec4(c,1.);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}'});
+ fragmentShader:'uniform vec3 zen,mid,hor,gnd;varying vec3 vP;void main(){float y=vP.y;vec3 c=mix(hor,mid,smoothstep(0.,.08,y));c=mix(c,zen,smoothstep(.08,.6,y));if(y<0.)c=mix(hor*.55,gnd,smoothstep(0.,.03,-y));gl_FragColor=vec4(c,1.);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}'});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(800,32,16),skyM);SC.add(sky);
 {const pm=new THREE.PMREMGenerator(R),es=new THREE.Scene();es.add(new THREE.Mesh(new THREE.SphereGeometry(50,32,16),skyM));
  SC.environment=pm.fromScene(es,0.04).texture;pm.dispose();}
-SC.fog=new THREE.Fog(blue?'#2C3A6A':'#B8C8DA',120,520);
+SC.fog=new THREE.Fog(blue?'#2C3A6A':'#B8C8DA',ALLQ?400:120,ALLQ?1800:520);
 SC.add(new THREE.HemisphereLight(blue?'#A9C6E8':'#DCE8F2',blue?'#6E6A78':'#BFB7A8',blue?.55:.9));
 const sun=new THREE.DirectionalLight(blue?'#FFB07A':'#FFEFD9',blue?.55:2.0);sun.position.set(-60,blue?16:60,-40);sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-22,right:22,top:22,bottom:-22,near:1,far:200});sun.shadow.bias=-.0004;SC.add(sun);
@@ -53,7 +59,7 @@ const fill=new THREE.DirectionalLight('#6A8EE6',blue?.35:.15);fill.position.set(
 const heightAt=(x,z)=>st.ground==='flat'?0:1.1*Math.sin(x*.07)*Math.cos(z*.055)+.35*Math.sin(x*.19+z*.15)+.004*(x*x+z*z)*.2;
 let ground=null;
 function makeGround(){if(ground){SC.remove(ground);ground.geometry.dispose();}
- const g=new THREE.PlaneGeometry(140,140,140,140);g.rotateX(-Math.PI/2);const p=g.attributes.position;
+ const g=ALLQ?new THREE.PlaneGeometry(2400,2400,8,8):new THREE.PlaneGeometry(140,140,140,140);g.rotateX(-Math.PI/2);const p=g.attributes.position;
  for(let i=0;i<p.count;i++)p.setY(i,heightAt(p.getX(i),p.getZ(i)));g.computeVertexNormals();
  ground=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:blue?'#5A5B66':'#7E8274',roughness:.95}));ground.receiveShadow=true;ground.name='test_ground';SC.add(ground);}
 // ---- optional fake shared materials (?mats=1) to exercise the ctx.mats path ----
@@ -127,7 +133,7 @@ const FPS=Q.get('fps')==='1';if(FPS)$('fps').style.display='block';
 let uT={value:0},last=performance.now(),fr=0,fpsV=0,acc=0;const T0=performance.now();const TFIX=Q.get('t')!=null?+Q.get('t'):null;
 function frame(){const now=performance.now();const T=TFIX!=null?TFIX:(now-T0)/1000;uT.value=T;
  if(cur&&cur.res.anim)try{cur.res.anim(T);}catch(e){if(window.__errs.length<20)window.__errs.push('anim '+e);}
- place();if(ALL)placeLabels();R.render(SC,CAM);fr++;acc+=now-last;last=now;if(acc>1000){fpsV=fr*1000/acc;fr=0;acc=0;
+ place();sky.position.copy(CAM.position);if(ALL)placeLabels();R.render(SC,CAM);fr++;acc+=now-last;last=now;if(acc>1000){fpsV=fr*1000/acc;fr=0;acc=0;
   if(FPS){const s=window.__stats||{};$('fps').textContent=fpsV.toFixed(1)+' fps · calls '+R.info.render.calls+' · tris '+R.info.render.triangles+
    '\n'+st.preset+' seed '+st.seed+' · near '+(s.near&&s.near.tris)+'/'+(s.near&&s.near.calls)+' · mid '+(s.mid&&s.mid.tris)+'/'+(s.mid&&s.mid.calls)+
    ' · far '+(s.far&&s.far.tris)+' · build '+s.buildMs+' ms · max step '+s.maxStepMs+' ms';}}

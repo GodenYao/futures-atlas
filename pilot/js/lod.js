@@ -236,30 +236,53 @@ function farMat(name,o){const m=new THREE.MeshStandardMaterial(Object.assign({ve
  m.customProgramCacheKey=()=>'faFar_'+name;return m;}
 // B1: generator-supplied FAR ({geom, family} in LOCAL coords, non-indexed or indexed, position/normal/color) -> engine families + aS/aW
 const FARFAM={light:'emit',metal:'metal',ground:'ground'};
-function farGen(s){let n=0;for(const e of s.farGeoms){const g0=e.geom||e.geometry;if(!g0)continue;const G=g0.index?g0.toNonIndexed():g0,P=G.attributes.position,N=G.attributes.normal,C=G.attributes.color,F=fam(FARFAM[e.family]||'mass');
+function* farGenG(s,T){let n=0;for(const e of s.farGeoms){const g0=e.geom||e.geometry;if(!g0)continue;
+  if(e.family==='ground'&&!L.FARGROUND)continue;   // B1 r4 halo: generator FAR 'ground' is opaque here (far geoms have no alpha) -> a hard plate under protown sites; terrain carries the colour instead (?farground=1 restores)
+  const G=g0.index?g0.toNonIndexed():g0,P=G.attributes.position,N=G.attributes.normal,C=G.attributes.color,F=fam(FARFAM[e.family]||'mass');
   for(let i=0;i<P.count;i++){F.pos.push(P.getX(i)+s.x,P.getY(i)+s.y,P.getZ(i)+s.z);if(N)F.nor.push(N.getX(i),N.getY(i),N.getZ(i));else F.nor.push(0,1,0);
-   if(C)F.col.push(C.getX(i),C.getY(i),C.getZ(i));else F.col.push(.6,.58,.55);F.s.push(s.i);F.w.push(e.family==='light'?1:0);}if(G!==g0)G.dispose();n++;}return n;}
+   if(C)F.col.push(C.getX(i),C.getY(i),C.getZ(i));else F.col.push(.6,.58,.55);F.s.push(s.i);F.w.push(e.family==='light'?1:0);
+   if(T&&(i&1023)===1023&&performance.now()-T.tw>L.farSlice()){T.work+=performance.now()-T.tw;yield 'far:gen';T.tw=performance.now();}}if(G!==g0)G.dispose();n++;}return n;}
+function farGen(s){const it=farGenG(s,null);let r;while(!(r=it.next()).done);return r.value;}
 // B1 r2: FAR re-merge as a time-sliced generator (GPU r2: the sync rebuild after a lazy build was 27-64 ms = the 50-66 ms frame).
 // Per-site generation yields at L.BUDGET*.75, one family buffer per step, the swap (remove old, add new, VIS reset) is one cheap step.
 // Boot still calls L.far() (drains it synchronously); lazy builds use L.farAsync() (rAF-paced, coalesces repeated requests).
 function farMats(){if(L.farMatsC)return L.farMatsC;const mats={mass:farMat('mass'),metal:farMat('metal',{metalness:.55,roughness:.45}),ground:farMat('ground',{roughness:.95,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),
   emit:new THREE.MeshBasicMaterial({vertexColors:true,toneMapped:true})};
  {const e=farMat('emit');mats.emit.onBeforeCompile=e.onBeforeCompile;e.dispose();}mats.emit.customProgramCacheKey=()=>'faFar_emit';return L.farMatsC=mats;}
-function* farSteps(){const t0=performance.now();let pieces=0,tw=performance.now(),work=0;for(const k in FAM)delete FAM[k];
- for(const s of SITES){const rnd=FA.rng(9001+s.i*131);pieces+=s.farGeoms?farGen(s):s.g==='city'?farCity(s,rnd):farCot(s,rnd);
-  if(performance.now()-tw>L.BUDGET*.75){work+=performance.now()-tw;yield 'far:sites';tw=performance.now();}}
- const mats=farMats(),out=[];let tris=0;const fams=Object.keys(FAM).map(k=>[k,FAM[k]]);for(const k in FAM)delete FAM[k];
- for(const [k,F] of fams){if(!F.pos.length)continue;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(F.pos,3));
-  g.setAttribute('normal',new THREE.Float32BufferAttribute(F.nor,3));g.setAttribute('color',new THREE.Float32BufferAttribute(F.col,3));g.setAttribute('aS',new THREE.Float32BufferAttribute(F.s,1));
-  g.setAttribute('aW',new THREE.Float32BufferAttribute(F.w,1));g.computeBoundingSphere();const me=new THREE.Mesh(g,mats[k]);me.name='far_'+k;me.castShadow=false;me.receiveShadow=true;out.push(me);tris+=F.pos.length/9;
-  work+=performance.now()-tw;yield 'far:'+k;tw=performance.now();}
- if(L.farMeshes)for(const me of L.farMeshes){FA.SC.remove(me);me.geometry.dispose();}   // swap
- for(const me of out)FA.SC.add(me);L.farMeshes=out;for(const s of SITES)VIS[s.i]=0;work+=performance.now()-tw;
- L.farInfo={draws:out.length,tris:Math.round(tris),pieces,ms:Math.round(performance.now()-t0),workMs:Math.round(work),sites:SITES.length};return L.farInfo;}
-L.far=function(){const it=farSteps();let r;while(!(r=it.next()).done);return L.farInfo;};
-L.farAsync=function(){if(L.farIt){L.farAgain=true;return;}L.farIt=farSteps();let mx=0;const nxt=f=>document.hidden?setTimeout(f,16):requestAnimationFrame(()=>setTimeout(f,0));
- const tick=()=>{const t=performance.now();let r=null;do{r=L.farIt.next();}while(!r.done&&performance.now()-t<L.BUDGET*.5);mx=Math.max(mx,performance.now()-t);
-  if(!r.done){nxt(tick);return;}L.farIt=null;L.farMs=+mx.toFixed(1);L.farInfo.maxSliceMs=L.farMs;L.update(true);FA.kick&&FA.kick(300);if(L.farAgain){L.farAgain=false;L.farAsync();}};
+// B1 r4 build spike: every FAR step is capped at L.farSlice() (?farms=, default 4 ms; 2 ms right after a slow frame): site pieces and
+// generator far geoms yield inside (every 1024 verts), family typed arrays are filled in chunks, the bounding sphere is its own step,
+// async rebuilds pre-upload each new family mesh (hidden, 1x1 scissor draw) in its own step, then the swap + dispose is one cheap step.
+function* f32(src,T){const a=new Float32Array(src.length);for(let i=0;i<src.length;){const e=Math.min(src.length,i+49152);for(let j=i;j<e;j++)a[j]=src[j];i=e;
+  if(T&&i<src.length&&performance.now()-T.tw>L.farSlice()){T.work+=performance.now()-T.tw;yield 'far:copy';T.tw=performance.now();}}return a;}
+function* farSteps(async){const t0=performance.now();let pieces=0,regen=0;const T={tw:performance.now(),work:0};for(const k in FAM)delete FAM[k];
+ const chk=function*(nm){if(performance.now()-T.tw>L.farSlice()*.6){T.work+=performance.now()-T.tw;yield nm;T.tw=performance.now();}};
+ // per-site cache (B1 r4): a site's FAR pieces are generated once and kept as typed arrays; a rebuild regenerates only sites whose
+ // generator far geoms changed (s.farCv !== s.farGeoms), the rest is a typed-array copy (the old full regen was 5-10 ms per slice)
+ for(const s of SITES){if(s.farC&&s.farCv===(s.farGeoms||null))continue;for(const k in FAM)delete FAM[k];const rnd=FA.rng(9001+s.i*131);
+  s.farN=s.farGeoms?yield* farGenG(s,async?T:null):s.g==='city'?farCity(s,rnd):farCot(s,rnd);s.farC={};
+  for(const k in FAM){const F=FAM[k];if(F.pos.length)s.farC[k]={pos:new Float32Array(F.pos),nor:new Float32Array(F.nor),col:new Float32Array(F.col),s:new Float32Array(F.s),w:new Float32Array(F.w)};}
+  for(const k in FAM)delete FAM[k];s.farCv=s.farGeoms||null;regen++;yield* chk('far:sites');}
+ const mats=farMats(),out=[];let tris=0;const keys=[];for(const s of SITES){pieces+=s.farN||0;for(const k in s.farC)if(!keys.includes(k))keys.push(k);}
+ for(const k of keys){let n=0;for(const s of SITES){const c=s.farC[k];if(c)n+=c.pos.length;}if(!n)continue;
+  const A={pos:new Float32Array(n),nor:new Float32Array(n),col:new Float32Array(n),s:new Float32Array(n/3),w:new Float32Array(n/3)};let o=0;
+  for(const s of SITES){const c=s.farC[k];if(!c)continue;A.pos.set(c.pos,o);A.nor.set(c.nor,o);A.col.set(c.col,o);A.s.set(c.s,o/3);A.w.set(c.w,o/3);o+=c.pos.length;yield* chk('far:copy');}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(A.pos,3));g.setAttribute('normal',new THREE.BufferAttribute(A.nor,3));
+  g.setAttribute('color',new THREE.BufferAttribute(A.col,3));g.setAttribute('aS',new THREE.BufferAttribute(A.s,1));g.setAttribute('aW',new THREE.BufferAttribute(A.w,1));
+  g.computeBoundingSphere();const me=new THREE.Mesh(g,mats[k]);me.name='far_'+k;me.castShadow=false;me.receiveShadow=true;out.push(me);tris+=n/9;
+  T.work+=performance.now()-T.tw;yield 'far:'+k;T.tw=performance.now();
+  if(async&&L.FARUP){me.visible=false;FA.SC.add(me);preUpload([me]);T.work+=performance.now()-T.tw;yield 'far:up:'+k;T.tw=performance.now();}}
+ const old=L.farMeshes;for(const me of out){me.visible=true;if(!me.parent)FA.SC.add(me);}L.farMeshes=out;for(const s of SITES)VIS[s.i]=0;   // swap
+ if(old)for(const me of old){FA.SC.remove(me);me.geometry.dispose();}T.work+=performance.now()-T.tw;
+ L.farInfo={draws:out.length,tris:Math.round(tris),pieces,regen,ms:Math.round(performance.now()-t0),workMs:Math.round(T.work),sites:SITES.length};return L.farInfo;}
+L.far=function(){const it=farSteps(false);let r;while(!(r=it.next()).done);return L.farInfo;};
+L.FAR_MS=+(Q.get('farms')||4);L.FARUP=Q.get('farup')!=='0';L.FARGROUND=Q.get('farground')==='1';
+L.SLOW_DT=+(Q.get('slowdt')||18);L.SLOW_MS=+(Q.get('slowms')||2);L.lastDt=16.7;L.rafTs=0;
+L.rafNote=function(ts){if(L.rafTs&&ts>L.rafTs){const d=ts-L.rafTs;L.lastDt=d<100?d:16.7;}L.rafTs=ts;};
+L.farSlice=()=>L.lastDt>L.SLOW_DT?Math.min(L.FAR_MS,L.SLOW_MS):L.FAR_MS;
+L.farAsync=function(){if(L.farIt){L.farAgain=true;return;}L.farIt=farSteps(true);let mx=0;L.farSlices=[];const nxt=f=>document.hidden?setTimeout(f,16):requestAnimationFrame(ts=>{L.rafNote(ts);setTimeout(f,0);});
+ const tick=()=>{const t=performance.now(),lim=L.farSlice();let r=null,nm='';do{r=L.farIt.next();nm=r.value&&r.value.draws==null?r.value:nm;}while(!r.done&&performance.now()-t<lim);const t1=performance.now();mx=Math.max(mx,t1-t);
+  FA.mark&&FA.mark('far',t,t1,nm);L.farSlices.push(+(t1-t).toFixed(1));
+  if(!r.done){nxt(tick);return;}L.farIt=null;L.farMs=+mx.toFixed(1);L.farInfo.maxSliceMs=L.farMs;L.farInfo.slices=L.farSlices.length;L.update(true);FA.kick&&FA.kick(300);if(L.farAgain){L.farAgain=false;L.farAsync();}};
  nxt(tick);FA.kick&&FA.kick(400);};
 
 // ---- stand-in markers: DOM plates (0 draws) + ONE LineSegments for all their drop lines ----
@@ -467,17 +490,23 @@ function* hostSteps(s){const t0=performance.now(),R=GEN.resolve(s),site=L.siteAr
  if(L.FADE){const U=fdU(s);fdApply(near,U.near);fdApply(mid,U.mid);}   // B1 r3: per-site cross-fade material variants (programs warmed at boot)
  yield 'fade:variants';
  // B1 r3: upload buffers / compile any missed program HERE (a build step), one tier per step; the site counts as built only afterwards
+ if(FA.anisoSweep){FA.anisoSweep(near);FA.anisoSweep(mid);}   // B1 r4: 16x anisotropy on any texture the generator brought
  s.upMs=[preUpload([near].concat(s.fx,s.decals))];yield 'upload:near';s.upMs.push(preUpload([mid]));yield 'upload:mid';
  s.built=1;return s;}
 // ---- scheduler: run build steps from rAF with a per-frame budget (L.BUDGET ms, default 8). ?lodsplit=0 = B0 path (one sync chunk) ----
-L.BUDGET=+(Q.get('lodms')||8);L.LEGACY=Q.get('lodsplit')==='0';L.SPLIT=Q.get('lodsplit')!=='sync';const JOBS=[];let pumpOn=false;  // ?lodsplit=0 = B0 buildFull (before), =sync = B1 host in one chunk
-function pump(){pumpOn=false;const f0=performance.now();
- while(JOBS.length){const j=JOBS[0],t=performance.now();let r;try{r=j.it.next();}catch(e){r={done:true};j.err=e.message;(window.__errs=window.__errs||[]).push('lod build '+j.s.id+': '+e.message);}
-  const dt=performance.now()-t;j.steps.push([r.value&&typeof r.value==='string'?r.value:r.value&&r.value.step?String(r.value.step):r.done?'end':'gen',+dt.toFixed(1)]);j.work+=dt;
-  if(r.done){JOBS.shift();done(j);}
-  if(performance.now()-f0>=L.BUDGET)break;}
- if(JOBS.length)schedule();}
-function schedule(){if(pumpOn)return;pumpOn=true;if(document.hidden)setTimeout(pump,16);else requestAnimationFrame(()=>setTimeout(pump,0));FA.kick&&FA.kick(400);}  // rAF -> after this frame's render
+L.BUDGET=+(Q.get('lodms')||5);L.LEGACY=Q.get('lodsplit')==='0';L.SPLIT=Q.get('lodsplit')!=='sync';const JOBS=[];let pumpOn=false;  // ?lodsplit=0 = B0 buildFull (before), =sync = B1 host in one chunk
+function pump(){pumpOn=false;const f0=performance.now(),B=L.lastDt>L.SLOW_DT?Math.min(L.BUDGET,L.SLOW_MS):L.BUDGET;let last='',held=false;   // B1 r4: 2 ms slice right after a slow frame
+ while(JOBS.length){let ji=0;
+  // B1 r4: a stand-in's first step (the sync procity / procottage build, 45-70 ms on the T4 box) is held while the camera moves
+  // (FA.camMovedAt < L.DEFER ms ago); the FAR proxy stays up meanwhile; other jobs keep running. Idle prebuild (below) makes this rare.
+  if(L.DEFER&&FA.camMovedAt&&performance.now()-FA.camMovedAt<L.DEFER){const nw=performance.now();ji=JOBS.findIndex(j=>!(j.heavy&&!j.steps.length&&nw-(j.held0||(j.held0=nw))<2500));if(ji<0){held=true;break;}}   // hold <= 2.5 s (idle camera drift cannot starve a build)
+  const j=JOBS[ji],t=performance.now();let r;try{r=j.it.next();}catch(e){r={done:true};j.err=e.message;(window.__errs=window.__errs||[]).push('lod build '+j.s.id+': '+e.message);}
+  const dt=performance.now()-t;last=(r.value&&typeof r.value==='string'?r.value:r.value&&r.value.step?String(r.value.step):r.done?'end':'gen')+':'+j.s.id+(j.pre?':pre':'');j.steps.push([last,+dt.toFixed(1)]);j.work+=dt;
+  if(r.done){JOBS.splice(ji,1);done(j);}
+  if(performance.now()-f0>=B)break;}
+ FA.mark&&FA.mark('pump',f0,performance.now(),last+(B<L.BUDGET?' (slow)':'')+(held?' (held)':''));
+ if(JOBS.length){if(held){pumpOn=true;setTimeout(()=>{pumpOn=false;schedule();},120);}else schedule();}}
+function schedule(){if(pumpOn)return;pumpOn=true;if(document.hidden)setTimeout(pump,16);else requestAnimationFrame(ts=>{L.rafNote(ts);setTimeout(pump,0);});FA.kick&&FA.kick(400);}  // rAF -> after this frame's render
 function done(j){const s=j.s;pending=JOBS.length?JOBS[0].s.id:null;const ms=Math.round(performance.now()-j.t0);
  const mx=j.steps.reduce((m,x)=>Math.max(m,x[1]),0);
  if(j.realMid){L.log.push({id:s.id,realMid:1,ok:!j.err,err:j.err,workMs:Math.round(j.work),steps:j.steps.length,maxStepMs:+mx.toFixed(1),tris:s.tris});L.update(true);FA.kick&&FA.kick(300);return;}
@@ -485,11 +514,19 @@ function done(j){const s=j.s;pending=JOBS.length?JOBS[0].s.id:null;const ms=Math
  if(!j.err){LRU.push(s.id);for(let i=0;LRU.length>L.CACHE&&i<LRU.length;){const ev=LRU[i];if(L.tiers[ev]==='far'&&ev!==s.id){LRU.splice(i,1);dispose(site(ev));}else i++;}}
  if(L.farDirty){L.farDirty=false;L.farAsync();}   // B1 r2: FAR re-merge time-sliced over frames (the site is NEAR, its FAR slot is hidden by VIS anyway)
  const td=performance.now();L.update(true);FA.shadowDirty=true;FA.kick&&FA.kick(600);L.log[L.log.length-1].doneMs=+(performance.now()-td).toFixed(1);}
-function queueBuild(s){if(JOBS.some(j=>j.s===s))return;const j={s,it:hostSteps(s),steps:[],work:0,t0:performance.now()};
+function queueBuild(s,pre){if(JOBS.some(j=>j.s===s))return;const R0=GEN.resolve(s);const j={s,it:hostSteps(s),steps:[],work:0,t0:performance.now(),heavy:!!(R0.g&&R0.g.legacy),pre:!!pre};
  if(!L.SPLIT){pending=s.id;setTimeout(()=>{try{let r;do{r=j.it.next();}while(!r.done);}catch(e){j.err=e.message;(window.__errs=window.__errs||[]).push('lod build '+s.id+': '+e.message);}
    j.work=performance.now()-j.t0;j.steps.push(['sync',+j.work.toFixed(1)]);done(j);pending=null;},0);return;}
  JOBS.push(j);pending=JOBS[0].s.id;schedule();}
 L.jobs=()=>JOBS.map(j=>j.s.id);
+// B1 r4 idle prebuild: while the camera has been still >= 1.5 s, no job runs and the page is visible, build the nearest unbuilt
+// stand-in (heavy sync first step) ahead of need - at most L.PRE_MAX per session, only while the LRU has 2 free slots (no eviction churn),
+// one site per 1.2 s tick. ?lodpre=0 off; ?loddefer=0 disables the camera-move hold above.
+L.DEFER=+(Q.get('loddefer')||350);L.PRE=Q.get('lodpre')!=='0';L.PRE_MAX=+(Q.get('lodpremax')||4);L.preN=0;
+setInterval(()=>{if(!L.PRE||document.hidden||JOBS.length||L.preN>=L.PRE_MAX||!window.__ready||L.LEGACY||!L.SPLIT)return;
+ if(!FA.camMovedAt||performance.now()-FA.camMovedAt<1500||LRU.length>=L.CACHE-1)return;
+ const c=SITES.filter(s=>!s.real&&!s.built&&!s.preDone&&!s.gen&&s.dist!=null).sort((a,b)=>a.dist-b.dist)[0];if(!c||c.dist>L.MID_IN*2.2)return;
+ c.preDone=1;L.preN++;queueBuild(c,true);},1200);
 function buildFull(s){const t0=performance.now();const a=snap();const sv={GK:FA.GK,RV:FA.RV,rng:FA.rng,eye:FA.eyePos,pc:FA.PROCITY&&FA.PROCITY.info,pk:FA.PROCOTTAGE&&FA.PROCOTTAGE.info,
   fl:FA.PROFLORA&&FA.PROFLORA.add,rvs:FA.RVSITE};
  const R0=sv.rng,off=s.seed;let ok=true;

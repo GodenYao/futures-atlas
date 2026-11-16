@@ -206,6 +206,34 @@ FA.Q=(function(){const q=(Q.get('q')||'').toLowerCase();let rs='';try{const gl=R
  const weak=/SwiftShader|llvmpipe|softpipe|Microsoft Basic|Mali|Adreno|PowerVR|Intel|Iris|UHD Graphics|HD Graphics/i.test(rs)&&!/Arc/i.test(rs);
  return(mob||weak||R.capabilities.maxTextureSize<8192)?'low':'high';})();
 FA.QK=FA.Q==='high'?1:.4;
+// B1 r4 image precision. (a) anisotropic filtering: every mipmapped texture gets the GPU max (16 on desktop; ?aniso=n) - the default
+// for new textures plus a sweep (FA.anisoSweep) over scene materials at the first frame and over each lazily built site.
+FA.ANISO=Q.has('aniso')?Math.max(1,+Q.get('aniso')):Math.min(16,R.capabilities.getMaxAnisotropy()||1);THREE.Texture.DEFAULT_ANISOTROPY=FA.ANISO;
+FA.anisoSweep=function(root){let n=0;const fix=t=>{if(!t||!t.isTexture||t.isRenderTargetTexture||t.generateMipmaps===false||t.anisotropy>=FA.ANISO)return;
+  if(t.minFilter!==THREE.LinearMipmapLinearFilter&&t.minFilter!==THREE.LinearMipmapNearestFilter)return;t.anisotropy=FA.ANISO;t.needsUpdate=true;n++;};
+ const seen=new Set();root.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];for(const m of ms){if(!m||seen.has(m))continue;seen.add(m);
+  for(const k in m){const v=m[k];if(v&&v.isTexture)fix(v);}if(m.uniforms)for(const k in m.uniforms){const u=m.uniforms[k];if(u&&u.value&&u.value.isTexture)fix(u.value);}}});return n;};
+// (b) pixel-ratio policy: target = min(devicePixelRatio, cap) with cap 2 (high tier) / 1.5 (low tier), limited by a pixel budget
+// (?dprmp= megapixels, default 6 high / 2.5 low) so a 1913x1000 dpr-2 screen does not render 7.7 MP; ?dpr= forces the cap.
+// Adaptive fallback: median frame interval over 40 interactive frames > D.slowMs (21) -> -0.25 (floor 1); < 15.5 ms for 4 windows -> +0.25
+// (max 2 raises per session, so it cannot ping-pong). ?dpradapt=0 off, ?dprslow=<ms> test hook. FA.DPR.log = changes.
+FA.DPR=(function(){const hi=FA.Q==='high',dev=window.devicePixelRatio||1,cap=Q.has('dpr')?parseFloat(Q.get('dpr')):hi?2:1.5,mp=Q.has('dprmp')?+Q.get('dprmp'):hi?6:2.5;
+ const D={dev,cap,mp,min:1,adapt:Q.get('dpradapt')!=='0',slowMs:Q.has('dprslow')?+Q.get('dprslow'):21,fastMs:15.5,win:[],last:0,good:0,ups:0,log:[]};
+ D.budget=()=>Math.sqrt(D.mp*1e6/Math.max(1,innerWidth*innerHeight));D.target=Math.max(D.min,Math.min(dev,cap,D.budget()));D.target=Math.round(D.target*100)/100;
+ if(Q.has('dpr'))D.target=Math.min(dev,cap);D.cur=D.target;
+ D.set=function(v,why){v=Math.round(v*100)/100;if(v===D.cur)return;D.cur=v;R.setPixelRatio(v);D.log.push({t:Math.round(performance.now()),dpr:v,why});FA.shadowDirty=true;FA.kick&&FA.kick(400);};
+ D.note=function(n){if(!D.adapt)return;const dt=n-D.last;D.last=n;if(dt>70||dt<=0)return;D.win.push(dt);if(D.win.length<40)return;
+  const s=D.win.slice().sort((a,b)=>a-b),med=s[20];D.win.length=0;D.lastMed=+med.toFixed(1);
+  if(med>D.slowMs&&D.cur>D.min+1e-3){D.set(Math.max(D.min,D.cur-.25),'slow '+med.toFixed(1));D.good=0;}
+  else if(med<D.fastMs&&D.cur<D.target-1e-3&&D.ups<2){if(++D.good>=4){D.set(Math.min(D.target,D.cur+.25),'fast '+med.toFixed(1));D.good=0;D.ups++;}}else D.good=0;};
+ return D;})();
+R.setPixelRatio(FA.DPR.cur);
+// (c) composer AA: MSAA samples on the HDR scene target (?msaa=, default 4, clamped to the GPU max) + FXAA on the final LDR image
+// (?aa=auto|fxaa|off; auto = FXAA only while the pixel ratio is < 1.75, i.e. where MSAA alone leaves bright HDR edges stair-stepped).
+FA.MSAA=Math.min(R.capabilities.maxSamples||4,Q.has('msaa')?+Q.get('msaa'):4);FA.AA=Q.get('aa')||'auto';
+// timing marks (B1 r4): FA.mark(kind, t0, t1, info) -> ring buffer FA.MARKS (last 600) + performance.measure 'fa:<kind>'
+FA.MARKS=[];FA.mark=function(k,t0,t1,info){FA.MARKS.push([+t0.toFixed(1),k,+(t1-t0).toFixed(2),info||'']);if(FA.MARKS.length>600)FA.MARKS.splice(0,100);
+ if(FA.MARKON)try{performance.measure('fa:'+k,{start:t0,end:t1});}catch(e){}};FA.MARKON=Q.get('marks')==='1';
 
 // height + distance fog: patch the shared fog chunks once (world position varying; valleys get extra haze)
 THREE.ShaderChunk.fog_pars_vertex='#ifdef USE_FOG\n varying float vFogDepth;\n varying vec3 vFogWP;\n#endif';
@@ -234,7 +262,7 @@ if(LOOK.overlay){const st=document.createElement('style');st.textContent='#faVig
  ';animation:faHz 90s ease-in-out infinite alternate;transform-origin:50% 0}@keyframes faHz{0%{opacity:1;transform:translateX(0) scale(1.04)}35%{opacity:.84;transform:translateX(-2.2%) scale(1.04)}70%{opacity:.93;transform:translateX(1.6%) scale(1.06)}100%{opacity:.8;transform:translateX(2.6%) scale(1.04)}}'+
  '@media (prefers-reduced-motion:reduce){#faGlow{animation:none}}body.faClose #faVig,body.faClose #faGlow{opacity:0;animation:none}';document.head.appendChild(st);
  for(const id of['faVig','faGlow']){const d=document.createElement('div');d.id=id;document.getElementById('stage').appendChild(d);}}
-FA.fitShadow=function(cx,cz,half){sun.target.position.set(cx,0,cz);sun.position.set(cx+SUNDIR.x*220,SUNDIR.y*220,cz+SUNDIR.z*220);
+FA.fitShadow=function(cx,cz,half,follow){if(!follow){FA.wFit=FA.VIEW==='world'?[cx,cz,half]:null;FA.shK='fit';}sun.target.position.set(cx,0,cz);sun.position.set(cx+SUNDIR.x*220,SUNDIR.y*220,cz+SUNDIR.z*220);
  const s=sun.shadow.camera;s.left=-half;s.right=half;s.top=half;s.bottom=-half;s.near=20;s.far=480;s.updateProjectionMatrix();sun.target.updateMatrixWorld();FA.shadowDirty=true;};
 FA.setShadowRes=function(n){if(sun.shadow.mapSize.x===n)return;sun.shadow.mapSize.set(n,n);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}FA.shadowDirty=true;}; // C4: 4096 in close-up on the high tier
 
@@ -359,6 +387,12 @@ function riverFacet(x,z,h){const k=smooth(-75,-30,z);if(k<=0)return h;const rc=F
  else if(ad<rw+.75)y=WL-.12;
  else{const t=ad-rw-.75,W=side?.6:3.6;y=lerp(WL+.06,land,smooth(0,W,t));if(!side)y=Math.min(y,lerp(WL+.06,land,smooth(W*.5,W*1.6,t)));}
  return lerp(land,y,k);}
+// B1 r4 halo fix: max basin-flattening weight of the stand-in / protown site basins at (x,z) (same warp as FA.H). The terrain colour
+// bands use the UNFLATTENED height inside a basin (lerp by this weight), because the flattened floor (h0 2.6 / 1.6) sat in the lower
+// meadow band while its surroundings were heath -> a lighter round plate under every protown town in the world view.
+FA.basinW=function(x,z){let m=0;if(FA.SITEB)for(const s of FA.SITEB){const ex=x-s.x,ez=z-s.z,ds=Math.hypot(ex,ez);if(ds>s.rb*1.7+24)continue;
+  const w=s.p1==null||!FA.LOD||!FA.LOD.warp?s.rb+1:s.rb+1+s.rb*FA.LOD.warp(s,Math.atan2(ez,ex))+Math.max(0,(fbm(x*.07+s.p1,z*.07+s.p2,2)-.5)*7);m=Math.max(m,smooth(w+20,w,ds));}return m;};
+FA.HRAW=(x,z)=>Hraw(x,z);FA.HALOFIX=Q.get('halofix')!=='0';
 FA.H=function(x,z){let h=Hraw(x,z);
  let d=Math.hypot(x-GK.x,z-GK.z);h=lerp(h,2.6,LOOK.archviz?smooth(31,24,d):smooth(17,11.5,d));                       // Gatekeeper plinth bed
  d=Math.hypot(x-RV.x,z-RV.z);h=lerp(h,1.0+(fbm(x*.09,z*.09,3)-.5)*.7,smooth(24,10,d));    // Reversion valley floor (low banks so the wheel reaches the stream)
@@ -512,7 +546,9 @@ function buildFacetTerrain(colorHook){const T=LOOK.ter;const G=tgrid(),xs=G.xs,z
  // B1 terrain B: colour PER VERTEX (interpolated across faces -> no per-face bands / steps). Slope from the analytic smooth normal,
  // height bands with noisy soft edges, dirt/scree at the mountain foot + slope breaks, rock on steep faces; palette = the look's ter.P.
  let VC=null;if(SNv&&TERB){VC=new Float32Array(NX*NZ*3);const q=new THREE.Color(),PH=P.heath||P.mid,PK=P.rock.clone().lerp(P.snow,.5);
-  for(let k=0;k<NX*NZ;k++){const x=VX[k],z=VZ[k],h=VH[k],sl=1-SNv[k*4+1],mo=fbm(x*.05+40,z*.05-20,3),n2=fbm(x*.19+3.7,z*.19-6.1,2)-.5;
+  for(let k=0;k<NX*NZ;k++){const x=VX[k],z=VZ[k],h0=VH[k],sl=1-SNv[k*4+1],mo=fbm(x*.05+40,z*.05-20,3),n2=fbm(x*.19+3.7,z*.19-6.1,2)-.5;
+   const bw=FA.HALOFIX?FA.basinW(x,z):0,h=bw>0?lerp(h0,Math.max(h0,FA.HRAW(x,z)),bw):h0;              // B1 r4: colour bands from the unflattened height in site basins
+   if(bw>0)VA[k]=lerp(VA[k],Math.min(1,VA[k]+.08),bw);                                            // and a softer occlusion ring at the basin wall
    q.copy(P.lo).lerp(P.mid,smooth(.36,.66,mo));                                                   // meadow: 2 moisture tones, blended
    q.lerp(PH,smooth(4.5,9,h+n2*3));q.lerp(P.hi,smooth(10,16,h+n2*4));q.lerp(PK,smooth(19,30,h+n2*5)*.7); // upland bands, noisy soft edges
    let sf=1;if(FA.SITEB)for(const s of FA.SITEB){const d=Math.hypot(x-s.x,z-s.z);sf=Math.min(sf,smooth(s.rb*1.1,s.rb*1.7+26,d));}   // B1 r3: no scree ring at a site's feathered basin edge
@@ -690,17 +726,52 @@ FA.TS=TS;
 {const t=document.querySelector('#hud .t');if(t)t.textContent+=' · style: '+STYLES[FA.STYLE].name;}
 FA.anims=[];const clock=new THREE.Clock();let fr=0,acc=0,lastInfo='',lastSh=-1;FA.T=0;
 FA.perf={steady:null,shadow:null};
+// B1 r4 composer AA hook (a2.js is not B1-owned: the chain is wrapped here, not edited). MSAA samples are set before the scene target is
+// first allocated; FXAA redirects the chain's final screen pass (setRenderTarget(null)) into an LDR target, then one FXAA pass to screen.
+FA.postAA=function(P){if(P.rtS)P.rtS.samples=FA.MSAA;const base=P.render;let rtF=null,mF=null,qs=null,qc=null;
+ P.render=function(){const fx=FA.AA==='fxaa'||(FA.AA==='auto'&&R.getPixelRatio()<1.75);FA.fxaaOn=fx;if(!fx)return base();
+  const w=R.domElement.width,h=R.domElement.height;
+  if(!rtF){rtF=new THREE.WebGLRenderTarget(w,h,{depthBuffer:false,generateMipmaps:false,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
+   mF=new THREE.ShaderMaterial({uniforms:{tI:{value:null},px:{value:new THREE.Vector2()}},depthTest:false,depthWrite:false,
+    vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=vec4(position.xy,0.,1.);}',
+    fragmentShader:['uniform sampler2D tI;uniform vec2 px;varying vec2 vU;',   // FXAA (Lottes, console variant) + local-contrast early out
+     'void main(){const vec3 L=vec3(.299,.587,.114);vec3 cM=texture2D(tI,vU).rgb;float lM=dot(cM,L);',
+     ' float lNW=dot(texture2D(tI,vU+vec2(-1.,-1.)*px).rgb,L),lNE=dot(texture2D(tI,vU+vec2(1.,-1.)*px).rgb,L),lSW=dot(texture2D(tI,vU+vec2(-1.,1.)*px).rgb,L),lSE=dot(texture2D(tI,vU+vec2(1.,1.)*px).rgb,L);',
+     ' float lMin=min(lM,min(min(lNW,lNE),min(lSW,lSE))),lMax=max(lM,max(max(lNW,lNE),max(lSW,lSE)));',
+     ' if(lMax-lMin<max(.0312,lMax*.125)){gl_FragColor=vec4(cM,1.);return;}',
+     ' vec2 d=vec2(-((lNW+lNE)-(lSW+lSE)),(lNW+lSW)-(lNE+lSE));float rd=max((lNW+lNE+lSW+lSE)*.03125,1./128.);float rc=1./(min(abs(d.x),abs(d.y))+rd);',
+     ' d=clamp(d*rc,vec2(-8.),vec2(8.))*px;vec3 A=.5*(texture2D(tI,vU+d*(1./3.-.5)).rgb+texture2D(tI,vU+d*(2./3.-.5)).rgb);',
+     ' vec3 B=A*.5+.25*(texture2D(tI,vU-d*.5).rgb+texture2D(tI,vU+d*.5).rgb);float lB=dot(B,L);gl_FragColor=vec4((lB<lMin||lB>lMax)?A:B,1.);}'].join('\n')});
+   qs=new THREE.Scene();qc=new THREE.OrthographicCamera(-1,1,1,-1,0,1);const q=new THREE.Mesh(new THREE.PlaneGeometry(2,2),mF);q.frustumCulled=false;qs.add(q);}
+  if(rtF.width!==w||rtF.height!==h)rtF.setSize(w,h);
+  const sr=R.setRenderTarget;R.setRenderTarget=function(t,a,b){return sr.call(R,t==null?rtF:t,a,b);};
+  try{base();}finally{R.setRenderTarget=sr;}
+  mF.uniforms.tI.value=rtF.texture;mF.uniforms.px.value.set(1/w,1/h);R.setRenderTarget(null);R.render(qs,qc);};};
+// B1 r4 shadow follow (NEAR detail in WORLD view): when the world camera is closer than FA.SHF_D (110 u) to its target, the sun shadow
+// frustum is refitted around the view (half = max(16, .8 d), shifted .3 half forward along the view), quantised (half in 1.25x steps,
+// centre on a half/4 grid) so it refits only a few times per dolly; at d >= 110 the go() world fit is restored. ?shf=0 off.
+// 2048 map: world fit 135 u half = .13 u/texel -> d 30: 24 u half = .023 u/texel (5.6x finer) without a second cascade.
+FA.SHF=Q.get('shf')!=='0'&&LOOK.archviz;FA.SHF_D=+(Q.get('shfd')||110);FA.shK='';FA.shFits=0;
+FA.shFollow=function(){if(!FA.SHF||FA.VIEW!=='world'||!FA.wFit||!FA.rig)return;const rg=FA.rig;
+ if(rg.d>=FA.SHF_D){if(FA.shK!=='fit'&&FA.shK!=='w'){FA.shK='w';FA.fitShadow(FA.wFit[0],FA.wFit[1],FA.wFit[2],true);}return;}
+ let half=Math.max(16,rg.d*.8);half=Math.min(FA.wFit[2],Math.pow(1.25,Math.ceil(Math.log(half)/Math.log(1.25))));
+ const vx=rg.tx-CAM.position.x,vz=rg.tz-CAM.position.z,vl=Math.hypot(vx,vz)||1,g=half*.25;
+ const cx=Math.round((rg.tx+vx/vl*half*.3)/g)*g,cz=Math.round((rg.tz+vz/vl*half*.3)/g)*g,k=half.toFixed(2)+','+cx.toFixed(1)+','+cz.toFixed(1);
+ if(k===FA.shK)return;FA.shK=k;FA.shFits++;FA.fitShadow(cx,cz,half,true);};
 const fpsEl=document.getElementById('fps');if(Q.get('fps')==='1')fpsEl.style.display='block';
 FA.frame=function(){if(FA.IDLE)FA.IDLE.renders++;if(FA.LOD&&FA.LOD.on&&FA.LOD.farMeshes)FA.LOD.update();  // B0 LOD tiers (throttled 120 ms)
 const dt=Math.min(.1,clock.getDelta());FA.T=FA.TFIX!=null?FA.TFIX:FA.T+dt;FA.TU.uT.value=FA.T; // C2: clamp .05 -> .1 so the 15-30 fps ambient cap keeps real-time animation speed
  if(FA.waterN){FA.waterN.offset.set(FA.T*.006,FA.T*.011);}
  for(const a of FA.anims)a(FA.T,dt);sky.position.copy(CAM.position);
+ if(!FA._aniso){FA._aniso=1;FA.anisoN=FA.anisoSweep(SC);}   // B1 r4: before the first upload of any texture
+ {const e=CAM.matrixWorld.elements,k=e[12]+e[13]*1.3+e[14]*1.7+e[8]*7+e[9]*11+e[10]*13;if(k!==FA._camK){FA._camK=k;FA.camMovedAt=performance.now();}}   // B1 r4: camera-move clock (LOD stand-in hold / idle prebuild)
+ FA.shFollow();
  // on-demand shadow map: after a view change, and at ~10 Hz in close-up where the wheel / fan / eyelids move (world zoom: they are sub-pixel)
  let sh=false;if(FA.shadowDirty||(FA.VIEW==='close'&&FA.TFIX==null&&FA.T-lastSh>.1)){R.shadowMap.needsUpdate=true;FA.shadowDirty=false;lastSh=FA.T;sh=true;}
  if(LOOK.post)R.info.reset();
  if(TS){const w=R.domElement.width,h=R.domElement.height;if(TS.rt.width!==w||TS.rt.height!==h)TS.rt.setSize(w,h);TS.q.material.uniforms.res.value.set(w,h);
   R.setRenderTarget(TS.rt);R.render(SC,CAM);R.setRenderTarget(null);R.render(TS.s,TS.c);}
- else if(LOOK.post&&FA.A2){if(!FA.POST)FA.POST=FA.A2.makePost();FA.POST.render();}   // A2: HDR target -> bloom -> Neutral + grade (draw calls include the 10 post passes)
+ else if(LOOK.post&&FA.A2){if(!FA.POST){FA.POST=FA.A2.makePost();if(FA.POST)FA.postAA(FA.POST);}FA.POST.render();}   // A2: HDR target -> bloom -> Neutral + grade (draw calls include the 10 post passes); B1 r4: + MSAA samples / FXAA
  else R.render(SC,CAM);FA.placeMarkers();
  {const i=R.info.render;FA.perf[sh?'shadow':'steady']={calls:i.calls,tris:i.triangles};}
  fr++;acc+=dt;if(acc>.5&&fpsEl.style.display==='block'){const i=R.info,P=FA.perf;lastInfo='fps '+(fr/acc).toFixed(0)+' · '+(acc/fr*1000).toFixed(1)+' ms · calls '+(P.steady?P.steady.calls:i.render.calls)+' · tris '+((P.steady?P.steady.tris:i.render.triangles)/1000).toFixed(0)+'k'+
@@ -739,7 +810,7 @@ FA.loop=function(n){requestAnimationFrame(FA.loop);const I=FA.IDLE;if(document.h
  else if(!I.on||FA.TU.uAn.value<.5){I.mode='off';I.fps=FA.ambFps=0;return;}
  else{if(n-lastMv>250){I.moving=FA.movingNow();lastMv=n;}const hot=FA.LOD&&FA.LOD.hot();I.hot=hot;
   f=FA.IDLE_FPS[(I.moving.length||hot)?0:1];I.mode=hot?'hot:'+hot:I.moving.length?'moving':'still';if(!f){I.fps=FA.ambFps=0;return;}}  // B0: hovered / showcase ending -> 30 fps
- I.fps=f;const gap=busy?0:1000/f;FA.ambFps=busy?0:f;if(n-lastF<gap-3)return;lastF=n;FA.frame();};
+ I.fps=f;const gap=busy?0:1000/f;FA.ambFps=busy?0:f;if(n-lastF<gap-3)return;lastF=n;const tf=performance.now();FA.frame();FA.mark('frame',tf,performance.now());if(busy)FA.DPR.note(n);};
 FA.info=()=>({calls:R.info.render.calls,tris:R.info.render.triangles,geometries:R.info.memory.geometries,textures:R.info.memory.textures,programs:(R.info.programs||[]).length,dpr:R.getPixelRatio(),perf:FA.perf,terrainTris:FA.terrainTris,waterTris:FA.waterTris,iblGain:FA.IBL_GAIN});
 // clipped-pixel check (P2): share of pixels with any channel > 240, measured right after a render
 FA.measureClip=function(){const cv=R.domElement,w=cv.width,h=cv.height;const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(cv,0,0);
