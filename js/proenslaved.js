@@ -36,9 +36,10 @@ const tone=(c,k)=>[c[0]*k,c[1]*k,c[2]*k];
 // ---- palettes: same structure for both blocs; grammar differs, not quality ----
 const BLOC={
  // C1 r5: Bloc A walls lifted ~12 % (owner: Bloc A too dark in close-up), Bloc B ground desaturated (world view: an orange patch)
- A:{name:'Bloc A',walls:['#7489A0','#8498AE','#697D94','#90A2B8'],roof:'#5E6A78',roof2:'#6A7684',ground:'#5A6472',deck:'#62707E',
+ // r4 T: lobe grounds split in tone AND value so the two blocs read apart at world zoom: A cool blue-slate, B pale warm grey (low chroma)
+ A:{name:'Bloc A',walls:['#7489A0','#8498AE','#697D94','#90A2B8'],roof:'#5E6A78',roof2:'#6A7684',ground:'#4F5C70',deck:'#62707E',
   light:'#CFEFFF',core:'#A8E0F0',pod:'#8FA4BA'},
- B:{name:'Bloc B',walls:['#C29A62','#D0AA74','#B08A58','#DAB884'],roof:'#7E6044','roof2':'#8E6E4C',ground:'#58564F',deck:'#8E7A60',
+ B:{name:'Bloc B',walls:['#C29A62','#D0AA74','#B08A58','#DAB884'],roof:'#7E6044','roof2':'#8E6E4C',ground:'#77736A',deck:'#8E7A60',
   light:'#F2C894',core:'#F2C894',pod:'#C4A274'}};
 const PAL={strip:'#7A776E',gravel:'#8C887D',asph:'#34363B',kerb:'#8E8A82',earth:'#6E6048',concrete:'#8E8A84',concL:'#A39F97',dark:'#2E3136',
  steel:'#7C8086',warm:'#FFC890',glassD:'#2A3038',mono:'#2A3038',sphere:'#6A5E50',cable:'#22252A',foliage:'#3E5238',trunk:'#5A4A3A',
@@ -58,7 +59,11 @@ function mkSite(site,ctx){site=site||{};ctx=ctx||{};const THREE=ctx.THREE||root.
  const q1=hash2(seed*.131,1.7)*TAU,q2=hash2(seed*.317,4.1)*TAU,q3=hash2(seed*.513,8.3)*TAU;
  T.rb=a=>clamp(R*(.80+.16*Math.pow(Math.abs(Math.cos(a)),1.5)+.05*Math.sin(3*a+q1)+.035*Math.sin(5*a+q2)+.02*Math.sin(7*a+q3)),R*.62,R*.97);
  T.bAt=(x,z)=>T.rb(Math.atan2(z,x));
- T.fa=(x,z)=>{const r=Math.hypot(x,z),b=T.bAt(x,z);return 1-ss(b*.84,b*1.03,r);};
+ // G1 r4 (T): wide, irregular alpha feather (starts at .56-.76 b, ends at .98-1.08 b, smooth noise in x/z) instead of a .84-1.03 b
+ // rim (read as a hard-edged plate edge / dark rectangle west of Bloc A at world zoom); the divide scar keeps alpha past the edge
+ T.fa=(x,z)=>{const r=Math.hypot(x,z),b=T.bAt(x,z),kk=T.k,w=.5+.28*Math.sin((x*.41+z*.17)/kk+q1)+.22*Math.sin((z*.53-x*.29)/kk+q2);
+  const sc=(1-ss(T.hw*.9,T.hw*2.3,Math.abs(x)))*(1-ss(b*.98,b*(1.3+.08*Math.sin(z*.7/kk+q3)),r));
+  return Math.max(1-ss(b*(.56+.2*w),b*(.98+.1*w),r),sc);};
  T.hw=R*.10;   // half width of the engineered divide (trench + lips)
  return T;}
 
@@ -529,11 +534,11 @@ function* coreA(B,S,K,mid){const T=B.T,k=T.k,c=K.core,m=K.mono,cx=c.x,cz=c.z,se=
 
 // ======================= centrepiece B : Bound Sphere =======================
 function* coreB(B,S,K,mid){const T=B.T,k=T.k,c=K.core,cx=c.x,cz=c.z,se=seatC(T,cx,cz,c.r*.9),y=se.hi,n=mid?18:36,P=K.P,te=K.terr,sp=K.sphere,la=K.lattice;K.y=y;
- const e1=hex(PAL.earth,.95*T.A),e2=hex(P.walls[2],.8*T.A),dk=hex(PAL.dark,T.A),st=hex(PAL.steel,.6*T.A),gl=glow(B,P.core,1.5),dr=(te.r1-te.r0)/te.n;
+ const e1=mid?hex('#6C675C',.95*T.A):hex(PAL.earth,.95*T.A),e2=mid?hex('#8C8574',.8*T.A):hex(P.walls[2],.8*T.A),dk=hex(PAL.dark,T.A),st=hex(PAL.steel,.6*T.A),gl=glow(B,P.core,1.5),dr=(te.r1-te.r0)/te.n; // G1 r4 (T): MID terraces desaturated (earth/sand rings = the orange smudge at world zoom)
  // earthwork terraces rising to the crater rim, crater wall + floor, light spilling from under the sphere
  let hp=0;for(let i=0;i<te.n;i++){const ro=te.r1-i*dr,h=te.h*(i+1)/te.n;
   cyl(S.building,cx,i?y+hp:se.lo-.15,cz,ro+(i?0:.12*k),ro,i?h-hp:y+h-se.lo+.15,n,i%2?e2:e1);annulus(S.building,cx,y+h,cz,ro-dr,ro,n,tone(i%2?e2:e1,1.12));hp=h;}
- cylIn(S.building,cx,y,cz,te.r0,te.r0,te.h,n,tone(e2,.6));annulus(S.building,cx,y+.02,cz,0,te.r0,n,dk);annulus(S.light,cx,y+.04,cz,sp.r*1.02,sp.r*1.2,mid?12:24,mid?glow(B,P.core,.8):gl);   // C1 r5: MID crater spill dimmed (orange patch at world zoom)
+ cylIn(S.building,cx,y,cz,te.r0,te.r0,te.h,n,tone(e2,.6));annulus(S.building,cx,y+.02,cz,0,te.r0,n,dk);annulus(S.light,cx,y+.04,cz,sp.r*1.02,sp.r*1.2,mid?12:24,mid?glow(B,P.core,.55):gl);   // C1 r5: MID crater spill dimmed (orange patch at world zoom); r4 T .8 -> .55
  if(!mid){const wcol=hex('#9FC2D6',T.day?.4:.62);   // cooling cascades down the terraces (dimmed: read as water, not white stairs)
   for(const a of K.casc){let h0=0;for(let i=0;i<te.n;i++){const ro=te.r1-i*dr,h=te.h*(i+1)/te.n,r2=ro+.012*k;
     annulus(S.light,cx,y+h+.012*k,cz,ro-dr,r2,1,wcol,a-.05,a+.05);
@@ -573,8 +578,8 @@ function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL
    quadO(S.building,[s*t.fl,fa0,z],[s*t.fl,fe0,e],[mx,me,e],[mx,ma,z],tone(DTR,sg),[s*t.out*3,ya,zc]);
    quadO(S.building,[mx,ma,z],[mx,me,e],[s*t.top,ye,e],[s*t.top,ya,z],tone(cc,.62*sg),[s*t.out*3,ya,zc]);
    quadUp(S.building,[s*t.top,ya,z],[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.top,ye,e],tone(cc,1.12));
-   if(mid||(Math.round(z/segL)&1)===0)box(S.light,s*(t.top+.03*k),ya-.005,zc,(mid?.07:.035)*k,.03*k,(e-z)*(mid?.92:.7),0,glow(B,PAL.cool,mid?.9:.5));   // lit lip: dashed edge light (MID: near-continuous line = the divide at world zoom)
-   quadO(S.building,[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.out,T.yl(s*t.out,e)-.03,e],[s*t.out,T.yl(s*t.out,z)-.03,z],er,[0,ya-9,zc]);}
+   if(mid||(Math.round(z/segL)&1)===0)box(S.light,s*(t.top+.03*k),ya-.005,zc,(mid?.13:.035)*k,.03*k,(e-z)*(mid?.96:.7),0,glow(B,PAL.cool,mid?.8:.5));   // lit lip: dashed edge light (MID: continuous line = the divide at world zoom; r4 T: .07 -> .13 k wide, .9 -> .8)
+   quadO(S.building,[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.out,T.yl(s*t.out,e)-.03,e],[s*t.out,T.yl(s*t.out,z)-.03,z],mid?tone(cc,.95):er,[0,ya-9,zc]);}   // r4 T: MID backfill = pale lip (was orange earth)
   yield 1;
   for(let z=t.z0+t.butt*.5;z<t.z1;z+=t.butt*(mid?2:1)){const yf=T.yl(s*t.fl,z)-.05;fin(S.building,s*t.fl*.62,z,s*t.top,z,yf,yf,.06*k,(yt(s,z)-yf)*.55,.24*k,tone(DTR,1.25));}
   yield 1;}
@@ -591,16 +596,24 @@ function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL
   if(i%12===11)yield 1;}}
 
 // ======================= ground: feathered two-tone underlay, trench floor, core pads, streets =======================
-function* groundGen(B,S,mid){const T=B.T,L=B.L,R=T.R,k=T.k,hw=T.hw,NR=mid?5:11,NS=mid?36:72,cA=hex(BLOC.A.ground,T.A),cB=hex(BLOC.B.ground,T.A),cS=hex(PAL.strip,T.A*.8);
- const V=(i,j)=>{const a=j*TAU/NS,r=Math.min(T.rb(a)*1.04,R*1.0)*i/NR,x=Math.cos(a)*r,z=Math.sin(a)*r;return[x,T.yl(x,z)-.03,z];};
- const col=x=>{const t=ss(hw*.9,hw*1.9,Math.abs(x)),c=x<0?cA:cB;return[lerp(cS[0],c[0],t),lerp(cS[1],c[1],t),lerp(cS[2],c[2],t)];};
+function* groundGen(B,S,mid){const T=B.T,L=B.L,R=T.R,k=T.k,hw=T.hw,NR=mid?6:12,NS=mid?36:72,cA=hex(BLOC.A.ground,T.A),cB=hex(BLOC.B.ground,T.A),cS=hex(PAL.strip,T.A*.8);
+ // G1 r4 (T): underlay reaches 1.12 b (the alpha feather ends inside it), and the ground across the divide reads at world zoom as
+ // a dark continuous trench band (|x| < 1.2 hw) framed by a pale lit lip band (1.2-1.9 hw), then each bloc's own ground tone
+ const DK=hex('#2B2F39',T.A*.9),LP=hex(PAL.concL,T.A*(mid?1.0:.9));
+ const V=(i,j)=>{const a=j*TAU/NS,r=Math.min(T.rb(a)*1.12,R*1.1)*i/NR,x=Math.cos(a)*r,z=Math.sin(a)*r;return[x,T.yl(x,z)-.03,z];};
+ const col=x=>{const ax=Math.abs(x),c=x<0?cA:cB,t=ss(hw*1.05,hw*1.3,ax),pl=ss(hw*1.1,hw*1.3,ax)*(1-ss(hw*1.55,hw*2.0,ax))*.85,o=[lerp(DK[0],c[0],t),lerp(DK[1],c[1],t),lerp(DK[2],c[2],t)];
+  return[lerp(o[0],LP[0],pl),lerp(o[1],LP[1],pl),lerp(o[2],LP[2],pl)];};
  for(let i=0;i<NR;i++){for(let j=0;j<NS;j++){const p0=V(i,j),p1=V(i+1,j),p2=V(i+1,j+1),p3=V(i,j+1),c=col((p0[0]+p2[0])/2);
    if(i===0)triUp(S.ground,p0,p1,p2,c);else quadUp(S.ground,p0,p1,p2,p3,c);}if(!mid&&i%3===2)yield 1;}
+ // the divide scar runs out past the city edge on both ends (alpha from T.fa tapers it), so the cut reads as engineered, not a plate
+ {const xs=[-2.3,-1.9,-1.55,-1.3,-1.05,0,1.05,1.3,1.55,1.9,2.3].map(v=>v*hw),nz=mid?4:8;
+  for(const s of[-1,1]){const zb=T.rb(s*PI/2)*1.1,ze=T.rb(s*PI/2)*1.36;for(let j=0;j<nz;j++){const za=lerp(zb,ze,j/nz)*s,zc=lerp(zb,ze,(j+1)/nz)*s;
+   for(let i=0;i<xs.length-1;i++){const xa=xs[i],xb=xs[i+1],P=(x,z)=>[x,T.yl(x,z)-.025,z];quadUp(S.ground,P(xa,za),P(xb,za),P(xb,zc),P(xa,zc),col((xa+xb)/2));}}}}
  yield 1;
- const t=L.trench;rectGrid(S.ground,T,0,(t.z0+t.z1)/2,t.fl*2.1,t.z1-t.z0,0,mid?1:2,mid?6:20,hex(PAL.gravel,T.A*.5),.012);
+ const t=L.trench;rectGrid(S.ground,T,0,(t.z0+t.z1)/2,t.fl*2.1,t.z1-t.z0,0,mid?1:2,mid?6:20,tone(DK,.9),.012); // r4 T: was mid-grey gravel
  const A=L.blocs[0],Bq=L.blocs[1];
  disc(S.ground,T,A.core.x,A.core.z,A.core.r*1.1,mid?2:3,mid?14:28,hex(PAL.concrete,.5*T.A),.016);
- disc(S.ground,T,Bq.core.x,Bq.core.z,Bq.core.r*1.08,mid?2:3,mid?14:28,hex(PAL.earth,.8*T.A),.016);
+ disc(S.ground,T,Bq.core.x,Bq.core.z,Bq.core.r*1.08,mid?2:3,mid?14:28,mid?hex('#67635A',.8*T.A):hex(PAL.earth,.8*T.A),.016); // r4 T: MID pad desaturated (orange smudge)
  yield 1;
  const AS=hex(PAL.asph,T.A),PV=hex(BLOC.B.deck,.7*T.A);let n=0;
  for(const st of L.streets){if(mid&&st.pts.length<12)continue;ribbon(S.ground,T,st.pts,st.w,st.s<0?AS:PV,.02,(mid?2.4:1.0)*k);if((++n)%12===0)yield 1;}

@@ -284,6 +284,8 @@ ol,ul{padding-left:20px}li{margin:5px 0}
 </script>
 <script src="js/protown.js"></script>
 <script src="js/proenslaved.js"></script>
+<script src="js/procity.js"></script>
+<script src="js/progate.js"></script>
 <script>
 // ======================= DATA (v4 model: Now -> 6 roads -> 13 sites in 4 basins) =======================
 // All numbers are ILLUSTRATIVE sample values (see v4_methods_design §2, §3.9, §4.3). Nothing here is a forecast.
@@ -438,7 +440,9 @@ function domRoad(src){let b=null,bv=-1;for(const k in src)if(src[k]>bv){bv=src[k
 const G1TXT={
  scene:{
   enslaved:'One basin split by an engineered trench between two buttressed walls, with sensor masts and two severed bridge stubs that do not meet. Bloc A (west) rises vertically: a terraced arcology, needle towers with sky-bridges and capsule towers on an orthogonal grid, threaded by a mag-lev spine with pods; at its centre a monolith hangs suspended inside three slowly turning gimbal rings over a ring basin. Bloc B (east) spreads horizontally: plinth decks, dome clusters, disc towers and lattice hangars on a radial plan around earthwork terraces; at its centre a sphere sits in a terraced crater, wrapped by three stacked coil rings inside an open lattice. Aqueducts, operations yards and drones serve each side.',
-  egalitarian:'Architecture (§2.3): identical modest two-storey dwellings with green, solar-topped roofs in three concentric rings around an open commons; a public workshop and a library on the inner ring, shared fields outside; no fences, no towers. Landmark: the open amphitheatre filling the commons.'},
+  normaltech:'Architecture (§2.3): an ordinary grid town of two- to four-storey concrete and brick buildings on irregular blocks around a central square with a four-storey civic block (the regulator\'s office); cars on the streets, street lamps, fields and farmsteads at the edge. Landmark: a fenced substation with transformers and gantries, a pylon line running out of town, and a data-centre campus of two long low halls joined to the substation by a raised cable tray.',
+ gatekeeper:'Architecture (§2.3): one round city inside a low perimeter rail with four gates: four avenues cross a ring canal (bridges, piers, small boats) to a central plaza; districts of glass towers, slab blocks on arcs, honeycomb pavilions with solar trees and a garden sector under a ribbed glass dome; an elevated rail loop with a slow train. Landmark: the single tall spire in a lattice frame at the centre, carrying one eye that turns to look around and blinks now and then (it watches; it does not scan).',
+ egalitarian:'Architecture (§2.3): identical modest two-storey dwellings with green, solar-topped roofs in three concentric rings around an open commons; a public workshop and a library on the inner ring, shared fields outside; no fences, no towers. Landmark: the open amphitheatre filling the commons.'},
  twinOld:'Two pits, Bloc A and Bloc B, separated by a ridge of mutual deterrence. Identical architecture on both sides; only the colour of the caged core differs (teal vs magenta).',
  twin:'One basin, Bloc A and Bloc B, divided by an engineered trench. The two blocs use different architectural languages (vertical arcology vs horizontal plinths), each built around its own confined AI core (monolith in gimbal rings vs coil-wrapped sphere).',
  labels:{blocA:'BLOC A',blocB:'BLOC B',divide:'ENGINEERED TRENCH',coreA:'monolith in gimbal rings',coreB:'coil-wrapped sphere'}};
@@ -572,7 +576,11 @@ const RSEG=[];for(const R of RIVERS){const p=R.full.map(([x,z])=>[x+Math.sin(z*.
   RSEG.push({ax:a0,az:a1,dx:b0-a0,dz:b1-a1,l2:(b0-a0)**2+(b1-a1)**2||1e-4,w0,w1,k,x0:Math.min(a0,b0)-pd,x1:Math.max(a0,b0)+pd,z0:Math.min(a1,b1)-pd,z1:Math.max(a1,b1)+pd});}}
 // G1 r2: lake shorelines are noise-warped (0.68-0.86 R), always inside the fa4_build water disc (R*1.02) and its rim ring (.97-1.0 R),
 // which therefore sit under the terrain -> no round water disc edge is visible
-for(const L of LAKES)L.sh=a=>.8+.17*(g1fbm(Math.cos(a)*1.3+L.X*.1,Math.sin(a)*1.3+L.Z*.1,2)-.5)*2;
+// G1 r4 (T): shoreline = elongated (per-lake axis) + 3 noise octaves (bays, spits) instead of one low-frequency wobble (read as a round
+// blue disc at world zoom); clamped below the fa4_build water disc radius (R*1.02) so the disc edge never shows
+for(const L of LAKES){const th=L.X*.37+L.Z*.21;L.sh=a=>{const c=Math.cos(a),s=Math.sin(a);
+ const v=.80+.12*Math.cos(2*(a-th))+.15*(g1fbm(c*1.3+L.X*.1,s*1.3+L.Z*.1,2)-.5)*2+.11*(g1fbm(c*3.1+L.X*.2+5,s*3.1-L.Z*.2,2)-.5)*2+.05*Math.sin(3*a+th*2)+.035*Math.sin(5*a+th*3);
+ return v<.5?.5:v>.9?.9:v;};}
 
 // ======================= TERRAIN =======================
 let VAL=[],INF=0,INFV=null,MW=0,MS=0,RIVF=0,LAKF=0,PLZF=0;
@@ -585,7 +593,11 @@ function g1fbm(x,z,o){let s=0,a=.5,t=0;for(let k=0;k<o;k++){s+=a*g1n(x,z);t+=a;x
 // owner decision D1 (G1): valley depth no longer follows the timeline share -> one fixed depth, terrain is static (built once)
 function depthOf(p){return 4.2;}
 function setValleys(p){VAL=[];for(const o of O){if(o.cliff)continue;const d=depthOf(p[o.id]||0);
- if(G1GEN[o.id]){const w=Math.max(o.twin?0:o.w*100,G1GEN[o.id].R*1.12);VAL.push({X:o.X,Z:o.Z,w2:w*w,d:o.twin?3.6:d,k:2.6,b:o.b,o});continue;} // G1: one flat-floored basin under a generator city (no twin pits, no ridge)
+ if(G1GEN[o.id]){const w=Math.max(o.twin?0:o.w*100,G1GEN[o.id].R*1.12);
+  // G1 r4 (T): Enslaved basin 3.6 -> 1.25 deep with a softer wall (k 2.6 -> 2.0), a stronger outline warp (wa) and a narrower noise
+  // feather (fk): the 3.6 u wall + its AO foot read as a dark round plateau rim (world ring L 39-41 at 1.0-1.3 R vs 53 outside)
+  if(o.id==='enslaved'){VAL.push({X:o.X,Z:o.Z,w2:w*w,d:1.25,k:2.0,b:o.b,o,wa:1.0,fk:.8});continue;}
+  VAL.push({X:o.X,Z:o.Z,w2:w*w,d:o.twin?3.6:d,k:2.6,b:o.b,o});continue;} // G1: one flat-floored basin under a generator city (no twin pits, no ridge)
  if(o.twin){for(const s of[-1,1])VAL.push({X:o.X+s*TWIN,Z:o.Z,w2:PITW*PITW,d:Math.min(9,d*.95),k:3.2,b:o.b,o});}
  else{const w=o.w*100;VAL.push({X:o.X,Z:o.Z,w2:w*w,d,k:2.2,b:o.b,o});}}}
 // G1 round 2 globals set by hAt: INFW = WIDE site feather (1 at the floor -> 0 at ~2.2 w, noise-warped outline; drives the noise ramp and
@@ -595,8 +607,8 @@ let INFW=0,BAS=0,RDN=99,RSAND=0,AD=0;
 function hAt(X,Z){let h=0,inf=0,iv=null,infw=0,bas=0;
  for(let i=0;i<VAL.length;i++){const v=VAL[i],dx=X-v.X,dz=Z-v.Z;let q=(dx*dx+dz*dz)/v.w2;if(q>9)continue;
   // G1 r2 (Part C idea 1): the basin outline is noise-warped (no round edge); floors (q<.55) keep the v4.4 shape for the dioramas
-  if(q>.55)q*=1+.55*(g1fbm(X*.085+v.X*.37,Z*.085-v.Z*.29,2)-.5)*sm(.55,1.4,q);
-  const fw=Math.exp(-Math.pow(q*.42,1.5));if(fw>infw)infw=fw;
+  if(q>.55)q*=1+(v.wa||.55)*(g1fbm(X*.085+v.X*.37,Z*.085-v.Z*.29,2)-.5+(v.wa?.45*(g1fbm(X*.21-v.X*.11,Z*.21+v.Z*.13,2)-.5):0))*sm(.55,1.4,q);
+  const fw=Math.exp(-Math.pow(q*(v.fk||.42),1.5));if(fw>infw)infw=fw;
   if(q>5)continue;const f=Math.exp(-Math.pow(q,v.k));h-=v.d*f;bas+=v.d*f;if(f>inf){inf=f;iv=v;}}
  INF=inf;INFV=iv;INFW=infw;BAS=bas;
  if(!G1GEN.enslaved){const rx=X-RX,rz=Z-RZ;h+=4.8*Math.exp(-rx*rx/7-Math.pow(rz/11,4));} // G1: proenslaved builds its own divide (trench + walls)
@@ -625,7 +637,7 @@ function hAt(X,Z){let h=0,inf=0,iv=null,infw=0,bas=0;
  // river bed: flat bed under the water, soft banks over .75-1.9 W; point bars raised; deeper gorge in the rim hills
  if(dn<1.9){const dep=1.15*(1+.7*sm(52,62,ad));h-=dep*(1-sm(.75,1.9,dn))*(1-.55*RSAND);}
  let lf=0;for(const L of LAKES){const dx=X-L.X,dz=Z-L.Z,r=Math.sqrt(dx*dx+dz*dz);if(r>L.R*1.8)continue;const Rs=L.R*L.sh(Math.atan2(dz,dx));
-  const g=sm(L.R*1.75,L.R*1.05,r);h=h+(L.LV-h)*g;h-=1.7*sm(Rs*1.08,Rs*.35,r);const sf=sm(Rs*1.5,Rs*.98,r);if(sf>lf)lf=sf;}
+  const g=sm(Rs*2.0,Rs*1.12,r);h=h+(L.LV-h)*g;h-=1.7*sm(Rs*1.08,Rs*.35,r);const sf=sm(Rs*1.5,Rs*.98,r);if(sf>lf)lf=sf;} // r4 T: shore flattening follows Rs (was a round 1.05-1.75 R flat ring = the 'disc')
  LAKF=lf;
  // the Now crossroads: a flat raised plaza
  {const dx=X-NOW.X,dz=Z-NOW.Z,r=Math.sqrt(dx*dx+dz*dz);PLZF=0;if(r<NOW.R*2.6){const g=sm(NOW.R*2.6,NOW.R*1.15,r);h=h+(NOW.H-h)*g;PLZF=sm(NOW.R*1.1,NOW.R*.95,r);}}
@@ -745,8 +757,9 @@ function faceColB(X,Z,h0,ny,o){const sl=1-ny,h=h0+BAS*.85;G1OW=g1out(X,Z,h,sl);c
  // water reads at twilight) -> slightly deeper tone toward the fa4_build ribbon core
  if(RDN<3.5){const dn=RDN+n2*.35;mix(o,T_WETE,(1-sm(1.0,2.6,dn))*.7,o);
   if(RSAND>0)mix(o,T_SAND,RSAND*.85,o);
-  if(dn<1.15){mix(T_SHAL,T_DEEP,1-sm(.3,.95,RDN),_tq);mix(o,_tq,(1-sm(.85,1.12,dn))*(1-RSAND*.85),o);}}
- if(LAKF>.01){mix(o,T_WETE,LAKF*(1-sm(.85,.97,LAKF))*.7,o);if(LAKF>.85)mix(o,T_SHAL,sm(.85,.97,LAKF),o);}
+  // G1 r4 (T): shallows edge feathered over ~.7 W (was .27 W, under one grid step -> per-vertex stair-steps along the bank)
+  if(dn<1.4){mix(T_SHAL,T_DEEP,1-sm(.3,.95,RDN),_tq);mix(o,_tq,(1-sm(.62,1.35,dn))*(1-RSAND*.85),o);}}
+ if(LAKF>.01){mix(o,T_WETE,LAKF*(1-sm(.8,.97,LAKF))*.7,o);if(LAKF>.72)mix(o,T_SHAL,sm(.72,.98,LAKF),o);}
  if(PLZF>0)mix(o,T_PAVE,PLZF*.9,o);
  const k=.97+.08*n2+.03*(g1n(X*.9,Z*.9)-.5);o[0]*=k;o[1]*=k;o[2]*=k;return o;} // G1 r2: smooth jitter (the per-vertex hash term read as speckle)
 function faceColV42(X,Z,h,ny,j,o){
@@ -999,19 +1012,19 @@ protector(o){const r=rng(16),cx=o.X,cz=o.Z,at=[cx,cz];const wl=['#f6e3c3','#f0d2
 benevolent(o){const r=rng(23),cx=o.X,cz=o.Z,at=[cx,cz];
  // §2.3: radial city around ONE tall stepped central structure; five distinct sectors (knowledge, art, pleasure, nature, religious), each with its own look; clear boundaries.
  // G1 r3 (D5, C2): the 12.2 u pale plaza disc is removed (read as an elliptical plate); the ziggurat stands on the terrain (paving patches tried: they merged into a pale disc again)
- for(let k=0;k<8;k++){const s=3.4-k*.4,h=1.0;P('box',cx,cz,s,h,s,'#8E8C9E',{at,yo:k*h,tag:'step'});if(k%3===2)P('box',cx,cz,s*1.015,.09,s*1.015,'#4E96A2',{glow:1,at,yo:k*h+h-.05});} // r2: light trims on every 3rd step only (the 8 stacked trims bloomed into one white disc) // r4 U11: steps + trims toned (white/brass reserved for UI markers)
- P('pyr',cx,cz,.7,1.1,.7,'#7FA6B8',{glow:1,at,yo:8});
- for(let s=0;s<5;s++){const a=s/5*6.2832+.31;P('box',cx+Math.cos(a)*4.1,cz+Math.sin(a)*4.1,4.4,.5,.16,'#A9A7B8',{ry:-a,at,tag:'wall'});P('box',cx+Math.cos(a)*4.1,cz+Math.sin(a)*4.1,4.4,.1,.42,'#4E96A2',{glow:1,ry:-a,at,yo:.52});} // sector rays = boundaries
+ for(let k=0;k<8;k++){const s=3.4-k*.4,h=1.0;P('box',cx,cz,s,h,s,'#8E8C9E',{at,yo:k*h,tag:'step'});if(k%3===2)P('box',cx,cz,s*1.015,.09,s*1.015,'#3C7480',{glow:1,at,yo:k*h+h-.05});} // r2: light trims on every 3rd step only (the 8 stacked trims bloomed into one white disc) // r4 U11: steps + trims toned (white/brass reserved for UI markers) // r4 T: trims '#4E96A2' -> '#3C7480'
+ P('pyr',cx,cz,.7,1.1,.7,'#5E8494',{glow:1,at,yo:8}); // r4 T: apex '#7FA6B8' -> '#5E8494' (centre hotspot)
+ for(let s=0;s<5;s++){const a=s/5*6.2832+.31;P('box',cx+Math.cos(a)*4.1,cz+Math.sin(a)*4.1,4.4,.5,.16,'#A9A7B8',{ry:-a,at,tag:'wall'});P('box',cx+Math.cos(a)*4.1,cz+Math.sin(a)*4.1,4.4,.1,.42,'#3E5F68',{ry:-a,at,yo:.52});} // sector rays = boundaries (r4 T: ray caps no longer glow - 5 lit rays + the fa4_post ray sprites read as a pale glowing disc)
  {const n=48,len=2*Math.PI*6.2/n*1.04;for(let i=0;i<n;i++){const a=i/n*6.2832,g=((a-.31)/6.2832*5%1+1)%1;if(g<.07||g>.93)continue;P('box',cx+Math.cos(a)*6.2,cz+Math.sin(a)*6.2,len,.6,.2,'#7A7888',{ry:-a-Math.PI/2,at,tag:'wall'});}} // G1 r3 (C2): low outer wall toned to the ground + open at the 5 sector rays; its lit band removed (read as a pale rim)
  const pts=(s,n,fn)=>{for(let i=0;i<n;i++){const a=(s+.5)/5*6.2832+.31+(r()-.5)*1.0,rr=2.4+r()*3.2;fn(cx+Math.cos(a)*rr,cz+Math.sin(a)*rr,a,i);}};
- pts(0,9,(X,Z,a)=>{const h=1.6+r()*1.3;P('box',X,Z,.42,h,.42,'#d6def2',{ry:-a});P('box',X,Z,.44,.06,.44,'#7ff6ff',{glow:1,ry:-a,yo:h*.7});}); // knowledge: slim archive towers
+ pts(0,9,(X,Z,a)=>{const h=1.6+r()*1.3;P('box',X,Z,.42,h,.42,'#d6def2',{ry:-a});P('box',X,Z,.44,.06,.44,'#8FB4BC',{glow:1,ry:-a,yo:h*.7});}); // knowledge: slim archive towers (G1 r4 T: band '#7ff6ff' -> muted, no neon)
  pts(0,1,(X,Z)=>{P('cyl',X,Z,1.1,.7,1.1,'#e4e8f6');P('sph',X,Z,1.1,.9,1.1,'#cfe0ff',{yo:.7});});
  pts(1,10,(X,Z,a,i)=>{const c=['#ff7ad9','#ffd36e','#6fd3c4','#c9a3ff'][i%4];const k=i%3;if(k===0)P('sph',X,Z,1.0,1.0,1.0,c,{yo:.2});else if(k===1)P('oct',X,Z,.85,2.2,.85,c,{ry:r()*3});else P('cone',X,Z,.85,1.8,.85,c);}); // art: sculptural forms
- pts(2,4,(X,Z)=>{P('cyl',X,Z,1.1,.06,1.1,'#2fd0ff',{glow:1});P('sph',X,Z,.8,.5,.8,'#f2e6ff',{yo:0});});pts(2,4,(X,Z)=>P('box',X,Z,.6,.5,.6,'#f6d6ee',{})); // pleasure: pools + pleasure domes
+ pts(2,4,(X,Z)=>{P('cyl',X,Z,1.1,.06,1.1,'#3A8296',{glow:1});P('sph',X,Z,.8,.5,.8,'#f2e6ff',{yo:0});});pts(2,4,(X,Z)=>P('box',X,Z,.6,.5,.6,'#f6d6ee',{})); // pleasure: pools + pleasure domes (G1 r4 T: pool '#2fd0ff' -> muted teal)
  pts(3,14,(X,Z)=>tree(X,Z,.5+r()*.3,GREENS[(r()*7)|0],r())); // nature: woodland + pond
- pts(3,1,(X,Z)=>P('cyl',X,Z,1.6,.05,1.6,'#2a8fb0',{glow:1}));
- pts(4,6,(X,Z)=>{P('box',X,Z,.7,.5,.7,'#e9dcc0');P('pyr',X,Z,.6,.8,.6,'#d9c08a',{yo:.5});});pts(4,2,(X,Z)=>{P('cyl',X,Z,.26,2.2,.26,'#efe3c6');P('cone',X,Z,.36,.7,.36,'#ffd36e',{glow:1,yo:2.2});}); // religious: temples + spires
- const hl=halo(cx,cz,4.5,1.4,'#cfe8ff',.16);ANIM.push(t=>{hl.material.opacity=.12+.06*Math.sin(t*1.6);});},
+ pts(3,1,(X,Z)=>P('cyl',X,Z,1.6,.05,1.6,'#2A6378',{glow:1}));
+ pts(4,6,(X,Z)=>{P('box',X,Z,.7,.5,.7,'#e9dcc0');P('pyr',X,Z,.6,.8,.6,'#d9c08a',{yo:.5});});pts(4,2,(X,Z)=>{P('cyl',X,Z,.26,2.2,.26,'#efe3c6');P('cone',X,Z,.36,.7,.36,'#B8995A',{glow:1,yo:2.2});}); // religious: temples + spires (r4 T: spire glow '#ffd36e' -> sodium-muted)
+ }, // G1 r4 (T): round additive halo sphere (r 1.4 u, '#cfe8ff') removed - with the ray sprites it read as a glowing disc with a near-white core at world zoom
 zookeeper(o){const r=rng(17),cx=o.X,cz=o.Z,at=[cx,cz];
  P('cyl',cx,cz,5.8,.07,5.8,'#86c46a',{at}); // G1 r3 (D5, C2): enclave lawn now fills the fence (was a smaller disc inside it -> read as a second ring)
  for(let i=0;i<6;i++){const a=i/6*6.283+.4;house(cx+Math.cos(a)*1.2,cz+Math.sin(a)*1.2,.32,.24,.32,'#f6e3c3','#d0704f',-a,at);}
@@ -1036,11 +1049,11 @@ descendants(o){const r=rng(18),cx=o.X,cz=o.Z,at=[cx,cz];const st='#cdb88f';
  for(let i=0;i<9;i++){const a=i/9*6.283+.5,rr=2+r()*3.5,X=cx+Math.cos(a)*rr,Z=cz+Math.sin(a)*rr,h=7+r()*6;P(i%2?'oct':'cone',X,Z,.75+r()*.45,h,.75+r()*.45,'#e8e2ff',{ry:r()*3});P('sph',X,Z,.5,.5,.5,'#b89cff',{glow:1,yo:h*(i%2?.48:.95)});}
  scatter(r,cx,cz,6,2.5,14,.8,(X,Z)=>tree(X,Z,.5+r()*.3,GREENS[(r()*7)|0],r()));
  scatter(r,cx,cz,7.5,4.2,22,.9,(X,Z)=>{if(r()<.5)house(X,Z,.55,.45,.55,'#e9dcc4','#a0846a',r()*3);else{P('box',X,Z,.6,.9+r()*1.4,.6,'#eceaff',{ry:r()*3});P('box',X,Z,.62,.06,.62,'#b89cff',{glow:1,yo:.7});}});
- const hl=halo(cx,cz,5,5.5,'#efe6ff',.13);
+ // G1 r4 (T): the r 5.5 near-white additive halo sphere ('#efe6ff') is removed (a round glowing blob + l75 3.3 % in the close-up)
  // §2.3 landmark: monument at the seam between the preserved human quarter and the machine city - a sunset arch / passing-torch
  const arch=dyn(new THREE.Mesh(new THREE.TorusGeometry(3.0,.34,10,48,Math.PI),new THREE.MeshLambertMaterial({color:'#ffd9a0',emissive:'#ff9a4a',emissiveIntensity:1.0})),cx+1.5,cz+1.6,0);arch.rotation.y=.25; // r6 final: bigger, brighter, nearer the camera, faces the viewer
  P('cone',cx+1.5,cz+1.6,.45,1.4,.45,'#e8d6b0',{});const fl=dyn(new THREE.Mesh(new THREE.OctahedronGeometry(.5,0),basic('#ffb04a',1)),cx+1.5,cz+1.6,1.8);
- ANIM.push(t=>{hl.material.opacity=.1+.04*Math.sin(t*1.2);fl.scale.setScalar(1+.25*Math.sin(t*5));fl.rotation.y=t*2;});},
+ ANIM.push(t=>{fl.scale.setScalar(1+.25*Math.sin(t*5));fl.rotation.y=t*2;});},
 conquerors(o){const r=rng(19),cx=o.X,cz=o.Z;const dk=['#2b2830','#37313f','#221f27','#403848'];
  scatter(r,cx,cz,5.4,0,34,.95,(X,Z,rr)=>{const w=.5+r()*.6,d=.5+r()*.6,h=(rr<1.8?3.5+r()*2.5:1+r()*2.2),ry=Math.round(r()*2)*.785;P('box',X,Z,w,h,d,dk[(r()*4)|0],{ry,sink:.2});P('box',X,Z,w*1.03,.08,d*1.03,'#ff3b30',{glow:1,ry,yo:h*.72});if(r()<.35){P('cyl',X+w*.3,Z,.16,h+1.2,.16,'#1d1a21');P('box',X+w*.3,Z,.18,.12,.18,'#ff5a3c',{glow:1,yo:h+1.2});}});
  for(let i=0;i<10;i++){const a=i/10*6.283,X=cx+Math.cos(a)*6.3,Z=cz+Math.sin(a)*6.3;P('oct',X,Z,.8,3+r()*3,.8,'#2a2630',{ry:a,tl:(r()-.5)*.4,sink:.4});}
@@ -1050,7 +1063,7 @@ conquerors(o){const r=rng(19),cx=o.X,cz=o.Z;const dk=['#2b2830','#37313f','#221f
  P('cyl',cx+1.0,cz+5.6,3.2,.05,3.2,'#151217',{sink:-.02});for(const[rr,hh]of[[1.6,.3],[1.2,.18]])ring(cx+1.0,cz+5.6,rr,22,hh,.25,'#2a2430',{});ring(cx+1.0,cz+5.6,1.7,22,.06,.12,'#ff7a1a',{glow:1,yo:.3});P('box',cx+1.0,cz+5.6,.3,1.6,.3,'#403848',{tl:.5}); // mine pit, front, orange rim
  for(let i=0;i<9;i++){const a=2.0+i*.17,rr=6.4+(i%3)*.5,X=cx+Math.cos(a)*rr,Z=cz+Math.sin(a)*rr;P('box',X,Z,.55,.35+r()*.4,.5,'#5a524c',{ry:r()*3,tl:(r()-.5)*.3,sink:.1});tree(X+.3,Z+.25,.45,GREENS[(r()*7)|0],r());}
  {const X=cx+5.3,Z=cz+3.6;P('box',X,Z,1.1,4.2,1.1,'#8a827c',{});P('box',X+.3,Z,1.0,1.8,1.0,'#8a827c',{yo:4.3,tl:.35});P('box',X+1.3,Z+.3,.8,.6,.7,'#5a524c',{tl:1.1,sink:.1});for(const yy of[1.4,2.6,3.8])P('box',X,Z,1.13,.08,1.13,'#ffd36e',{glow:1,yo:yy});} // r6: broken human tower taller, pale, 3 lit bands
- const hl=halo(cx,cz,3,4,'#ff3b30',.12);ANIM.push(t=>{hl.material.opacity=.09+.07*Math.sin(t*2.4);});},
+ const hl=halo(cx,cz,3,3.2,'#ff3b30',.07);ANIM.push(t=>{hl.material.opacity=.05+.035*Math.sin(t*2.4);});}, // G1 r4 (T): red halo r 4 -> 3.2, opacity .09+-.07 -> .05+-.035 (round glow, no neon)
 reversion(o){const r=rng(20),cx=o.X,cz=o.Z;
  // §2.3: villages, farmland, WATER WHEELS (landmark) and workshops; no data centres, no power lines
  for(const[dx,dz]of[[-6,-7],[4,-3],[-1,5],[8,7],[-10,3]]){const X=cx+dx,Z=cz+dz;P('box',X+1.1,Z,1.0,.05,5.2,'#3A4A58',{sink:-.02});house(X,Z,1.1,.85,1.0,'#efe6d6','#9b4a36',0);P('box',X-1.2,Z+.4,.8,.5,.7,'#b89870',{}); // v4.3 r2: mill race is dark water (no glow)
@@ -1084,13 +1097,18 @@ const SCALE={libertarian:.82,egalitarian:.82,benevolent:.85};
 // ======================= BUILD WORLD =======================
 // G1 round 2: two more endings from js/protown.js presets (terrain hook: G1GEN is owned by fa4_world.js; entries are added here,
 // before any terrain build, so the world builder gives them the same flat-floored basin - see g1_preview/CONFLICTS.md)
-Object.assign(G1GEN,{egalitarian:{R:10,gen:'PROTOWN',seed:2101},protector:{R:10.5,gen:'PROTOWN',seed:3303,dome:1}});
+Object.assign(G1GEN,{egalitarian:{R:10,gen:'PROTOWN',seed:2101},protector:{R:10.5,gen:'PROTOWN',seed:3303,dome:1},
+ // swap r4: Normal technology = protown preset 'normaltech'; Gatekeeper = the pilot Gatekeeper city (js/procity.js via js/progate.js),
+ // one tier (graded as MID, see g1GradeMats); gate4 = the road spur ends at the nearest of its four avenue gates. cR = city radius when
+ // it differs from the basin radius R: procity's deck is flat, so the basin (fa4_world: flat floor ~R*1.12) is made wider than the city
+ // (rise under the outer ring road ~.2 instead of ~1.1 with R = city radius); the feathered apron drapes on the terrain beyond it
+ normaltech:{R:10.5,gen:'PROTOWN',seed:1101},gatekeeper:{R:12,cR:9,lift:.4,gen:'PROGATE',seed:1505,gate4:1}});   // cR 11.5 overhung the selfdestruct crater lip (20 u SE): terrain -2.9 under the SE ring; lift .4 = terrain rise under the outer ring road at cR 9
 setValleys(curP.p);
 // spur end points for generator sites: at the city edge facing the road fork (enslaved: one per bloc either side of the trench;
 // protector: just outside the dome wall, where g1_cities.js puts a gate portal) -> the dashed spur never drapes across a new city
-function g1SpurTg(o,B){const G=G1GEN[o.id],dx=o.X-B[0],dz=o.Z-B[1],a0=Math.atan2(-dz,-dx);
+function g1SpurTg(o,B){const G=G1GEN[o.id],dx=o.X-B[0],dz=o.Z-B[1];let a0=Math.atan2(-dz,-dx);if(G.gate4)a0=Math.round(a0/(Math.PI/2))*(Math.PI/2);
  if(o.twin)return[-1,1].map(s=>{const a=a0+s*.5;return[o.X+Math.cos(a)*G.R*.86,o.Z+Math.sin(a)*G.R*.86,.5];});
- const k=G.dome?.97*1.035:.9;return[[o.X+Math.cos(a0)*G.R*k,o.Z+Math.sin(a0)*G.R*k,1]];}
+ const k=G.dome?.97*1.035:G.gate4?1.0:.9,RR=G.cR||G.R;return[[o.X+Math.cos(a0)*RR*k,o.Z+Math.sin(a0)*RR*k,1]];}
 const SCN=O.map(o=>({X:o.X,Z:o.Z,r:G1GEN[o.id]?G1GEN[o.id].R+1.5:o.twin?0:(o.cliff?(o.id==='reversion'?14:15):o.w*100*.85*(SCALE[o.id]||1))})); // G1: generator footprint reserved
 SCN.push({X:RX-TWIN,Z:RZ,r:12.5},{X:RX+TWIN,Z:RZ,r:12.5},{X:RX,Z:RZ,r:4},{X:NOW.X,Z:NOW.Z,r:NOW.R*1.6});
 for(const L of LAKES)SCN.push({X:L.X,Z:L.Z,r:L.R*1.3});
@@ -1361,7 +1379,7 @@ function enterBasin(b){if(b==='C')return;view='basin';focus=b;focusO=null;const 
  // r4 U11: frame the basin's sites (bbox centre, nudged south so southern sites clear the timeline; pulled back when the basin is wide) instead of the fixed basin centre
  const S=O.filter(o=>o.b===b&&!o.cliff);let tx=U(B.cx),tz=V(B.cy)+2,d=84;if(S.length){const xs=S.map(o=>o.X),zs=S.map(o=>o.Z),x0=Math.min(...xs),x1=Math.max(...xs),z0=Math.min(...zs),z1=Math.max(...zs);tx=(x0+x1)/2;tz=(z0+z1)/2+4.5;d=clamp(84*Math.max(1,((x1-x0)/2+9)/32,((z1-z0)/2+12)/22),84,108);}
  Object.assign(tg,{tx,tz,d,pit:.9,yaw:0,ly:0});setNav();}
-function enterO(o){view='basin';focus=o.b;focusO=o;const CD={gatekeeper:54,benevolent:42,libertarian:40,zookeeper:40,descendants:40,o1984:38};const LY={gatekeeper:9,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};Object.assign(tg,{ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();}
+function enterO(o){view='basin';focus=o.b;focusO=o;const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:40,descendants:40,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};Object.assign(tg,{ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();}
 function world(){view='world';focus=null;focusO=null;Object.assign(tg,WORLDV);closeCard();setNav();}
 document.getElementById('back').onclick=world;
 addEventListener('keydown',e=>{kick();if(e.key==='Escape'){if(document.getElementById('page').style.display==='block')closePage();else if(focusO&&view!=='world'&&focus!=='C'){closeCard();enterBasin(focus);}else world();}
@@ -1491,7 +1509,7 @@ const AMB=[];{const r=rng(44);const smokeC='#A4A6C8';
  // r2 U3: the generic aviation blink is retired (each site now has its own described motion, AMB2 below)
  for(const[id,dx,dz,hy]of[]){const o=byId[id];AMB.push({k:'blink',s:spr('#FFE6C4',0,true),X:o.X+dx,Z:o.Z+dz,hy,ph:r()*3});}
  // tiny vehicles (paired headlights) circling two ordinary towns
- for(const[id,n,rr]of[['normaltech',4,.5],['libertarian',3,.46]]){const o=byId[id];const R=o.w*100*rr*(SCALE[id]||1);for(let k=0;k<n;k++)AMB.push({k:'car',s:spr('#FFE2B0',0,true),X:o.X,Z:o.Z,R:R*(.75+.25*(k%2)),ph:k/n*6.2832,w:(k%2?-1:1)*.11});}
+ for(const[id,n,rr]of[['normaltech',4,.5],['libertarian',3,.46]]){if(G1GEN[id])continue;const o=byId[id];const R=o.w*100*rr*(SCALE[id]||1);for(let k=0;k<n;k++)AMB.push({k:'car',s:spr('#FFE2B0',0,true),X:o.X,Z:o.Z,R:R*(.75+.25*(k%2)),ph:k/n*6.2832,w:(k%2?-1:1)*.11});}
  // water shimmer: two soft glints drifting on each lake
  for(const L of LAKES)for(let k=0;k<2;k++)AMB.push({k:'glint',s:spr('#BFD8FF',0,true),X:L.X,Z:L.Z,R:L.R*.45,ph:k*3.1+r()});}
 ANIM.push(t=>{const amb=RMOT?1:0;for(const A of AMB){const s=A.s;
@@ -1510,7 +1528,7 @@ const AMB2=[];{const r=rng(45);const add=f=>AMB2.push(f);
  const poly=P=>{const cum=[0];for(let i=1;i<P.length;i++)cum.push(cum[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));return{P,cum,tot:cum[cum.length-1]};};
  const along=(L,d)=>{let j=1;while(j<L.cum.length-1&&L.cum[j]<d)j++;const f=(d-L.cum[j-1])/((L.cum[j]-L.cum[j-1])||1),a=L.P[j-1],b=L.P[j];return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];};
  // Normal technology: traffic (A1 cars) + a substation hum pulse
- {const s=S('normaltech'),p=gs('#FFD9A0');const X=s.X+s.R*.55,Z=s.Z+s.R*.3;add(t=>{p.position.set(X,gy(X,Z)+1.2,Z);const k=.5+.5*Math.sin(t*2.1);p.scale.set(2.2+k*.6,2.2+k*.6,1);p.material.opacity=.16+.14*k;});}
+ {const s=S('normaltech'),p=gs('#FFD9A0');const X=s.X+s.R*.55,Z=s.Z+s.R*.3;add(t=>{if(G1GEN.normaltech){p.visible=false;return;}p.position.set(X,gy(X,Z)+1.2,Z);const k=.5+.5*Math.sin(t*2.1);p.scale.set(2.2+k*.6,2.2+k*.6,1);p.material.opacity=.16+.14*k;});}
  // Libertarian Utopia: cargo drones shuttling between the machine, mixed and human-only zones
  {const s=S('libertarian');const zs=[1.75,3.85,5.95].map(a=>[s.X+Math.cos(a)*s.R*.42,s.Z+Math.sin(a)*s.R*.42]);for(let k=0;k<3;k++){const p=gs('#8FA6BE');const a=zs[k],b=zs[(k+1)%3],ph=k*.33; // r4 U11: drones steel-blue, dimmer (white/brass reserved for UI markers)
   add(t=>{const q=(t*.06+ph)%1,e=q<.5?q*2:2-q*2,X=a[0]+(b[0]-a[0])*e,Z=a[1]+(b[1]-a[1])*e;p.position.set(X,gy(X,Z)+2.6+Math.sin(e*Math.PI)*2,Z);p.scale.set(.8,.8,1);p.material.opacity=.42;});}}
@@ -1528,8 +1546,8 @@ const AMB2=[];{const r=rng(45);const add=f=>AMB2.push(f);
  {const s=S('protector');const m=new THREE.Mesh(new THREE.RingGeometry(.95,1,64),new THREE.MeshBasicMaterial({color:'#D8E6FF',transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.renderOrder=4;SC.add(m);const g=gy(s.X,s.Z);
   add(t=>{const q=(t/9)%1;m.position.set(s.X,g+.6+q*3.2,s.Z);const k=s.R*(.95-.55*q);m.scale.set(k,k,1);m.material.opacity=.22*Math.sin(q*Math.PI);});}
  // Benevolent Dictator: the five sector rays light up in sequence
- {const s=S('benevolent'),g=gy(s.X,s.Z),k0=SCALE.benevolent||1;for(let k=0;k<5;k++){const a=k/5*6.2832+.31,p=gs('#BFE6FF'),X=s.X+Math.cos(a)*4.1*k0,Z=s.Z+Math.sin(a)*4.1*k0;
-  add(t=>{const q=((t*.35-k/5)%1+1)%1;p.position.set(X,g+.9,Z);p.scale.set(2.6,2.6,1);p.material.opacity=q<.2?.32*Math.sin(q/.2*Math.PI):0;});}}
+ {const s=S('benevolent'),g=gy(s.X,s.Z),k0=SCALE.benevolent||1;for(let k=0;k<5;k++){const a=k/5*6.2832+.31,p=gs('#8E9FB8'),X=s.X+Math.cos(a)*4.1*k0,Z=s.Z+Math.sin(a)*4.1*k0;
+  add(t=>{const q=((t*.35-k/5)%1+1)%1;p.position.set(X,g+.9,Z);p.scale.set(2.2,2.2,1);p.material.opacity=q<.2?.16*Math.sin(q/.2*Math.PI):0;});}} // r4 main: Benevolent pulses halved + muted (were half its world hot pixels)
  // Zookeeper: a few humans walking inside the fence; a machine crane swinging outside it
  {const s=S('zookeeper');for(let k=0;k<4;k++){const p=gs('#FFE2B8');add(t=>{const a=t*.14*(k%2?1:-1)+k*1.6,rr=1.3+k*.22,X=s.X+Math.cos(a)*rr,Z=s.Z+Math.sin(a)*rr;p.position.set(X,gy(X,Z)+.45,Z);p.scale.set(.6,.6,1);p.material.opacity=.6;});}
   const G=new THREE.Group(),ms=bx(.28,5,.28,'#3E4450',.9),jb=bx(5,.2,.2,'#3E4450',.9);ms.position.y=2.5;jb.position.set(2,5,0);G.add(ms,jb);SC.add(G);const X=s.X+s.R*.95,Z=s.Z-s.R*.3,g=gy(X,Z);add(t=>{G.position.set(X,g,Z);G.rotation.y=Math.sin(t*.18)*.9;});}
@@ -2137,7 +2155,7 @@ if(G1.RM)G1.FADE=1;
 // GAIN/AMB tune the MID tier to the v4.4 world-view diorama brightness (luminance 66/74 for o1984/enslaved); NEAR is seen from close
 // with bloom, so it gets a smaller, per-site lift [vertex gain, AMB factor], fitted to the v4.4 close-up exposure (centre-60 % mean
 // luminance v4.4: o1984 69, enslaved 65, egalitarian 42, protector 46). ?g1ngain / ?g1nambk override all sites.
-G1.NG={o1984:[1.2,.5],enslaved:[.85,.2],egalitarian:[.62,0],protector:[.9,.25]};   // C1 r5: protector NEAR .8/.15 -> .9/.25 (interior too dark; .95/.3 overshot: L 64 -> 78)
+G1.NG={o1984:[1.2,.5],enslaved:[.85,.2],egalitarian:[.62,0],protector:[.9,.25],normaltech:[.6,0]};   // C1 r5: protector NEAR .8/.15 -> .9/.25 (interior too dark; .95/.3 overshot: L 64 -> 78); swap r4: normaltech default 1.3/.65 -> L 102, near-white 10 %
 G1.ng=id=>[G1Q.get('g1ngain')?G1.NGAIN:(G1.NG[id]||[G1.NGAIN])[0],G1Q.get('g1nambk')?G1.NAMBK:(G1.NG[id]||[0,G1.NAMBK])[1]];
 let TER_BUILT=0;
 // ---- material patch: (a) dither cross-fade mask, (b) ambient lift. v4.4 lights its dioramas with flat, bright-ish materials; the
@@ -2164,26 +2182,26 @@ const g1Glow=mt=>!mt||mt===G1.mats.light||mt.isMeshBasicMaterial||mt.blending===
 // Ground decals (owner D5) are mixed toward the terrain-B colour under each vertex, 55 % in the core and up to 100 % where the vertex
 // alpha feathers out, so the apron never shows as a slab, smudge or halo against the terrain.
 function g1Tone(r,o){const done=new Set(),c=[0,0,0],P=1/2.2;
- for(const g of[r.near,r.mid])if(g){const GN=g===r.near?G1.ng(r.id)[0]:G1.GAIN*(G1.MG[r.id]||1),FL=g===r.mid?G1.MFLOOR:G1.FLOOR;g.traverse(m=>{if(!m.isMesh||!m.geometry)return;const mt=g1Mts(m)[0],gr=g1Ground(m,mt),gl=g1Glow(mt);
+ for(const g of[r.near,r.mid])if(g){const mi=g===r.mid||!!r.single,SCL=g.scale.x||1,GN=!mi?G1.ng(r.id)[0]:G1.GAIN*(G1.MG[r.id]||1),FL=mi?G1.MFLOOR:G1.FLOOR;g.traverse(m=>{if(!m.isMesh||!m.geometry)return;const mt=g1Mts(m)[0],gr=g1Ground(m,mt),gl=g1Glow(mt);
   for(const x of g1Mts(m))g1Patch(x,gl?0:/dome|glass/i.test(x.name||'')?.08:gr?G1.GAMB:G1.AMB);
   const ca=m.geometry.attributes.color;if(!ca||done.has(m.geometry))return;
-  if(gl){if(g===r.mid&&mt){if(mt.blending===THREE.AdditiveBlending){if(G1.MPOOL!==1){done.add(m.geometry);g1Pool(ca,G1.MPOOLS[r.id]??G1.MPOOL);}}
+  if(gl){if(mi&&mt){if(mt.blending===THREE.AdditiveBlending){if(G1.MPOOL!==1){done.add(m.geometry);g1Pool(ca,G1.MPOOLS[r.id]??G1.MPOOL);}}
    else if(mt.isMeshBasicMaterial){done.add(m.geometry);if(G1.MWR>0)g1Warm(ca,G1.MWR);if(G1.MGLOW>0)g1Shoulder(ca,G1.MGLOW);}}return;}
-  done.add(m.geometry);const CAP=g===r.mid?G1.MCAP:1.6,NK=g===r.mid?G1.MNK:G1.NNK,ALB=g===r.mid?G1.MALB:0;
+  done.add(m.geometry);const CAP=mi?G1.MCAP:1.6,NK=mi?G1.MNK:G1.NNK,ALB=mi?G1.MALB:0;
   const pa=m.geometry.attributes.position,a=ca.array,s=ca.itemSize;
   for(let i=0;i<ca.count;i++){const k=i*s;let R=Math.pow(Math.max(0,a[k]),P),G=Math.pow(Math.max(0,a[k+1]),P),B=Math.pow(Math.max(0,a[k+2]),P);
-   if(!gr&&NK>0){const l=(R+G+B)/3;if(g===r.mid){const f=.8+.75*l;R=(R+(G1NC.r-R)*NK)*f;G=(G+(G1NC.g-G)*NK)*f;B=(B+(G1NC.b-B)*NK)*f;const am=Math.max(R,G,B);if(ALB>0&&am>ALB){const q=ALB/am;R*=q;G*=q;B*=q;}} // r4: v4.4 nightCol grade
+   if(!gr&&NK>0){const l=(R+G+B)/3;if(mi){const f=.8+.75*l;R=(R+(G1NC.r-R)*NK)*f;G=(G+(G1NC.g-G)*NK)*f;B=(B+(G1NC.b-B)*NK)*f;const am=Math.max(R,G,B);if(ALB>0&&am>ALB){const q=ALB/am;R*=q;G*=q;B*=q;}} // r4: v4.4 nightCol grade
     else{const ly=.2126*R+.7152*G+.0722*B,k=ly/G1NL;R+=(G1NC.r*k-R)*NK;G+=(G1NC.g*k-G)*NK;B+=(G1NC.b*k-B)*NK;}} // NEAR: night-hue cast at constant luminance (no darkening, close-ups stay as approved)
-   if(gr&&pa&&!m.isInstancedMesh){const X=o.X+pa.getX(i),Z=o.Z+pa.getZ(i);faceColB(X,Z,hAt(X,Z),1,c);const al=s>3?Math.min(1,Math.max(0,a[k+3])):1,w0=G1.GW[r.id]!=null?G1.GW[r.id]:.55,w=w0+(1-w0)*(1-al);
+   if(gr&&pa&&!m.isInstancedMesh){const X=o.X+pa.getX(i)*SCL,Z=o.Z+pa.getZ(i)*SCL;faceColB(X,Z,hAt(X,Z),1,c);const al=s>3?Math.min(1,Math.max(0,a[k+3])):1,w0=G1.GW[r.id]!=null?G1.GW[r.id]:.55,w=w0+(1-w0)*(1-al);   // swap r4: SCL = host scale (gatekeeper city is authored at plan radius 21.5)
     R=(R*(1-w)+c[0]*w)*G1.GK;G=(G*(1-w)+c[1]*w)*G1.GK;B=(B*(1-w)+c[2]*w)*G1.GK;
     // r4: MID apron read warmer/brighter than the terrain shader beside it (box mean 42,40,71 vs bare terrain 33,36,79) -> a warm
     // disc once the city above it was graded; night-hue cast at constant luminance (MGNK) + MGK dim on the MID apron only
-    if(g===r.mid&&G1.MGNK>0){const ly=(.2126*R+.7152*G+.0722*B)*G1.MGK,k=ly/G1NL;R+=(G1NC.r*k-R)*G1.MGNK;G+=(G1NC.g*k-G)*G1.MGNK;B+=(G1NC.b*k-B)*G1.MGNK;R*=G1.MGK;G*=G1.MGK;B*=G1.MGK;}
+    if(mi&&G1.MGNK>0){const ly=(.2126*R+.7152*G+.0722*B)*G1.MGK,k=ly/G1NL;R+=(G1NC.r*k-R)*G1.MGNK;G+=(G1NC.g*k-G)*G1.MGNK;B+=(G1NC.b*k-B)*G1.MGNK;R*=G1.MGK;G*=G1.MGK;B*=G1.MGK;}
     // C1 r5 (owner: Bloc A / Bloc B divide invisible at world zoom): low-chroma tone split of the two lobes on the ground only
     // (Bloc A x<0 cool slate, Bloc B x>0 warm grey, luminance +6 % / -6 %), ramped across the trench, faded by the feather alpha
     if(r.id==='enslaved'&&G1.LOBE>0){const u=Math.max(0,Math.min(1,(pa.getX(i)+2.4)/4.8)),sb=u*u*(3-2*u),q=(g===r.mid?1:.5)*G1.LOBE*al,
       L0=(.2126*R+.7152*G+.0722*B)*(1.06-.12*sb);R+=(L0*(.92+.08*sb)-R)*q;G+=(L0-G)*q;B+=(L0*(1.16-.16*sb)-B)*q;}}   // B side neutral grey (vision r5: brown smudge)
-   else if(!gr){R*=GN;G*=GN;B*=GN;if(g===r.mid&&G1.MSAT!==1){const l=.2126*R+.7152*G+.0722*B;R=Math.max(0,l+(R-l)*G1.MSAT);G=Math.max(0,l+(G-l)*G1.MSAT);B=Math.max(0,l+(B-l)*G1.MSAT);}
+   else if(!gr){R*=GN;G*=GN;B*=GN;if(mi&&G1.MSAT!==1){const l=.2126*R+.7152*G+.0722*B;R=Math.max(0,l+(R-l)*G1.MSAT);G=Math.max(0,l+(G-l)*G1.MSAT);B=Math.max(0,l+(B-l)*G1.MSAT);}
     // C1 r5: Bloc A read ~17 L darker than Bloc B in the close-up (owner: Bloc A too dark; also brightness must not read as welfare):
     // albedo-level lift on the Bloc A lobe only (x < 0), ramped across the trench; the CAP / shoulder below still bound it
     if(r.id==='enslaved'&&pa&&G1.BLA>1){const u=Math.max(0,Math.min(1,(pa.getX(i)+2.4)/4.8)),f=1+(G1.BLA-1)*(1-u*u*(3-2*u));R*=f;G*=f;B*=f;}
@@ -2212,9 +2230,34 @@ function g1Mats(){if(G1.mats)return G1.mats;const S=o=>new THREE.MeshStandardMat
   glass:new THREE.MeshStandardMaterial({color:'#3A4656',roughness:.08,metalness:.1}),foliage:S({roughness:.9}),light:new THREE.MeshBasicMaterial({vertexColors:true})};
  return G1.mats;}
 // per-draw tier mask: every mesh of a tier sets the shared fade uniforms before it is drawn (materials are shared by NEAR and MID)
-function g1Hook(grp,tier,r){const NK=G1.ng(r.id)[1];grp.traverse(m=>{if(!m.isMesh)return;const ms=g1Mts(m);
+function g1Hook(grp,tier,r){const NK=G1.ng(r.id)[1],nr=tier==='near'&&!r.single;grp.traverse(m=>{if(!m.isMesh)return;const ms=g1Mts(m);   // swap r4: a single-tier city (gatekeeper) is graded as MID
  m.onBeforeRender=function(){const md=r.fade<1?(tier===r.tier?1:2):0;G1.U.uG1M.value=md;G1.U.uG1Fd.value=r.fade;
-  for(const x of ms)if(x){x.uniformsNeedUpdate=true;const u=x.userData.g1A;if(u){if(u.b==null)u.b=u.value;u.value=tier==='near'?u.b*NK:u.b*G1.MAMBK;}const w=x.userData.g1W;if(w){if(w.b==null)w.b=w.value;w.value=tier==='near'?w.b:w.b*G1.MWIN*(G1.MWS[r.id]||1);}const sh=x.userData.g1S;if(sh)sh.value=tier==='near'?0:G1.MSH;}};});}
+  for(const x of ms)if(x){x.uniformsNeedUpdate=true;const u=x.userData.g1A;if(u){if(u.b==null)u.b=u.value;u.value=nr?u.b*NK:u.b*G1.MAMBK;}const w=x.userData.g1W;if(w){if(w.b==null)w.b=w.value;w.value=nr?w.b:w.b*G1.MWIN*(G1.MWS[r.id]||1);}const sh=x.userData.g1S;if(sh)sh.value=nr?0:G1.MSH;}};});}
+// ---- swap r4: gatekeeper (procity) colours by MATERIAL + world-space texture uniforms, not vertex colours. Same v4.4 MID night grade
+// (nightCol toward LOOK.night, albedo cap, gain) on the material albedo; unlit light colours pulled to sodium amber + soft-capped
+// (hue kept, so nothing clips to white before the bloom high-pass); window emission gain (pcS.w); additive pools / glow points dimmed.
+// ?g1gknk / g1gkgain / g1gkwin / g1gkhot / g1gkpool / g1gkglow override.
+G1.GKG={nk:+(G1Q.get('g1gknk')||.7),gain:+(G1Q.get('g1gkgain')||.98),alb:.52,hot:+(G1Q.get('g1gkhot')||.74),warm:.55,win:+(G1Q.get('g1gkwin')||.4),
+ em:1.1,pool:+(G1Q.get('g1gkpool')||.3),glow:+(G1Q.get('g1gkglow')||.65),gnk:+(G1Q.get('g1gkgnk')||.86),ggain:+(G1Q.get('g1gkggain')||.58),vcl:1.2};
+G1.GW.gatekeeper=G1.GW.gatekeeper??.8;   // apron core mostly terrain colour (vision r4: pale ring outside the deck edge)
+function g1Night(c,K){let R=c.r,G=c.g,B=c.b;const l=(R+G+B)/3,f=.8+.75*l;R=(R+(G1NC.r-R)*K.nk)*f;G=(G+(G1NC.g-G)*K.nk)*f;B=(B+(G1NC.b-B)*K.nk)*f;
+ const am=Math.max(R,G,B);if(am>K.alb){const q=K.alb/am;R*=q;G*=q;B*=q;}R*=K.gain;G*=K.gain;B*=K.gain;
+ if(G1.MSAT!==1){const y=.2126*R+.7152*G+.0722*B;R=Math.max(0,y+(R-y)*G1.MSAT);G=Math.max(0,y+(G-y)*G1.MSAT);B=Math.max(0,y+(B-y)*G1.MSAT);}c.setRGB(R,G,B);}
+function g1Hot(c,K){const mx=Math.max(c.r,c.g,c.b);if(mx<=0)return;if(c.r>c.b){const wm=Math.max(G1WC.r,G1WC.g,G1WC.b),f=mx/wm;c.r+=(G1WC.r*f-c.r)*K.warm;c.g+=(G1WC.g*f-c.g)*K.warm;c.b+=(G1WC.b*f-c.b)*K.warm;}
+ const m2=Math.max(c.r,c.g,c.b),K0=K.hot*.62;if(m2>K0){const y=K0+(K.hot-K0)*(1-Math.exp(-(m2-K0)/(K.hot-K0)));c.multiplyScalar(y/m2);}}
+function g1GradeMats(r){const K=G1.GKG,seen=new Set();let n=0;
+ r.near.traverse(m=>{if(m.isPoints&&r.glows){const gp=r.glows;gp.U.uK.value=K.glow;const ca=m.geometry.attributes.color;g1Warm(ca,K.warm);g1Shoulder(ca,K.hot);return;}
+  if(!m.isMesh)return;
+  if(m.isInstancedMesh&&m.instanceColor&&m.material.blending===THREE.AdditiveBlending){const a=m.instanceColor.array;for(let i=0;i<a.length;i++)a[i]*=K.pool;m.instanceColor.needsUpdate=true;}
+  // trees / solar: per-instance LINEAR colours (dark blue-greens) -> display space like the vertex colours (vision r4: black blob trees)
+  else if(m.isInstancedMesh&&m.instanceColor&&m.material.vertexColors&&m.material!==G1.mats.building&&!m.userData.g1L){m.userData.g1L=1;const a=m.instanceColor.array;for(let i=0;i<a.length;i++)a[i]=Math.pow(Math.max(0,a[i]),1/2.2);m.instanceColor.needsUpdate=true;}
+  for(const x of g1Mts(m)){if(!x||seen.has(x)||x===G1.mats.ground||x===G1.mats.building)continue;seen.add(x);n++;const U=x.userData.pcU;
+   if(U){const gk=/flat|asph/.test(x.userData.pcKind||'')?Object.assign({},K,{nk:K.gnk,gain:K.ggain}):K;g1Night(U.pcC.value,gk);U.pcS.value.w*=K.win;continue;}   // decks / paving / asphalt: ground-like grade (city floor close to the terrain tone, D5)
+   if(x.blending===THREE.AdditiveBlending){x.color&&x.color.multiplyScalar(K.pool);continue;}
+   if(x.isMeshBasicMaterial){g1Hot(x.color,K);continue;}
+   if(x.isMeshStandardMaterial){if(x.vertexColors&&!m.geometry.attributes.color){x.vertexColors=false;x.needsUpdate=true;}   // no colour attribute -> black in WebGL
+    if(!x.vertexColors)g1Night(x.color,K);else x.color.multiplyScalar(K.vcl);if(x.emissiveIntensity>K.em)x.emissiveIntensity=K.em;if(x.emissive&&x.emissiveIntensity>0)g1Hot(x.emissive,K);}}});
+ return n;}
 // ---- protector: nothing may poke through the dome; the road meets the dome wall at a gate portal ----
 function g1DomeFix(r,o,id){const out={clampedV:0,shrunkI:0,hiddenI:0};const v=new THREE.Vector3(),M=new THREE.Matrix4(),Mi=new THREE.Matrix4(),bb=new THREE.Box3();
  for(const g of[r.near,r.mid]){if(!g)continue;g.updateMatrixWorld(true);let dm=null;g.traverse(m=>{if(m.isMesh&&/dome/i.test(m.name||'')&&!/grp/i.test(m.name||''))dm=m;});if(!dm)continue;
@@ -2251,20 +2294,26 @@ function g1Labels(r,o,y){const A=r.anchors;if(!A)return;const W=p=>({X:o.X+p.x,Z
 function g1Text(){for(const id in G1TXT.scene)if(G1GEN[id])SCENE_TXT[id]=G1TXT.scene[id];
  if(G1GEN.enslaved&&typeof select==='function'&&!select.g1){const s0=select;select=function(id){s0.apply(this,arguments);if(id==='enslaved'){const cd=document.getElementById('card');
   if(cd&&cd.innerHTML.indexOf(G1TXT.twinOld)>=0){cd.innerHTML=cd.innerHTML.replace(G1TXT.twinOld,G1TXT.twin);fitCard();}}};select.g1=1;}}
-function g1Build(){const ctx={THREE,LOOK:{mood:'blue'},mats:g1Mats(),heightAt:(x,z)=>hMesh(x,z)},T0=performance.now();
+function g1Build(){const ctx={THREE,LOOK:{mood:'blue'},mats:g1Mats(),heightAt:(x,z)=>hMesh(x,z),renderer:RD,camera:CAM,fog:SC.fog?{near:SC.fog.near,far:SC.fog.far}:null,
+  ai:LOOK.ai||'#8FD8E8',human:LOOK.human||'#FFC27E',
+  // swap r4: the gatekeeper city's eye runs on the SAME clock as the v4.4 map icon (gkOpen blink, gkIris drift + cursor follow)
+  eye:T=>{if(typeof gkOpen!=='function')return null;const ir=typeof gkIris==='function'?gkIris(T):[0,0];return[ir[0]||0,ir[1]||0,gkOpen(T)];}},T0=performance.now();
  for(const id in G1GEN){const G=G1GEN[id],o=byId[id],M=window.FA&&window.FA[G.gen];
   if(!M||typeof M.build!=='function'){window.__errs.push('g1: FA.'+G.gen+' missing');continue;}
-  const y=hMesh(o.X,o.Z),t0=performance.now();let r=null;
-  try{r=M.build({id,ending:id,name:o.n,x:o.X,z:o.Z,y,radius:G.R,seed:G.seed,rot:0,style:'archviz',q:'high',mood:'blue'},ctx);}catch(e){window.__errs.push('g1 '+id+': '+(e&&e.message));continue;}
+  const y=hMesh(o.X,o.Z)+(G.lift||0),t0=performance.now();let r=null;   // swap r4: lift = flat-deck cities sit just above the basin's rising rim (deck covers the terrain inside)
+  try{r=M.build({id,ending:id,name:o.n,x:o.X,z:o.Z,y,radius:G.cR||G.R,seed:G.seed,rot:0,style:'archviz',q:'high',mood:'blue',rm:G1.RM},ctx);}catch(e){window.__errs.push('g1 '+id+': '+(e&&e.message));continue;}
   if(!r||!r.near){window.__errs.push('g1 '+id+': empty result');continue;}
   const tb=performance.now();r.id=id;
   for(const g of[r.near,r.mid])if(g){g.position.set(o.X,y,o.Z);g.traverse(m=>{if(m.isMesh){m.castShadow=false;m.receiveShadow=false;}});SC.add(g);}
-  g1Tone(r,o);r.tier=r.mid?'mid':'near';r.fade=1;r.near.visible=!r.mid;if(r.mid)r.mid.visible=true;g1Hook(r.near,'near',r);if(r.mid)g1Hook(r.mid,'mid',r);
+  g1Tone(r,o);const gm=r.single?g1GradeMats(r):0;r.tier=r.mid?'mid':'near';r.fade=1;r.near.visible=!r.mid;if(r.mid)r.mid.visible=true;g1Hook(r.near,'near',r);if(r.mid)g1Hook(r.mid,'mid',r);
+  if(id==='gatekeeper'&&r.eye&&typeof GKE!=='undefined'){const ev=new THREE.Vector3();   // map-icon cursor follow measures from the city eye's screen point
+   GKE.fn=()=>{ev.copy(r.eye).multiplyScalar(r.near.scale.x).add(r.near.position);const q=proj(ev.x,ev.y,ev.z);GKE.sx=q[0];GKE.sy=q[1];};}
+  let edge=0;const RC=G.cR||G.R;for(let k=0;k<16;k++){const a=k/16*Math.PI*2;for(const f of[.8,.9])edge=Math.max(edge,Math.abs(hMesh(o.X+Math.cos(a)*RC*f,o.Z+Math.sin(a)*RC*f)-y));}   // terrain rise under the outer city ring
   const dfx=G.dome?g1DomeFix(r,o,id):null;
   r.near.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(r.near);
   AH[id]=Math.max(2,Math.min(30,bb.max.y-y)); // marker altitude plane / drop line clear the new city's tallest part
   G1.res[id]=r;G1.stats[id]={ms:+(tb-t0).toFixed(1),postMs:+(performance.now()-tb).toFixed(1),y:+y.toFixed(2),top:+(bb.max.y-y).toFixed(2),near:r.stats&&r.stats.nearTris,mid:r.stats&&r.stats.midTris,
-   nearDraws:r.stats&&r.stats.nearDraws,midDraws:r.stats&&r.stats.midDraws,dome:dfx};
+   nearDraws:r.stats&&r.stats.nearDraws,midDraws:r.stats&&r.stats.midDraws,dome:dfx,edge:+edge.toFixed(2),gradedMats:gm||undefined,single:r.single||undefined};
   if(id==='enslaved')g1Labels(r,o,y);}
  g1Text();G1.bootMs=+(performance.now()-T0).toFixed(1);window.__g1=G1;}
 // r4 test hook: world-view colour stats of every diorama (pixels that change when the site models are hidden) -> mean HSV S, mean hue,
