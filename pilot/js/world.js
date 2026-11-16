@@ -363,7 +363,10 @@ FA.H=function(x,z){let h=Hraw(x,z);
  let d=Math.hypot(x-GK.x,z-GK.z);h=lerp(h,2.6,LOOK.archviz?smooth(31,24,d):smooth(17,11.5,d));                       // Gatekeeper plinth bed
  d=Math.hypot(x-RV.x,z-RV.z);h=lerp(h,1.0+(fbm(x*.09,z*.09,3)-.5)*.7,smooth(24,10,d));    // Reversion valley floor (low banks so the wheel reaches the stream)
  const wm=Math.hypot(x-(RV.x-12),z-(RV.z-8));h+=1.6*smooth(5,1.5,wm)*smooth(24,10,d);      // windmill knoll
- if(FA.SITEB)for(const s of FA.SITEB){const ds=Math.hypot(x-s.x,z-s.z);if(ds<s.rb+10)h=lerp(h,s.h0,smooth(s.rb+10,s.rb+1,ds));} // B0 stress stand-in basins (lod.js)
+ if(FA.SITEB)for(const s of FA.SITEB){const ex=x-s.x,ez=z-s.z,ds=Math.hypot(ex,ez);if(ds>s.rb*1.7+24)continue;   // B0 stress stand-in basins (lod.js)
+  // B1 r3: noise-warped footprint (outward only) + 20 u feathered blend instead of a 9 u ring (owner 11-16: no round disc)
+  const w=s.p1==null||!FA.LOD||!FA.LOD.warp?s.rb+1:s.rb+1+s.rb*FA.LOD.warp(s,Math.atan2(ez,ex))+Math.max(0,(fbm(x*.07+s.p1,z*.07+s.p2,2)-.5)*7);
+  h=lerp(h,s.h0,smooth(w+20,w,ds));}
  if(LOOK.ter.facet){h=riverFacet(x,z,h);return FA.carveH?FA.carveH(x,z,h):h;}   // C7: carveH = prostream brook trench (archviz RV only)
  const dx=Math.abs(x-FA.riverX(z)),rw=1.5+.35*Math.sin(z*.07);
  h=Math.max(h,WL+.55);h=lerp(h,WL-.8,smooth(rw+2.4,rw*.5,dx)*smooth(-75,-30,z));          // river channel (springs at the foot of the back range)
@@ -512,7 +515,8 @@ function buildFacetTerrain(colorHook){const T=LOOK.ter;const G=tgrid(),xs=G.xs,z
   for(let k=0;k<NX*NZ;k++){const x=VX[k],z=VZ[k],h=VH[k],sl=1-SNv[k*4+1],mo=fbm(x*.05+40,z*.05-20,3),n2=fbm(x*.19+3.7,z*.19-6.1,2)-.5;
    q.copy(P.lo).lerp(P.mid,smooth(.36,.66,mo));                                                   // meadow: 2 moisture tones, blended
    q.lerp(PH,smooth(4.5,9,h+n2*3));q.lerp(P.hi,smooth(10,16,h+n2*4));q.lerp(PK,smooth(19,30,h+n2*5)*.7); // upland bands, noisy soft edges
-   const foot=smooth(.06,.16,sl+n2*.05)*(1-smooth(.30,.44,sl));q.lerp(P.bank,foot*.42*(1-smooth(14,20,h))); // dirt / scree at slope breaks
+   let sf=1;if(FA.SITEB)for(const s of FA.SITEB){const d=Math.hypot(x-s.x,z-s.z);sf=Math.min(sf,smooth(s.rb*1.1,s.rb*1.7+26,d));}   // B1 r3: no scree ring at a site's feathered basin edge
+   const foot=smooth(.06,.16,sl+n2*.05)*(1-smooth(.30,.44,sl))*sf;q.lerp(P.bank,foot*.42*(1-smooth(14,20,h))); // dirt / scree at slope breaks
    q.lerp(P.rock,smooth(.24+n2*.12,.47,sl));                                                      // rock on steep faces
    if(h<WL-.2)q.lerp(P.bed,.8);
    if(colorHook)colorHook(x,z,h,sl,q);

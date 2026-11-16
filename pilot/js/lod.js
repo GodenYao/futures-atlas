@@ -24,6 +24,8 @@ const L=FA.LOD={on:Q.get('lod')!=='0',stress:STRESS,all:LODALL,CACHE:+(Q.get('lo
  NEAR_IN:95,NEAR_OUT:112,MID_IN:165,MID_OUT:192,MAXMID:2,
  tiers:{},builds:{},log:[],hover:null,show:{},farInfo:null};
 FA.IDLE_PX=+(Q.get('idlepx')||12);
+// B1 r3: screen-door dither (interleaved gradient noise on gl_FragCoord); tiers use complementary halves -> no double-bright overlap
+const DQ='float faDq=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))));';
 
 // ---- v4.4 world positions (live build futures_atlas_sample_v44_20261115_1524.html, O[].X/Z after its layout solve) ----
 const V44={normaltech:[-41.86,-21.49],libertarian:[-13.05,-43.6],egalitarian:[-32.39,-39.34],enslaved:[-35.18,19.32],o1984:[-55.98,43.1],
@@ -77,15 +79,69 @@ L.siteArg=s=>{const t=FA.SITE_TABLE.find(e=>e.id===s.id);return Object.assign({}
 L.ctx=()=>({THREE,LOOK:FA.LOOK,mats:FA.MATS,heightAt:(x,z)=>FA.Hm?FA.Hm(x,z):FA.H(x,z),rng:FA.rng});
 L.site=id=>SITES.find(s=>s.id===id);
 // terrain basins for the stand-ins (world.js FA.H reads FA.SITEB): flat floor h0 over the UNSCALED generator footprint
-FA.SITEB=SITES.filter(s=>!s.real).map(s=>({x:s.x,z:s.z,h0:s.h0,rb:Math.max(s.r+4,RFULL[s.g]+2)}));
+// B1 r3 (owner 11-16 "every ending sits on a round disc"): p1..p3 = per-site phases of the noise-warped basin footprint (world.js FA.H
+// expands the flat floor outward only by L.warp(), never inward, so the generator's r*1.15 bound stays flat) + 20 u feathered blend.
+FA.SITEB=SITES.filter(s=>!s.real).map(s=>{const q=FA.rng((s.seed|0)+311);return {x:s.x,z:s.z,h0:s.h0,rb:Math.max(s.r+4,RFULL[s.g]+2),p1:q()*6.283,p2:q()*6.283,p3:q()*6.283,id:s.id};});
+for(const s of SITES){const b=FA.SITEB.find(e=>e.id===s.id);if(b){s.p1=b.p1;s.p2=b.p2;s.p3=b.p3;}}
+// outward-only angular warp of a site's footprint (fraction of the radius, >= 0): 2nd/3rd/5th harmonics
+L.warp=(s,a)=>Math.max(0,.12+.11*Math.sin(2*a+s.p1)+.08*Math.sin(3*a+s.p2)+.05*Math.sin(5*a+s.p3));
 FA.SITEB_ALL=SITES.map(s=>({x:s.x,z:s.z,rb:s.real?(s.id==='gatekeeper'?27:24):Math.max(s.r+4,RFULL[s.g]+2)}));
 // B1 r2 keepOut: boot-time scatter / flora / far trees run BEFORE any lazy build, so every live generator site PRE-RESERVES the
 // contract footprint (radius*1.15 = the conformance bound) + pad. After a build, the generator's own keepOut circles are checked
 // against that disk (L.koCheck) and published in world coords (FA.KEEPOUT) for later placement passes.
 L.KO_K=1.15;FA.KEEPOUT=[];
-L.inSite=(x,z,pad)=>{for(const s of SITES){if(s.real)continue;if(Math.hypot(x-s.x,z-s.z)<s.r*L.KO_K+(pad==null?4:pad))return true;}return false;};
-L.reserved=(x,z,pad)=>L.inSite(x,z,pad==null?2:pad);
+// B1 r3: hard disk r*1.15+pad (unchanged guarantee) + a noise-warped THINNING band outside it (deterministic hash rejection, density
+// ramps back to full over ~.55 r), so forest / scatter does not stop on a circle (owner: "round disc, looks stiff").
+const hsh=(x,z)=>{const v=Math.sin(x*127.1+z*311.7)*43758.5453;return v-Math.floor(v);};
+L.inSite=(x,z,pad)=>{for(const s of SITES){if(s.real)continue;const dx=x-s.x,dz=z-s.z,d=Math.hypot(dx,dz),r0=s.r*L.KO_K+(pad==null?4:pad);if(d<r0)return true;
+  if(L.THIN&&s.p1!=null){const bw=s.r*(.25+L.warp(s,Math.atan2(dz,dx))*2.6);if(d<r0+bw&&hsh(x,z)>Math.pow((d-r0)/bw,1.6))return true;}}return false;};
+L.THIN=Q.get('thin')!=='0';
+L.reserved=(x,z,pad)=>{const t=L.THIN;L.THIN=false;const r=L.inSite(x,z,pad==null?2:pad);L.THIN=t;return r;};
 L.koCheck={};
+// ---- B1 r3 OUTSKIRTS (owner 11-16 "every ending sits on a round disc"): tracks leaving each site into the terrain, scattered houses
+// and field patches thinning outward (density ~ (1-u)^2 over r*1.1..r*2.1), forest thinned by L.inSite's band. Engine-owned, built once
+// at boot for every live stand-in / contract site, 3 draws for all sites (houses + window panes + ground: tracks/fields), no shadows cast.
+// Endings with no free humans outside the town (zookeeper, conquerors, selfdestruct) get tracks only. ?outskirts=0 = off.
+L.OUTSK=Q.get('outskirts')!=='0';
+const HUM={normaltech:1,o1984:1,protector:1,egalitarian:1,libertarian:1,benevolent:1,enslaved:1,descendants:1},FIELDS={normaltech:1,egalitarian:1,protector:1,libertarian:1,benevolent:1,o1984:1};
+L.outskirts=function(){if(!L.OUTSK)return null;const t0=performance.now(),H=L.ctx().heightAt,G={p:[],n:[],c:[]},W={p:[],n:[],c:[]},Gr={p:[],n:[],c:[]};
+ const cc=h=>new THREE.Color(h),real=SITES.filter(s=>s.real),rv=x=>FA.riverX?FA.riverX(x):1e9;
+ const okAt=(x,z,s)=>{if(Math.abs(x)>FA.TW/2-6||Math.abs(z)>FA.TD/2-6)return false;if(Math.abs(x-rv(z))<4.5)return false;
+  for(const o of real)if(Math.hypot(x-o.x,z-o.z)<o.r+9)return false;
+  for(const o of SITES)if(!o.real&&Math.hypot(x-o.x,z-o.z)<o.r*L.KO_K+(o===s?.5:3.5))return false;return true;};   // own site: only its hard r*1.15 disk
+ const tri=(A,a,b,c,col,ctr)=>{let ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;
+  const fl=ctr?(nx*((a[0]+b[0]+c[0])/3-ctr[0])+ny*((a[1]+b[1]+c[1])/3-ctr[1])+nz*((a[2]+b[2]+c[2])/3-ctr[2]))<0:ny<0;   // outward (houses) / up (ground): winding follows the normal (FrontSide)
+  if(fl){const t=b;b=c;c=t;nx=-nx;ny=-ny;nz=-nz;}for(const p of [a,b,c]){A.p.push(p[0],p[1],p[2]);A.n.push(nx/l,ny/l,nz/l);A.c.push(col.r,col.g,col.b);}};
+ const quad=(A,a,b,c,d,col,ctr)=>{tri(A,a,b,c,col,ctr);tri(A,a,c,d,col,ctr);};
+ const house=(x,z,ry,w,d,h,wall,roof,lit)=>{const y=H(x,z)-.05,cs=Math.cos(ry),sn=Math.sin(ry),P=(u,v,yy)=>[x+u*cs-v*sn,yy,z+u*sn+v*cs],O=[x,y+h*.5,z];
+  const a=P(-w,-d,y),b=P(w,-d,y),c=P(w,d,y),e=P(-w,d,y),A=P(-w,-d,y+h),B=P(w,-d,y+h),Cc=P(w,d,y+h),E=P(-w,d,y+h),r1=P(-w,0,y+h+d*.9),r2=P(w,0,y+h+d*.9);
+  quad(G,a,b,B,A,wall,O);quad(G,b,c,Cc,B,wall,O);quad(G,c,e,E,Cc,wall,O);quad(G,e,a,A,E,wall,O);
+  tri(G,B,Cc,r2,wall,O);tri(G,E,A,r1,wall,O);quad(G,A,B,r2,r1,roof,O);quad(G,Cc,E,r1,r2,roof,O);   // gable ends (u = +-w) + 2 roof planes, ridge along u
+  if(lit){const f=P(-w*.35,-d-.02,y+h*.3),g2=P(w*.1,-d-.02,y+h*.3),g3=P(w*.1,-d-.02,y+h*.72),g4=P(-w*.35,-d-.02,y+h*.72);quad(W,f,g2,g3,g4,lit,O);}};
+ const WALL=['#B9AE9C','#A89F92','#C4B8A2','#9C958C'].map(cc),ROOF=['#4A4A52','#5A4C46','#3E4448','#6A5446'].map(cc),FC=['#5E6B45','#6F7448','#7D7650','#56603F','#857A4E'].map(cc),TRK=cc('#857660');
+ const LIT=cc(FA.LOOK.human||'#FFC27A').multiplyScalar(.55),FL=[];let nH=0,nF=0,nT=0;
+ for(const s of SITES){if(s.real)continue;const R=s.r,rnd=FA.rng((s.seed|0)+5501),tracks=[];const K=s.g==='city'?3:2;
+  for(let k=0;k<K;k++){let a=(s.rot||0)+k*6.283/K+(rnd()-.5)*.7,x=s.x+Math.cos(a)*R*.82,z=s.z+Math.sin(a)*R*.82;const L0=R*(1.1+rnd()*.6),pts=[];   // r3 vision: start under protown's feathered ground edge so tracks meet the town
+   for(let t=0;t<=L0;t+=1.4){if(t>0&&!okAt(x,z,s)&&Math.hypot(x-s.x,z-s.z)>R*1.2)break;pts.push([x,z]);a+=(rnd()-.5)*.22;x+=Math.cos(a)*1.4;z+=Math.sin(a)*1.4;}
+   if(pts.length<4)continue;tracks.push(pts);nT++;
+   for(let i=0;i<pts.length-1;i++){const [x0,z0]=pts[i],[x1,z1]=pts[i+1],dx=x1-x0,dz=z1-z0,l=Math.hypot(dx,dz)||1,u=i/(pts.length-1),w0=.62*(1-.7*u),w1=.62*(1-.7*(i+1)/(pts.length-1));
+    const px=-dz/l,pz=dx/l,y=(xx,zz)=>H(xx,zz)+.07;
+    quad(Gr,[x0-px*w0,y(x0-px*w0,z0-pz*w0),z0-pz*w0],[x0+px*w0,y(x0+px*w0,z0+pz*w0),z0+pz*w0],[x1+px*w1,y(x1+px*w1,z1+pz*w1),z1+pz*w1],[x1-px*w1,y(x1-px*w1,z1-pz*w1),z1-pz*w1],TRK);}}
+  if(HUM[s.id]){const N=Math.round(R*1.5);for(let i=0,tries=0;i<N&&tries<N*12;tries++){let x,z,ry;
+    if(tracks.length&&rnd()<.55){const tr=tracks[(rnd()*tracks.length)|0],j=1+((rnd()*(tr.length-2))|0),[ax,az]=tr[j],[bx2,bz]=tr[j+1]||tr[j],sd=rnd()<.5?-1:1,dx=bx2-ax,dz=bz-az,l=Math.hypot(dx,dz)||1;
+     const u=j/tr.length;if(rnd()>Math.pow(1-u,1.4))continue;x=ax-dz/l*sd*(1.5+rnd()*.9);z=az+dx/l*sd*(1.5+rnd()*.9);ry=Math.atan2(dz,dx);}
+    else{const a=rnd()*6.283,d=R*(1.12+rnd()*1.0),u=(d-R*1.12)/R;if(rnd()>Math.pow(1-u,2))continue;x=s.x+Math.cos(a)*d;z=s.z+Math.sin(a)*d;ry=rnd()*3.14;}
+    if(!okAt(x,z,s)||(FA.slope&&FA.slope(x,z)>.32))continue;const w=.3+rnd()*.22,dd=.22+rnd()*.16,h=.3+rnd()*.25;
+    house(x,z,ry,w,dd,h,WALL[(rnd()*4)|0],ROOF[(rnd()*4)|0],rnd()<.5?LIT:null);i++;nH++;}}
+  if(FIELDS[s.id]){const N=Math.round(R*.7);for(let i=0,tries=0;i<N&&tries<N*10;tries++){const a=rnd()*6.283,d=R*(1.15+rnd()*.9),u=(d-R*1.15)/(R*.9);if(rnd()>Math.pow(1-u,1.6))continue;
+    const x=s.x+Math.cos(a)*d,z=s.z+Math.sin(a)*d,fw=1.2+rnd()*1.6,fd=.8+rnd()*1.1,ry=a+(rnd()-.5)*.6,cs=Math.cos(ry),sn=Math.sin(ry);
+    let ok=!FL.some(f=>Math.hypot(f[0]-x,f[1]-z)<f[2]+fw+.4);for(const [u2,v2] of [[-fw,-fd],[fw,-fd],[fw,fd],[-fw,fd]]){if(!ok)break;const xx=x+u2*cs-v2*sn,zz=z+u2*sn+v2*cs;if(!okAt(xx,zz,s)){ok=false;break;}}if(!ok||(FA.slope&&FA.slope(x,z)>.25))continue;FL.push([x,z,fw]);   // r3 vision: no overlapping field quads
+    const col=FC[(rnd()*FC.length)|0],P=(u2,v2)=>{const xx=x+u2*cs-v2*sn,zz=z+u2*sn+v2*cs;return [xx,H(xx,zz)+.05,zz];};
+    for(let q=0;q<3;q++){const u0=-fw+q*fw*2/3,u1=u0+fw*2/3,c2=col.clone().multiplyScalar(q%2?.92:1.04);quad(Gr,P(u0,-fd),P(u1,-fd),P(u1,fd),P(u0,fd),c2);}i++;nF++;}}}
+ const mk=(A,m,name)=>{if(!A.p.length)return null;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(A.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(A.n,3));
+  g.setAttribute('color',new THREE.Float32BufferAttribute(A.c,3));g.computeBoundingSphere();const me=new THREE.Mesh(g,m);me.name=name;me.receiveShadow=true;me.castShadow=false;FA.SC.add(me);return me;};
+ L.outsk=[mk(G,FA.MATS.building,'outskirts_houses'),mk(W,FA.MATS.light,'outskirts_windows'),mk(Gr,FA.MATS.ground,'outskirts_ground')].filter(Boolean);
+ return L.outskInfo={houses:nH,fields:nF,tracks:nT,tris:Math.round((G.p.length+W.p.length+Gr.p.length)/9),ms:Math.round(performance.now()-t0)};};
 
 // ---- capture: objects a builder adds to the scene (real detail cities) ----
 function snap(){return{sc:new Set(FA.SC.children),st:FA.STATIC.length,an:FA.anims.length,mv:FA.MOVERS.length,gl:FA.GLOWS.length,sm:FA.SMOKES.length,ao:FA.AOS.length,
@@ -98,7 +154,7 @@ L.collect=function(){for(const s of SITES){if(!s.real)continue;const objs=(s.dir
   for(const o of FA.SC.children)if(o.userData.site===s.id&&!objs.includes(o))objs.push(o);
   s.objs=objs;s.meshes=[];for(const o of objs)o.traverse(m=>{if(m.isMesh||m.isInstancedMesh){m.userData.cs0=m.castShadow;s.meshes.push(m);}});s.built=1;
   if(MIDREAL)JOBS.push({s,it:realMidSteps(s),steps:[],work:0,t0:performance.now(),realMid:1});}
- if(JOBS.length)schedule();try{L.warm();}catch(e){L.warmInfo={err:e.message};}};
+ if(JOBS.length)schedule();try{L.outskirts();}catch(e){(window.__errs=window.__errs||[]).push('outskirts: '+e.message);}try{L.warm();}catch(e){L.warmInfo={err:e.message};}};
 // B1 r2: protown program WARM-UP at boot. GPU r2: the first protown lazy build had a 433 ms frame = 8 new shader programs compiled on
 // first draw (window facade onBeforeCompile etc.), while every build step stayed <= 6.4 ms. Build each preset once at radius 4 and keep the
 // groups in the scene (frustumCulled off) for the FIRST rendered frame only, so the boot frame compiles them through the real pipeline
@@ -106,9 +162,10 @@ L.collect=function(){for(const s of SITES){if(!s.real)continue;const objs=(s.dir
 // Removed in the next rAF after their first draw; materials are NOT disposed so the programs stay cached for the real builds. ?ptwarm=0 = off.
 L.WARM=Q.get('ptwarm')!=='0';
 L.warm=function(){if(!L.WARM||!FA.PROTOWN)return null;const t0=performance.now(),g=new THREE.Group(),ctx=L.ctx();
- const s0=SITES.find(s=>!s.real)||{x:0,z:0,y:0};g.name='protown_warm';
+ const s0=SITES.find(s=>!s.real)||{x:0,z:0,y:0};g.name='protown_warm';const WU={near:{value:2},mid:{value:1}};
  for(const id of ['normaltech','o1984','protector','egalitarian','zookeeper','descendants']){try{const it=FA.PROTOWN.buildSteps({id:'warm_'+id,ending:id,name:id,x:s0.x,z:s0.z,y:s0.y||0,radius:4,rot:0,seed:7},ctx);
-   let r;while(!(r=it.next()).done);const T=r.value;if(T&&T.near)g.add(T.near);if(T&&T.mid)g.add(T.mid);}catch(e){(L.warmErr=L.warmErr||[]).push(id+': '+e.message);}}
+   let r;while(!(r=it.next()).done);const T=r.value;if(T&&T.near){g.add(T.near);if(L.FADE)fdApply(T.near,WU.near);}if(T&&T.mid){g.add(T.mid);if(L.FADE)fdApply(T.mid,WU.mid);}}catch(e){(L.warmErr=L.warmErr||[]).push(id+': '+e.message);}}
+ if(L.FADE){const mm=[];for(const k in FA.MATS)mm.push(FA.MATS[k]);mm.forEach((m,i)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.2,.2,.2),m);const c=b.clone();fdApply(b,WU.near);fdApply(c,WU.mid);c.position.x=.3;g.add(b,c);});}   // r3: '|fd' programs of the shared families (MID of every contract generator)
  g.position.set(s0.x,(s0.y||0)-30,s0.z);let first=null;g.traverse(o=>{if(o.isMesh||o.isInstancedMesh){o.frustumCulled=false;if(!first)first=o;}});
  L.warmInfo={buildMs:Math.round(performance.now()-t0),err:L.warmErr||null,state:'pending'};if(!first)return L.warmInfo;
  first.onAfterRender=()=>{first.onAfterRender=()=>{};requestAnimationFrame(()=>{FA.SC.remove(g);g.traverse(o=>{if(o.geometry)o.geometry.dispose();});
@@ -127,7 +184,8 @@ function* realMidSteps(s,amin,lvl){amin=amin||MIDA;const g=new THREE.Group();g.n
   swap.push(m);if(o){o.matrixAutoUpdate=false;o.matrix.copy(m.matrixWorld);o.renderOrder=m.renderOrder;o.receiveShadow=m.receiveShadow;o.frustumCulled=m.frustumCulled;o.castShadow=false;g.add(o);}
   if(performance.now()-tw>L.BUDGET*.75){yield 'realmid';tw=performance.now();}}
  if(s.midG){swapMid(s,g,lvl);return s;}   // B1 r2: distance re-level (tier + swap list unchanged)
- g.visible=false;FA.SC.add(g);s.midG=g;s.midLvl=lvl||0;s.midSwap=swap;s.fx=s.fx||[];s.decals=s.decals||[];s.tris={near:s.meshes.reduce((a,m)=>a+trisM(m),0),mid:trisOf(g)};L.tiers[s.id]=null;return s;}
+ if(L.FADE&&L.FADEREAL){const U=fdU(s);for(const m of swap)m.material=fdMat(m.material,U.near);fdApply(g,U.mid);}   // B1 r3: cross-fade variants (real cities)
+ g.visible=false;FA.SC.add(g);yield 'realmid:mount';preUpload([g]);yield 'realmid:upload';s.midG=g;s.midLvl=lvl||0;s.midSwap=swap;s.fx=s.fx||[];s.decals=s.decals||[];s.tris={near:s.meshes.reduce((a,m)=>a+trisM(m),0),mid:trisOf(g)};L.tiers[s.id]=null;return s;}
 const trisM=m=>Math.round(triN(m.geometry)*(m.isInstancedMesh?m.count:1));
 
 // ---- FAR proxies: simplified massing, merged across ALL sites per material family ----
@@ -168,8 +226,10 @@ function farMat(name,o){const m=new THREE.MeshStandardMaterial(Object.assign({ve
  m.onBeforeCompile=sh=>{sh.uniforms.uVis=UV;
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aS;attribute float aW;uniform float uVis[16];varying vec3 vWPf;varying vec3 vWNf;varying float vW;varying float vS;')
    .replace('#include <begin_vertex>','#include <begin_vertex>\nvWPf=(modelMatrix*vec4(transformed,1.)).xyz;'+(name==='emit'?'vWNf=vec3(0.,1.,0.);':'vWNf=normalize(mat3(modelMatrix)*objectNormal);')+'vW=aW;vS=aS;')
-   .replace('#include <project_vertex>','#include <project_vertex>\nif(uVis[int(aS+.5)]<.5)gl_Position=vec4(2.,2.,2.,1.);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWPf;varying vec3 vWNf;varying float vW;varying float vS;')
+   .replace('#include <project_vertex>','#include <project_vertex>\nvFv=uVis[int(aS+.5)];if(vFv<.002)gl_Position=vec4(2.,2.,2.,1.);');   // B1 r3: uVis = FAR share 0..1 (cross-fade), dither in the fragment
+  sh.vertexShader=sh.vertexShader.replace('varying float vS;','varying float vS;varying float vFv;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWPf;varying vec3 vWNf;varying float vW;varying float vS;varying float vFv;')
+   .replace(/void\s+main\s*\(\s*\)\s*\{/,'void main() {\n'+DQ+'if(faDq>=vFv)discard;')
    .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n{float wf=abs(vW);vec3 n=normalize(vWNf);if(wf>0.&&abs(n.y)<.35){float u=abs(n.x)>abs(n.z)?vWPf.z:vWPf.x;'+
     'vec2 g=vec2(u/.42,(vWPf.y-.1)/.52);vec2 c=floor(g),f=fract(g);float mk=step(.24,f.x)*step(f.x,.76)*step(.26,f.y)*step(f.y,.68);'+
     'float h=fract(sin(dot(c,vec2(12.9898,78.233))+vS*7.13)*43758.5453);totalEmissiveRadiance+=(vW>0.?vec3('+WC.toArray().map(v=>v.toFixed(3))+'):vec3('+AC.toArray().map(v=>v.toFixed(3))+')*.6)*mk*step(h,wf);}}');};
@@ -310,7 +370,7 @@ function* deriveMid(near,amin){const mid=new THREE.Group();const inv=new THREE.M
  mid.scale.copy(near.scale);return mid;}
 function* reMidSteps(s,lv){if(!s.pivot||!s.midG)return s;const g=yield* deriveMid(s.pivot,MIDA*Math.pow(2,lv));if(!s.pivot||!s.midG)return s;
  g.position.copy(s.pivot.position);g.traverse(m=>{if(m.isMesh||m.isInstancedMesh){m.castShadow=false;m.userData.cs0=false;}});swapMid(s,g,lv);return s;}
-function swapMid(s,g,lv){const old=s.midG;g.name=old.name;g.visible=old.visible;FA.SC.add(g);FA.SC.remove(old);const keep=new Set();g.traverse(m=>{if(m.geometry)keep.add(m.geometry);});
+function swapMid(s,g,lv){const old=s.midG;if(s.fdU)fdApply(g,s.fdU.mid);g.name=old.name;g.visible=old.visible;FA.SC.add(g);FA.SC.remove(old);const keep=new Set();g.traverse(m=>{if(m.geometry)keep.add(m.geometry);});
  old.traverse(m=>{if(m.isInstancedMesh&&m.dispose)m.dispose();if(m.geometry&&MIDOUT.has(m.geometry)&&!keep.has(m.geometry))m.geometry.dispose();});
  const t0=s.tris?s.tris.mid:0;s.midG=g;s.midLvl=lv;if(s.tris)s.tris.mid=trisOf(g);L.midLog.push({id:s.id,lvl:lv,amin:+(MIDA*Math.pow(2,lv)).toFixed(3),tris:[t0,s.tris&&s.tris.mid],d:s.dist});FA.kick&&FA.kick(200);}
 function midRelevel(T){if(!L.MIDDIST||JOBS.some(j=>j.reMid))return;
@@ -402,9 +462,13 @@ function* hostSteps(s){const t0=performance.now(),R=GEN.resolve(s),site=L.siteAr
  FA.SC.add(near);FA.SC.add(mid);for(const o of (res.fxObjs||[]))FA.SC.add(o);for(const d of (res.decals||[]))FA.SC.add(d);   // r2: NaN guard now lives in profarm.js pfN
  s.pivot=near;s.midG=mid;s.fx=res.fxObjs||[];s.objs=[near].concat(res.decals||[]);s.decals=res.decals||[];
  s.meshes=[];near.traverse(m=>{if(m.isMesh||m.isInstancedMesh)s.meshes.push(m);});
- s.tris={near:trisOf(near),mid:trisOf(mid)};s.built=1;s.buildMs=Math.round(performance.now()-t0);
+ s.tris={near:trisOf(near),mid:trisOf(mid)};s.buildMs=Math.round(performance.now()-t0);
  near.visible=mid.visible=false;for(const o of s.fx)o.visible=false;for(const d of s.decals)d.visible=false;
- return s;}
+ if(L.FADE){const U=fdU(s);fdApply(near,U.near);fdApply(mid,U.mid);}   // B1 r3: per-site cross-fade material variants (programs warmed at boot)
+ yield 'fade:variants';
+ // B1 r3: upload buffers / compile any missed program HERE (a build step), one tier per step; the site counts as built only afterwards
+ s.upMs=[preUpload([near].concat(s.fx,s.decals))];yield 'upload:near';s.upMs.push(preUpload([mid]));yield 'upload:mid';
+ s.built=1;return s;}
 // ---- scheduler: run build steps from rAF with a per-frame budget (L.BUDGET ms, default 8). ?lodsplit=0 = B0 path (one sync chunk) ----
 L.BUDGET=+(Q.get('lodms')||8);L.LEGACY=Q.get('lodsplit')==='0';L.SPLIT=Q.get('lodsplit')!=='sync';const JOBS=[];let pumpOn=false;  // ?lodsplit=0 = B0 buildFull (before), =sync = B1 host in one chunk
 function pump(){pumpOn=false;const f0=performance.now();
@@ -456,7 +520,7 @@ function buildFull(s){const t0=performance.now();const a=snap();const sv={GK:FA.
  for(let i=a.mv;i<FA.MOVERS.length;i++){const m=FA.MOVERS[i];const n=Object.assign({},m,{vis:alive,site:s.id});if(m.x!=null&&!m.o&&!m.p&&!m.fn){const t=tx(m.x,m.y,m.z);n.x=t[0];n.y=t[1];n.z=t[2];}if(m.r)n.r=m.r*k;FA.MOVERS[i]=n;}
  s.meshes=[];pv.traverse(m=>{if(m.isMesh||m.isInstancedMesh){m.userData.cs0=m.castShadow;s.meshes.push(m);}});s.objs=[pv].concat(s.decals||[]);s.pivot=pv;
  s.built=ok?1:0;s.buildMs=Math.round(performance.now()-t0);L.builds[s.id]=s.buildMs;L.log.push({id:s.id,ms:s.buildMs,meshes:s.meshes.length,dropped,droppedNames:s.droppedNames,ok});return ok;}
-function dispose(s){if(!s.pivot)return;s.pivot.userData.dead=true;
+function dispose(s){if(!s.pivot)return;s.pivot.userData.dead=true;FADING.delete(s);s.fd=null;
  const keep=new Set();for(const k in FA.MODELS)for(const p of (FA.MODELS[k].parts||[]))keep.add(p.geo);const geos=new Set();
  for(const o of s.objs.concat(s.midG?[s.midG]:[],s.fx||[])){FA.SC.remove(o);o.traverse(m=>{if(m.isInstancedMesh&&m.dispose)m.dispose();if(m.geometry&&!keep.has(m.geometry))geos.add(m.geometry);});}
  for(const g of geos)g.dispose();s.midG=null;s.fx=null;   // shared generator geometries re-upload on next use; materials stay (shared)
@@ -468,23 +532,77 @@ const _cp=new THREE.Vector3();let lastU=0,pending=null;const LRU=[];
 function want(s,dist,prev){if(FA.VIEW==='close')return s.id===FA.CITY?'near':(s.real&&!LODALL?'mid':'far');
  const nIn=prev==='near'?L.NEAR_OUT:L.NEAR_IN,mIn=(prev==='mid'||prev==='near')?L.MID_OUT:L.MID_IN;
  let t=dist<nIn?'near':dist<mIn?'mid':'far';if(s.real&&!LODALL&&t==='far')t='mid';return t;}
+// ---- B1 r3: tier CROSS-FADE (owner 11-16 "LOD pop"): both tiers drawn for L.FADE ms with complementary screen-door dither
+// (FAR via uVis[] share, MID/NEAR via per-site uFd uniforms on per-site material variants; key = base key + '|fd', warmed at boot).
+// uFd < 1.5: show where dq < uFd (lower tier); uFd >= 2: show where dq >= uFd-2 (higher tier). Defaults: MID 1, NEAR 2 = no discard.
+// NEAR casts shadows only once its fade-in has completed (shadow refresh after the fade, never in the swap frame). ?lodfade=0 = instant.
+L.FADE=+(Q.get('lodfade')||500);L.FADEREAL=Q.get('fadereal')!=='0';
+const FDC=new WeakMap(),FDB=new WeakMap();
+function fdInject(sh,U){sh.uniforms.uFd=U;sh.fragmentShader=sh.fragmentShader.replace(/void\s+main\s*\(\s*\)\s*\{/,'uniform float uFd;\nvoid main() {\n'+DQ+'if(uFd<1.5){if(faDq>=uFd)discard;}else if(faDq<uFd-2.)discard;');}
+function fdMat(m,U){if(!m||!U)return m;m=FDB.get(m)||m;if(m.isPointsMaterial||m.isLineBasicMaterial||m.isSpriteMaterial)return m;
+ let c=FDC.get(m);if(!c){c=new Map();FDC.set(m,c);}let v=c.get(U);if(v)return v;
+ const ud=m.userData;m.userData={};v=m.clone();m.userData=ud;v.userData=ud;if(m.isShaderMaterial)v.uniforms=Object.assign({},m.uniforms);
+ const ob=m.onBeforeCompile,k0=m.customProgramCacheKey();v.onBeforeCompile=function(sh,r){ob.call(this,sh,r);fdInject(sh,U);};v.customProgramCacheKey=()=>k0+'|fd';
+ v.name=(m.name||'')+'|fd';FDB.set(v,m);c.set(U,v);return v;}
+function fdApply(root,U){if(!root||!U)return;root.traverse(o=>{if((o.isMesh||o.isInstancedMesh)&&o.material)o.material=Array.isArray(o.material)?o.material.map(x=>fdMat(x,U)):fdMat(o.material,U);});}
+L.fdApply=fdApply;
+const fdU=s=>s.fdU||(s.fdU={near:{value:2},mid:{value:1}});
+// v = tier shares {far,mid,near} (sum 1); visibility + dither for one site
+function setVis(s,v){const n=v.near||0,md=v.mid||0,f=v.far||0;VIS[s.i]=f;
+ if(s.midG&&s.real){if(s.midSwap)for(const m of s.midSwap)m.visible=n>0;s.midG.visible=md>0;}
+ else if(s.midG){s.pivot.visible=n>0;s.midG.visible=md>0;const o=n>0||md>0;for(const d of s.decals)d.visible=o;for(const x of s.fx)x.visible=o;}
+ else if(s.objs)for(const o of s.objs)o.visible=n>0||md>0;
+ const U=s.fdU;if(U){U.near.value=2+(1-n);U.mid.value=f>0?2+(1-md):(md>0?md:1);}}
+const one=t=>({far:t==='far'?1:0,mid:t==='mid'?1:0,near:t==='near'?1:0});
+function shadowsFor(s,t){if(!s.meshes)return;let ch=false;for(const m of s.meshes){const c=!!m.userData.cs0&&t==='near';if(m.castShadow!==c){m.castShadow=c;ch=true;}}if(ch)FA.shadowDirty=true;}
+function canFade(s,a,b){if(!L.FADE||!a||a===b||!s.fdU)return false;if(s.real&&!L.FADEREAL)return false;if(!s.midG&&(a!=='far'&&b!=='far'))return false;return true;}
+const FADING=new Set();
+function fadeTick(){if(!FADING.size)return;const n=performance.now();
+ for(const s of FADING){const F=s.fd;let p=(n-F.t0)/L.FADE;if(p>=1){FADING.delete(s);s.fd=null;setVis(s,one(F.b));shadowsFor(s,F.b);(L.fadeLog=L.fadeLog||[]).push({id:s.id,a:F.a,b:F.b,ms:Math.round(n-F.t0),frames:F.fr});if(L.fadeLog.length>24)L.fadeLog.shift();continue;}
+  p=p*p*(3-2*p);F.fr=(F.fr||0)+1;const v={far:0,mid:0,near:0};v[F.a]+=1-p;v[F.b]+=p;setVis(s,v);}
+ FA.kick&&FA.kick(120);}
+FA.anims.push(fadeTick);
+function startFade(s,a,b){const n=performance.now();if(s.fd){const F=s.fd;if(F.b===b)return;
+  if(F.a===b){const p=Math.min(1,(n-F.t0)/L.FADE);s.fd={a:F.b,b:F.a,t0:n-(1-p)*L.FADE,fr:F.fr};return;}   // reversal: continue from the current mix
+  setVis(s,one(F.b));a=F.b;}
+ s.fd={a,b,t0:n,fr:0};FADING.add(s);FA.kick&&FA.kick(L.FADE+200);}
 function apply(s,t){const prev=L.tiers[s.id];
  if(t!=='far'&&!s.built){if(!s.real){if(L.LEGACY){if(!pending){pending=s.id;setTimeout(()=>{const ok=buildFull(s);pending=null;
     if(ok){LRU.push(s.id);for(let i=0;LRU.length>L.CACHE&&i<LRU.length;){const ev=LRU[i];if(L.tiers[ev]==='far'&&ev!==s.id){LRU.splice(i,1);dispose(site(ev));}else i++;}}
-    L.update(true);FA.shadowDirty=true;FA.kick&&FA.kick(600);},0);}}else queueBuild(s);}t='far';}  // FAR proxy shown until the full build exists
+    L.update(true);FA.shadowDirty=true;FA.kick&&FA.kick(600);},0);}}else queueBuild(s);}t='far';}  // FAR proxy shown until the full build exists (never swap to an unbuilt tier)
  if(t!=='far'&&!s.real){const i=LRU.indexOf(s.id);if(i>=0){LRU.splice(i,1);LRU.push(s.id);}}
- VIS[s.i]=t==='far'?1:0;
- if(s.midG&&s.real){const n=t==='near';if(s.midSwap)for(const m of s.midSwap)m.visible=n;s.midG.visible=!n;}   // B1: real-city MID swap
- else if(s.midG){s.pivot.visible=t==='near';s.midG.visible=t==='mid';for(const o of s.decals)o.visible=t!=='far';for(const o of s.fx)o.visible=t!=='far';}   // B1 host: separate MID group
- else if(s.objs)for(const o of s.objs)o.visible=t!=='far';
- if(s.meshes&&prev!==t){for(const m of s.meshes)m.castShadow=!!m.userData.cs0&&t==='near';FA.shadowDirty=true;}
+ if(prev!==t&&canFade(s,prev,t))startFade(s,prev,t);
+ else if(s.fd){if(s.fd.b!==t)startFade(s,s.fd.b,t);}   // fade in progress: fadeTick owns visibility
+ else{setVis(s,one(t));if(s.meshes&&prev!==t)shadowsFor(s,t);}
  L.tiers[s.id]=t;}
+// ---- B1 r3: PRE-UPLOAD a freshly built tier inside a build step (not in the first frame that shows it): draw only the new meshes
+// (layer 30, lights enabled on it) into the real post target rtS with a 1x1 scissor -> same program keys as the app, buffers +
+// VAOs uploaded, programs (if any were missed by the warm-up) compiled here. Shadow map untouched. ?ptup=0 = off (round-2 behaviour).
+L.PREUP=Q.get('ptup')!=='0';const LAY=30;let upCam=null,litLay=false;
+function preUpload(objs){if(!L.PREUP||!FA.POST||!FA.POST.rtS)return -1;const t=performance.now(),R=FA.R;
+ if(!litLay){FA.SC.traverse(o=>{if(o.isLight)o.layers.enable(LAY);});litLay=true;}
+ if(!upCam)upCam=FA.CAM.clone();upCam.copy(FA.CAM);upCam.layers.set(LAY);
+ const st=[];for(const g of objs){if(!g)continue;st.push([g,'v',g.visible]);g.visible=true;g.traverse(o=>{if(o.isMesh||o.isInstancedMesh){st.push([o,'f',o.frustumCulled]);o.frustumCulled=false;o.layers.enable(LAY);if(o!==g&&!o.visible){st.push([o,'v',false]);o.visible=true;}}});}
+ const prevT=R.getRenderTarget(),ac=R.autoClear,su=R.shadowMap.needsUpdate,pr=R.info.render.calls;
+ try{R.shadowMap.needsUpdate=false;R.autoClear=false;R.setRenderTarget(FA.POST.rtS);R.setScissorTest(true);R.setScissor(0,0,1,1);R.render(FA.SC,upCam);}
+ finally{R.setScissorTest(false);R.setRenderTarget(prevT);R.autoClear=ac;R.shadowMap.needsUpdate=su;
+  for(const [o,k,v] of st){if(k==='v')o.visible=v;else{o.frustumCulled=v;o.layers.disable(LAY);}}}
+ return +(performance.now()-t).toFixed(1);}
+L.preUpload=preUpload;
+// ---- B1 r3: PREFETCH - build ahead of need while FAR/MID is still shown: the 2 nearest stand-ins (by the camera position AND the
+// position predicted ~0.8 s ahead from its velocity) are built once within L.PRE_D (default 1.4 x MID_IN). ?lodpre=0 = off.
+L.PRE=Q.get('lodpre')!=='0';L.PRE_D=+(Q.get('lodpred')||L.MID_IN*1.4);const _lp=new THREE.Vector3(),_vp=new THREE.Vector3();let lpT=0;
+function prefetch(D){if(!L.PRE||JOBS.length||pending||FA.VIEW!=='world')return;const n=performance.now(),dt=Math.max(.016,(n-lpT)/1000);
+ _vp.copy(_cp).sub(_lp).multiplyScalar(lpT?Math.min(.8/dt,8):0).add(_cp);_lp.copy(_cp);lpT=n;
+ const C=D.filter(o=>!o.s.real).map(o=>({s:o.s,d:Math.min(o.d,Math.hypot(_vp.x-o.s.x,_vp.y-(o.s.h0+2),_vp.z-o.s.z))})).sort((a,b)=>a.d-b.d).slice(0,L.MAXMID);
+ for(const o of C)if(!o.s.built&&o.d<L.PRE_D){o.s.prefetched=1;queueBuild(o.s);(L.preLog=L.preLog||[]).push({id:o.s.id,d:Math.round(o.d)});return;}}
 L.update=function(force){if(!L.farMeshes)return;const n=performance.now();if(!force&&n-lastU<120)return;lastU=n;FA.CAM.getWorldPosition(_cp);
  const D=SITES.map(s=>({s,d:Math.hypot(_cp.x-s.x,_cp.y-(s.h0+2),_cp.z-s.z)}));
  const T=D.map(o=>({s:o.s,d:o.d,t:want(o.s,o.d,L.tiers[o.s.id])}));
  // at most MAXMID stand-ins above FAR at once (closest first)
  T.filter(o=>!o.s.real&&o.t!=='far').sort((a,b)=>a.d-b.d).slice(L.MAXMID).forEach(o=>o.t='far');
  for(const o of T){o.s.dist=Math.round(o.d);apply(o.s,o.t);}
+ prefetch(D);   // B1 r3: build ahead of need (FAR/MID stays on screen meanwhile)
  midRelevel(T);   // B1 r2: distance-driven MID level (one re-derive job at a time)
  {const anyFar=VIS.some(v=>v>0);for(const m of L.farMeshes)m.visible=anyFar;}   // no FAR site -> skip the 4 proxy draws entirely
  if(L.lines)L.lines.visible=FA.VIEW==='world';};
@@ -495,7 +613,7 @@ L.hot=function(){if(FA.VIEW!=='world')return null;const n=performance.now();if(L
  for(const m of FA.markers||[]){if(m.el.style.display==='none')continue;v.copy(m.p).project(FA.CAM);const X=(v.x*.5+.5)*innerWidth,Y=(-v.y*.5+.5)*innerHeight,d=Math.hypot(X-e.clientX,Y-e.clientY);if(d<bd){bd=d;best=m.id;}}
  L.hover=best;});}
 L.hud=()=>{const c={near:0,mid:0,far:0};for(const k in L.tiers)c[L.tiers[k]]++;return 'lod N'+c.near+' M'+c.mid+' F'+c.far+(pending?' (building '+pending+')':'')+' · ter '+FA.TER;};
-L.info=()=>({tiers:Object.assign({},L.tiers),dist:Object.fromEntries(SITES.map(s=>[s.id,s.dist])),builds:Object.assign({},L.builds),far:L.farInfo,lru:LRU.slice(),pending,
+L.info=()=>({fade:(L.fadeLog||[]).slice(-8),pre:(L.preLog||[]).slice(-8),outsk:L.outskInfo||null,up:Object.fromEntries(SITES.filter(s=>s.upMs).map(s=>[s.id,s.upMs])),tiers:Object.assign({},L.tiers),dist:Object.fromEntries(SITES.map(s=>[s.id,s.dist])),builds:Object.assign({},L.builds),far:L.farInfo,lru:LRU.slice(),pending,
  koCheck:Object.assign({},L.koCheck),warm:L.warmInfo||null,farMs:L.farMs,midLvl:Object.fromEntries(SITES.filter(s=>s.midG).map(s=>[s.id,s.midOwn?'own':s.midLvl||0])),midLog:L.midLog.slice(-8),
  gens:Object.fromEntries(SITES.map(s=>[s.id,s.genName||s.gen])),
  sites:SITES.map(s=>({id:s.id,real:s.real,g:s.g,x:+s.x.toFixed(1),z:+s.z.toFixed(1),r:+s.r.toFixed(1),nudge:s.nudge||0})),log:L.log.slice(-12)});
