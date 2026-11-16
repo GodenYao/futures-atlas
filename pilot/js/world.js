@@ -556,7 +556,7 @@ FA.setView=function(){const c=FA.CITY==='gatekeeper'?GK:RV;const rg=FA.rig;
  if(FA.closeOnly)for(const o of FA.closeOnly)o.visible=FA.VIEW==='close'; // C4: lane weeds / gravel / ground pools / crop relief only in close-up
  if(LOOK.exposureWorld)R.toneMappingExposure=FA.VIEW==='world'?LOOK.exposureWorld:LOOK.exposure;  // fixed exposure per view, no auto-exposure
  document.body.classList.toggle('faClose',FA.VIEW!=='world');FA.kick&&FA.kick(1500); // C2: v4.4 overlays only in world view
- FA.applyCam();FA.ui&&FA.ui();};
+ FA.applyCam();FA.ui&&FA.ui();if(FA.PROFLORA&&FA.PROFLORA.on)FA.PROFLORA.setView();};
 FA.applyCam=function(){const r=FA.rig;CAM.position.set(r.tx+Math.sin(r.yaw)*Math.cos(r.pitch)*r.d,r.ty+Math.sin(r.pitch)*r.d,r.tz+Math.cos(r.yaw)*Math.cos(r.pitch)*r.d);CAM.lookAt(r.tx,r.ty,r.tz);
  const nr=Math.min(4,Math.max(.5,r.d*.02));let up=false;if(Math.abs(CAM.near-nr)>.01){CAM.near=nr;up=true;}
  const fv=r.fov||28,sh=r.shift||0;if(CAM.fov!==fv){CAM.fov=fv;up=true;}if(sh>0){if(!CAM.view||!CAM.view.enabled||Math.abs(CAM.view.offsetY+innerHeight*sh)>.5||CAM.view.fullWidth!==innerWidth||CAM.view.fullHeight!==innerHeight){CAM.setViewOffset(innerWidth,innerHeight,0,-innerHeight*sh,innerWidth,innerHeight);up=false;}}else if(CAM.view&&CAM.view.enabled){CAM.clearViewOffset();up=false;}
@@ -593,7 +593,7 @@ FA.TS=TS;
 FA.anims=[];const clock=new THREE.Clock();let fr=0,acc=0,lastInfo='',lastSh=-1;FA.T=0;
 FA.perf={steady:null,shadow:null};
 const fpsEl=document.getElementById('fps');if(Q.get('fps')==='1')fpsEl.style.display='block';
-FA.frame=function(){const dt=Math.min(.1,clock.getDelta());FA.T=FA.TFIX!=null?FA.TFIX:FA.T+dt;FA.TU.uT.value=FA.T; // C2: clamp .05 -> .1 so the 15-30 fps ambient cap keeps real-time animation speed
+FA.frame=function(){if(FA.IDLE)FA.IDLE.renders++;const dt=Math.min(.1,clock.getDelta());FA.T=FA.TFIX!=null?FA.TFIX:FA.T+dt;FA.TU.uT.value=FA.T; // C2: clamp .05 -> .1 so the 15-30 fps ambient cap keeps real-time animation speed
  if(FA.waterN){FA.waterN.offset.set(FA.T*.006,FA.T*.011);}
  for(const a of FA.anims)a(FA.T,dt);sky.position.copy(CAM.position);
  // on-demand shadow map: after a view change, and at ~10 Hz in close-up where the wheel / fan / eyelids move (world zoom: they are sub-pixel)
@@ -615,10 +615,25 @@ FA.kick=function(ms){const n=performance.now();FA.lastInput=n;FA.activeUntil=Mat
 // C2 wrap-up: idle no longer renders at 30/15 fps (a headless SwiftShader tab sat at ~290 % CPU idle). The light animation is slow
 // (breath periods 3-9 s, switch slots ~10-25 s), so idle ticks run at FA.IDLE_FPS[0] for 30 s after input, then FA.IDLE_FPS[1];
 // reduced motion (uAn 0) or ?idle=0 -> no idle frames at all (pure on-demand). Interaction (kick) still renders every rAF.
-FA.IDLE_FPS=Q.get('idle')==='0'?[0,0]:[10,5];
-FA.loop=function(n){requestAnimationFrame(FA.loop);if(document.hidden)return;n=n||performance.now();const busy=n<FA.activeUntil||Q.get('anim')==='1';
- const f=busy?0:(FA.TU.uAn.value<.5?0:FA.IDLE_FPS[n-FA.lastInput>30000?1:0]);if(!busy&&!f){FA.ambFps=0;return;}
- const gap=busy?0:1000/f;FA.ambFps=busy?0:f;if(n-lastF<gap-3)return;lastF=n;FA.frame();};
+// C5 (owner decision A): idle renders at FA.IDLE_FPS[0] (30) while any continuously moving element is ON SCREEN (water wheel,
+// windmill sails, Gatekeeper eye / spire ring, drones, wind sway of near trees = FA.PROFLORA.moving()), else FA.IDLE_FPS[1] (10).
+// Interaction still every rAF; reduced motion (uAn 0) or ?idle=0 -> no idle frames; document.hidden -> nothing at all.
+// Movers register with FA.mover({x,y,z,r,n}) | ({o:Object3D,r,n}) | ({fn:()=>bool,n}); "on screen" = sphere inside the frustum
+// and >= 1.5 px projected radius; re-tested every 250 ms. FA.IDLE = {on, mode, fps, moving:[names], renders} for tests.
+FA.IDLE_FPS=Q.get('idle')==='0'?[0,0]:[30,10];
+FA.IDLE={on:Q.get('idle')!=='0',mode:'init',fps:0,moving:[],renders:0};FA.MOVERS=[];FA.mover=m=>{FA.MOVERS.push(m);return m;};
+const _fr=new THREE.Frustum(),_pm=new THREE.Matrix4(),_sp=new THREE.Sphere(),_wp=new THREE.Vector3();let lastMv=-1e9;
+FA.movingNow=function(){if(FA.TFIX!=null)return [];CAM.updateMatrixWorld();_pm.multiplyMatrices(CAM.projectionMatrix,CAM.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);
+ const out=[],ms=FA.eyePos?FA.MOVERS.concat([{x:FA.eyePos.x,y:FA.eyePos.y,z:FA.eyePos.z,r:1.6,n:'eye'}]):FA.MOVERS,hp=R.domElement.height/2/Math.tan(CAM.fov*Math.PI/360);
+ for(const m of ms){try{if(m.fn){if(m.fn())out.push(m.n||'fn');continue;}
+  if(m.o){if(!m.o.visible||!m.o.parent)continue;m.o.getWorldPosition(_wp);}else if(m.p)_wp.copy(m.p());else _wp.set(m.x,m.y,m.z);_sp.set(_wp,m.r||1);
+  if(!_fr.intersectsSphere(_sp))continue;const d=Math.max(.1,_wp.distanceTo(CAM.position));if((m.r||1)/d*hp>=1.5)out.push(m.n||'?');}catch(e){}}
+ return out;};
+FA.loop=function(n){requestAnimationFrame(FA.loop);const I=FA.IDLE;if(document.hidden){I.mode='hidden';I.fps=FA.ambFps=0;return;}n=n||performance.now();const busy=n<FA.activeUntil||Q.get('anim')==='1';
+ let f=0;if(busy)I.mode='interactive';
+ else if(!I.on||FA.TU.uAn.value<.5){I.mode='off';I.fps=FA.ambFps=0;return;}
+ else{if(n-lastMv>250){I.moving=FA.movingNow();lastMv=n;}f=FA.IDLE_FPS[I.moving.length?0:1];I.mode=I.moving.length?'moving':'still';if(!f){I.fps=FA.ambFps=0;return;}}
+ I.fps=f;const gap=busy?0:1000/f;FA.ambFps=busy?0:f;if(n-lastF<gap-3)return;lastF=n;FA.frame();};
 FA.info=()=>({calls:R.info.render.calls,tris:R.info.render.triangles,geometries:R.info.memory.geometries,textures:R.info.memory.textures,programs:(R.info.programs||[]).length,dpr:R.getPixelRatio(),perf:FA.perf,terrainTris:FA.terrainTris,waterTris:FA.waterTris,iblGain:FA.IBL_GAIN});
 // clipped-pixel check (P2): share of pixels with any channel > 240, measured right after a render
 FA.measureClip=function(){const cv=R.domElement,w=cv.width,h=cv.height;const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(cv,0,0);

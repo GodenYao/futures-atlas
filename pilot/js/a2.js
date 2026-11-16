@@ -179,6 +179,7 @@ A.gkKit=function(o){const {cx,cz,top,towers,sy}=o;const br=A.brass();const ST=[]
   else{const u=(T/46)%1,s=u<.5?u*2:2-u*2,e=s*s*(3-2*s);P.set(cx+.4,top+4.6+1.6*Math.sin(e*3.1416),cz+8.5+e*30);}return P;};
  FA.anims.push(T=>{for(let i=0;i<3;i++){path(i,T);const p=P.clone();path(i,T+.25);P2.copy(P);P.copy(p);const dx=P2.x-P.x,dz=P2.z-P.z;E.set(0,Math.atan2(dx,dz),0);Q.setFromEuler(E);
   M.compose(P,Q,S);body.setMatrixAt(i,M);P.y-=.06;M.compose(P,Q,S);lit.setMatrixAt(i,M);}body.instanceMatrix.needsUpdate=true;lit.instanceMatrix.needsUpdate=true;});
+ if(FA.mover)[0,1,2].forEach(i=>FA.mover({p:()=>path(i,FA.T),r:.6,n:'drone'})); // C5: idle 30 fps while a drone is on screen
  return ST.length;};
 
 // ======================= (5) Reversion craft kit =======================

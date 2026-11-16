@@ -139,12 +139,12 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  if(WM){const bc=new THREE.Vector3();WM.box.getCenter(bc);const wp=WM.parts.find(p=>p.name.toLowerCase().includes('wheel'));if(wp){wp.geo.computeBoundingBox();const wc=new THREE.Vector3();wp.geo.boundingBox.getCenter(wc).applyMatrix4(wp.m);
   const ox=wc.x-bc.x,oz=wc.z-bc.z;wry=Math.atan2(oz,ox);const sx=WM.box.max.x-WM.box.min.x,sz=WM.box.max.z-WM.box.min.z;woff=Math.hypot(ox,oz)*2.7/Math.max(sx,sz);}}
  wx=FA.riverX(z0)-1.05-woff;const wm=FA.single('watermill',wx,z0,{w:2.7,ry:wry,y:H(wx,z0)-.45});
- if(wm){const sp=wm.spinner('wheel');if(sp)FA.anims.push(T=>sp(T*.9));}
+ if(wm){const sp=wm.spinner('wheel');if(sp){FA.anims.push(T=>sp(T*.9));FA.mover&&FA.mover({x:wx,y:H(wx,z0)+.4,z:z0,r:1.2,n:'wheel'});}}
  const bz=vz-7.5,bxc=FA.riverX(bz);{const wood=new THREE.MeshStandardMaterial({color:'#6B5038',roughness:.9});const deck=new THREE.Mesh(new THREE.BoxGeometry(5.6,.14,1.0),wood);deck.position.set(bxc,1.12,bz);
   const r1=new THREE.Mesh(new THREE.BoxGeometry(5.6,.07,.07),wood),r2=r1.clone();r1.position.set(bxc,1.55,bz-.46);r2.position.set(bxc,1.55,bz+.46);[deck,r1,r2].forEach(m=>{m.castShadow=m.receiveShadow=true;FA.addStatic(m);});
   for(let i=-2;i<=2;i++)for(const s of[-.46,.46]){const p=new THREE.Mesh(new THREE.BoxGeometry(.09,1.3,.09),wood);p.position.set(bxc+i*1.35,.95,bz+s);p.castShadow=true;p.receiveShadow=true;FA.addStatic(p);}}
  FA.lanes.push([vx,vz,bxc-2.6,bz]);
- wmx=c.x-12;wmz=c.z-8;const wd=FA.single('windmill',wmx,wmz,{w:2.6,ry:.5});if(wd){const sp=wd.spinner('fan');if(sp)FA.anims.push(T=>sp(T*.55));}
+ wmx=c.x-12;wmz=c.z-8;const wd=FA.single('windmill',wmx,wmz,{w:2.6,ry:.5});if(wd){const sp=wd.spinner('fan');if(sp){FA.anims.push(T=>sp(T*.55));FA.mover&&FA.mover({x:wmx,y:H(wmx,wmz)+2.6,z:wmz,r:2.2,n:'sails'});}}
  FA.lanes.push([vx,vz,wmx,wmz]);
  } // C3: end of KayKit village branch
  // fields: rotated parcels west/south of the village (crops in vertex colour + furrows, wheat kit pieces, wood fences)
@@ -196,7 +196,7 @@ FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
    if(big>.55&&cell>.47&&sl<.6&&r()<.8){const k=r(),w=k<.85?1.4+r()*.8:.8+r()*.3;
     if(L.thin&&dg<70&&FA.hash(x*.31,z*.17)<L.thin){} // C1 archviz blue hour: thin the forest ~50 % around the city (hash, so the RNG stream is unchanged)
     else if(FA.LOOK.ter.facet&&dg>34&&dr>36){FA.FARTREES.push({x,z,w});FA.AOS.push({x,z,r:w*.62+.3,k:.3});} // far field: cheap facet archetypes
-    else FA.put(k<.5?'treesA':k<.85?'treesB':'treeA',x,z,{w,ry:r()*6.3,aok:.34});}
+    else{const ry=r()*6.3;if(!(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add(k<.85?'clump':'broad',x,null,z,w,w,ry)))FA.put(k<.5?'treesA':k<.85?'treesB':'treeA',x,z,{w,ry,aok:.34});}} // C5: proflora
    else if(sl>.38&&sl<.9&&r()<.03)FA.put('rock',x,z,{w:.7+r()*1.1,ry:r()*6.3,sink:.15});}
   else if(forest>.56&&sl<.75&&r()<.42){const k=r();FA.put(k<.45?'treesA':k<.75?'treesB':k<.9?'treeA':'treeB',x,z,{w:k<.75?1.35+r()*.8:.7+r()*.3,ry:r()*6.3,aok:.3});}
   else if(sl>.38&&sl<.9&&r()<.05)FA.put('rock',x,z,{w:.7+r()*1.1,ry:r()*6.3,sink:.15});
@@ -219,9 +219,10 @@ document.querySelectorAll('[data-city]').forEach(b=>b.addEventListener('click',(
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>FA.go(null,b.dataset.view)));
 addEventListener('keydown',e=>{if(e.key==='1')FA.go('gatekeeper');if(e.key==='2')FA.go('reversion');if(e.key==='v')FA.go(null,FA.VIEW==='world'?'close':'world');});
 FA.start=async function(){const t0=performance.now();if(FA.A2&&document.fonts)await document.fonts.load('64px "Plex Mono"').catch(()=>{});await FA.load(FA.LIST);const t1=performance.now();
- FA.buildGK();FA.buildRV();FA.scatter();FA.buildTerrain(FA.colorHook);FA.tufts(FA.tuftList);const n=FA.buildInstances();
+ if(L.archviz&&FA.PROFLORA&&FA.QS.get('flora')!=='0')FA.PROFLORA.prepare(); // C5: procedural vegetation (js/proflora.js); prepare fails or ?flora=0 -> PROFLORA.on=false -> old stamps
+ FA.buildGK();FA.buildRV();FA.scatter();if(FA.PROFLORA&&FA.PROFLORA.on){FA.PROFLORA.build();FA.mover&&FA.mover({fn:()=>FA.PROFLORA.moving(),n:'wind'});}FA.buildTerrain(FA.colorHook);if(FA.tuftList.length)FA.tufts(FA.tuftList);const n=FA.buildInstances();
  const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();
  FA.marker('gatekeeper','Gatekeeper','eye on the spire',FA.GK.x,FA.GK.top,FA.GK.z);FA.marker('reversion','Reversion','water wheel, windmill',FA.RV.x-1.5,H(FA.RV.x-1.5,FA.RV.z),FA.RV.z);
- FA.setView();FA.frame();FA.loop();FA.boot={farm:FA.PROFARM&&FA.PROFARM.on?FA.PROFARM.info:null,loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,pk:FA.RVSITE&&FA.PROCOTTAGE?FA.PROCOTTAGE.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
+ FA.setView();FA.frame();FA.loop();FA.boot={farm:FA.PROFARM&&FA.PROFARM.on?FA.PROFARM.info:null,loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,pk:FA.RVSITE&&FA.PROCOTTAGE?FA.PROCOTTAGE.info:null,fl:FA.PROFLORA&&FA.PROFLORA.on?FA.PROFLORA.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
 FA.start().catch(e=>window.__errs.push('start:'+e.message));
 })();

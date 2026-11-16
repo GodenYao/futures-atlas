@@ -218,7 +218,8 @@ function barrel(x,z,k){setF(x,FA.H(x,z),z,0);k=k||1;add('boards',gBarrel(),0,0,0
 function sack(x,z){setF(x,FA.H(x,z),z,0);add('canvas',gIco(1),0,.06,0,tn(CAN,.6+.2*rnd()),0,rnd()*3,.2,.075,.08,.055);}
 function lumber(x,z,ry){setF(x,FA.H(x,z),z,ry);for(let r=0;r<3;r++)for(let c=0;c<4-r;c++)box('boards',.8,.035,.07,(rnd()-.5)*.06,.03+r*.04,(c-1.5+r*.5)*.085,tn(BRD,.8+.4*rnd()));FA.AOS.push({x,z,r:.5,k:.3});}
 function stone(x,z){setF(x,FA.H(x,z),z,rnd()*3);cyl('stone',.1+.05*rnd(),.04,0,.012,0,tn(STO,.7+.3*rnd()),7,0,0,.85);}
-function tree(x,z){setF(x,FA.H(x,z),z,rnd()*6);const s=.85+.4*rnd();cyl('oak',.03*s,.36*s,0,.16*s,0,LOG,5,0,0,.7);add('plain',gIco(1),0,.52*s,0,tn(LEAF,.75+.4*rnd()),0,0,0,.3*s,.26*s,.3*s);FA.AOS.push({x,z,r:.45*s,k:.3});}
+function tree(x,z){const ry=rnd()*6;setF(x,FA.H(x,z),z,ry);const s=.85+.4*rnd(),lk=.75+.4*rnd();if(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add('orchard',x,null,z,s*.3,s*.37,ry))return; // C5: proflora
+ cyl('oak',.03*s,.36*s,0,.16*s,0,LOG,5,0,0,.7);add('plain',gIco(1),0,.52*s,0,tn(LEAF,lk),0,0,0,.3*s,.26*s,.3*s);FA.AOS.push({x,z,r:.45*s,k:.3});}
 
 // ======================= (7) mill house, flume, undershot wheel, foam =======================
 function mill(m){setF(m.x,m.g,m.z,0);DL=1.6;DW=1.5;const e=.85,pit=.74,rh=DW/2*Math.tan(pit);
@@ -236,7 +237,7 @@ function waterwheel(w){const WL=FA.WL,ay=.62,R=.82;setF(w.x,WL,w.z,0);
  for(let k=0;k<20;k++){const a=k*TAU/20;box('spin',.44,.22,.022,0,(R-.06)*Math.cos(a),(R-.06)*Math.sin(a),tn(BRD,.75+.3*FA.hash(k,2.2)),a);}
  cyl('spin',.1,.46,0,0,0,OAK,8,0,Math.PI/2);cyl('spin',.035,1.9,-.4,0,0,tn(OAK,.7),6,0,Math.PI/2);use('main');
  const g=new THREE.Group();g.name='pk_wheelG';g.position.set(w.x,WL+ay,w.z);mesh(SETS.wheel,'spin',M.spin,g);FA.SC.add(g);
- FA.anims.push(T=>{g.rotation.x=-T*.9;});foam(w.x,WL+.035,w.z);}
+ FA.anims.push(T=>{g.rotation.x=-T*.9;});FA.mover&&FA.mover({o:g,r:1.1,n:'wheel'});foam(w.x,WL+.035,w.z);}
 // white water downstream of the paddles: one small plane, scrolling noise in the fragment shader (uT)
 function foam(x,y,z){const g=new THREE.PlaneGeometry(.56,1.7);g.rotateX(-Math.PI/2);
  const m=new THREE.ShaderMaterial({uniforms:{uT:FA.TU.uT},transparent:true,depthWrite:false,
@@ -265,7 +266,7 @@ function sails(w){use('sails');
   if(k%2===0)box('spin',.33,1.5,.008,.205,1.18,-.006,tn(CAN,.62));else box('spin',.06,1.5,.035,.06,1.18,-.012,tn(CAN,.55));}
  F.identity();cyl('spin',.1,.2,0,0,0,OAK,8,Math.PI/2);use('main');setF(w.x,w.g,w.z,w.ry);
  const hp=wpt(1.3,3.412,0),g=new THREE.Group();g.name='pk_sailsG';g.position.copy(hp);g.rotation.order='YXZ';g.rotation.set(-.14,w.ry+Math.PI/2,0);
- mesh(SETS.sails,'spin',M.spin,g);FA.SC.add(g);FA.anims.push(T=>{g.rotation.z=T*.55;});w.tip=hp.y+2-w.g;}
+ mesh(SETS.sails,'spin',M.spin,g);FA.SC.add(g);FA.anims.push(T=>{g.rotation.z=T*.55;});FA.mover&&FA.mover({o:g,r:2.4,n:'sails'});w.tip=hp.y+2-w.g;}
 
 // ======================= (9) trestle bridge, green, bonfire =======================
 function bridge(b){const WL=FA.WL,yb=Math.max(FA.H(b.x-2.7,b.z),FA.H(b.x+2.7,b.z)),yd=Math.max(WL+.7,Math.min(WL+1.1,yb+.06));setF(b.x,0,b.z,0);gy=WL-.3;

@@ -157,7 +157,7 @@ const GREENS=['#4F6B46','#5E7A48','#6F8650','#587350'],GREENS_B=['#434E47','#4A5
 let TC=0;const POOLS=[];
 // C1 blue hour: every 2nd tree dropped (~50 % thinner); the rnd() draws are kept so the rest of the layout is unchanged
 function tree(x,z,s,y){const blue=P.mood!=='day';const g=col((blue?GREENS_B:GREENS)[(rnd()*4)|0],.85+.3*rnd());const sy=s*(.9+.3*rnd()),ry=rnd()*TAU;
- if(blue&&(TC++&1))return;B.tree.add(x,y==null?Y:y,z,s,sy,s,ry,g);}
+ if(blue&&(TC++&1))return;if(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add('park',x,y==null?Y:y,z,s,sy,ry,g))return;B.tree.add(x,y==null?Y:y,z,s,sy,s,ry,g);} // C5: proflora 'park'
 // C1: warm light-pool decal on the deck (additive, 1 instanced draw for all of them; built in buildPools)
 // C2: every pool breathes (an = [amp .10-.15, period 4-9 s, phase, switch]); lamp pools share their lamp's glow params
 const anOf=(x,z,sw)=>{const h1=FA.hash(x*1.7+.3,z*2.9),h2=FA.hash(z*.7,x*3.3+1.1),h3=FA.hash(x+z*1.3,x-z);return[.10+.05*h1,4+5*h2,h3*6.2832,sw&&h1>.9?1:0];};
@@ -344,7 +344,7 @@ function transit(){const yb=Y+2.05,yt=Y+2.4;tor(RM,.06,yt,M.shell,true);tor(RM,.
   for(let k=-3;k<=3;k++){const o=k*.42;B.rib.add(x-Math.sin(a)*o,yt-.3,z+Math.cos(a)*o,.62,1.0,.62,-a);}
   B.crown.add(x,Y+1.97,z,2.72,.02,1.17,ry);pool(x,z,2.2,.3);}
  const im=new THREE.InstancedMesh(G.box,M.paint,4);im.frustumCulled=false;im.castShadow=false;SC.add(im);
- FA.anims.push(T=>{for(let c=0;c<4;c++){const a=T*.045+c*.062;m4.compose(v3.set(cx+Math.cos(a)*RM,yt+.06,cz+Math.sin(a)*RM),q4.setFromAxisAngle(UP,Math.PI/2-a),s3.set(.85,.2,.24));im.setMatrixAt(c,m4);}im.instanceMatrix.needsUpdate=true;});}
+ FA.anims.push(T=>{for(let c=0;c<4;c++){const a=T*.045+c*.062;m4.compose(v3.set(cx+Math.cos(a)*RM,yt+.06,cz+Math.sin(a)*RM),q4.setFromAxisAngle(UP,Math.PI/2-a),s3.set(.85,.2,.24));im.setMatrixAt(c,m4);}im.instanceMatrix.needsUpdate=true;});FA.mover&&FA.mover({x:cx,y:yt,z:cz,r:RM,n:'spire'});}
 
 // ======================= (10) vehicles, street lamps, perimeter sensor rail + gates =======================
 function traffic(){const VC=['#D8D6D0','#8E949C','#2E3238','#B9BEC6'];

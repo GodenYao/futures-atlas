@@ -128,9 +128,9 @@ function nearLane(x,z,d){for(const l of O.lanes)if(Math.hypot(l[2]-l[0],l[3]-l[1
 function besideField(u,w,du,dw){const a=toW(u+du,w+dw),b=toW(u-du,w-dw);return inField(a[0],a[1],.05)||inField(b[0],b[1],.05);}
 function boundaries(lay){const HB=[],TR=[],ST=[],PL=[];const HG=['#475A3E','#506340','#43553D','#56633F'],SC2=['#8A8577','#7E796C','#857E70']; // C4: lifted off near-black
  // C4: continuous shrub masses - each step lays one elongated, line-aligned lump (overlapping its neighbours at the .30 step) + a crown lump
- const hedgeAt=(x,z,k,ang)=>{const y=H(x,z);const c=CC.set(HG[(rnd()*4)|0]).multiplyScalar(.85+.3*rnd()).clone();const s=.13+.06*rnd();const r1=rnd(),r2=rnd(),r3=rnd(),r4=rnd(),r5=rnd();
-  HB.push([x,y+s*.62,z,.25+.05*r1,s*(1.2+.45*r2),s*1.12,(ang||0)+(r3-.5)*.25,0,0,c]);HB.push([x+(r4-.5)*.1,y+s*1.42,z+(r5-.5)*.1,.18+.06*r1,s*(.8+.35*r2),s*.85,(ang||0)+(r3-.5)*.7,0,0,c.clone().multiplyScalar(1.1)]);
-  if(rnd()<(k?.16:.10)){const ts=.42+.25*rnd();TR.push([x,y,z,ts,ts*(1.0+.3*rnd()),ts,rnd()*TAU,0,0,CC.set(HG[(rnd()*4)|0]).multiplyScalar(.9+.25*rnd()).clone()]);}};
+ const hedgeAt=(x,z,k,ang)=>{const y=H(x,z);const c=CC.set(HG[(rnd()*4)|0]).multiplyScalar(.85+.3*rnd()).clone();const s=.13+.06*rnd();const r1=rnd(),r2=rnd(),r3=rnd(),r4=rnd(),r5=rnd();const FLh=!!(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add('hedge',x,y,z,s,s*(1+.3*r2),(r3-.5)*.2,c,ang||0)); // C5: proflora hedge step
+  if(!FLh)HB.push([x,y+s*.62,z,.25+.05*r1,s*(1.2+.45*r2),s*1.12,(ang||0)+(r3-.5)*.25,0,0,c]);if(!FLh)HB.push([x+(r4-.5)*.1,y+s*1.42,z+(r5-.5)*.1,.18+.06*r1,s*(.8+.35*r2),s*.85,(ang||0)+(r3-.5)*.7,0,0,c.clone().multiplyScalar(1.1)]);
+  if(rnd()<(k?.16:.10)){const ts=.42+.25*rnd();const tr=[x,y,z,ts,ts*(1.0+.3*rnd()),ts,rnd()*TAU,0,0,CC.set(HG[(rnd()*4)|0]).multiplyScalar(.9+.25*rnd()).clone()];if(!(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add('broad',x,y,z,tr[3]*2.5,tr[4]*2,tr[6],tr[9])))TR.push(tr);}};
  const wallAt=(x,z,ang)=>{const y=H(x,z);for(let c=0;c<3;c++){if(c===2&&rnd()<.35)continue;const k=c===2?.8:1;
   ST.push([x+(rnd()-.5)*.03,y+.035+c*.05,z+(rnd()-.5)*.03,(.085+rnd()*.035)*k,(.032+rnd()*.012)*k,(.06+rnd()*.02)*k,ang+(rnd()-.5)*.5,(rnd()-.5)*.3,(rnd()-.5)*.3,CC.set(SC2[(rnd()*3)|0]).multiplyScalar(.78+.3*rnd()).clone()]);}};
  const okB=(x,z)=>!nearLane(x,z,.7)&&!(O.polys&&FA.PROROAD&&FA.PROROAD.dist(x,z)<.45)&&!(DITCH.length&&polyD(x,z,DITCH)<.5)&&polyD(x,z,O.road)>1.5&&x<FA.riverX(z)-3.4&&Math.hypot((x-O.vx)/1.25,z-O.vz)>7.8;
@@ -165,7 +165,7 @@ function build(opts){const t0=performance.now();O=opts;rnd=FA.rng(91);ox=O.vx;oz
  const OT=[],RK=[];for(const f of lay.F){const P=PER[f.t];
   if(f.t===4){const nx=-f.tz,nz=f.tx,R=Math.hypot(f.u1-f.u0,f.w1-f.w0)/2;for(let s=-R+P*.5;s<R;s+=P)for(let r=-R;r<R;r+=.78){const x=f.x+f.tx*r+nx*s,z=f.z+f.tz*r+nz*s;const lc=toL(x,z);
     const e=Math.min(lc[0]-f.u0,f.u1-lc[0],lc[1]-f.w0,f.w1-lc[1]);if(e<.35||rnd()<.06)continue;const sc=.17+.05*rnd();
-    OT.push([x+(rnd()-.5)*.06,H(x,z),z+(rnd()-.5)*.06,sc,sc*(.9+.25*rnd()),sc,rnd()*TAU,0,0,CC.set(rnd()<.5?'#44553A':'#4C5B3C').multiplyScalar(.85+.3*rnd()).clone()]);}}
+    const ot=[x+(rnd()-.5)*.06,H(x,z),z+(rnd()-.5)*.06,sc,sc*(.9+.25*rnd()),sc,rnd()*TAU,0,0,CC.set(rnd()<.5?'#44553A':'#4C5B3C').multiplyScalar(.85+.3*rnd()).clone()];if(!(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add('orchard',ot[0],ot[1],ot[2],ot[3],ot[4],ot[6],ot[9])))OT.push(ot);}}
   if((f.t===3||f.t===0)&&rnd()<.35){const n=2+((rnd()*3)|0);for(let k=0;k<n;k++){const u=f.u0+.6+rnd()*(f.u1-f.u0-1.2),w=f.w0+.6+rnd()*(f.w1-f.w0-1.2),p=toW(u,w);
     RK.push([p[0],H(p[0],p[1])+.02,p[1],.15+.03*rnd(),.15+.04*rnd(),.15+.03*rnd(),rnd()*TAU,0,0,CC.set('#8C7A4C').multiplyScalar(.8+.25*rnd()).clone()]);}}}
  const treeM=new THREE.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.9,flatShading:true,envMapIntensity:1.0});
