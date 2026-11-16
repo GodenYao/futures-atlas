@@ -192,6 +192,7 @@ FA.colorHook=function(x,z,h,sl,c){const rv=FA.RV;if(Math.abs(x-rv.x)>26||Math.ab
 // ======================= scatter (forests, rocks, grass) =======================
 FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
  for(let i=0;i<5200;i++){const x=(r()-.5)*(FA.TW-12),z=(r()-.5)*(FA.TD-12);const h=H(x,z);const dg=Math.hypot(x-gk.x,z-gk.z),dr=Math.hypot(x-rv.x,z-rv.z);
+  if(FA.LOD&&FA.LOD.stress&&FA.LOD.inSite(x,z,5))continue;   // B0 stress stand-in basins stay clear of forest
   if(dg<(L.archviz?26:19)||Math.abs(x-FA.riverX(z))<3.3||h>21)continue;if(dr<23&&!(z<rv.z-12&&dr>13))continue;if(FA.PROSTREAM&&FA.PROSTREAM.on&&FA.PROSTREAM.dist(x,z)<1.6)continue;const sl=FA.slope(x,z);
   const forest=FA.fbm(x*.045+7,z*.045+3,3);
   if(FA.LOOK.clump){ // style: forest clumps with clearings (low-frequency mask x cluster cells), no lone-sapling confetti
@@ -226,9 +227,11 @@ document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',(
 addEventListener('keydown',e=>{if(e.key==='1')FA.go('gatekeeper');if(e.key==='2')FA.go('reversion');if(e.key==='v')FA.go(null,FA.VIEW==='world'?'close':'world');});
 FA.start=async function(){const t0=performance.now();if(FA.A2&&document.fonts)await document.fonts.load('64px "Plex Mono"').catch(()=>{});await FA.load(FA.LIST);const t1=performance.now();
  if(L.archviz&&FA.PROFLORA&&FA.QS.get('flora')!=='0')FA.PROFLORA.prepare(); // C5: procedural vegetation (js/proflora.js); prepare fails or ?flora=0 -> PROFLORA.on=false -> old stamps
- FA.buildGK();FA.buildRV();FA.scatter();if(FA.PROFLORA&&FA.PROFLORA.on){FA.PROFLORA.build();FA.mover&&FA.mover({fn:()=>FA.PROFLORA.moving(),n:'wind'});}FA.buildTerrain(FA.colorHook);if(FA.tuftList.length)FA.tufts(FA.tuftList);const n=FA.buildInstances();
- const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();
+ const LD=FA.LOD&&FA.LOD.on?FA.LOD:null;   // B0 (lod.js): per-site capture for tiers/shadows, FAR proxies before terrain/decals
+ if(LD){LD.capture('gatekeeper',()=>FA.buildGK());LD.capture('reversion',()=>FA.buildRV());}else{FA.buildGK();FA.buildRV();}FA.scatter();if(LD)LD.far();if(FA.PROFLORA&&FA.PROFLORA.on){FA.PROFLORA.build();FA.mover&&FA.mover({fn:()=>FA.PROFLORA.moving(),n:'wind'});}FA.buildTerrain(FA.colorHook);if(FA.tuftList.length)FA.tufts(FA.tuftList);const n=FA.buildInstances();
+ const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();if(LD)LD.collect();
  FA.marker('gatekeeper','Gatekeeper','eye on the spire',FA.GK.x,FA.GK.top,FA.GK.z);FA.marker('reversion','Reversion','water wheel, windmill',FA.RV.x-1.5,H(FA.RV.x-1.5,FA.RV.z),FA.RV.z);
+ if(LD)LD.markers();
  FA.setView();FA.frame();FA.loop();FA.boot={farm:FA.PROFARM&&FA.PROFARM.on?FA.PROFARM.info:null,loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,pk:FA.RVSITE&&FA.PROCOTTAGE?FA.PROCOTTAGE.info:null,fl:FA.PROFLORA&&FA.PROFLORA.on?FA.PROFLORA.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
 FA.start().catch(e=>window.__errs.push('start:'+e.message));
 })();

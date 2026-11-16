@@ -158,6 +158,14 @@ FA.DEFAULT_STYLE='bluefacet'; // A2: side-by-side vision judged A2 bluefacet cle
 FA.STYLE=STYLES[(Q.get('style')||'').toLowerCase()]?(Q.get('style')||'').toLowerCase():FA.DEFAULT_STYLE;
 (function merge(dst,src){for(const k in src){const v=src[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&dst[k]&&typeof dst[k]==='object'&&!Array.isArray(dst[k]))merge(dst[k],v);else dst[k]=v;}})(LOOK,STYLES[FA.STYLE]);
 if(Q.has('ao'))LOOK.contact=Q.get('ao')==='1';              // ?ao=0 / ?ao=1 toggles contact decals + crease bands (A/B check)
+// B0 terrain option (owner 11-16): 'c' = DEFAULT for the arch-viz style = architect's-model terrain: every city sits in a smooth
+// basin (smooth normals, no facets, no terraces inside the basin rim) and the land around it is cut into crisp stepped contour
+// layers (1.6 u plates, near-vertical risers, finer 1.9 u grid so the layer edges read as cut card rather than ramps).
+// 'a' = the C7 faceted terrain unchanged (1.3 u terraces, 2.8 u facets). 'b' = cheap smooth variant (no terraces, smooth
+// normals everywhere, 2.2 u grid). Other styles (bluefacet / pilot) stay on their own terrain ('a') unless ?ter= is given.
+FA.TER=(()=>{const t=(Q.get('ter')||'').toLowerCase();if(!LOOK.ter.facet)return 'a';if(t==='a'||t==='b'||t==='c')return t;return LOOK.archviz?'c':'a';})();
+if(FA.TER==='c')Object.assign(LOOK.ter,{terr:1.6,hard:.93,cell:1.9});
+if(FA.TER==='b')Object.assign(LOOK.ter,{terr:0,cell:2.2});
 // colour management (r149): with legacyMode off, hex/CSS colours are sRGB and converted to linear, so palettes render as written.
 THREE.ColorManagement.legacyMode=!LOOK.cm;
 const C=h=>new THREE.Color(h);
@@ -296,7 +304,7 @@ FA.buildFx=function(){const out=[];
 // ---------------- static landmark merge (one draw per material instead of ~70 small meshes) ----------------
 FA.STATIC=[];
 FA.addStatic=function(...ms){for(const m of ms)FA.STATIC.push(m);};
-FA.mergeStatic=function(){const groups={};for(const m of FA.STATIC){m.updateMatrix();const k=m.material.uuid+'|'+m.castShadow+'|'+m.receiveShadow;(groups[k]=groups[k]||[]).push(m);}
+FA.mergeStatic=function(){const groups={};for(const m of FA.STATIC){m.updateMatrix();const k=m.material.uuid+'|'+m.castShadow+'|'+m.receiveShadow+'|'+(m.userData.site||'');(groups[k]=groups[k]||[]).push(m);}
  let n=0;for(const k in groups){const L=groups[k],mat=L[0].material;if(L.length===1){SC.add(L[0]);n++;continue;}
   const useUV=!!mat.map,useC=!!mat.vertexColors;const pos=[],nor=[],uv=[],col=[];
   for(const m of L){const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry.clone());g.applyMatrix4(m.matrix);const p=g.attributes.position,q=g.attributes.normal;
@@ -304,7 +312,7 @@ FA.mergeStatic=function(){const groups={};for(const m of FA.STATIC){m.updateMatr
     if(useUV){const a=g.attributes.uv;uv.push(a?a.getX(i):0,a?a.getY(i):0);}if(useC){const a=g.attributes.color;col.push(a?a.getX(i):1,a?a.getY(i):1,a?a.getZ(i):1);}}g.dispose();}
   const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));G.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));
   if(useUV)G.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));if(useC)G.setAttribute('color',new THREE.Float32BufferAttribute(col,3));G.computeBoundingSphere();
-  const me=new THREE.Mesh(G,mat);me.castShadow=L[0].castShadow;me.receiveShadow=L[0].receiveShadow;me.renderOrder=L[0].renderOrder;SC.add(me);n++;}
+  const me=new THREE.Mesh(G,mat);me.castShadow=L[0].castShadow;me.receiveShadow=L[0].receiveShadow;me.renderOrder=L[0].renderOrder;if(L[0].userData.site)me.userData.site=L[0].userData.site;SC.add(me);n++;}
  FA.STATIC=[];return n;};
 // crease band: darken the lowest `band` units of a (local-space) geometry by k (vertex colour; material needs vertexColors)
 FA.crease=function(geo,y0,band,k,sy){sy=sy||1;const p=geo.attributes.position,n=p.count,c=new Float32Array(n*3);for(let i=0;i<n;i++){const y=(p.getY(i)-y0)*sy;const v=1-k*smooth(band,0,y);c[i*3]=c[i*3+1]=c[i*3+2]=v;}
@@ -351,6 +359,7 @@ FA.H=function(x,z){let h=Hraw(x,z);
  let d=Math.hypot(x-GK.x,z-GK.z);h=lerp(h,2.6,LOOK.archviz?smooth(31,24,d):smooth(17,11.5,d));                       // Gatekeeper plinth bed
  d=Math.hypot(x-RV.x,z-RV.z);h=lerp(h,1.0+(fbm(x*.09,z*.09,3)-.5)*.7,smooth(24,10,d));    // Reversion valley floor (low banks so the wheel reaches the stream)
  const wm=Math.hypot(x-(RV.x-12),z-(RV.z-8));h+=1.6*smooth(5,1.5,wm)*smooth(24,10,d);      // windmill knoll
+ if(FA.SITEB)for(const s of FA.SITEB){const ds=Math.hypot(x-s.x,z-s.z);if(ds<s.rb+10)h=lerp(h,s.h0,smooth(s.rb+10,s.rb+1,ds));} // B0 stress stand-in basins (lod.js)
  if(LOOK.ter.facet){h=riverFacet(x,z,h);return FA.carveH?FA.carveH(x,z,h):h;}   // C7: carveH = prostream brook trench (archviz RV only)
  const dx=Math.abs(x-FA.riverX(z)),rw=1.5+.35*Math.sin(z*.07);
  h=Math.max(h,WL+.55);h=lerp(h,WL-.8,smooth(rw+2.4,rw*.5,dx)*smooth(-75,-30,z));          // river channel (springs at the foot of the back range)
@@ -487,7 +496,9 @@ function buildFacetTerrain(colorHook){const T=LOOK.ter;const G=tgrid(),xs=G.xs,z
  // C7 (archviz): per-vertex analytic smooth normal + blend weight (Reversion basin + river corridor) -> the fragment shader blends the
  // flat facet normal toward it, so the 1.1-u facets stop reading as angular steps / dark wedges on the valley floor and banks
  let SNv=null;const snA=[];if(LOOK.archviz){SNv=new Float32Array(NX*NZ*4);const e=.35;for(let k=0;k<NX*NZ;k++){const x=VX[k],z=VZ[k];
-   const m=Math.max(.72*smooth(28,20,Math.hypot(x-RV.x,z-RV.z)),.72*smooth(-75,-30,z)*smooth(FA.riverE(z)+7,FA.riverE(z)+4,FA.riverD(x,z)));if(m<=0)continue;
+   let m=Math.max(.72*smooth(28,20,Math.hypot(x-RV.x,z-RV.z)),.72*smooth(-75,-30,z)*smooth(FA.riverE(z)+7,FA.riverE(z)+4,FA.riverD(x,z)));
+   if(FA.TER==='b')m=1;else if(FA.TER==='c'&&FA.SITEB_ALL)for(const s of FA.SITEB_ALL)m=Math.max(m,smooth(s.rb+3,s.rb-2,Math.hypot(x-s.x,z-s.z)));  // B0 ter C: smooth basins
+   if(m<=0)continue;
    const gx=(FA.H(x+e,z)-FA.H(x-e,z))/(2*e),gz=(FA.H(x,z+e)-FA.H(x,z-e))/(2*e),l=Math.hypot(gx,1,gz);SNv[k*4]=-gx/l;SNv[k*4+1]=1/l;SNv[k*4+2]=-gz/l;SNv[k*4+3]=m;}}
  const face=(k0,k1,k2)=>{const x=(VX[k0]+VX[k1]+VX[k2])/3,z=(VZ[k0]+VZ[k1]+VZ[k2])/3,h=(VH[k0]+VH[k1]+VH[k2])/3;
   a.set(VX[k1]-VX[k0],VH[k1]-VH[k0],VZ[k1]-VZ[k0]);b.set(VX[k2]-VX[k0],VH[k2]-VH[k0],VZ[k2]-VZ[k0]);nn.crossVectors(b,a).normalize();if(nn.y<0)nn.negate();const sl=1-nn.y;
@@ -620,7 +631,7 @@ FA.setView=function(){const c=FA.CITY==='gatekeeper'?GK:RV;const rg=FA.rig;
  if(FA.closeOnly)for(const o of FA.closeOnly)o.visible=FA.VIEW==='close'; // C4: lane weeds / gravel / ground pools / crop relief only in close-up
  if(LOOK.exposureWorld)R.toneMappingExposure=FA.VIEW==='world'?LOOK.exposureWorld:LOOK.exposure;  // fixed exposure per view, no auto-exposure
  document.body.classList.toggle('faClose',FA.VIEW!=='world');FA.kick&&FA.kick(1500); // C2: v4.4 overlays only in world view
- FA.applyCam();FA.ui&&FA.ui();if(FA.PROFLORA&&FA.PROFLORA.on)FA.PROFLORA.setView();};
+ FA.applyCam();FA.ui&&FA.ui();if(FA.PROFLORA&&FA.PROFLORA.on)FA.PROFLORA.setView();if(FA.LOD&&FA.LOD.on)FA.LOD.update(true);};
 FA.applyCam=function(){const r=FA.rig;CAM.position.set(r.tx+Math.sin(r.yaw)*Math.cos(r.pitch)*r.d,r.ty+Math.sin(r.pitch)*r.d,r.tz+Math.cos(r.yaw)*Math.cos(r.pitch)*r.d);CAM.lookAt(r.tx,r.ty,r.tz);
  const nr=Math.min(4,Math.max(.5,r.d*.02));let up=false;if(Math.abs(CAM.near-nr)>.01){CAM.near=nr;up=true;}
  const fv=r.fov||28,sh=r.shift||0;if(CAM.fov!==fv){CAM.fov=fv;up=true;}if(sh>0){if(!CAM.view||!CAM.view.enabled||Math.abs(CAM.view.offsetY+innerHeight*sh)>.5||CAM.view.fullWidth!==innerWidth||CAM.view.fullHeight!==innerHeight){CAM.setViewOffset(innerWidth,innerHeight,0,-innerHeight*sh,innerWidth,innerHeight);up=false;}}else if(CAM.view&&CAM.view.enabled){CAM.clearViewOffset();up=false;}
@@ -657,7 +668,8 @@ FA.TS=TS;
 FA.anims=[];const clock=new THREE.Clock();let fr=0,acc=0,lastInfo='',lastSh=-1;FA.T=0;
 FA.perf={steady:null,shadow:null};
 const fpsEl=document.getElementById('fps');if(Q.get('fps')==='1')fpsEl.style.display='block';
-FA.frame=function(){if(FA.IDLE)FA.IDLE.renders++;const dt=Math.min(.1,clock.getDelta());FA.T=FA.TFIX!=null?FA.TFIX:FA.T+dt;FA.TU.uT.value=FA.T; // C2: clamp .05 -> .1 so the 15-30 fps ambient cap keeps real-time animation speed
+FA.frame=function(){if(FA.IDLE)FA.IDLE.renders++;if(FA.LOD&&FA.LOD.on&&FA.LOD.farMeshes)FA.LOD.update();  // B0 LOD tiers (throttled 120 ms)
+const dt=Math.min(.1,clock.getDelta());FA.T=FA.TFIX!=null?FA.TFIX:FA.T+dt;FA.TU.uT.value=FA.T; // C2: clamp .05 -> .1 so the 15-30 fps ambient cap keeps real-time animation speed
  if(FA.waterN){FA.waterN.offset.set(FA.T*.006,FA.T*.011);}
  for(const a of FA.anims)a(FA.T,dt);sky.position.copy(CAM.position);
  // on-demand shadow map: after a view change, and at ~10 Hz in close-up where the wheel / fan / eyelids move (world zoom: they are sub-pixel)
@@ -669,7 +681,7 @@ FA.frame=function(){if(FA.IDLE)FA.IDLE.renders++;const dt=Math.min(.1,clock.getD
  else R.render(SC,CAM);FA.placeMarkers();
  {const i=R.info.render;FA.perf[sh?'shadow':'steady']={calls:i.calls,tris:i.triangles};}
  fr++;acc+=dt;if(acc>.5&&fpsEl.style.display==='block'){const i=R.info,P=FA.perf;lastInfo='fps '+(fr/acc).toFixed(0)+' · '+(acc/fr*1000).toFixed(1)+' ms · calls '+(P.steady?P.steady.calls:i.render.calls)+' · tris '+((P.steady?P.steady.tris:i.render.triangles)/1000).toFixed(0)+'k'+
-  (P.shadow?' (shadow-refresh frame '+P.shadow.calls+' / '+(P.shadow.tris/1000).toFixed(0)+'k)':'')+' · geo '+i.memory.geometries+' · tex '+i.memory.textures+' · dpr '+R.getPixelRatio()+' · '+(FA.ambFps?'ambient cap '+FA.ambFps+' fps':'interactive');fpsEl.textContent=lastInfo;fr=0;acc=0;}
+  (P.shadow?' (shadow-refresh frame '+P.shadow.calls+' / '+(P.shadow.tris/1000).toFixed(0)+'k)':'')+' · geo '+i.memory.geometries+' · tex '+i.memory.textures+' · dpr '+R.getPixelRatio()+' · '+(FA.ambFps?'ambient cap '+FA.ambFps+' fps':'interactive')+(FA.LOD&&FA.LOD.hud?' · '+FA.LOD.hud():'');fpsEl.textContent=lastInfo;fr=0;acc=0;}
  if(FA.wantClip){FA.wantClip=false;FA.clip=FA.measureClip();}};
 // C2: v4.4-style render loop (fa4_labels.js:308-320): full display rate while the user interacts (kick), ~30 fps ambient,
 // ~15 fps after 30 s without input, nothing while the tab is hidden. All light animation is a pure function of uT in shaders,
@@ -688,15 +700,19 @@ FA.IDLE_FPS=Q.get('idle')==='0'?[0,0]:[30,10];
 FA.IDLE={on:Q.get('idle')!=='0',mode:'init',fps:0,moving:[],renders:0};FA.MOVERS=[];FA.mover=m=>{FA.MOVERS.push(m);return m;};
 const _fr=new THREE.Frustum(),_pm=new THREE.Matrix4(),_sp=new THREE.Sphere(),_wp=new THREE.Vector3();let lastMv=-1e9;
 FA.movingNow=function(){if(FA.TFIX!=null)return [];CAM.updateMatrixWorld();_pm.multiplyMatrices(CAM.projectionMatrix,CAM.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);
- const out=[],ms=FA.eyePos?FA.MOVERS.concat([{x:FA.eyePos.x,y:FA.eyePos.y,z:FA.eyePos.z,r:1.6,n:'eye'}]):FA.MOVERS,hp=R.domElement.height/2/Math.tan(CAM.fov*Math.PI/360);
- for(const m of ms){try{if(m.fn){if(m.fn())out.push(m.n||'fn');continue;}
+ const out=[],ms=FA.eyePos?FA.MOVERS.concat([{x:FA.eyePos.x,y:FA.eyePos.y,z:FA.eyePos.z,r:1.6,n:'eye'}]):FA.MOVERS,hp=R.domElement.height/2/Math.tan(CAM.fov*Math.PI/360),hpc=innerHeight/2/Math.tan(CAM.fov*Math.PI/360);
+ for(const m of ms){try{if(m.vis&&!m.vis())continue;if(m.fn){if(m.fn())out.push(m.n||'fn');continue;}
   if(m.o){if(!m.o.visible||!m.o.parent)continue;m.o.getWorldPosition(_wp);}else if(m.p)_wp.copy(m.p());else _wp.set(m.x,m.y,m.z);_sp.set(_wp,m.r||1);
-  if(!_fr.intersectsSphere(_sp))continue;const d=Math.max(.1,_wp.distanceTo(CAM.position));if((m.r||1)/d*hp>=1.5)out.push(m.n||'?');}catch(e){}}
+  // B0 idle rule (owner decision 3 option B): world view counts a mover only when its projected DIAMETER >= FA.IDLE_PX (12 CSS px);
+  // close-up keeps the C5 rule (projected radius >= 1.5 device px)
+  if(!_fr.intersectsSphere(_sp))continue;const d=Math.max(.1,_wp.distanceTo(CAM.position));
+  if(FA.VIEW==='world'?2*(m.r||1)/d*hpc>=FA.IDLE_PX:(m.r||1)/d*hp>=1.5)out.push(m.n||'?');}catch(e){}}
  return out;};
 FA.loop=function(n){requestAnimationFrame(FA.loop);const I=FA.IDLE;if(document.hidden){I.mode='hidden';I.fps=FA.ambFps=0;return;}n=n||performance.now();const busy=n<FA.activeUntil||Q.get('anim')==='1';
  let f=0;if(busy)I.mode='interactive';
  else if(!I.on||FA.TU.uAn.value<.5){I.mode='off';I.fps=FA.ambFps=0;return;}
- else{if(n-lastMv>250){I.moving=FA.movingNow();lastMv=n;}f=FA.IDLE_FPS[I.moving.length?0:1];I.mode=I.moving.length?'moving':'still';if(!f){I.fps=FA.ambFps=0;return;}}
+ else{if(n-lastMv>250){I.moving=FA.movingNow();lastMv=n;}const hot=FA.LOD&&FA.LOD.hot();I.hot=hot;
+  f=FA.IDLE_FPS[(I.moving.length||hot)?0:1];I.mode=hot?'hot:'+hot:I.moving.length?'moving':'still';if(!f){I.fps=FA.ambFps=0;return;}}  // B0: hovered / showcase ending -> 30 fps
  I.fps=f;const gap=busy?0:1000/f;FA.ambFps=busy?0:f;if(n-lastF<gap-3)return;lastF=n;FA.frame();};
 FA.info=()=>({calls:R.info.render.calls,tris:R.info.render.triangles,geometries:R.info.memory.geometries,textures:R.info.memory.textures,programs:(R.info.programs||[]).length,dpr:R.getPixelRatio(),perf:FA.perf,terrainTris:FA.terrainTris,waterTris:FA.waterTris,iblGain:FA.IBL_GAIN});
 // clipped-pixel check (P2): share of pixels with any channel > 240, measured right after a render
