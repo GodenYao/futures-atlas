@@ -89,8 +89,24 @@ function show(){try{if(cur){for(const g of [cur.res.near,cur.res.mid,cur.farG])i
  function preset(){return st.preset;}}
 window.PT={measure(preset,seed){const sp=st.preset,ss=st.seed;st.preset=preset;st.seed=seed==null?ss:seed;show();const s=window.__stats;st.preset=sp;st.seed=ss;return s;},
  show(p,lod){if(p)st.preset=p;if(lod)st.lod=lod;show();return window.__stats;},st,CAM,R,SC,get cur(){return cur;}};
+// ---- B2 r2 review overview (?all=1): all six presets side by side on flat ground, 3 x 2 grid, label + stats per tile ----
+const ALL=Q.get('all')==='1',GAP=+(Q.get('gap')||st.radius*2.6);let allG=[];
+if(ALL){st.ground='flat';Object.assign(sun.shadow.camera,{left:-70,right:70,top:50,bottom:-50});sun.shadow.mapSize.set(4096,4096);sun.position.set(-90,blue?24:90,-60);}
+function tileXY(i){return[((i%3)-1)*GAP,(Math.floor(i/3)-.5)*GAP];}
+function showAll(){for(const g of allG)SC.remove(g);allG=[];const out=[];document.querySelectorAll('.ptlab').forEach(e=>e.remove());
+ PRE.forEach((p,i)=>{try{const b=buildTimed(p,st.seed),res=b.res,[x,z]=tileXY(i);
+  for(const c of (res.casters||[]))c.castShadow=true;
+  const nm=infoOf(res.near),md=res.mid?infoOf(res.mid):null;
+  const g=st.lod==='mid'?(res.mid||res.near):st.lod==='far'?b.farG:res.near;g.position.set(x,0,z);SC.add(g);allG.push(g);
+  out.push({preset:p,near:nm,mid:md,buildMs:+b.ms.toFixed(1),maxStepMs:+b.maxStep.toFixed(1),steps:b.steps,midRatio:md?+(md.tris/Math.max(1,nm.tris)).toFixed(3):null});
+  const d=document.createElement('div');d.className='ptlab';d.dataset.i=i;d.style.cssText='position:fixed;color:#E8ECF2;font:12px/1.3 monospace;background:rgba(10,14,24,.55);padding:2px 6px;pointer-events:none;white-space:pre';
+  d.textContent=p+'  near '+nm.tris+'/'+nm.calls+'  build '+b.ms.toFixed(0)+' ms  max step '+b.maxStep.toFixed(1)+' ms';document.body.appendChild(d);
+ }catch(e){window.__errs.push('all '+p+': '+(e&&e.stack||e));}});
+ window.__all=out;window.__stats=out[0]||null;}
+function placeLabels(){const v=new THREE.Vector3();document.querySelectorAll('.ptlab').forEach(d=>{const [x,z]=tileXY(+d.dataset.i);v.set(x,0,z+st.radius*1.05).project(CAM);
+ d.style.left=Math.round((v.x*.5+.5)*innerWidth-d.offsetWidth/2)+'px';d.style.top=Math.round((-v.y*.5+.5)*innerHeight+4)+'px';});}
 // ---- orbit camera ----
-const orb={yaw:.75,pitch:.62,d:st.lod==='far'?90:46,tx:0,ty:1,tz:0};
+const orb={yaw:.75,pitch:.62,d:ALL?150:st.lod==='far'?90:46,tx:0,ty:1,tz:0};
 if(Q.get('cam')){const c=Q.get('cam').split(',').map(Number);['yaw','pitch','d','tx','ty','tz'].forEach((k,i)=>{if(!isNaN(c[i]))orb[k]=c[i];});}
 function place(){orb.pitch=Math.max(.05,Math.min(1.5,orb.pitch));orb.d=Math.max(4,Math.min(400,orb.d));
  CAM.position.set(orb.tx+orb.d*Math.cos(orb.pitch)*Math.sin(orb.yaw),orb.ty+orb.d*Math.sin(orb.pitch),orb.tz+orb.d*Math.cos(orb.pitch)*Math.cos(orb.yaw));CAM.lookAt(orb.tx,orb.ty,orb.tz);}
@@ -111,13 +127,13 @@ const FPS=Q.get('fps')==='1';if(FPS)$('fps').style.display='block';
 let uT={value:0},last=performance.now(),fr=0,fpsV=0,acc=0;const T0=performance.now();const TFIX=Q.get('t')!=null?+Q.get('t'):null;
 function frame(){const now=performance.now();const T=TFIX!=null?TFIX:(now-T0)/1000;uT.value=T;
  if(cur&&cur.res.anim)try{cur.res.anim(T);}catch(e){if(window.__errs.length<20)window.__errs.push('anim '+e);}
- place();R.render(SC,CAM);fr++;acc+=now-last;last=now;if(acc>1000){fpsV=fr*1000/acc;fr=0;acc=0;
+ place();if(ALL)placeLabels();R.render(SC,CAM);fr++;acc+=now-last;last=now;if(acc>1000){fpsV=fr*1000/acc;fr=0;acc=0;
   if(FPS){const s=window.__stats||{};$('fps').textContent=fpsV.toFixed(1)+' fps · calls '+R.info.render.calls+' · tris '+R.info.render.triangles+
    '\n'+st.preset+' seed '+st.seed+' · near '+(s.near&&s.near.tris)+'/'+(s.near&&s.near.calls)+' · mid '+(s.mid&&s.mid.tris)+'/'+(s.mid&&s.mid.calls)+
    ' · far '+(s.far&&s.far.tris)+' · build '+s.buildMs+' ms · max step '+s.maxStepMs+' ms';}}
  requestAnimationFrame(frame);}
 makeGround();
-if(!window.FA||!FA.PROTOWN)window.__errs.push('FA.PROTOWN missing');else show();
+if(!window.FA||!FA.PROTOWN)window.__errs.push('FA.PROTOWN missing');else if(ALL)showAll();else show();
 place();frame();window.__ready=true;
 })();
 </script>

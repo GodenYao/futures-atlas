@@ -232,18 +232,13 @@ FA.go=function(city,view){if(city)FA.CITY=city;if(view)FA.VIEW=view;const q=new 
 document.querySelectorAll('[data-city]').forEach(b=>b.addEventListener('click',()=>FA.go(b.dataset.city)));
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>FA.go(null,b.dataset.view)));
 addEventListener('keydown',e=>{if(e.key==='1')FA.go('gatekeeper');if(e.key==='2')FA.go('reversion');if(e.key==='v')FA.go(null,FA.VIEW==='world'?'close':'world');});
-// B1 bug fix (GPU world view, Reversion white blowout): profarm.js pfN() builds the field-row bump normal from screen derivatives;
-// at world-view distance dFdx/dFdy(viewPos) underflow -> normalize(0) = NaN on ANGLE-GL (T4), bloom spreads it to a white blob.
-// profarm.js is not B1-owned, so the guard is chained here onto the field / verge materials: no bump beyond 70 u or on a bad normal.
-FA.guardNaN=function(root){const seen=new Set();(root||FA.SC).traverse(o=>{const M=o.material;if(!M)return;for(const m of (Array.isArray(M)?M:[M])){
-  if(seen.has(m)||!m.customProgramCacheKey||m.userData.nanG)continue;seen.add(m);const k=m.customProgramCacheKey();if(k!=='pfField'&&k!=='pfVerge')continue;
-  const ob=m.onBeforeCompile;m.onBeforeCompile=(sh,r)=>{ob.call(m,sh,r);sh.fragmentShader=sh.fragmentShader.replace(/(normal=pfN\([^;]*;)/,'$1\nif(!(dot(normal,normal)>.5)||length(vViewPosition)>70.)normal=geometryNormal;');};
-  m.customProgramCacheKey=()=>k+'_g';m.userData.nanG=1;m.needsUpdate=true;}});};
+// B1 r1 bug fix (GPU world view, Reversion white blowout, profarm.js pfN NaN at distance): the guard chained here in round 1
+// (FA.guardNaN) moved into profarm.js pfN() in round 2 (B1 owns profarm.js now); nothing is chained any more.
 FA.start=async function(){const t0=performance.now();if(FA.A2&&document.fonts)await document.fonts.load('64px "Plex Mono"').catch(()=>{});await FA.load(FA.LIST);const t1=performance.now();
  if(L.archviz&&FA.PROFLORA&&FA.QS.get('flora')!=='0')FA.PROFLORA.prepare(); // C5: procedural vegetation (js/proflora.js); prepare fails or ?flora=0 -> PROFLORA.on=false -> old stamps
  const LD=FA.LOD&&FA.LOD.on?FA.LOD:null;   // B0 (lod.js): per-site capture for tiers/shadows, FAR proxies before terrain/decals
  if(LD){LD.capture('gatekeeper',()=>FA.buildGK(LD.site('gatekeeper')));LD.capture('reversion',()=>FA.buildRV(LD.site('reversion')));}else{FA.buildGK();FA.buildRV();}FA.scatter();if(LD)LD.far();if(FA.PROFLORA&&FA.PROFLORA.on){FA.PROFLORA.build();FA.mover&&FA.mover({fn:()=>FA.PROFLORA.moving(),n:'wind'});}FA.buildTerrain(FA.colorHook);if(FA.tuftList.length)FA.tufts(FA.tuftList);const n=FA.buildInstances();
- const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();FA.guardNaN();if(LD)LD.collect();
+ const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();if(LD)LD.collect();
  FA.marker('gatekeeper','Gatekeeper','eye on the spire',FA.GK.x,FA.GK.top,FA.GK.z);FA.marker('reversion','Reversion','water wheel, windmill',FA.RV.x-1.5,H(FA.RV.x-1.5,FA.RV.z),FA.RV.z);
  if(LD)LD.markers();
  FA.setView();FA.frame();FA.loop();FA.boot={farm:FA.PROFARM&&FA.PROFARM.on?FA.PROFARM.info:null,loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,pk:FA.RVSITE&&FA.PROCOTTAGE?FA.PROCOTTAGE.info:null,fl:FA.PROFLORA&&FA.PROFLORA.on?FA.PROFLORA.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};

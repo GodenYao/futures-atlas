@@ -55,26 +55,37 @@ if(STRESS)for(const s of CAND)SITES.push(s);
 // ---- B1 site table + generator host (parallel_contract_B1_B2.md) ----
 // endings whose main body is a contemporary human town -> FA.PROTOWN (integration plan sec. 3 / B3 row); others keep the stand-ins
 const PROTOWN_FOR={normaltech:1,o1984:1,protector:1,egalitarian:1};
+// B1 round 2 (contract v2, frozen): zookeeper + descendants = COMPOSITE sites (protown preset part + the plan's other part, see compositeSteps)
+const COMPOSITE_FOR={zookeeper:1,descendants:1};
 FA.SITE_TABLE=SITES.filter(s=>s.real).concat(CAND).map(s=>({id:s.id,ending:s.name,x:+s.x.toFixed(2),z:+s.z.toFixed(2),
  y:s.id==='gatekeeper'?2.6:s.h0,radius:+s.r.toFixed(2),seed:s.seed||(s.id==='gatekeeper'?1505:2031),
  rot:s.real?0:+((((s.seed||0)*2654435761>>>0)%6283)/1000).toFixed(3),   // layout hint for the generator; the engine does NOT rotate the group
- gen:PROTOWN_FOR[s.id]?'protown':s.g==='city'?'procity':'procottage',standin:s.g==='city'?'procity':'procottage',live:SITES.includes(s)}));
+ gen:PROTOWN_FOR[s.id]?'protown':COMPOSITE_FOR[s.id]?'composite':s.g==='city'?'procity':'procottage',standin:s.g==='city'?'procity':'procottage',live:SITES.includes(s)}));
 for(const s of SITES){const t=FA.SITE_TABLE.find(e=>e.id===s.id);s.gen=t.gen;s.standin=t.standin;s.y=t.y;s.rot=t.rot;}
 // generator registry: name -> {version, build(site,ctx), buildSteps?(site,ctx)}; 'protown' resolves to window.FA.PROTOWN at CALL time
 // (load order free, zero engine edits once js/protown.js is in index.html). Missing generator -> the site's stand-in.
-const GEN=FA.GEN={reg:{},register(n,g){this.reg[n]=g;return g;},get(n){if(n==='protown')return (window.FA&&window.FA.PROTOWN)||null;return this.reg[n]||null;},
+const GEN=FA.GEN={reg:{},register(n,g){this.reg[n]=g;return g;},get(n){if(n==='protown')return (window.FA&&window.FA.PROTOWN)||null;
+  if(n==='composite')return (window.FA&&window.FA.PROTOWN)?this.reg.composite:null;return this.reg[n]||null;},   // composite needs protown for its town part
  resolve(s){const g=this.get(s.gen);return g?{name:s.gen,g}:{name:s.standin,g:this.reg[s.standin]};}};
 // shared material families (FA.MATS) for generators: vertex-coloured, sRGB hexes (LOOK.cm colour management), env from the scene IBL
 FA.MATS=(()=>{const E=(FA.LOOK.env||.5)*.6,S=o=>new THREE.MeshStandardMaterial(Object.assign({vertexColors:true,roughness:.84,metalness:0,envMapIntensity:E},o));
  return {building:S({}),stone:S({roughness:.9}),wood:S({roughness:.8}),roof:S({roughness:.7}),metal:S({roughness:.42,metalness:.6}),ground:S({roughness:.95,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),
   glass:new THREE.MeshStandardMaterial({color:'#2A3442',roughness:.08,metalness:.1,envMapIntensity:E*2}),foliage:S({roughness:.9}),light:new THREE.MeshBasicMaterial({vertexColors:true,toneMapped:true})};})();
-L.siteArg=s=>{const t=FA.SITE_TABLE.find(e=>e.id===s.id);return Object.assign({},t,{style:FA.STYLE,q:FA.Q||'mid',mood:FA.QS.get('mood')==='day'?'day':'blue'});};
+// B1 r2: `ending` handed to a generator = the PRESET id (protown looks up PRESETS[site.ending]; the table's display name
+// 'Normal technology' fell back to normaltech for every site) - display name moves to `name` (conflict log 16:xx).
+L.siteArg=s=>{const t=FA.SITE_TABLE.find(e=>e.id===s.id);return Object.assign({},t,{ending:t.id,name:t.ending,style:FA.STYLE,q:FA.Q||'mid',mood:FA.QS.get('mood')==='day'?'day':'blue'});};
 L.ctx=()=>({THREE,LOOK:FA.LOOK,mats:FA.MATS,heightAt:(x,z)=>FA.Hm?FA.Hm(x,z):FA.H(x,z),rng:FA.rng});
 L.site=id=>SITES.find(s=>s.id===id);
 // terrain basins for the stand-ins (world.js FA.H reads FA.SITEB): flat floor h0 over the UNSCALED generator footprint
 FA.SITEB=SITES.filter(s=>!s.real).map(s=>({x:s.x,z:s.z,h0:s.h0,rb:Math.max(s.r+4,RFULL[s.g]+2)}));
 FA.SITEB_ALL=SITES.map(s=>({x:s.x,z:s.z,rb:s.real?(s.id==='gatekeeper'?27:24):Math.max(s.r+4,RFULL[s.g]+2)}));
-L.inSite=(x,z,pad)=>{for(const s of SITES){if(s.real)continue;if(Math.hypot(x-s.x,z-s.z)<s.r+(pad||4))return true;}return false;};
+// B1 r2 keepOut: boot-time scatter / flora / far trees run BEFORE any lazy build, so every live generator site PRE-RESERVES the
+// contract footprint (radius*1.15 = the conformance bound) + pad. After a build, the generator's own keepOut circles are checked
+// against that disk (L.koCheck) and published in world coords (FA.KEEPOUT) for later placement passes.
+L.KO_K=1.15;FA.KEEPOUT=[];
+L.inSite=(x,z,pad)=>{for(const s of SITES){if(s.real)continue;if(Math.hypot(x-s.x,z-s.z)<s.r*L.KO_K+(pad==null?4:pad))return true;}return false;};
+L.reserved=(x,z,pad)=>L.inSite(x,z,pad==null?2:pad);
+L.koCheck={};
 
 // ---- capture: objects a builder adds to the scene (real detail cities) ----
 function snap(){return{sc:new Set(FA.SC.children),st:FA.STATIC.length,an:FA.anims.length,mv:FA.MOVERS.length,gl:FA.GLOWS.length,sm:FA.SMOKES.length,ao:FA.AOS.length,
@@ -87,20 +98,36 @@ L.collect=function(){for(const s of SITES){if(!s.real)continue;const objs=(s.dir
   for(const o of FA.SC.children)if(o.userData.site===s.id&&!objs.includes(o))objs.push(o);
   s.objs=objs;s.meshes=[];for(const o of objs)o.traverse(m=>{if(m.isMesh||m.isInstancedMesh){m.userData.cs0=m.castShadow;s.meshes.push(m);}});s.built=1;
   if(MIDREAL)JOBS.push({s,it:realMidSteps(s),steps:[],work:0,t0:performance.now(),realMid:1});}
- if(JOBS.length)schedule();};
+ if(JOBS.length)schedule();try{L.warm();}catch(e){L.warmInfo={err:e.message};}};
+// B1 r2: protown program WARM-UP at boot. GPU r2: the first protown lazy build had a 433 ms frame = 8 new shader programs compiled on
+// first draw (window facade onBeforeCompile etc.), while every build step stayed <= 6.4 ms. Build each preset once at radius 4 and keep the
+// groups in the scene (frustumCulled off) for the FIRST rendered frame only, so the boot frame compiles them through the real pipeline
+// (composer render target, shadow pass, light state -> identical program keys; renderer.compile() gave mismatched keys = 61 dead programs).
+// Removed in the next rAF after their first draw; materials are NOT disposed so the programs stay cached for the real builds. ?ptwarm=0 = off.
+L.WARM=Q.get('ptwarm')!=='0';
+L.warm=function(){if(!L.WARM||!FA.PROTOWN)return null;const t0=performance.now(),g=new THREE.Group(),ctx=L.ctx();
+ const s0=SITES.find(s=>!s.real)||{x:0,z:0,y:0};g.name='protown_warm';
+ for(const id of ['normaltech','o1984','protector','egalitarian','zookeeper','descendants']){try{const it=FA.PROTOWN.buildSteps({id:'warm_'+id,ending:id,name:id,x:s0.x,z:s0.z,y:s0.y||0,radius:4,rot:0,seed:7},ctx);
+   let r;while(!(r=it.next()).done);const T=r.value;if(T&&T.near)g.add(T.near);if(T&&T.mid)g.add(T.mid);}catch(e){(L.warmErr=L.warmErr||[]).push(id+': '+e.message);}}
+ g.position.set(s0.x,(s0.y||0)-30,s0.z);let first=null;g.traverse(o=>{if(o.isMesh||o.isInstancedMesh){o.frustumCulled=false;if(!first)first=o;}});
+ L.warmInfo={buildMs:Math.round(performance.now()-t0),err:L.warmErr||null,state:'pending'};if(!first)return L.warmInfo;
+ first.onAfterRender=()=>{first.onAfterRender=()=>{};requestAnimationFrame(()=>{FA.SC.remove(g);g.traverse(o=>{if(o.geometry)o.geometry.dispose();});
+   L.warmInfo.state='done';L.warmInfo.programs=FA.R.info.programs.length;L.warmInfo.atMs=Math.round(performance.now()-t0);});};
+ FA.SC.add(g);return L.warmInfo;};
 // B1: MID tier for the 2 REAL cities (they clamp to MID in world view, B0 rendered them full-detail there: ~140k of the 295k world tris).
 // Every mesh is either replaced by a decimated copy (world matrix baked into the copy's matrix) or dropped; movers' objects stay live.
 const MIDREAL=Q.get('midreal')!=='0';
-function* realMidSteps(s){const g=new THREE.Group();g.name='mid_'+s.id;const live=new Set();
+function* realMidSteps(s,amin,lvl){amin=amin||MIDA;const g=new THREE.Group();g.name='mid_'+s.id;const live=new Set();
  for(const m of FA.MOVERS)if(m.o)m.o.traverse(x=>live.add(x));for(const o of (FA.closeOnly||[]))o.traverse(x=>live.add(x));   // view-managed close-up extras stay with their owner
  let tw=performance.now();const swap=[];FA.SC.updateMatrixWorld(true);const ws=new THREE.Vector3();
  for(const m of s.meshes){if(live.has(m))continue;let o=null;
   if(m.isInstancedMesh)o=midInst(m);else{m.getWorldScale(ws);const t=triN(m.geometry),rr=radOf(m)*ws.x;
    if(m.material&&m.material.isShaderMaterial)o=new THREE.Mesh(m.geometry,m.material);     // custom shaders (windows / water): keep as is
-   else if(t>MIDT)o=new THREE.Mesh(midGeo(m.geometry,MIDA/(ws.x*ws.x)),m.material);else if(rr>=MIDR*2)o=new THREE.Mesh(m.geometry,m.material);}
+   else if(t>MIDT)o=new THREE.Mesh(midGeo(m.geometry,amin/(ws.x*ws.x)),m.material);else if(rr>=MIDR*2)o=new THREE.Mesh(m.geometry,m.material);}
   swap.push(m);if(o){o.matrixAutoUpdate=false;o.matrix.copy(m.matrixWorld);o.renderOrder=m.renderOrder;o.receiveShadow=m.receiveShadow;o.frustumCulled=m.frustumCulled;o.castShadow=false;g.add(o);}
   if(performance.now()-tw>L.BUDGET*.75){yield 'realmid';tw=performance.now();}}
- g.visible=false;FA.SC.add(g);s.midG=g;s.midSwap=swap;s.fx=s.fx||[];s.decals=s.decals||[];s.tris={near:s.meshes.reduce((a,m)=>a+trisM(m),0),mid:trisOf(g)};L.tiers[s.id]=null;return s;}
+ if(s.midG){swapMid(s,g,lvl);return s;}   // B1 r2: distance re-level (tier + swap list unchanged)
+ g.visible=false;FA.SC.add(g);s.midG=g;s.midLvl=lvl||0;s.midSwap=swap;s.fx=s.fx||[];s.decals=s.decals||[];s.tris={near:s.meshes.reduce((a,m)=>a+trisM(m),0),mid:trisOf(g)};L.tiers[s.id]=null;return s;}
 const trisM=m=>Math.round(triN(m.geometry)*(m.isInstancedMesh?m.count:1));
 
 // ---- FAR proxies: simplified massing, merged across ALL sites per material family ----
@@ -152,23 +179,33 @@ const FARFAM={light:'emit',metal:'metal',ground:'ground'};
 function farGen(s){let n=0;for(const e of s.farGeoms){const g0=e.geom||e.geometry;if(!g0)continue;const G=g0.index?g0.toNonIndexed():g0,P=G.attributes.position,N=G.attributes.normal,C=G.attributes.color,F=fam(FARFAM[e.family]||'mass');
   for(let i=0;i<P.count;i++){F.pos.push(P.getX(i)+s.x,P.getY(i)+s.y,P.getZ(i)+s.z);if(N)F.nor.push(N.getX(i),N.getY(i),N.getZ(i));else F.nor.push(0,1,0);
    if(C)F.col.push(C.getX(i),C.getY(i),C.getZ(i));else F.col.push(.6,.58,.55);F.s.push(s.i);F.w.push(e.family==='light'?1:0);}if(G!==g0)G.dispose();n++;}return n;}
-L.far=function(){const t0=performance.now();let pieces=0;
- if(L.farMeshes)for(const me of L.farMeshes){FA.SC.remove(me);me.geometry.dispose();}   // B1: rebuild-safe (generator FAR arrives after a lazy build)
- for(const s of SITES){const rnd=FA.rng(9001+s.i*131);pieces+=s.farGeoms?farGen(s):s.g==='city'?farCity(s,rnd):farCot(s,rnd);VIS[s.i]=0;}
- const mats={mass:farMat('mass'),metal:farMat('metal',{metalness:.55,roughness:.45}),ground:farMat('ground',{roughness:.95,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),
+// B1 r2: FAR re-merge as a time-sliced generator (GPU r2: the sync rebuild after a lazy build was 27-64 ms = the 50-66 ms frame).
+// Per-site generation yields at L.BUDGET*.75, one family buffer per step, the swap (remove old, add new, VIS reset) is one cheap step.
+// Boot still calls L.far() (drains it synchronously); lazy builds use L.farAsync() (rAF-paced, coalesces repeated requests).
+function farMats(){if(L.farMatsC)return L.farMatsC;const mats={mass:farMat('mass'),metal:farMat('metal',{metalness:.55,roughness:.45}),ground:farMat('ground',{roughness:.95,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),
   emit:new THREE.MeshBasicMaterial({vertexColors:true,toneMapped:true})};
- {const e=farMat('emit');mats.emit.onBeforeCompile=e.onBeforeCompile;e.dispose();}mats.emit.customProgramCacheKey=()=>'faFar_emit';
- L.farMeshes=[];let tris=0;
- for(const k in FAM){const F=FAM[k];if(!F.pos.length)continue;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(F.pos,3));
+ {const e=farMat('emit');mats.emit.onBeforeCompile=e.onBeforeCompile;e.dispose();}mats.emit.customProgramCacheKey=()=>'faFar_emit';return L.farMatsC=mats;}
+function* farSteps(){const t0=performance.now();let pieces=0,tw=performance.now(),work=0;for(const k in FAM)delete FAM[k];
+ for(const s of SITES){const rnd=FA.rng(9001+s.i*131);pieces+=s.farGeoms?farGen(s):s.g==='city'?farCity(s,rnd):farCot(s,rnd);
+  if(performance.now()-tw>L.BUDGET*.75){work+=performance.now()-tw;yield 'far:sites';tw=performance.now();}}
+ const mats=farMats(),out=[];let tris=0;const fams=Object.keys(FAM).map(k=>[k,FAM[k]]);for(const k in FAM)delete FAM[k];
+ for(const [k,F] of fams){if(!F.pos.length)continue;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(F.pos,3));
   g.setAttribute('normal',new THREE.Float32BufferAttribute(F.nor,3));g.setAttribute('color',new THREE.Float32BufferAttribute(F.col,3));g.setAttribute('aS',new THREE.Float32BufferAttribute(F.s,1));
-  g.setAttribute('aW',new THREE.Float32BufferAttribute(F.w,1));g.computeBoundingSphere();const me=new THREE.Mesh(g,mats[k]);me.name='far_'+k;me.castShadow=false;me.receiveShadow=true;FA.SC.add(me);L.farMeshes.push(me);tris+=F.pos.length/9;}
- for(const k in FAM)delete FAM[k];
- L.farInfo={draws:L.farMeshes.length,tris:Math.round(tris),pieces,ms:Math.round(performance.now()-t0),sites:SITES.length};return L.farInfo;};
+  g.setAttribute('aW',new THREE.Float32BufferAttribute(F.w,1));g.computeBoundingSphere();const me=new THREE.Mesh(g,mats[k]);me.name='far_'+k;me.castShadow=false;me.receiveShadow=true;out.push(me);tris+=F.pos.length/9;
+  work+=performance.now()-tw;yield 'far:'+k;tw=performance.now();}
+ if(L.farMeshes)for(const me of L.farMeshes){FA.SC.remove(me);me.geometry.dispose();}   // swap
+ for(const me of out)FA.SC.add(me);L.farMeshes=out;for(const s of SITES)VIS[s.i]=0;work+=performance.now()-tw;
+ L.farInfo={draws:out.length,tris:Math.round(tris),pieces,ms:Math.round(performance.now()-t0),workMs:Math.round(work),sites:SITES.length};return L.farInfo;}
+L.far=function(){const it=farSteps();let r;while(!(r=it.next()).done);return L.farInfo;};
+L.farAsync=function(){if(L.farIt){L.farAgain=true;return;}L.farIt=farSteps();let mx=0;const nxt=f=>document.hidden?setTimeout(f,16):requestAnimationFrame(()=>setTimeout(f,0));
+ const tick=()=>{const t=performance.now();let r=null;do{r=L.farIt.next();}while(!r.done&&performance.now()-t<L.BUDGET*.5);mx=Math.max(mx,performance.now()-t);
+  if(!r.done){nxt(tick);return;}L.farIt=null;L.farMs=+mx.toFixed(1);L.farInfo.maxSliceMs=L.farMs;L.update(true);FA.kick&&FA.kick(300);if(L.farAgain){L.farAgain=false;L.farAsync();}};
+ nxt(tick);FA.kick&&FA.kick(400);};
 
 // ---- stand-in markers: DOM plates (0 draws) + ONE LineSegments for all their drop lines ----
 L.markers=function(){const st=SITES.filter(s=>!s.real);if(!st.length)return;const P=[];
  for(const s of st){const gy=s.h0+(s.g==='city'?.75:0);P.push(s.x,24,s.z,s.x,gy+.2,s.z);
-  const el=document.createElement('div');el.className='mk';el.innerHTML='<i></i><span class="pl"><b>'+s.name+'</b><em>stand-in · '+(s.g==='city'?'Gatekeeper':'Reversion')+' generator</em></span>';
+  const el=document.createElement('div');el.className='mk';el.innerHTML='<i></i><span class="pl"><b>'+s.name+'</b><em>'+(s.gen==='protown'?'protown generator':s.gen==='composite'?'protown + placeholder part':'stand-in · '+(s.g==='city'?'Gatekeeper':'Reversion')+' generator')+'</em></span>';
   document.getElementById('labels').appendChild(el);FA.markers.push({id:s.id,el,line:{visible:true},dot:{visible:true},p:new THREE.Vector3(s.x,24,s.z),anchor:new THREE.Vector3(s.x,gy,s.z),standin:1});}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
  const ln=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:'#E6E0D2',transparent:true,opacity:.45,fog:false,toneMapped:false}));ln.name='standin_lines';FA.SC.add(ln);L.lines=ln;};
@@ -247,13 +284,92 @@ function midGeo(g,amin){const key=g,c=MIDC.get(key);if(c&&c.a===amin)return c.g;
  for(let i=0;i<n;i++){A.fromBufferAttribute(P,i*3);B.fromBufferAttribute(P,i*3+1).sub(A);C.fromBufferAttribute(P,i*3+2).sub(A);if(B.cross(C).length()*.5>=amin)keep.push(i);}
  const G=new THREE.BufferGeometry();for(const nm in src.attributes){const a=src.attributes[nm],sz=a.itemSize,arr=new a.array.constructor(keep.length*3*sz);
   keep.forEach((t,j)=>{for(let v=0;v<3;v++)for(let q=0;q<sz;q++)arr[(j*3+v)*sz+q]=a.array[(t*3+v)*sz+q];});G.setAttribute(nm,new THREE.BufferAttribute(arr,sz,a.normalized));}
- G.computeBoundingSphere();if(src!==g)src.dispose();MIDC.set(key,{a:amin,g:G});return G;}
+ G.computeBoundingSphere();if(src!==g)src.dispose();MIDC.set(key,{a:amin,g:G});MIDOUT.add(G);return G;}
+const MIDOUT=new WeakSet();   // B1 r2: geometries made by midGeo (the only ones a MID re-level may dispose)
 function midInst(im){const small=radOf(im)*Math.max(im.scale.x,1)<.9;return cloneInst(im,small&&im.count>=24?2:1);}   // halve only small props (lamps, crops, posts)
 function cloneInst(im,step){const n=Math.ceil(im.count/step),o=new THREE.InstancedMesh(im.geometry,im.material,n),m=new THREE.Matrix4();
  for(let i=0;i<n;i++){im.getMatrixAt(i*step,m);o.setMatrixAt(i,m);}
  if(im.instanceColor){const c=new THREE.Color();for(let i=0;i<n;i++){im.getColorAt(i*step,c);o.setColorAt(i,c);}}   // keep instanceColor: same program + right colours
  o.position.copy(im.position);o.rotation.copy(im.rotation);o.scale.copy(im.scale);o.frustumCulled=im.frustumCulled;o.receiveShadow=true;o.castShadow=false;o.renderOrder=im.renderOrder;return o;}
 GEN.register('procity',{version:1,legacy:1,buildSteps:standinSteps});GEN.register('procottage',{version:1,legacy:1,buildSteps:standinSteps});
+
+// ---- B1 r2: distance-driven MID threshold ----
+// Kept triangle area scales with the camera distance^2 (constant ~3 px^2 on screen at 1440x900, fov 40): amin(d) = MIDA*(d/MID_REF)^2,
+// quantised to power-of-two levels -2..+2 (amin = MIDA*2^lvl) with a .75-level hysteresis; a level change re-derives the MID as an
+// ordinary split job (real cities: realMidSteps over the live meshes; engine-derived stand-in MIDs: deriveMid over the NEAR group).
+// Generator-supplied MIDs (protown) are left alone. ?middist=0 = fixed MIDA (round 1), ?midref=<u> moves the reference distance.
+L.MIDDIST=Q.get('middist')!=='0';L.MID_REF=+(Q.get('midref')||150);L.midLog=[];
+function midLvl(d,cur,fresh){if(!L.MIDDIST)return 0;const raw=2*Math.log2(Math.max(1,d)/L.MID_REF);
+ if(!fresh&&Math.abs(raw-cur)<=.75)return cur;return Math.max(-2,Math.min(2,Math.round(raw)));}
+function* deriveMid(near,amin){const mid=new THREE.Group();const inv=new THREE.Matrix4();near.updateMatrixWorld(true);inv.copy(near.matrixWorld).invert();const ws=new THREE.Vector3();let tw=performance.now();
+ const list=[];near.traverse(m=>{if(m.isMesh||m.isInstancedMesh)list.push(m);});
+ for(const m of list){let o=null;if(m.isInstancedMesh)o=midInst(m);else{m.getWorldScale(ws);const t=triN(m.geometry),rr=radOf(m)*ws.x;
+   if(t>MIDT)o=new THREE.Mesh(midGeo(m.geometry,amin/(ws.x*ws.x)),m.material);else if(rr>=MIDR*2)o=new THREE.Mesh(m.geometry,m.material);}
+  if(!o)continue;o.matrixAutoUpdate=false;o.matrix.multiplyMatrices(inv,m.matrixWorld);o.renderOrder=m.renderOrder;o.receiveShadow=m.receiveShadow;o.frustumCulled=m.frustumCulled;mid.add(o);
+  if(performance.now()-tw>L.BUDGET*.75){yield 'mid';tw=performance.now();}}
+ mid.scale.copy(near.scale);return mid;}
+function* reMidSteps(s,lv){if(!s.pivot||!s.midG)return s;const g=yield* deriveMid(s.pivot,MIDA*Math.pow(2,lv));if(!s.pivot||!s.midG)return s;
+ g.position.copy(s.pivot.position);g.traverse(m=>{if(m.isMesh||m.isInstancedMesh){m.castShadow=false;m.userData.cs0=false;}});swapMid(s,g,lv);return s;}
+function swapMid(s,g,lv){const old=s.midG;g.name=old.name;g.visible=old.visible;FA.SC.add(g);FA.SC.remove(old);const keep=new Set();g.traverse(m=>{if(m.geometry)keep.add(m.geometry);});
+ old.traverse(m=>{if(m.isInstancedMesh&&m.dispose)m.dispose();if(m.geometry&&MIDOUT.has(m.geometry)&&!keep.has(m.geometry))m.geometry.dispose();});
+ const t0=s.tris?s.tris.mid:0;s.midG=g;s.midLvl=lv;if(s.tris)s.tris.mid=trisOf(g);L.midLog.push({id:s.id,lvl:lv,amin:+(MIDA*Math.pow(2,lv)).toFixed(3),tris:[t0,s.tris&&s.tris.mid],d:s.dist});FA.kick&&FA.kick(200);}
+function midRelevel(T){if(!L.MIDDIST||JOBS.some(j=>j.reMid))return;
+ for(const o of T){const s=o.s;if(L.tiers[s.id]!=='mid'||!s.midG||s.midOwn||!s.built||(!s.real&&!s.pivot))continue;const lv=midLvl(o.d,s.midLvl||0,false);if(lv===(s.midLvl||0))continue;
+  JOBS.push({s,it:s.real?realMidSteps(s,MIDA*Math.pow(2,lv),lv):reMidSteps(s,lv),steps:[],work:0,t0:performance.now(),realMid:1,reMid:1});schedule();return;}}
+
+// ---- B1 r2: COMPOSITE sites (contract v2 frozen decision): protown preset part + the plan's OTHER part ----
+// Plan sec. 3: Zookeeper = tidy town inside a tall transparent enclosure (protown 'zookeeper') + outside it a machine landscape that
+// ignores the enclosure (procompute, batch B4); Descendants = old human quarter kept like a museum, slowly emptying (protown
+// 'descendants') + a luminous machine-mind city growing out of it (batch B5) + a monument at the seam. procompute / the machine-mind
+// generator do not exist yet, so the engine builds a cheap PLACEHOLDER massing for the other part here (same result fields); the real
+// generators replace `otherPart` later through COMP[*].other. Q17a light: outside the enclosure machine indicator dots only.
+const COMP={zookeeper:{town:.52,off:0,other:'compute'},descendants:{town:.5,off:-.42,other:'mind'}};
+const BOXN=(()=>{const g=BOX.toNonIndexed();return{p:g.attributes.position.array,n:g.attributes.normal.array};})();
+const lin=h=>{const c=new THREE.Color(h);return[c.r,c.g,c.b];};
+function bx(A,x,y,z,w,h,d,ry,c){const cs=Math.cos(ry),sn=Math.sin(ry),P=BOXN.p,N=BOXN.n;
+ for(let i=0;i<P.length;i+=3){const px=P[i]*w,py=P[i+1]*h,pz=P[i+2]*d;A.p.push(x+px*cs+pz*sn,y+py,z-px*sn+pz*cs);const nx=N[i],nz=N[i+2];A.n.push(nx*cs+nz*sn,N[i+1],-nx*sn+nz*cs);A.c.push(c[0],c[1],c[2]);}}
+const arr=()=>({p:[],n:[],c:[]});
+function geoOf(A){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(A.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(A.n,3));
+ g.setAttribute('color',new THREE.Float32BufferAttribute(A.c,3));g.computeBoundingSphere();return g;}
+function otherPart(site,ctx,C,tc){const R=site.radius,rot=site.rot||0,cr=Math.cos(rot),sr=Math.sin(rot),rnd=FA.rng((site.seed|0)+977);
+ const W=(u,v)=>[u*cr+v*sr,-u*sr+v*cr],yl=(x,z)=>ctx.heightAt(site.x+x,site.z+z)-site.y;   // plan (u,v) -> local (x,z): protown's rotP convention
+ const M=arr(),Lt=arr(),F=arr(),lights=[],ko=[];const rt=R*C.town+1.3;let n=0;
+ if(C.other==='compute'){const HALL=['#3A3E46','#434750','#30343B'].map(lin),ROOF=lin('#565A62'),DOT=lin('#9FD8E6').map(v=>v*.55),g=1.55;
+  for(let u=-R;u<=R;u+=g)for(let v=-R;v<=R;v+=g*.7){const d=Math.hypot(u,v);if(d<rt+.6||d>R*1.08||rnd()<.25)continue;const [x,z]=W(u,v),y=yl(x,z)-.05;
+   const w=g*(.72+rnd()*.12),dd=g*.7*(.62+rnd()*.15),h=.32+rnd()*rnd()*.75;bx(M,x,y,z,w,h,dd,rot,HALL[n%3]);bx(F,x,y,z,w,h,dd,rot,HALL[n%3]);
+   if(rnd()<.6){const [ox,oz]=W((rnd()-.5)*w*.5,0);bx(M,x+ox,y+h,z+oz,w*.22,.12,dd*.5,rot,ROOF);}
+   if(rnd()<.55){const [ox,oz]=W(w*.46,dd*(rnd()-.5)*.6);bx(Lt,x+ox,y+h*.6,z+oz,.05,.05,.05,rot,DOT);}n++;}
+  ko.push({x:0,z:0,r:R});}
+ else{const TW=['#B6BCC6','#A2AAB6','#C4C8CE'].map(lin),STRIP=lin('#CFE0EC').map(v=>v*.6),cu=R*.46,g=1.05;   // machine-mind city on the far side of the seam
+  for(let u=cu-R*.62;u<=cu+R*.62;u+=g)for(let v=-R*.62;v<=R*.62;v+=g){const du=Math.hypot(u-cu,v),d=Math.hypot(u,v);
+   if(du>R*.6||d>R*1.05||Math.hypot(u-C.off*R,v)<R*C.town+.9||rnd()<.3)continue;const [x,z]=W(u+(rnd()-.5)*.3,v+(rnd()-.5)*.3),y=yl(x,z)-.05;
+   const w=.32+rnd()*.34,h=(1.4+5.2*Math.pow(1-du/(R*.6),1.4))*(.7+rnd()*.5),ry=rot+(rnd()<.3?.785:0);bx(M,x,y,z,w,h,w,ry,TW[n%3]);bx(F,x,y,z,w,h,w,ry,TW[n%3]);
+   const [ox,oz]=W(0,w*.52);bx(Lt,x+ox,y+h*.15,z+oz,w*.14,h*.8,.03,ry,STRIP);n++;}
+  // seam monument: a sunset arch (two piers + lintel) with one warm lamp (the passed torch) where the quarters meet
+  const sm=tc.seam?[tc.seam.x,tc.seam.z]:W((C.off+C.town)*R+.4,0),y=yl(sm[0],sm[1])-.05,ST=lin('#A89C88');
+  for(const k of [-1,1]){const [ox,oz]=W(0,k*.55);bx(M,sm[0]+ox,y,sm[1]+oz,.22,2.1,.22,rot,ST);bx(F,sm[0]+ox,y,sm[1]+oz,.22,2.1,.22,rot,ST);}
+  bx(M,sm[0],y+2.1,sm[1],.3,.24,1.4,rot,ST);bx(Lt,sm[0],y+2.36,sm[1],.08,.12,.08,rot,lin('#FFB870'));lights.push({x:sm[0],y:y+2.45,z:sm[1],color:'#FFB870',intensity:.6,dist:3});
+  ko.push({x:W(cu,0)[0],z:W(cu,0)[1],r:R*.6},{x:sm[0],z:sm[1],r:1});}
+ const mB=new THREE.Mesh(geoOf(M),FA.MATS.building);mB.name='comp_'+C.other;mB.castShadow=true;mB.receiveShadow=true;
+ const mL=new THREE.Mesh(geoOf(Lt),FA.MATS.light);mL.name='comp_'+C.other+'_lights';
+ return{meshes:[mB,mL],casters:[mB],far:[{geom:geoOf(F),family:'building'}],lights,keepOut:ko,n};}
+function offGeo(g,dx,dz){const G=g.clone();G.translate(dx,0,dz);return G;}
+function* compositeSteps(site,ctx){const C=COMP[site.id];if(!C)throw new Error('no composite plan for '+site.id);const R=site.radius,rot=site.rot||0;
+ const px=C.off*R*Math.cos(rot),pz=-C.off*R*Math.sin(rot);   // town part centre (plan u = off*R), local frame
+ const part=Object.assign({},site,{ending:site.id,x:site.x+px,z:site.z+pz,radius:+(R*C.town).toFixed(2)});
+ const it=FA.PROTOWN.buildSteps(part,ctx);let r;while(!(r=it.next()).done)yield r.value||'protown';const T=r.value;
+ if(!T||!T.near)throw new Error('protown part '+site.id+' returned no near group');
+ const near=new THREE.Group(),mid=new THREE.Group();T.near.position.set(px,0,pz);near.add(T.near);if(T.mid){T.mid.position.set(px,0,pz);mid.add(T.mid);}
+ const sh=o=>Object.assign({},o,{x:o.x+px,z:o.z+pz});const tc={seam:T.anchors&&T.anchors.seam?sh(T.anchors.seam):null};
+ yield 'compose:town';
+ const O=otherPart(site,ctx,C,tc);for(const m of O.meshes){near.add(m);const c=new THREE.Mesh(m.geometry,m.material);c.name=m.name+'_mid';mid.add(c);}
+ yield 'compose:'+C.other;
+ const A=T.anchors||{};return{near,mid,far:(T.far||[]).map(e=>({geom:offGeo(e.geom||e.geometry,px,pz),family:e.family})).concat(O.far),
+  casters:(T.casters||[]).concat(O.casters),movers:(T.movers||[]).map(sh),lights:(T.lights||[]).map(sh).concat(O.lights),
+  anim:T.anim,uniforms:T.uniforms,keepOut:(T.keepOut||[]).map(sh).concat(O.keepOut),
+  anchors:{square:A.square?sh(A.square):null,seam:tc.seam,entries:(A.entries||[]).map(sh),parts:{town:{x:px,z:pz,r:part.radius,preset:site.id},other:C.other}},
+  stats:{tris:(T.stats&&T.stats.nearTris||0),town:T.stats,other:{pieces:O.n,placeholder:1}},composite:1};}
+GEN.register('composite',{version:1,composite:1,buildSteps:compositeSteps});
 
 // ---- B1 host steps: any generator (contract) -> mounted tiers; split over frames by the scheduler below ----
 function* hostSteps(s){const t0=performance.now(),R=GEN.resolve(s),site=L.siteArg(s),ctx=L.ctx();s.genName=R.name;let res;
@@ -262,12 +378,7 @@ function* hostSteps(s){const t0=performance.now(),R=GEN.resolve(s),site=L.siteAr
  if(!res||!res.near)throw new Error('generator '+R.name+' returned no near group');
  const near=res.near;near.position.set(s.x,s.y,s.z);near.name='site_'+s.id;
  const cast=new Set(res.casters||[]);near.traverse(m=>{if(m.isMesh||m.isInstancedMesh){m.userData.cs0=R.g.legacy?m.castShadow:cast.has(m);m.castShadow=false;}});
- let mid=res.mid;if(!mid){mid=new THREE.Group();const inv=new THREE.Matrix4();near.updateMatrixWorld(true);inv.copy(near.matrixWorld).invert();const ws=new THREE.Vector3();let tw=performance.now();
-  const list=[];near.traverse(m=>{if(m.isMesh||m.isInstancedMesh)list.push(m);});
-  for(const m of list){let o=null;if(m.isInstancedMesh)o=midInst(m);else{m.getWorldScale(ws);const t=triN(m.geometry),rr=radOf(m)*ws.x;
-    if(t>MIDT)o=new THREE.Mesh(midGeo(m.geometry,MIDA/(ws.x*ws.x)),m.material);else if(rr>=MIDR*2)o=new THREE.Mesh(m.geometry,m.material);}
-   if(!o)continue;o.matrixAutoUpdate=false;o.matrix.multiplyMatrices(inv,m.matrixWorld);o.renderOrder=m.renderOrder;o.receiveShadow=m.receiveShadow;o.frustumCulled=m.frustumCulled;mid.add(o);
-   if(performance.now()-tw>L.BUDGET*.75){yield 'mid';tw=performance.now();}}mid.scale.copy(near.scale);}   // engine-derived MID (flattened, decimated by triangle area)
+ let mid=res.mid;s.midOwn=!!mid;if(!mid){const lv=midLvl(s.dist||L.MID_IN,0,true);mid=yield* deriveMid(near,MIDA*Math.pow(2,lv));s.midLvl=lv;}   // engine-derived MID (flattened, decimated by a DISTANCE-driven triangle area)
  mid.position.copy(near.position);mid.name='mid_'+s.id;mid.traverse(m=>{if(m.isMesh||m.isInstancedMesh){m.castShadow=false;m.userData.cs0=false;}});
  yield 'mount';
  // ambient movers / anims: legacy entries were captured by the adapter; contract movers are LOCAL coords (o = any Object3D)
@@ -276,6 +387,10 @@ function* hostSteps(s){const t0=performance.now(),R=GEN.resolve(s),site=L.siteAr
  for(const f of (res.fxAnims||[])){f.site=s.id;an.push(f);}
  if(typeof res.anim==='function'){const A=res.anim,U=res.uniforms;const g=(T,dt)=>{if(!alive())return;if(U&&U.uT)U.uT.value=T;A(T,dt);};g.site=s.id;an.push(g);}   // B2 additive: result.anim(T) + uniforms.uT
  FA.anims.push(...an);s.keepOut=res.keepOut||null;s.anchors=res.anchors||null;
+ // B1 r2: consume keepOut - world-coords circles published in FA.KEEPOUT (replaced per site) + checked against the boot reservation
+ FA.KEEPOUT=FA.KEEPOUT.filter(k=>k.site!==s.id);if(s.keepOut&&s.keepOut.length){let out=0,worst=0;const lim=s.r*L.KO_K+2;
+  for(const k of s.keepOut){const d=Math.hypot(k.x,k.z)+(k.r||0);worst=Math.max(worst,d/s.r);if(d>lim)out++;FA.KEEPOUT.push({x:k.x+s.x,z:k.z+s.z,r:k.r||0,site:s.id});}
+  L.koCheck[s.id]={n:s.keepOut.length,outside:out,worstR:+worst.toFixed(2)};}
  const tx=res.legacyTx;
  for(const m of (res.legacyMovers||[])){const n=Object.assign({},m,{vis:alive,site:s.id});if(m.x!=null&&!m.o&&!m.p&&!m.fn){const t=tx(m.x,m.y,m.z);n.x=t[0];n.y=t[1];n.z=t[2];}if(m.r)n.r=m.r*(res.k||1);FA.MOVERS.push(n);}
  for(const m of (res.movers||[])){const n=Object.assign({},m,{vis:alive,site:s.id});if(m.x!=null&&!m.o&&!m.p&&!m.fn){n.x=m.x+s.x;n.y=m.y+s.y;n.z=m.z+s.z;}
@@ -284,7 +399,7 @@ function* hostSteps(s){const t0=performance.now(),R=GEN.resolve(s),site=L.siteAr
  if(res.lights&&res.lights.length){const gl=res.lights.map(l=>({x:l.x+s.x,y:l.y+s.y,z:l.z+s.z,size:Math.max(.3,(l.dist||4)*.25),c:new THREE.Color(l.color||FA.LOOK.human).multiplyScalar((l.intensity==null?.5:l.intensity)*FA.LOOK.glowK),material:{opacity:1},an:null}));
   const nA=FA.anims.length;const fx=FA.buildFx(gl,[]);for(const o of fx)FA.SC.remove(o);for(const f of FA.anims.slice(nA))f.site=s.id;res.fxObjs=(res.fxObjs||[]).concat(fx);}
  if(res.far&&res.far.length){s.farGeoms=res.far;L.farDirty=true;}
- FA.SC.add(near);FA.SC.add(mid);if(FA.guardNaN)FA.guardNaN(near);for(const o of (res.fxObjs||[]))FA.SC.add(o);for(const d of (res.decals||[]))FA.SC.add(d);
+ FA.SC.add(near);FA.SC.add(mid);for(const o of (res.fxObjs||[]))FA.SC.add(o);for(const d of (res.decals||[]))FA.SC.add(d);   // r2: NaN guard now lives in profarm.js pfN
  s.pivot=near;s.midG=mid;s.fx=res.fxObjs||[];s.objs=[near].concat(res.decals||[]);s.decals=res.decals||[];
  s.meshes=[];near.traverse(m=>{if(m.isMesh||m.isInstancedMesh)s.meshes.push(m);});
  s.tris={near:trisOf(near),mid:trisOf(mid)};s.built=1;s.buildMs=Math.round(performance.now()-t0);
@@ -294,7 +409,7 @@ function* hostSteps(s){const t0=performance.now(),R=GEN.resolve(s),site=L.siteAr
 L.BUDGET=+(Q.get('lodms')||8);L.LEGACY=Q.get('lodsplit')==='0';L.SPLIT=Q.get('lodsplit')!=='sync';const JOBS=[];let pumpOn=false;  // ?lodsplit=0 = B0 buildFull (before), =sync = B1 host in one chunk
 function pump(){pumpOn=false;const f0=performance.now();
  while(JOBS.length){const j=JOBS[0],t=performance.now();let r;try{r=j.it.next();}catch(e){r={done:true};j.err=e.message;(window.__errs=window.__errs||[]).push('lod build '+j.s.id+': '+e.message);}
-  const dt=performance.now()-t;j.steps.push([r.value&&typeof r.value==='string'?r.value:'end',+dt.toFixed(1)]);j.work+=dt;
+  const dt=performance.now()-t;j.steps.push([r.value&&typeof r.value==='string'?r.value:r.value&&r.value.step?String(r.value.step):r.done?'end':'gen',+dt.toFixed(1)]);j.work+=dt;
   if(r.done){JOBS.shift();done(j);}
   if(performance.now()-f0>=L.BUDGET)break;}
  if(JOBS.length)schedule();}
@@ -302,10 +417,10 @@ function schedule(){if(pumpOn)return;pumpOn=true;if(document.hidden)setTimeout(p
 function done(j){const s=j.s;pending=JOBS.length?JOBS[0].s.id:null;const ms=Math.round(performance.now()-j.t0);
  const mx=j.steps.reduce((m,x)=>Math.max(m,x[1]),0);
  if(j.realMid){L.log.push({id:s.id,realMid:1,ok:!j.err,err:j.err,workMs:Math.round(j.work),steps:j.steps.length,maxStepMs:+mx.toFixed(1),tris:s.tris});L.update(true);FA.kick&&FA.kick(300);return;}
- L.builds[s.id]=Math.round(j.work);L.log.push({id:s.id,gen:s.genName,ok:!j.err,err:j.err,workMs:Math.round(j.work),wallMs:ms,steps:j.steps.length,maxStepMs:+mx.toFixed(1),stepList:j.steps.slice(0,12),tris:s.tris});
+ L.builds[s.id]=Math.round(j.work);L.log.push({id:s.id,gen:s.genName,ok:!j.err,err:j.err,workMs:Math.round(j.work),wallMs:ms,steps:j.steps.length,maxStepMs:+mx.toFixed(1),maxStep:j.steps.reduce((a,x)=>x[1]>a[1]?x:a,['',0])[0],top:j.steps.slice().sort((a,b)=>b[1]-a[1]).slice(0,4),stepList:j.steps.slice(0,12),tris:s.tris});
  if(!j.err){LRU.push(s.id);for(let i=0;LRU.length>L.CACHE&&i<LRU.length;){const ev=LRU[i];if(L.tiers[ev]==='far'&&ev!==s.id){LRU.splice(i,1);dispose(site(ev));}else i++;}}
- if(L.farDirty){L.farDirty=false;L.far();}
- L.update(true);FA.shadowDirty=true;FA.kick&&FA.kick(600);}
+ if(L.farDirty){L.farDirty=false;L.farAsync();}   // B1 r2: FAR re-merge time-sliced over frames (the site is NEAR, its FAR slot is hidden by VIS anyway)
+ const td=performance.now();L.update(true);FA.shadowDirty=true;FA.kick&&FA.kick(600);L.log[L.log.length-1].doneMs=+(performance.now()-td).toFixed(1);}
 function queueBuild(s){if(JOBS.some(j=>j.s===s))return;const j={s,it:hostSteps(s),steps:[],work:0,t0:performance.now()};
  if(!L.SPLIT){pending=s.id;setTimeout(()=>{try{let r;do{r=j.it.next();}while(!r.done);}catch(e){j.err=e.message;(window.__errs=window.__errs||[]).push('lod build '+s.id+': '+e.message);}
    j.work=performance.now()-j.t0;j.steps.push(['sync',+j.work.toFixed(1)]);done(j);pending=null;},0);return;}
@@ -370,6 +485,7 @@ L.update=function(force){if(!L.farMeshes)return;const n=performance.now();if(!fo
  // at most MAXMID stand-ins above FAR at once (closest first)
  T.filter(o=>!o.s.real&&o.t!=='far').sort((a,b)=>a.d-b.d).slice(L.MAXMID).forEach(o=>o.t='far');
  for(const o of T){o.s.dist=Math.round(o.d);apply(o.s,o.t);}
+ midRelevel(T);   // B1 r2: distance-driven MID level (one re-derive job at a time)
  {const anyFar=VIS.some(v=>v>0);for(const m of L.farMeshes)m.visible=anyFar;}   // no FAR site -> skip the 4 proxy draws entirely
  if(L.lines)L.lines.visible=FA.VIEW==='world';};
 // ---- idle-rule hooks: hover over a marker (screen distance) + showcase window ----
@@ -380,6 +496,8 @@ L.hot=function(){if(FA.VIEW!=='world')return null;const n=performance.now();if(L
  L.hover=best;});}
 L.hud=()=>{const c={near:0,mid:0,far:0};for(const k in L.tiers)c[L.tiers[k]]++;return 'lod N'+c.near+' M'+c.mid+' F'+c.far+(pending?' (building '+pending+')':'')+' · ter '+FA.TER;};
 L.info=()=>({tiers:Object.assign({},L.tiers),dist:Object.fromEntries(SITES.map(s=>[s.id,s.dist])),builds:Object.assign({},L.builds),far:L.farInfo,lru:LRU.slice(),pending,
+ koCheck:Object.assign({},L.koCheck),warm:L.warmInfo||null,farMs:L.farMs,midLvl:Object.fromEntries(SITES.filter(s=>s.midG).map(s=>[s.id,s.midOwn?'own':s.midLvl||0])),midLog:L.midLog.slice(-8),
+ gens:Object.fromEntries(SITES.map(s=>[s.id,s.genName||s.gen])),
  sites:SITES.map(s=>({id:s.id,real:s.real,g:s.g,x:+s.x.toFixed(1),z:+s.z.toFixed(1),r:+s.r.toFixed(1),nudge:s.nudge||0})),log:L.log.slice(-12)});
 // test helper: aim the world camera at a site from distance d (world view), then update tiers
 L.look=function(id,d){const s=site(id);if(!s)return null;FA.VIEW='world';Object.assign(FA.rig,{tx:s.x,ty:s.h0,tz:s.z,d:d||60});FA.applyCam();L.update(true);return L.info().tiers[id];};

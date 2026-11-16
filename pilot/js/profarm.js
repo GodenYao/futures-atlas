@@ -66,7 +66,10 @@ function layout(){const F=[];let u=-26;const cols=[];while(u<26){const cw=4.0+rn
 const HEAD='varying vec3 vR;varying vec3 vTy;varying vec3 vWQ;\n'+
  'float pfH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n'+
  'float pfV(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(pfH(i),pfH(i+vec2(1.,0.)),f.x),mix(pfH(i+vec2(0.,1.)),pfH(i+vec2(1.,1.)),f.x),f.y);}\n'+
- 'vec3 pfN(vec3 sp,vec3 sn,vec2 dH){vec3 sx=dFdx(sp),sy=dFdy(sp);vec3 r1=cross(sy,sn),r2=cross(sn,sx);float det=dot(sx,r1);vec3 g=sign(det)*(dH.x*r1+dH.y*r2);return normalize(abs(det)*sn-g);}\n';
+ 'vec3 pfN(vec3 sp,vec3 sn,vec2 dH){vec3 sx=dFdx(sp),sy=dFdy(sp);vec3 r1=cross(sy,sn),r2=cross(sn,sx);float det=dot(sx,r1);vec3 g=sign(det)*(dH.x*r1+dH.y*r2);vec3 n=abs(det)*sn-g;'+
+ // B1 r2 NaN guard (moved here from the chained cities.js FA.guardNaN): at world-view distance the derivative determinant underflows,
+ // normalize(0) = NaN on ANGLE-GL (T4) and bloom smears it into a white blob -> no bump beyond 70 u or on a non-finite / degenerate normal
+ 'vec3 r=n*inversesqrt(max(dot(n,n),1e-30));return (dot(r,r)>.5&&length(sp)<70.)?r:sn;}\n';
 const BODY=[
  'float fT=floor(vTy.x+.5),sd=vTy.y,PP=vTy.z;vec2 wq=vWQ.xz;',
  'float n1=pfV(wq*.55+sd*17.),n2=pfV(wq*2.6+sd*7.),n3=pfV(wq*13.);float ss=vR.y,rr=vR.x,ee=min(min(vB.x,vB.y),min(vB.z,vB.w));', // C6: exact edge distance (vB is linear in position)
