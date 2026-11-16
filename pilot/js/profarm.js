@@ -23,6 +23,7 @@ const H=(x,z)=>FA.H(x,z);
 const Hm=(x,z)=>FA.Hm?FA.Hm(x,z):FA.H(x,z); // C6: exact facet-terrain height (what the eye sees)
 const HK=1.35; // C6: hedge height factor (proflora hedge height = 2*sy*HK): ~25-45 % of the cottage height, clearly above the dry-stone walls
 let DITCH=[],PATHS=[];
+const STR=()=>!!(FA.PROSTREAM&&FA.PROSTREAM.on); // C7: prostream brook replaces the straight ditch (keep-outs below)
 
 // ---------------- where farmland may go ----------------
 function valid(x,z,clr){const vx=O.vx,vz=O.vz,RV=FA.RV;clr=clr||0;
@@ -31,6 +32,7 @@ function valid(x,z,clr){const vx=O.vx,vz=O.vz,RV=FA.RV;clr=clr||0;
  if(x>FA.riverX(z)-3.6)return false;if(Math.hypot(x-O.wmx,z-O.wmz)<4.6+clr)return false;
  for(const l of O.lanes){if(Math.hypot(l[2]-l[0],l[3]-l[1])>4&&segD(x,z,l[0],l[1],l[2],l[3])<.55+clr)return false;}
  if(polyD(x,z,O.road)<1.4+clr)return false;if(O.polys&&FA.PROROAD&&FA.PROROAD.dist(x,z)<.45+clr)return false;if(DITCH.length&&polyD(x,z,DITCH)<.45+clr)return false;
+ if(STR()&&FA.PROSTREAM.dist(x,z)<1.95+clr)return false;                                          // C7: brook + its bank ribbon
  if(O.keepOut)for(const k of O.keepOut)if(Math.hypot(x-k.x,z-k.z)<k.r+.6+clr)return false; // C3: procottage hamlet footprint (FA.RVSITE.keepOut)
  if(FA.slope(x,z)>.42)return false;if(H(x,z)<FA.WL+.3)return false;return true;}
 function rectOK(u0,u1,w0,w1){const N=4;for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const p=toW(u0+(u1-u0)*i/N,w0+(w1-w0)*j/N);if(!valid(p[0],p[1]))return false;}return true;}
@@ -118,7 +120,7 @@ function drapeRect(u0,u1,w0,w1,emit){const G=FA.tgrid&&FA.tgrid();
   emit(P.map(l=>{const p=toW(l[0],l[1]),px=p[0]-X[a],pz=p[1]-Z[a],uu=(px*bz-bx*pz)/den,vv=(ax*pz-px*az)/den;return[p[0],Y[a]+(Y[b]-Y[a])*uu+(Y[d]-Y[a])*vv,p[1]];}));}}
 const VM=.95; // verge width (survey units)
 function clearAt(x,z){let d=VM;for(const l of O.lanes)if(Math.hypot(l[2]-l[0],l[3]-l[1])>4)d=Math.min(d,segD(x,z,l[0],l[1],l[2],l[3])-.3);
- if(O.polys&&FA.PROROAD)d=Math.min(d,FA.PROROAD.dist(x,z)-.18);d=Math.min(d,polyD(x,z,O.road)-.9);if(DITCH.length)d=Math.min(d,polyD(x,z,DITCH)-.32);d=Math.min(d,FA.riverX(z)-3.1-x);
+ if(O.polys&&FA.PROROAD)d=Math.min(d,FA.PROROAD.dist(x,z)-.18);d=Math.min(d,polyD(x,z,O.road)-.9);if(DITCH.length)d=Math.min(d,polyD(x,z,DITCH)-.32);if(STR())d=Math.min(d,FA.PROSTREAM.dist(x,z)-1.75);d=Math.min(d,FA.riverX(z)-3.1-x);
  if(O.keepOut)for(const k of O.keepOut)d=Math.min(d,Math.hypot(x-k.x,z-k.z)-k.r-.1);return Math.max(0,d);}
 function fieldMesh(F,verge){const pos=[],nor=[],aR=[],aT=[],aB=[],aV=[],idx=[];const e=.35,m=verge?VM:0,lift=verge?.012:.02;
  for(const f of F){const nx=-f.tz,nz=f.tx;
@@ -166,7 +168,7 @@ function boundaries(lay){const HB=[],TR=[],ST=[],PL=[];const HG=['#3F5E40','#466
   if(rnd()<(k?.16:.10)){const ts=.42+.25*rnd();const tr=[x,y,z,ts,ts*(1.0+.3*rnd()),ts,rnd()*TAU,0,0,CC.set(HG[(rnd()*4)|0]).multiplyScalar(.9+.25*rnd()).clone()];if(!(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add('broad',x,y,z,tr[3]*2.5,tr[4]*2,tr[6],tr[9])))TR.push(tr);}};
  const wallAt=(x,z,ang)=>{const y=FA.Hm?FA.Hm(x,z):H(x,z);for(let c=0;c<3;c++){if(c===2&&rnd()<.35)continue;const k=c===2?.8:1;
   ST.push([x+(rnd()-.5)*.03,y+.035+c*.05,z+(rnd()-.5)*.03,(.085+rnd()*.035)*k,(.032+rnd()*.012)*k,(.06+rnd()*.02)*k,ang+(rnd()-.5)*.5,(rnd()-.5)*.3,(rnd()-.5)*.3,CC.set(SC2[(rnd()*3)|0]).multiplyScalar(.78+.3*rnd()).clone()]);}};
- const okB=(x,z)=>!nearLane(x,z,.7)&&!(O.polys&&FA.PROROAD&&FA.PROROAD.dist(x,z)<.45)&&!(DITCH.length&&polyD(x,z,DITCH)<.5)&&polyD(x,z,O.road)>1.5&&x<FA.riverX(z)-3.4&&Math.hypot((x-O.vx)/1.25,z-O.vz)>7.8;
+ const okB=(x,z)=>!nearLane(x,z,.7)&&!(O.polys&&FA.PROROAD&&FA.PROROAD.dist(x,z)<.45)&&!(DITCH.length&&polyD(x,z,DITCH)<.5)&&!(STR()&&FA.PROSTREAM.dist(x,z)<1.5)&&polyD(x,z,O.road)>1.5&&x<FA.riverX(z)-3.4&&Math.hypot((x-O.vx)/1.25,z-O.vz)>7.8;
  const angU=Math.atan2(-uz,ux),angW=Math.atan2(-wz,wx);let hedgeLen=0,wallLen=0;const pathLines=[];
  // column boundaries (long lines along w): 50 % hedgerow, 22 % wall, rest open balk (some carry a footpath)
  // C6: hedge / wall mix balanced by running length (~50/50), fewer open balks; hedges laid at a tighter .22 step (continuous masses)
@@ -187,7 +189,7 @@ function boundaries(lay){const HB=[],TR=[],ST=[],PL=[];const HG=['#3F5E40','#466
 
 // ---------------- build ----------------
 function build(opts){const t0=performance.now();O=opts;rnd=FA.rng(91);ox=O.vx;oz=O.vz;const ang=.32;ux=Math.cos(ang);uz=Math.sin(ang);wx=-uz;wz=ux;DITCH=[];
- DITCH=ditch();
+ DITCH=STR()?[]:ditch();
  const lay=layout();PF.fields=lay.F;PF.toL=toL;PF.on=true;let tris=fieldMesh(lay.F);tris+=fieldMesh(lay.F,true); // C6: exact facet drape + ragged grass verges
  const B=boundaries(lay);
  const hedgeM=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.92,flatShading:true,envMapIntensity:1.0});

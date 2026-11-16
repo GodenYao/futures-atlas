@@ -123,6 +123,9 @@ FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  const PKV=FA.RVSITE=(L.archviz&&FA.PROCOTTAGE)?FA.PROCOTTAGE.build({}):null;
  // C4: procedural lane network (js/proroad.js) replaces procottage's straight radial lanes (they painted light spokes from the plaza) + the grey road stub
  const RDP=(PKV&&FA.PROROAD)?(FA.lanes.length=0,FA.PROROAD.plan(PKV)):null;
+ // C7: archviz brook + mill race (js/prostream.js): planned after the lanes (bridges where they cross), BEFORE any terrain grid is
+ // sampled (installs the FA.H carve), so farmland / flora / terrain all see the incised channel
+ if(RDP&&FA.PROSTREAM&&L.archviz){FA.PROSTREAM.plan(PKV);FA.PROSTREAM.build();}
  let homes=[],z0=vz+2.5,wx=0,wmx=c.x-12,wmz=c.z-8;
  if(PKV){homes=PKV.homes;wx=PKV.wheel.x;z0=PKV.wheel.z;wmx=PKV.mill.x;wmz=PKV.mill.z;}else{
  FA.put('well',vx,vz,{w:1.0});
@@ -183,13 +186,13 @@ FA.colorHook=function(x,z,h,sl,c){const rv=FA.RV;if(Math.abs(x-rv.x)>26||Math.ab
  for(const f of FA.fields){const dx=x-f.x,dz=z-f.z,a=dx*f.ux+dz*f.uz,b=dx*f.wx+dz*f.wz;if(Math.abs(a)<2.05&&Math.abs(b)<1.55){c.lerp(CF[f.ty],.85);if(f.ty!=='pasture')c.multiplyScalar(.9+.1*Math.sin(b*10));return;}}
  for(const l of FA.lanes){const ax=l[2]-l[0],az=l[3]-l[1],ll=ax*ax+az*az;let t=((x-l[0])*ax+(z-l[1])*az)/ll;t=Math.max(0,Math.min(1,t));const d=Math.hypot(x-l[0]-ax*t,z-l[1]-az*t);if(d<.55){c.lerp(DIRT,.75*smooth(.55,.25,d));return;}}
  if(FA.PROFARM&&FA.PROFARM.hook(x,z,c))return; // C2b: balks / ditch banks
- if(FA.PROROAD&&FA.PROROAD.polys.length){const d=FA.PROROAD.dist(x,z);if(d<.5)c.lerp(DIRT,.45*smooth(.5,-.1,d));} // C4: faint worn ground under the lane mesh edges (no radial spokes)
+ if(FA.PROROAD&&FA.PROROAD.polys.length&&!L.archviz){const d=FA.PROROAD.dist(x,z);if(d<.5)c.lerp(DIRT,.45*smooth(.5,-.1,d));} // C4: faint worn ground under the lane mesh edges (no radial spokes). C7: off in archviz (per-face -> stepped dark wedges beside the south lane; the lane mesh has its own feathered verge)
  if(Math.hypot(x-(rv.x-1.5),z-rv.z)<2.4)c.lerp(DIRT,.55);};
 
 // ======================= scatter (forests, rocks, grass) =======================
 FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
  for(let i=0;i<5200;i++){const x=(r()-.5)*(FA.TW-12),z=(r()-.5)*(FA.TD-12);const h=H(x,z);const dg=Math.hypot(x-gk.x,z-gk.z),dr=Math.hypot(x-rv.x,z-rv.z);
-  if(dg<(L.archviz?26:19)||Math.abs(x-FA.riverX(z))<3.3||h>21)continue;if(dr<23&&!(z<rv.z-12&&dr>13))continue;const sl=FA.slope(x,z);
+  if(dg<(L.archviz?26:19)||Math.abs(x-FA.riverX(z))<3.3||h>21)continue;if(dr<23&&!(z<rv.z-12&&dr>13))continue;if(FA.PROSTREAM&&FA.PROSTREAM.on&&FA.PROSTREAM.dist(x,z)<1.6)continue;const sl=FA.slope(x,z);
   const forest=FA.fbm(x*.045+7,z*.045+3,3);
   if(FA.LOOK.clump){ // style: forest clumps with clearings (low-frequency mask x cluster cells), no lone-sapling confetti
    const big=FA.fbm(x*.022+21,z*.022-8,3),cell=FA.fbm(x*.11+3,z*.11+17,2);
@@ -209,7 +212,9 @@ FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
    .map(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)<RR?[t[0],t[1],'#56603F']:t);
   // C4: no tufts on the lanes; around Reversion tufts shrink to knee-high clumps (were house-sized black spikes at the close-up distance) and lift off near-black
   if(FA.PROROAD&&FA.PROROAD.polys.length)FA.tuftList=FA.tuftList.filter(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)>40||FA.PROROAD.dist(t[0],t[1])>.12)
-   .map(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)<75?[t[0],t[1],'#66704A',.28+.2*FA.hash(t[0]*.71,t[1]*.29)]:t);}};
+   .map(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)<75?[t[0],t[1],'#66704A',.28+.2*FA.hash(t[0]*.71,t[1]*.29)]:t);
+  if(FA.PROSTREAM&&FA.PROSTREAM.on)FA.tuftList=FA.tuftList.filter(t=>FA.PROSTREAM.dist(t[0],t[1])>1.05);} // C7: no meadow tufts in the brook / on its bank ribbon (prostream adds its own bank grass)
+ };
 
 // ======================= HUD + start =======================
 const TXT={gatekeeper:['Gatekeeper','one superintelligence whose only goal is to block any other'],reversion:['Reversion','technology rolled back to a pre-industrial level']};

@@ -146,7 +146,8 @@ const STYLES=FA.STYLES={
   // C4: the 'vertical light shafts above the roofs' were the chimney smoke columns (6 x 9 lilac puffs rising 34 m, 1.5x size, lighter than
   // the dark slopes behind them in the lower close-up). Shorter, thinner, darker, more drift; procottage also halves the chimney count.
   A.smokeK=.16;A.smokeC='#3C4566';A.smokeS=.85;A.smokeRise=1.7;
-  A.water=Object.assign({},A.water,{env:.36}); // river: grazing sky reflection -> .7 -> .36
+  A.water=Object.assign({},A.water,{env:.36,sh:'#33487A'}); // river: grazing sky reflection -> .7 -> .36; C7: lighter shallow edge vs the dark wet-mud band (value contrast)
+  A.shore={mud:'#0F111A',sand:'#30344A',silt:'#0D1326'};    // C7 analytic shore band (blue hour)
   A.fill=[A.fill[0],.30,A.fill[2]];A.fillV=[60,120,-50]; // ported v4.4 cool rim at el 21 deg put a clipped specular on the river (RV close 5.2k px >240, 53 with it off) -> higher + weaker; the moon carries the rim
   }
  if(Q.get('mood')==='day'){A.name='Arch-viz (day haze)';Object.assign(A,{exposure:.80,exposureWorld:.84,glowK:.15,sun:['#FFF2E0',1.15],sunEl:40,kitWarm:null});
@@ -324,7 +325,23 @@ function Hraw(x,z){let h=2.4+(fbm(x*.016+3.1,z*.016-1.7,Math.min(5,OC))-.5)*7;
 // river profile for facet terrain: width 0.8-2.6 along the course, deep line shifted to the outer bend, shallow shelf both sides,
 // steep cut bank on the outer bend, gentle sand bar on the inner bend.
 FA.riverW=z=>1.7+.9*Math.sin(z*.07+1.0);
+// C7: analytic distance to the river centre line (perpendicular-corrected) + the waterline offset E. The archviz bank profile, the
+// water alpha edge / foam / wave bands and the terrain shore band all use THIS (mirrored in GLSL by RIVER_GLSL) instead of the
+// 1.1-u grid, so the shoreline is a smooth curve. (C6 root cause: water = grid cells below WL, edge + foam keyed on per-vertex
+// depth interpolated across alternating-diagonal triangles -> regular sawtooth; per-face bank/bed/wet colours -> stepped bands.)
+const riverXd=z=>.189*Math.cos((z-RV.z)*.045)+.176*Math.cos(z*.11);
+FA.riverE=z=>FA.riverW(z)*.5+1.15;
+FA.riverDs=(x,z)=>(x-FA.riverX(z))/Math.sqrt(1+riverXd(z)*riverXd(z));
+FA.riverD=(x,z)=>Math.abs(FA.riverDs(x,z));
+const RIVER_GLSL='\nfloat rvX(float z){return '+(RV.x+7).toFixed(3)+'+4.2*sin((z-('+RV.z.toFixed(3)+'))*.045)+1.6*sin(z*.11);}float rvXd(float z){return .189*cos((z-('+RV.z.toFixed(3)+'))*.045)+.176*cos(z*.11);}'+
+ 'float rvE(float z){return (1.7+.9*sin(z*.07+1.))*.5+1.15;}float rvD(vec2 p){float d=rvXd(p.y);return abs(p.x-rvX(p.y))/sqrt(1.+d*d);}\n';
 function riverFacet(x,z,h){const k=smooth(-75,-30,z);if(k<=0)return h;const rc=FA.riverX(z),dx=x-rc,rw=FA.riverW(z)*.5+.4;const outer=-Math.sign(riverX2(z))||1;
+ if(LOOK.archviz){ // C7: one continuous profile, waterline exactly at analytic t=.35 beyond E-.75 (slope .16 there, no shelf step)
+  const ds=FA.riverDs(x,z),ad=Math.abs(ds),side=Math.sign(ds)===outer?1:0,off=.3*rw*outer,au=Math.abs(ds-off),land=Math.max(h,WL+.55),t=ad-rw-.75;
+  const u=Math.min(1,au/(rw+Math.abs(off)));const yb=WL-.12-(.5+.3*Math.sin(z*.05))*(1-u*u);let y;
+  if(t<.35)y=yb+.16*Math.max(0,t+.4);
+  else{const W=side?.9:3.6,f=smooth(.35,.35+W,t);y=WL+.16*(t-.35)*(1-f)+(land-WL)*f;}
+  return lerp(land,y,k);}
  const side=Math.sign(dx)===outer?1:0;const off=.3*rw*outer;const ad=Math.abs(dx),au=Math.abs(dx-off);const land=Math.max(h,WL+.55);let y;
  if(ad<rw){const u=Math.min(1,au/(rw+Math.abs(off)));y=WL-.12-(.5+.3*Math.sin(z*.05))*(1-u*u);}
  else if(ad<rw+.75)y=WL-.12;
@@ -334,7 +351,7 @@ FA.H=function(x,z){let h=Hraw(x,z);
  let d=Math.hypot(x-GK.x,z-GK.z);h=lerp(h,2.6,LOOK.archviz?smooth(31,24,d):smooth(17,11.5,d));                       // Gatekeeper plinth bed
  d=Math.hypot(x-RV.x,z-RV.z);h=lerp(h,1.0+(fbm(x*.09,z*.09,3)-.5)*.7,smooth(24,10,d));    // Reversion valley floor (low banks so the wheel reaches the stream)
  const wm=Math.hypot(x-(RV.x-12),z-(RV.z-8));h+=1.6*smooth(5,1.5,wm)*smooth(24,10,d);      // windmill knoll
- if(LOOK.ter.facet)return riverFacet(x,z,h);
+ if(LOOK.ter.facet){h=riverFacet(x,z,h);return FA.carveH?FA.carveH(x,z,h):h;}   // C7: carveH = prostream brook trench (archviz RV only)
  const dx=Math.abs(x-FA.riverX(z)),rw=1.5+.35*Math.sin(z*.07);
  h=Math.max(h,WL+.55);h=lerp(h,WL-.8,smooth(rw+2.4,rw*.5,dx)*smooth(-75,-30,z));          // river channel (springs at the foot of the back range)
  return h;};
@@ -397,7 +414,17 @@ function terrainMat(T){const mat=new THREE.MeshStandardMaterial({vertexColors:tr
   'vec2 g=abs(fract(wp/10.+.5)-.5)*10.;vec2 ln=1.-smoothstep(vec2(0.),fw*1.3,g);float gl=max(ln.x,ln.y);float hq=vFogWP.y/2.6;float fh=max(fwidth(hq),1e-4);float cl=1.-smoothstep(0.,1.1,abs(fract(hq-.5)-.5)/fh);'+
   'vec2 c5=abs(fract(wp/50.+.5)-.5)*50.;float cr=(1.-smoothstep(0.,fw.x*1.3,min(c5.x,c5.y)))*step(max(c5.x,c5.y),1.1);float e=max(max(gl*.13,cl*.10)*band,cr*.18);outgoingLight*=1.-e;}\n':'';
  mat.onBeforeCompile=sh=>{sh.uniforms.uT=FA.TU.uT;
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>',TER_COMMON).replace('#include <output_fragment>','#ifdef USE_FOG\n'+CLOUD+CL+SV+'#endif\n#include <output_fragment>');};
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>',TER_COMMON).replace('#include <output_fragment>','#ifdef USE_FOG\n'+CLOUD+CL+SV+'#endif\n#include <output_fragment>');
+  if(LOOK.archviz){const SHc=LOOK.shore||{mud:'#463E31',sand:'#9A8E76',silt:'#4E5E60'},v3=h=>{const q=C(h);return 'vec3('+q.r.toFixed(4)+','+q.g.toFixed(4)+','+q.b.toFixed(4)+')';};
+   // C7: smooth-normal blend (aSN) + analytic shore band: silt -> sand under the shallow water, wet mud ~1 u above the waterline,
+   // a faint pale gravel strip fading into the meadow. All keyed on rvD (distance to the river spline), never on the grid.
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aSN;varying vec4 vSN;').replace('#include <begin_vertex>','#include <begin_vertex>\nvSN=vec4(mat3(viewMatrix)*aSN.xyz,aSN.w);');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec4 vSN;'+RIVER_GLSL)
+    .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nif(dot(vSN.xyz,vSN.xyz)>.01)normal=normalize(mix(normal,normalize(vSN.xyz),vSN.w));')
+    .replace('#include <color_fragment>','#include <color_fragment>\n#ifdef USE_FOG\n{float rk=smoothstep(-75.,-30.,vFogWP.z);float t=rvD(vFogWP.xz)-rvE(vFogWP.z);if(rk>0.&&t<4.5){float n=cN2(vFogWP.xz*vec2(1.9,.6));'+
+     'float wet=(1.-smoothstep(.3,1.0+.6*n,t))*rk;vec3 c=mix(diffuseColor.rgb,'+v3(SHc.mud)+'*(.8+.4*n),wet*.88);'+
+     'float gv=smoothstep(.55,1.1,t)*(1.-smoothstep(1.5,3.2+n,t));c=mix(c,mix('+v3(SHc.sand)+',diffuseColor.rgb,.55),gv*.32*rk);'+
+     'float sub=(1.-smoothstep(.12,.42,t))*rk;vec3 bed=mix('+v3(SHc.sand)+','+v3(SHc.silt)+',smoothstep(.1,-1.2,t))*(.85+.3*n);diffuseColor.rgb=mix(c,bed,sub);}}\n#endif');}};
  mat.customProgramCacheKey=()=>'ter'+FA.STYLE;return mat;}
 function addSkirtTable(){if(LOOK.a2&&FA.A2){FA.A2.frame();return;} // A2: instrument-table frame (js/a2.js)
  const sk=new THREE.Mesh(new THREE.BoxGeometry(TW+.4,10,TD+.4),new THREE.MeshStandardMaterial({color:LOOK.skirt,roughness:1}));sk.position.y=-5.4;SC.add(sk);
@@ -457,22 +484,30 @@ function buildFacetTerrain(colorHook){const T=LOOK.ter;const G=tgrid(),xs=G.xs,z
  // horizon AO (8 dirs x 2 radii) sampled from the analytic height
  for(let k=0;k<NX*NZ;k++){const x=VX[k],z=VZ[k],h=VH[k];let occ=0;for(let a=0;a<8;a++){const ca=Math.cos(a*.785),sa=Math.sin(a*.785);for(const rr of[2.8,8.4]){occ+=Math.max(0,FA.H(x+ca*rr,z+sa*rr)-h)*1.4/rr;}}VA[k]=1-Math.min(.42,occ*.085);}
  const P={};for(const kk in T.P)P[kk]=C(T.P[kk]);const pos=[],col=[];const wpos=[],wdep=[];const c=new THREE.Color(),a=new THREE.Vector3(),b=new THREE.Vector3(),nn=new THREE.Vector3();
+ // C7 (archviz): per-vertex analytic smooth normal + blend weight (Reversion basin + river corridor) -> the fragment shader blends the
+ // flat facet normal toward it, so the 1.1-u facets stop reading as angular steps / dark wedges on the valley floor and banks
+ let SNv=null;const snA=[];if(LOOK.archviz){SNv=new Float32Array(NX*NZ*4);const e=.35;for(let k=0;k<NX*NZ;k++){const x=VX[k],z=VZ[k];
+   const m=Math.max(.72*smooth(28,20,Math.hypot(x-RV.x,z-RV.z)),.72*smooth(-75,-30,z)*smooth(FA.riverE(z)+7,FA.riverE(z)+4,FA.riverD(x,z)));if(m<=0)continue;
+   const gx=(FA.H(x+e,z)-FA.H(x-e,z))/(2*e),gz=(FA.H(x,z+e)-FA.H(x,z-e))/(2*e),l=Math.hypot(gx,1,gz);SNv[k*4]=-gx/l;SNv[k*4+1]=1/l;SNv[k*4+2]=-gz/l;SNv[k*4+3]=m;}}
  const face=(k0,k1,k2)=>{const x=(VX[k0]+VX[k1]+VX[k2])/3,z=(VZ[k0]+VZ[k1]+VZ[k2])/3,h=(VH[k0]+VH[k1]+VH[k2])/3;
   a.set(VX[k1]-VX[k0],VH[k1]-VH[k0],VZ[k1]-VZ[k0]);b.set(VX[k2]-VX[k0],VH[k2]-VH[k0],VZ[k2]-VZ[k0]);nn.crossVectors(b,a).normalize();if(nn.y<0)nn.negate();const sl=1-nn.y;
   const mo=fbm(x*.05+40,z*.05-20,3),dx=Math.abs(x-FA.riverX(z));
   // palette bands: meadow (2 moisture tiers) -> heath -> upland -> snow-rock; risers/steep faces = rock; river sand bar / bed
   if(h>20)c.copy(P.snow).lerp(P.rock,.35);else if(h>12)c.copy(P.hi);else if(h>6.5)c.copy(P.heath);else c.copy(mo>.52?P.mid:P.lo);
-  if(sl>.36)c.copy(P.rock).lerp(c,sl>.55?0:.45);
+  // C7: the binary meadow moisture threshold made per-face stepped dark patches (lower-left / south lane); around Reversion blend it
+  if(LOOK.archviz&&h<=6.5){const wr=smooth(42,30,Math.hypot(x-RV.x,z-RV.z));if(wr>0)c.lerp(P.lo.clone().lerp(P.mid,smooth(.42,.62,mo)),wr);}
+  const rk=smooth(-75,-30,z),rvA=LOOK.archviz&&rk>0&&FA.riverD(x,z)<FA.riverE(z)+4.6; // C7: archviz river corridor = meadow per face, shore band painted analytically in the shader
+  if(sl>.36&&!rvA)c.copy(P.rock).lerp(c,sl>.55?0:.45);
   else c.multiplyScalar(Math.floor(h/T.terr)%2?1.02:.98);                                 // alternate terrace shelves +-2 % so the steps read
-  const rk=smooth(-75,-30,z);if(rk>0&&dx<FA.riverW(z)*.5+5.0&&h<WL+.9)c.copy(P.bank);if(rk>0&&h<WL-.2)c.copy(P.bed);else if(rk>0&&h<WL-.02)c.copy(P.bank).multiplyScalar(.82); // shelf bed = wet sand (seen through shallow water)
+  if(!rvA){if(rk>0&&dx<FA.riverW(z)*.5+5.0&&h<WL+.9)c.copy(P.bank);if(rk>0&&h<WL-.2)c.copy(P.bed);else if(rk>0&&h<WL-.02)c.copy(P.bank).multiplyScalar(.82);} // shelf bed = wet sand (seen through shallow water)
   if(colorHook)colorHook(x,z,h,sl,c);
-  if(rk>0&&h>WL&&h<WL+.38&&dx<8)c.multiplyScalar(.78);                                   // wet band just above the waterline
+  if(!rvA&&rk>0&&h>WL&&h<WL+.38&&dx<8)c.multiplyScalar(.78);                                   // wet band just above the waterline
   const ao=(VA[k0]+VA[k1]+VA[k2])/3,v=1-T.vary/2+T.vary*hash(x*.37,z*.53);c.multiplyScalar(ao*v);
-  for(const kk of[k0,k1,k2]){pos.push(VX[kk],VH[kk],VZ[kk]);col.push(c.r,c.g,c.b);}
+  for(const kk of[k0,k1,k2]){pos.push(VX[kk],VH[kk],VZ[kk]);col.push(c.r,c.g,c.b);if(SNv)snA.push(SNv[kk*4],SNv[kk*4+1],SNv[kk*4+2],SNv[kk*4+3]);}
   if(Math.min(VH[k0],VH[k1],VH[k2])<WL){for(const kk of[k0,k1,k2]){wpos.push(VX[kk],WL,VZ[kk]);wdep.push(WL-VH[kk]);}}};
  for(let j=0;j<NZ-1;j++)for(let i=0;i<NX-1;i++){const k00=j*NX+i,k10=k00+1,k01=k00+NX,k11=k01+1;
   if(Math.abs(VH[k00]-VH[k11])<=Math.abs(VH[k10]-VH[k01])){face(k00,k01,k11);face(k00,k11,k10);}else{face(k00,k01,k10);face(k10,k01,k11);}}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.computeVertexNormals();
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));if(SNv)g.setAttribute('aSN',new THREE.Float32BufferAttribute(snA,4));g.computeVertexNormals();
  const m=new THREE.Mesh(g,terrainMat(T));m.receiveShadow=true;m.castShadow=!LOOK.archviz;SC.add(m);FA.terrainTris=pos.length/9;
  addSkirtTable();
  // water: only the cells below the waterline, depth per vertex -> depth tint (shallow->deep), stepped foam lines at the shore
@@ -483,7 +518,20 @@ function buildFacetTerrain(colorHook){const T=LOOK.ter;const G=tgrid(),xs=G.xs,z
  const v3=h=>{const q=C(h);return 'vec3('+q.r.toFixed(4)+','+q.g.toFixed(4)+','+q.b.toFixed(4)+')';};
  wm.onBeforeCompile=sh=>{sh.uniforms.uT=FA.TU.uT;
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aDep;varying float vDep;').replace('#include <begin_vertex>','#include <begin_vertex>\nvDep=aDep;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>',TER_COMMON+'\nvarying float vDep;')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>',TER_COMMON+'\nvarying float vDep;'+RIVER_GLSL);
+  if(LOOK.archviz){
+   // C7: river corridor (m) uses the analytic spline distance: depth tint dark centre -> lighter shallows, alpha feathered out before the
+   // geometric waterline (t=.35), a faint broken foam line + one parallel wave band + slow flow streaks, all following the spline
+   const RV_='float rk=smoothstep(-75.,-30.,vFogWP.z);float t=rvD(vFogWP.xz)-rvE(vFogWP.z);float m=rk*(1.-smoothstep(1.5,3.,t));';
+   sh.fragmentShader=sh.fragmentShader
+    .replace('#include <color_fragment>','#ifdef USE_FOG\n{'+RV_+'float dz=mix(smoothstep(.1,.55,vDep),smoothstep(.0,-1.5,t),m);float fl=cN2(vec2(rvD(vFogWP.xz)*2.6,vFogWP.z*.32-uT*.22));'+
+     'diffuseColor.rgb=mix('+v3(W.sh)+','+v3(W.dp)+',dz)*(1.+.16*(fl-.5)*m*dz);diffuseColor.a=mix(.40,.93,dz)*mix(1.,1.-smoothstep(-.3,.1,t),m);}\n#else\n'+
+     '{float dz=smoothstep(.1,.55,vDep);diffuseColor.rgb='+v3(W.sh)+'*(1.-dz)+'+v3(W.dp)+'*dz;diffuseColor.a=mix(.42,.93,dz);}\n#endif')
+    .replace('#include <output_fragment>','#ifdef USE_FOG\n{'+RV_+'float n=cN2(vec2(vFogWP.z*.9,t*2.)+vec2(-uT*.25,0.));float br=smoothstep(.34,.5,cN2(vec2(vFogWP.z*.38+11.,uT*.05)));'+
+     'float f1=(1.-smoothstep(0.,.045,abs(t+.05+.035*n)))*br;float f2=(1.-smoothstep(0.,.03,abs(t+.42+.07*n)))*smoothstep(.5,.62,n);'+
+     'float fo=(1.-smoothstep(.008,.018,vDep-.006*n))*step(-.002,vDep)*step(.32,cN2(vFogWP.xz*vec2(.9,.3)+7.));float f=mix(fo*.75,max(f1*.5,f2*.22),m);'+
+     'outgoingLight=mix(outgoingLight,'+v3(W.foam)+'*.5,f);diffuseColor.a=max(diffuseColor.a,f*.7);}\n#endif\n#include <output_fragment>');}
+  else sh.fragmentShader=sh.fragmentShader
    .replace('#include <color_fragment>','{float dz=smoothstep(.1,.55,vDep);diffuseColor.rgb='+v3(W.sh)+'*(1.-dz)+'+v3(W.dp)+'*dz;diffuseColor.a=mix(.42,.93,dz);}')
    .replace('#include <output_fragment>','#ifdef USE_FOG\n{float n=cN2(vFogWP.xz*vec2(1.7,.55)+vec2(0.,-uT*.3));float br=step(.32,cN2(vFogWP.xz*vec2(.9,.3)+7.));float f1=(1.-smoothstep(.008,.018,vDep-.006*n))*br*step(-.002,vDep);float f2=(1.-smoothstep(.0,.006,abs(vDep-.07-.025*n)))*step(.5,n);'+
     'float f=max(f1*.75,f2*.4);outgoingLight=mix(outgoingLight,'+v3(W.foam)+'*.5,f);diffuseColor.a=max(diffuseColor.a,f*.85);}\n#endif\n#include <output_fragment>');};
