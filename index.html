@@ -2065,7 +2065,7 @@ const G1Q=new URLSearchParams(location.search);
 const G1={res:{},stats:{},NEAR_D:95,HYS:6,FADE:500,_v:new THREE.Vector3(),U:{uG1Fd:{value:1},uG1M:{value:0}},animN:0,fades:0,
  AMB:+(G1Q.get('g1amb')||.76),GAMB:+(G1Q.get('g1gamb')||0),FLOOR:+(G1Q.get('g1floor')||.22),GAIN:+(G1Q.get('g1gain')||1.55),
  GK:+(G1Q.get('g1gk')||.7),NGAIN:+(G1Q.get('g1ngain')||1.3),NAMBK:+(G1Q.get('g1nambk')||.65),
- MAMBK:+(G1Q.get('g1mambk')||1),MGLOW:+(G1Q.get('g1mglow')||.85),MCAP:+(G1Q.get('g1mcap')||1.6),MSAT:+(G1Q.get('g1msat')||1.4),MWIN:+(G1Q.get('g1mwin')||1),MSH:+(G1Q.get('g1msh')||.9),dome:{}};
+ MAMBK:+(G1Q.get('g1mambk')||1),MGLOW:+(G1Q.get('g1mglow')||.85),MCAP:+(G1Q.get('g1mcap')||1.6),MSAT:+(G1Q.get('g1msat')||.85),MWIN:+(G1Q.get('g1mwin')||1),MSH:+(G1Q.get('g1msh')||.9),dome:{}};
 // r3 exposure (owner: new cities over-exposed at world zoom; close-ups fine): MID-only. The MID tier's lit colours ran > 1 (gamma lift x
 // GAIN 1.55 + AMB .76 emission) and its window/light vertex colours up to 1.74; v4.4 has no tone mapping and an 8-bit scene target, so
 // they clipped per channel to white and fed the bloom high-pass (th .70) -> white towers + halo. Fix: MSH = in-shader hue-preserving
