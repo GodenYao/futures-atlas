@@ -185,7 +185,10 @@ function triUp(b,p0,p1,p2,col){const ux=p1[0]-p0[0],uz=p1[2]-p0[2],vx=p2[0]-p0[0
 // vertical wall from (ax,az) to (bx,bz); outward normal = (-dz,0,dx). win={bay,st,lit,seed} adds the window grid
 function wall(b,ax,az,bx,bz,y0,y1,col,win){let w=null;
  if(win&&win.lit>0){const len=Math.hypot(bx-ax,bz-az);w=[0,0,Math.max(1,Math.round(len/(win.bay||BAY))),Math.max(1,Math.round((y1-y0)/(win.st||STOREY))),win.lit,win.seed||1];}
- quad(b,[ax,y0,az],[bx,y0,az],[bx,y1,bz],[ax,y1,bz],col,w);}
+ // B2 fix (owner 11-16 "1984 building bodies see-through"; protector MID "tilted boxes"): the corners were [bx,y0,AZ] / [ax,y1,BZ],
+ // i.e. bottom edge along x only and top edge sheared -> every wall running along z collapsed to 2 zero-area triangles (open
+ // building sides, background visible through the body) and every rotated wall was a twisted, tilted plane. Correct corners below.
+ quad(b,[ax,y0,az],[bx,y0,bz],[bx,y1,bz],[ax,y1,az],col,w);}
 // footprint corners of a rotated rectangle, in the order every prism expects (CCW seen from above with x right, z down)
 function rectPts(x,z,w,d,ry){const hx=w/2,hz=d/2,c=Math.cos(ry||0),s=Math.sin(ry||0),o=[[hx,-hz],[-hx,-hz],[-hx,hz],[hx,hz]];
  for(let i=0;i<4;i++){const lx=o[i][0],lz=o[i][1];o[i]=[x+lx*c+lz*s,z-lx*s+lz*c];}return o;}

@@ -21,7 +21,7 @@ const STRESS=Q.get('stress')==='1'||Q.get('stress')==='13';
 const LODALL=Q.get('lod')==='all';
 const L=FA.LOD={on:Q.get('lod')!=='0',stress:STRESS,all:LODALL,CACHE:+(Q.get('lodcache')||3),
  // camera-distance thresholds (world units, camera position -> site centre); enter / leave (hysteresis band ~15 %)
- NEAR_IN:95,NEAR_OUT:112,MID_IN:165,MID_OUT:192,MAXMID:2,
+ NEAR_IN:95,NEAR_OUT:112,MID_IN:165,MID_OUT:192,MAXMID:2,RANK_KEEP:8,
  tiers:{},builds:{},log:[],hover:null,show:{},farInfo:null};
 FA.IDLE_PX=+(Q.get('idlepx')||12);
 // B1 r3: screen-door dither (interleaved gradient noise on gl_FragCoord); tiers use complementary halves -> no double-bright overlap
@@ -653,13 +653,20 @@ L.preUpload=preUpload;
 L.PRE=Q.get('lodpre')!=='0';L.PRE_D=+(Q.get('lodpred')||L.MID_IN*1.4);const _lp=new THREE.Vector3(),_vp=new THREE.Vector3();let lpT=0;
 function prefetch(D){if(!L.PRE||JOBS.length||pending||FA.VIEW!=='world')return;const n=performance.now(),dt=Math.max(.016,(n-lpT)/1000);
  _vp.copy(_cp).sub(_lp).multiplyScalar(lpT?Math.min(.8/dt,8):0).add(_cp);_lp.copy(_cp);lpT=n;
- const C=D.filter(o=>!o.s.real).map(o=>({s:o.s,d:Math.min(o.d,Math.hypot(_vp.x-o.s.x,_vp.y-(o.s.h0+2),_vp.z-o.s.z))})).sort((a,b)=>a.d-b.d).slice(0,L.MAXMID);
+ // B2 fix: prefetch picks the same sites the MAXMID cap keeps (ranked by distance to the orbit target), so orbiting never
+ // prefetches a neighbour that the cap would then have to swap in for the site being looked at
+ const rg=FA.rig||{tx:_cp.x,tz:_cp.z},rk=s=>Math.hypot(s.x-rg.tx,s.z-rg.tz);
+ const C=D.filter(o=>!o.s.real).map(o=>({s:o.s,k:rk(o.s),d:Math.min(o.d,Math.hypot(_vp.x-o.s.x,_vp.y-(o.s.h0+2),_vp.z-o.s.z))})).sort((a,b)=>a.k-b.k).slice(0,L.MAXMID);
  for(const o of C)if(!o.s.built&&o.d<L.PRE_D){o.s.prefetched=1;queueBuild(o.s);(L.preLog=L.preLog||[]).push({id:o.s.id,d:Math.round(o.d)});return;}}
 L.update=function(force){if(!L.farMeshes)return;const n=performance.now();if(!force&&n-lastU<120)return;lastU=n;FA.CAM.getWorldPosition(_cp);
  const D=SITES.map(s=>({s,d:Math.hypot(_cp.x-s.x,_cp.y-(s.h0+2),_cp.z-s.z)}));
  const T=D.map(o=>({s:o.s,d:o.d,t:want(o.s,o.d,L.tiers[o.s.id])}));
- // at most MAXMID stand-ins above FAR at once (closest first)
- T.filter(o=>!o.s.real&&o.t!=='far').sort((a,b)=>a.d-b.d).slice(L.MAXMID).forEach(o=>o.t='far');
+ // at most MAXMID stand-ins above FAR at once. B2 fix (owner 11-16 "protector: orbiting, not zooming, switches to the coarse model"):
+ // the cap used to rank by CAMERA distance, which changes when orbiting (the camera swings toward neighbouring sites and evicted
+ // the site being looked at). Rank now by ground distance to the ORBIT TARGET (orbit-invariant: only pan/fly changes it), with a
+ // small keep-bonus for sites already above FAR (no rank flicker at ties); camera distance only breaks exact ties.
+ {const rg=FA.rig||{tx:_cp.x,tz:_cp.z};for(const o of T)o.k=Math.hypot(o.s.x-rg.tx,o.s.z-rg.tz)-(L.tiers[o.s.id]&&L.tiers[o.s.id]!=='far'?L.RANK_KEEP:0)+o.d*1e-3;}
+ T.filter(o=>!o.s.real&&o.t!=='far').sort((a,b)=>a.k-b.k).slice(L.MAXMID).forEach(o=>o.t='far');
  for(const o of T){o.s.dist=Math.round(o.d);apply(o.s,o.t);}
  prefetch(D);   // B1 r3: build ahead of need (FAR/MID stays on screen meanwhile)
  midRelevel(T);   // B1 r2: distance-driven MID level (one re-derive job at a time)
