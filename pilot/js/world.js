@@ -163,7 +163,7 @@ if(Q.has('ao'))LOOK.contact=Q.get('ao')==='1';              // ?ao=0 / ?ao=1 tog
 // layers (1.6 u plates, near-vertical risers, finer 1.9 u grid so the layer edges read as cut card rather than ramps).
 // 'a' = the C7 faceted terrain unchanged (1.3 u terraces, 2.8 u facets). 'b' = cheap smooth variant (no terraces, smooth
 // normals everywhere, 2.2 u grid). Other styles (bluefacet / pilot) stay on their own terrain ('a') unless ?ter= is given.
-FA.TER=(()=>{const t=(Q.get('ter')||'').toLowerCase();if(!LOOK.ter.facet)return 'a';if(t==='a'||t==='b'||t==='c')return t;return LOOK.archviz?'c':'a';})();
+FA.TER=(()=>{const t=(Q.get('ter')||'').toLowerCase();if(!LOOK.ter.facet)return 'a';if(t==='a'||t==='b'||t==='c')return t;return LOOK.archviz?'b':'a';})();  // owner 11-16: smooth terrain B is the archviz default (C/A via ?ter=)
 if(FA.TER==='c')Object.assign(LOOK.ter,{terr:1.6,hard:.93,cell:1.9});
 if(FA.TER==='b')Object.assign(LOOK.ter,{terr:0,cell:2.2});
 // colour management (r149): with legacyMode off, hex/CSS colours are sRGB and converted to linear, so palettes render as written.
@@ -699,7 +699,10 @@ FA.kick=function(ms){const n=performance.now();FA.lastInput=n;FA.activeUntil=Mat
 FA.IDLE_FPS=Q.get('idle')==='0'?[0,0]:[30,10];
 FA.IDLE={on:Q.get('idle')!=='0',mode:'init',fps:0,moving:[],renders:0};FA.MOVERS=[];FA.mover=m=>{FA.MOVERS.push(m);return m;};
 const _fr=new THREE.Frustum(),_pm=new THREE.Matrix4(),_sp=new THREE.Sphere(),_wp=new THREE.Vector3();let lastMv=-1e9;
-FA.movingNow=function(){if(FA.TFIX!=null)return [];CAM.updateMatrixWorld();_pm.multiplyMatrices(CAM.projectionMatrix,CAM.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);
+// B0 owner decision 11-16 (option 2): in WORLD view ambient movers (windmill sails, spire ring, stream, ...) never hold 30 fps;
+// world idle = 10 fps unless an ending is hovered / in showcase (FA.LOD.hot). `?idlepx=<n>` restores the size-based mover rule for tests.
+FA.WORLD_MOVERS=Q.get('idlepx')!=null;
+FA.movingNow=function(){if(FA.TFIX!=null)return [];if(FA.VIEW==='world'&&!FA.WORLD_MOVERS)return [];CAM.updateMatrixWorld();_pm.multiplyMatrices(CAM.projectionMatrix,CAM.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);
  const out=[],ms=FA.eyePos?FA.MOVERS.concat([{x:FA.eyePos.x,y:FA.eyePos.y,z:FA.eyePos.z,r:1.6,n:'eye'}]):FA.MOVERS,hp=R.domElement.height/2/Math.tan(CAM.fov*Math.PI/360),hpc=innerHeight/2/Math.tan(CAM.fov*Math.PI/360);
  for(const m of ms){try{if(m.vis&&!m.vis())continue;if(m.fn){if(m.fn())out.push(m.n||'fn');continue;}
   if(m.o){if(!m.o.visible||!m.o.parent)continue;m.o.getWorldPosition(_wp);}else if(m.p)_wp.copy(m.p());else _wp.set(m.x,m.y,m.z);_sp.set(_wp,m.r||1);
