@@ -27,11 +27,9 @@ FA.IDLE_PX=+(Q.get('idlepx')||12);
 // B1 r3: screen-door dither (interleaved gradient noise on gl_FragCoord); tiers use complementary halves -> no double-bright overlap
 const DQ='float faDq=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))));';
 
-// ---- v4.4 world positions (live build futures_atlas_sample_v44_20261115_1524.html, O[].X/Z after its layout solve) ----
-const V44={normaltech:[-41.86,-21.49],libertarian:[-13.05,-43.6],egalitarian:[-32.39,-39.34],enslaved:[-35.18,19.32],o1984:[-55.98,43.1],
- gatekeeper:[-10.16,39.9],protector:[19.75,30.96],benevolent:[42.7,41.45],zookeeper:[50.34,16.27],descendants:[40.15,-31],conquerors:[55.44,-9.24],
- reversion:[-75,0],selfdestruct:[6,51]};
-const K44=1.6; // v4.4 map (|X|<75,|Z|<51) -> pilot table (280 x 210)
+// ---- v4.4 world positions: ONE copy in world.js (FA.V44 / FA.K44 / FA.POS, G1 P0); FA.SITE_TABLE below is the resolved table ----
+const V44=FA.V44;
+const K44=FA.K44; // v4.4 map (|X|<75,|Z|<51) -> pilot table (280 x 210)
 // stand-in generator per ending: 'city' = procity (Gatekeeper generator), 'cot' = procottage (Reversion generator).
 // win = lit-window share in the FAR shader (Q17a: uniform for human towns; Conquerors machine indicators only (<0); Self-destruction none)
 const STAND={normaltech:{g:'city',n:'Normal technology',win:.45},libertarian:{g:'city',n:'Libertarian Utopia',win:.45},
@@ -45,14 +43,15 @@ SITES.push({id:'reversion',name:'Reversion',real:1,g:'cot',x:FA.RV.x-1.5,z:FA.RV
 // B1: the 11 stand-in positions are solved ALWAYS (FA.SITE_TABLE lists all 13 endings); they are only instantiated (terrain basin,
 // FAR proxy, lazy build) with ?stress=1 so the default world view stays the 2-city pilot.
 const CAND=[];{let i=2;for(const id in STAND){const s=STAND[id],k=KS[s.g]*(s.big?1.25:1);
-  CAND.push({id,name:s.n,real:0,g:s.g,win:s.win,dark:!!s.dark,ash:!!s.ash,x:V44[id][0]*K44,z:V44[id][1]*K44,x44:V44[id][0],z44:V44[id][1],k,r:RFULL[s.g]*k,h0:s.g==='city'?2.6:1.6,seed:i*7919+13,i:i++});}
- // nudge: off the real cities, the river corridor, each other, inside the table rim
- const TW=FA.TW,TD=FA.TD,st=CAND,real=SITES.filter(s=>s.real);
+  CAND.push({id,name:s.n,real:0,g:s.g,win:s.win,dark:!!s.dark,ash:!!s.ash,x:FA.POS(id).x,z:FA.POS(id).z,x44:V44[id][0],z44:V44[id][1],k,r:RFULL[s.g]*k,h0:s.g==='city'?2.6:1.6,seed:i*7919+13,i:i++});}
+ // nudge: off the real cities, the river corridor, each other, the NOW hub (G1 P0: v4.4 rule dn >= r+17, x K44), inside the table rim
+ const TW=FA.TW,TD=FA.TD,st=CAND,real=SITES.filter(s=>s.real),NW=FA.NOW;
  for(let it=0;it<160;it++){for(const s of st){
   for(const o of real.concat(st)){if(o===s)continue;const dx=s.x-o.x,dz=s.z-o.z,d=Math.hypot(dx,dz)||.01,m=s.r+o.r+(o.real?9:7);if(d<m){const p=(m-d)*(o.real?1:.5);s.x+=dx/d*p;s.z+=dz/d*p;}}
+  {const dx=s.x-NW.x,dz=s.z-NW.z,d=Math.hypot(dx,dz)||.01,m=s.r+NW.clear;if(d<m){s.x=NW.x+dx/d*m;s.z=NW.z+dz/d*m;}}
   if(s.z>-80){const rx=FA.riverX(s.z),dx=s.x-rx,m=s.r+8;if(Math.abs(dx)<m)s.x=rx+Math.sign(dx||1)*m;}
   s.x=Math.max(-TW/2+s.r+10,Math.min(TW/2-s.r-10,s.x));s.z=Math.max(-TD/2+s.r+10,Math.min(TD/2-s.r-12,s.z));}}
- for(const s of st)s.nudge=+Math.hypot(s.x-s.x44*K44,s.z-s.z44*K44).toFixed(1);}
+ for(const s of st)s.nudge=+Math.hypot(s.x-FA.POS(s.id).x,s.z-FA.POS(s.id).z).toFixed(1);}
 if(STRESS)for(const s of CAND)SITES.push(s);
 // ---- B1 site table + generator host (parallel_contract_B1_B2.md) ----
 // endings whose main body is a contemporary human town -> FA.PROTOWN (integration plan sec. 3 / B3 row); others keep the stand-ins
@@ -63,7 +62,10 @@ const OWN_GEN={enslaved:'proenslaved'};   // per-ending generators (pass #2: js/
 FA.SITE_TABLE=SITES.filter(s=>s.real).concat(CAND).map(s=>({id:s.id,ending:s.name,x:+s.x.toFixed(2),z:+s.z.toFixed(2),
  y:s.id==='gatekeeper'?2.6:s.h0,radius:+s.r.toFixed(2),seed:s.seed||(s.id==='gatekeeper'?1505:2031),
  rot:s.real?0:+((((s.seed||0)*2654435761>>>0)%6283)/1000).toFixed(3),   // layout hint for the generator; the engine does NOT rotate the group
- gen:OWN_GEN[s.id]||(PROTOWN_FOR[s.id]?'protown':COMPOSITE_FOR[s.id]?'composite':s.g==='city'?'procity':'procottage'),standin:s.g==='city'?'procity':'procottage',live:SITES.includes(s)}));
+ gen:OWN_GEN[s.id]||(PROTOWN_FOR[s.id]?'protown':COMPOSITE_FOR[s.id]?'composite':s.g==='city'?'procity':'procottage'),standin:s.g==='city'?'procity':'procottage',live:SITES.includes(s),
+ x44:V44[s.id][0],z44:V44[s.id][1],nudge:s.nudge||0}));
+// G1 P0: the table is the single source of truth; real sites must sit exactly at their FA.POS spot, NOW hub published with it
+FA.SITE_TABLE.NOW=FA.NOW;FA.SITE_TABLE.check=FA.SITE_TABLE.filter(t=>{const p=FA.POS(t.id);return Math.hypot(t.x-p.x,t.z-p.z)>(t.nudge||0)+.05||Math.sign(t.x)!==Math.sign(V44[t.id][0]||t.x)||Math.sign(t.z)!==Math.sign(V44[t.id][1]||t.z);}).map(t=>t.id);
 for(const s of SITES){const t=FA.SITE_TABLE.find(e=>e.id===s.id);s.gen=t.gen;s.standin=t.standin;s.y=t.y;s.rot=t.rot;}
 // generator registry: name -> {version, build(site,ctx), buildSteps?(site,ctx)}; 'protown' resolves to window.FA.PROTOWN at CALL time
 // (load order free, zero engine edits once js/protown.js is in index.html). Missing generator -> the site's stand-in.
@@ -650,13 +652,27 @@ function preUpload(objs){if(!L.PREUP||!FA.POST||!FA.POST.rtS)return -1;const t=p
 L.preUpload=preUpload;
 // ---- B1 r3: PREFETCH - build ahead of need while FAR/MID is still shown: the 2 nearest stand-ins (by the camera position AND the
 // position predicted ~0.8 s ahead from its velocity) are built once within L.PRE_D (default 1.4 x MID_IN). ?lodpre=0 = off.
+// ---- G1 r1 fix (owner 11-16 "Enslaved God: zooming in, the detail suddenly turns into the coarse model") ----
+// Cause: the wheel dollied toward the fixed ORBIT TARGET (world view: between Gatekeeper and Protector), not toward the site the
+// owner looks at, and the MAXMID cap ranked stand-ins only by ground distance to that target. While zooming in, neighbours nearer
+// the target entered their own MID/NEAR camera bands and took both slots -> the on-screen Enslaved God (~58 u off the target) was
+// demoted NEAR -> FAR. Fix (?lodlock=0 = old rule): cap priority = (0) the site under the view centre (target inside its r*1.15
+// footprint), (1) INCUMBENTS (already above FAR) still inside the view frustum, (2) the rest; within a class by ground distance to
+// the target (- RANK_KEEP for incumbents). A visible detailed site is never demoted by the cap; it drops only through its own
+// camera-distance band (zoom out) or by leaving the view. The world wheel also zooms toward the cursor (world.js FA.ZCUR).
+L.LOCK=Q.get('lodlock')!=='0';
+const _fr=new THREE.Frustum(),_pm=new THREE.Matrix4(),_sp=new THREE.Sphere();
+function rankFlags(T){const rg=FA.rig||{tx:_cp.x,tz:_cp.z};if(L.LOCK){FA.CAM.updateMatrixWorld();_pm.multiplyMatrices(FA.CAM.projectionMatrix,FA.CAM.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);}
+ for(const o of T){const s=o.s,g=Math.hypot(s.x-rg.tx,s.z-rg.tz),inc=!!(L.tiers[s.id]&&L.tiers[s.id]!=='far');o.k=g-(inc?L.RANK_KEEP:0)+(o.d||0)*1e-3;
+  if(!L.LOCK){o.pr=0;continue;}_sp.center.set(s.x,s.h0+2,s.z);_sp.radius=s.r*L.KO_K+2;o.pr=g<s.r*L.KO_K?0:(inc&&_fr.intersectsSphere(_sp))?1:2;}}
+const capCmp=(a,b)=>(a.pr-b.pr)||(a.k-b.k);
 L.PRE=Q.get('lodpre')!=='0';L.PRE_D=+(Q.get('lodpred')||L.MID_IN*1.4);const _lp=new THREE.Vector3(),_vp=new THREE.Vector3();let lpT=0;
 function prefetch(D){if(!L.PRE||JOBS.length||pending||FA.VIEW!=='world')return;const n=performance.now(),dt=Math.max(.016,(n-lpT)/1000);
  _vp.copy(_cp).sub(_lp).multiplyScalar(lpT?Math.min(.8/dt,8):0).add(_cp);_lp.copy(_cp);lpT=n;
  // B2 fix: prefetch picks the same sites the MAXMID cap keeps (ranked by distance to the orbit target), so orbiting never
  // prefetches a neighbour that the cap would then have to swap in for the site being looked at
- const rg=FA.rig||{tx:_cp.x,tz:_cp.z},rk=s=>Math.hypot(s.x-rg.tx,s.z-rg.tz);
- const C=D.filter(o=>!o.s.real).map(o=>({s:o.s,k:rk(o.s),d:Math.min(o.d,Math.hypot(_vp.x-o.s.x,_vp.y-(o.s.h0+2),_vp.z-o.s.z))})).sort((a,b)=>a.k-b.k).slice(0,L.MAXMID);
+ // G1 fix: same priority as the cap (capCmp: under the view centre > visible incumbent > distance to the orbit target)
+ const C=D.filter(o=>!o.s.real).map(o=>({s:o.s,d0:o.d,d:Math.min(o.d,Math.hypot(_vp.x-o.s.x,_vp.y-(o.s.h0+2),_vp.z-o.s.z))}));rankFlags(C);C.sort(capCmp);C.length=Math.min(C.length,L.MAXMID);
  for(const o of C)if(!o.s.built&&o.d<L.PRE_D){o.s.prefetched=1;queueBuild(o.s);(L.preLog=L.preLog||[]).push({id:o.s.id,d:Math.round(o.d)});return;}}
 L.update=function(force){if(!L.farMeshes)return;const n=performance.now();if(!force&&n-lastU<120)return;lastU=n;FA.CAM.getWorldPosition(_cp);
  const D=SITES.map(s=>({s,d:Math.hypot(_cp.x-s.x,_cp.y-(s.h0+2),_cp.z-s.z)}));
@@ -665,8 +681,8 @@ L.update=function(force){if(!L.farMeshes)return;const n=performance.now();if(!fo
  // the cap used to rank by CAMERA distance, which changes when orbiting (the camera swings toward neighbouring sites and evicted
  // the site being looked at). Rank now by ground distance to the ORBIT TARGET (orbit-invariant: only pan/fly changes it), with a
  // small keep-bonus for sites already above FAR (no rank flicker at ties); camera distance only breaks exact ties.
- {const rg=FA.rig||{tx:_cp.x,tz:_cp.z};for(const o of T)o.k=Math.hypot(o.s.x-rg.tx,o.s.z-rg.tz)-(L.tiers[o.s.id]&&L.tiers[o.s.id]!=='far'?L.RANK_KEEP:0)+o.d*1e-3;}
- T.filter(o=>!o.s.real&&o.t!=='far').sort((a,b)=>a.k-b.k).slice(L.MAXMID).forEach(o=>o.t='far');
+ rankFlags(T);
+ T.filter(o=>!o.s.real&&o.t!=='far').sort(capCmp).slice(L.MAXMID).forEach(o=>o.t='far');
  for(const o of T){o.s.dist=Math.round(o.d);apply(o.s,o.t);}
  prefetch(D);   // B1 r3: build ahead of need (FAR/MID stays on screen meanwhile)
  midRelevel(T);   // B1 r2: distance-driven MID level (one re-derive job at a time)
@@ -676,7 +692,7 @@ L.update=function(force){if(!L.farMeshes)return;const n=performance.now();if(!fo
 L.showcase=(id,ms)=>{L.show[id]=performance.now()+(ms||6000);};
 L.hot=function(){if(FA.VIEW!=='world')return null;const n=performance.now();if(L.hover)return L.hover;for(const id in L.show)if(L.show[id]>n)return id;return null;};
 {const v=new THREE.Vector3();addEventListener('pointermove',e=>{if(e.buttons){L.hover=null;return;}let best=null,bd=26;
- for(const m of FA.markers||[]){if(m.el.style.display==='none')continue;v.copy(m.p).project(FA.CAM);const X=(v.x*.5+.5)*innerWidth,Y=(-v.y*.5+.5)*innerHeight,d=Math.hypot(X-e.clientX,Y-e.clientY);if(d<bd){bd=d;best=m.id;}}
+ for(const m of FA.markers||[]){if(m.now||m.el.style.display==='none')continue;v.copy(m.p).project(FA.CAM);const X=(v.x*.5+.5)*innerWidth,Y=(-v.y*.5+.5)*innerHeight,d=Math.hypot(X-e.clientX,Y-e.clientY);if(d<bd){bd=d;best=m.id;}}
  L.hover=best;});}
 L.hud=()=>{const c={near:0,mid:0,far:0};for(const k in L.tiers)c[L.tiers[k]]++;return 'lod N'+c.near+' M'+c.mid+' F'+c.far+(pending?' (building '+pending+')':'')+' · ter '+FA.TER;};
 L.info=()=>({fade:(L.fadeLog||[]).slice(-8),pre:(L.preLog||[]).slice(-8),outsk:L.outskInfo||null,up:Object.fromEntries(SITES.filter(s=>s.upMs).map(s=>[s.id,s.upMs])),tiers:Object.assign({},L.tiers),dist:Object.fromEntries(SITES.map(s=>[s.id,s.dist])),builds:Object.assign({},L.builds),far:L.farInfo,lru:LRU.slice(),pending,

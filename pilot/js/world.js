@@ -348,15 +348,35 @@ FA.crease=function(geo,y0,band,k,sy){sy=sy||1;const p=geo.attributes.position,n=
  geo.setAttribute('color',new THREE.BufferAttribute(c,3));return geo;};
 
 // ---------------- layout + sculpted heightfield ----------------
-const GK=FA.GK={x:-30,z:6,top:3.9};const RV=FA.RV={x:30,z:-6};const WL=FA.WL=0.45;
+// G1 P0 (audit item 26): ONE position source for all 13 endings + NOW. V44 = the live v4.4 build's world positions (O[].X/Z after its
+// layout solve, futures_atlas_sample_v44_20261115_1524.html; NOW = {X:0,Z:0}); pilot table = V44 x K44 (v4.4 |X|<75,|Z|<51 ->
+// 280 x 210). Axes as in v4.4: x humans -> AI = west -> east, z (map y) many -> one = north -> south, NOW at the centre.
+// lod.js builds FA.SITE_TABLE (the published single source of truth, + nudges for stand-ins) from this; FA.GK / FA.RV are derived
+// from it here because the terrain (basins, river) needs them before lod.js loads. Real sites are never nudged.
+// EDGE: reversion sits on the west cliff (v4.4 X = -AXX-5 = -75 -> -120); its fields reach 22.6 u west of the hamlet, so the site
+// is pulled 3 u inside the table (-117) to keep them on the 280 u table (documented deviation, sign/axis side unchanged).
+FA.K44=1.6;
+FA.V44={normaltech:[-41.86,-21.49],libertarian:[-13.05,-43.6],egalitarian:[-32.39,-39.34],enslaved:[-35.18,19.32],o1984:[-55.98,43.1],
+ gatekeeper:[-10.16,39.9],protector:[19.75,30.96],benevolent:[42.7,41.45],zookeeper:[50.34,16.27],descendants:[40.15,-31],conquerors:[55.44,-9.24],
+ reversion:[-75,0],selfdestruct:[6,51]};
+FA.EDGE={reversion:[3,0]};
+FA.POS=id=>{const v=FA.V44[id],e=FA.EDGE[id]||[0,0];return {x:+(v[0]*FA.K44+e[0]).toFixed(2),z:+(v[1]*FA.K44+e[1]).toFixed(2)};};
+FA.NOW={x:0,z:0,clear:17*FA.K44,x44:0,z44:0};   // v4.4 NOW hub at the map centre; sites keep >= r + 17 v4.4 units (x K44) clear of it
+const OLDPOS=Q.get('oldpos')==='1';   // ?oldpos=1 = pre-G1 pilot spots (GK -30,6 / RV 30,-6) for A/B comparison only
+const GK=FA.GK=OLDPOS?{x:-30,z:6,top:3.9}:Object.assign(FA.POS('gatekeeper'),{top:3.9});
+const RV=FA.RV=OLDPOS?{x:30,z:-6}:{x:FA.POS('reversion').x+1.5,z:FA.POS('reversion').z};   // FA.RV = river/valley anchor; the hamlet (site) is RV.x-1.5
+const WL=FA.WL=0.45;
 const TW=280,TD=210;FA.TW=TW;FA.TD=TD;
-FA.riverX=z=>RV.x+7.0+4.2*Math.sin((z-RV.z)*.045)+1.6*Math.sin(z*.11);
-const riverX2=z=>-4.2*.045*.045*Math.sin((z-RV.z)*.045)-1.6*.11*.11*Math.sin(z*.11); // curvature sign -> outer bend side
+// river shape is RELATIVE to RV (zr = z-RV.z-6 equals the old absolute z for the old RV.z = -6), so brook / mill race / fields /
+// close-up framing tuned in C3-C7 keep their geometry when Reversion moves
+FA.riverX=z=>RV.x+7.0+4.2*Math.sin((z-RV.z)*.045)+1.6*Math.sin((z-RV.z-6)*.11);
+const riverX2=z=>-4.2*.045*.045*Math.sin((z-RV.z)*.045)-1.6*.11*.11*Math.sin((z-RV.z-6)*.11); // curvature sign -> outer bend side
 const OC=LOOK.ter.oct;
 function Hraw(x,z){let h=2.4+(fbm(x*.016+3.1,z*.016-1.7,Math.min(5,OC))-.5)*7;
  const r=fbm(x*.028+11,z*.028+5,Math.min(4,OC));h+=Math.pow(Math.max(0,r-.5),1.5)*30;
  h+=smooth(-30,-95,z)*(9+fbm(x*.035,z*.035,Math.min(5,OC))*20);               // back range (silhouette against the horizon glow)
- h+=smooth(90,135,Math.abs(x))*16*fbm(x*.05,z*.05+9,Math.min(4,OC));          // side rims
+ const rimK=(1-smooth(40,22,Math.hypot(x-RV.x,z-RV.z)))*(1-smooth(-75,-30,z)*(1-smooth(5,24,Math.abs(x-FA.riverX(z)))));   // G1 P0: no rim gorge along the west-edge river / Reversion valley
+ h+=smooth(90,135,Math.abs(x))*16*fbm(x*.05,z*.05+9,Math.min(4,OC))*rimK;   // side rims
  // B1 terrain B (game-style smooth): gentle large-scale undulation (~90 u swells, +-1.5 u) + small surface noise (~8 u, +-.22 u);
  // faded out over low ground so no new puddles appear below the waterline. City / stand-in basins flatten it again in FA.H.
  if(TERB){const u=(fbm(x*.011+5.3,z*.011-2.9,3)-.5)*3.0+(fbm(x*.13+1.7,z*.13+8.1,2)-.5)*.45;h+=u*smooth(WL+.4,WL+2.6,h);}
@@ -364,17 +384,18 @@ function Hraw(x,z){let h=2.4+(fbm(x*.016+3.1,z*.016-1.7,Math.min(5,OC))-.5)*7;
  return h;}
 // river profile for facet terrain: width 0.8-2.6 along the course, deep line shifted to the outer bend, shallow shelf both sides,
 // steep cut bank on the outer bend, gentle sand bar on the inner bend.
-FA.riverW=z=>1.7+.9*Math.sin(z*.07+1.0);
+FA.riverW=z=>1.7+.9*Math.sin((z-RV.z-6)*.07+1.0);
 // C7: analytic distance to the river centre line (perpendicular-corrected) + the waterline offset E. The archviz bank profile, the
 // water alpha edge / foam / wave bands and the terrain shore band all use THIS (mirrored in GLSL by RIVER_GLSL) instead of the
 // 1.1-u grid, so the shoreline is a smooth curve. (C6 root cause: water = grid cells below WL, edge + foam keyed on per-vertex
 // depth interpolated across alternating-diagonal triangles -> regular sawtooth; per-face bank/bed/wet colours -> stepped bands.)
-const riverXd=z=>.189*Math.cos((z-RV.z)*.045)+.176*Math.cos(z*.11);
+const riverXd=z=>.189*Math.cos((z-RV.z)*.045)+.176*Math.cos((z-RV.z-6)*.11);
 FA.riverE=z=>FA.riverW(z)*.5+1.15;
 FA.riverDs=(x,z)=>(x-FA.riverX(z))/Math.sqrt(1+riverXd(z)*riverXd(z));
 FA.riverD=(x,z)=>Math.abs(FA.riverDs(x,z));
-const RIVER_GLSL='\nfloat rvX(float z){return '+(RV.x+7).toFixed(3)+'+4.2*sin((z-('+RV.z.toFixed(3)+'))*.045)+1.6*sin(z*.11);}float rvXd(float z){return .189*cos((z-('+RV.z.toFixed(3)+'))*.045)+.176*cos(z*.11);}'+
- 'float rvE(float z){return (1.7+.9*sin(z*.07+1.))*.5+1.15;}float rvD(vec2 p){float d=rvXd(p.y);return abs(p.x-rvX(p.y))/sqrt(1.+d*d);}\n';
+const RZ6=(RV.z+6).toFixed(3);   // G1 P0: GLSL twin of the RV-relative river (z-RV.z-6)
+const RIVER_GLSL='\nfloat rvX(float z){return '+(RV.x+7).toFixed(3)+'+4.2*sin((z-('+RV.z.toFixed(3)+'))*.045)+1.6*sin((z-('+RZ6+'))*.11);}float rvXd(float z){return .189*cos((z-('+RV.z.toFixed(3)+'))*.045)+.176*cos((z-('+RZ6+'))*.11);}'+
+ 'float rvE(float z){return (1.7+.9*sin((z-('+RZ6+'))*.07+1.))*.5+1.15;}float rvD(vec2 p){float d=rvXd(p.y);return abs(p.x-rvX(p.y))/sqrt(1.+d*d);}\n';
 function riverFacet(x,z,h){const k=smooth(-75,-30,z);if(k<=0)return h;const rc=FA.riverX(z),dx=x-rc,rw=FA.riverW(z)*.5+.4;const outer=-Math.sign(riverX2(z))||1;
  if(LOOK.archviz){ // C7: one continuous profile, waterline exactly at analytic t=.35 beyond E-.75 (slope .16 there, no shelf step)
   const ds=FA.riverDs(x,z),ad=Math.abs(ds),side=Math.sign(ds)===outer?1:0,off=.3*rw*outer,au=Math.abs(ds-off),land=Math.max(h,WL+.55),t=ad-rw-.75;
@@ -510,13 +531,13 @@ FA.buildTerrain=function(colorHook){const T=LOOK.ter;if(T.facet)return buildFace
 
 // ---- facet terrain (bluefacet): tensor grid (fine 1.1 around Reversion + the river, 2.8 elsewhere), vertices jittered +-0.25 cell,
 // quad diagonal by the smaller height difference, non-indexed, one colour per face snapped to palette bands (+-2 %), horizon AO per vertex.
-function axis(min,max,a,b,fine,coarse){const out=[];const seg=(s,e,st)=>{const n=Math.max(1,Math.ceil((e-s)/st));for(let i=0;i<n;i++)out.push(s+(e-s)*i/n);};const mid=(fine+coarse)/2,T=10; // graded fine->mid->coarse (no visible density seam)
+function axis(min,max,a,b,fine,coarse){const out=[];const seg=(s,e,st)=>{s=Math.max(min,s);e=Math.min(max,e);if(e-s<1e-6)return;const n=Math.max(1,Math.ceil((e-s)/st));for(let i=0;i<n;i++)out.push(s+(e-s)*i/n);};const mid=(fine+coarse)/2,T=10; // graded fine->mid->coarse (no visible density seam); G1 P0: segments clamped to [min,max] (fine band may touch the table edge)
  seg(min,a-T,coarse);seg(a-T,a,mid);seg(a,b,fine);seg(b,b+T,mid);seg(b+T,max,coarse);out.push(max);return out;}
 // C6: the facet grid is shared (lazy, deterministic) so other modules can drape on the REAL terrain triangles before the mesh exists.
 // Root cause of the jagged field edges (C5): terrain faces got the balk colour per face (1.1-u triangles) around the field rectangles and
 // field vertices sat on the analytic height (+.05), not on the facet planes. FA.Hm = exact facet height; FA.terTris(i,j) = the cell's 2 triangles.
 let TGR=null;
-function tgrid(){if(TGR)return TGR;const T=LOOK.ter;const xs=axis(-TW/2,TW/2,6,49,T.fine,T.cell),zs=axis(-TD/2,TD/2,-32,22,T.fine,T.cell);const NX=xs.length,NZ=zs.length;
+function tgrid(){if(TGR)return TGR;const T=LOOK.ter;const xs=axis(-TW/2,TW/2,Math.max(-TW/2,RV.x-24),Math.min(TW/2,RV.x+19),T.fine,T.cell),zs=axis(-TD/2,TD/2,RV.z-26,RV.z+28,T.fine,T.cell);const NX=xs.length,NZ=zs.length;   // G1 P0: fine band follows RV (was x 6..49, z -32..22 for RV 30,-6)
  const VX=new Float32Array(NX*NZ),VZ=new Float32Array(NX*NZ),VH=new Float32Array(NX*NZ);
  for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const k=j*NX+i;let x=xs[i],z=zs[j];
   if(i>0&&i<NX-1&&j>0&&j<NZ-1){const cx=Math.min(xs[i+1]-x,x-xs[i-1]),cz=Math.min(zs[j+1]-z,z-zs[j-1]);x+=(hash(i*1.3,j*.7)-.5)*.5*cx;z+=(hash(i*.9+7,j*1.7+3)-.5)*.5*cz;}
@@ -681,7 +702,7 @@ FA.setView=function(){const c=FA.CITY==='gatekeeper'?GK:RV;const rg=FA.rig;
  else if(c===GK){Object.assign(rg,{tx:c.x,ty:7.6,tz:c.z,d:50,pitch:.38,yaw:-.36});FA.fitShadow(c.x,c.z,20);}
  else{Object.assign(rg,{tx:c.x+1.5,ty:1.8,tz:c.z,d:46,pitch:.50,yaw:-.30});FA.fitShadow(c.x+1,c.z,22);}
  rg.fov=28;rg.shift=0;FA.eyeBase=-.22;
- if(FA.VIEW==='world'&&LOOK.worldCam){const k=LOOK.worldCam;Object.assign(rg,{tx:c===GK?-k.tx:k.tx,ty:0,tz:k.tz,d:k.d,pitch:k.pitch,yaw:c===GK?.08:-.08,fov:k.fov||28});FA.fitShadow(0,-6,135);} // A2: pulled back so the instrument-table rim + scale read in the world view
+ if(FA.VIEW==='world'&&LOOK.worldCam){const k=LOOK.worldCam;Object.assign(rg,{tx:OLDPOS?(c===GK?-k.tx:k.tx):-14,ty:0,tz:k.tz,d:k.d,pitch:k.pitch,yaw:c===GK?.08:-.08,fov:k.fov||28});FA.fitShadow(0,-6,135);} // A2: pulled back so the instrument-table rim + scale read in the world view
  if(FA.VIEW==='close'&&LOOK.closeCam&&LOOK.closeCam[FA.CITY]){const k=LOOK.closeCam[FA.CITY];Object.assign(rg,{yaw:k.yaw,pitch:k.pitch,d:k.d,ty:k.ty,fov:k.fov||28,shift:k.shift||0});if(k.eye!=null)FA.eyeBase=k.eye;FA.shadowDirty=true;if(LOOK.archviz&&c===GK)FA.fitShadow(c.x,c.z,27);} // A2: lower close-up, lens shift up -> a strip of graded sky + horizon glow in frame
  // C4: Reversion close-up deep-link framed empty terraces (target sat 3 u east of the village, 40 u out): aim at the hamlet centroid, tighter
  if(FA.VIEW==='close'&&c===RV&&LOOK.archviz&&FA.RVSITE){const S=FA.RVSITE;let x=0,z=0;S.homes.forEach(h=>{x+=h.x;z+=h.z;});x/=S.homes.length;z/=S.homes.length;x=x*.8+S.vx*.2;z=z*.8+S.vz*.2;
@@ -695,9 +716,20 @@ FA.applyCam=function(){const r=FA.rig;CAM.position.set(r.tx+Math.sin(r.yaw)*Math
  const nr=Math.min(4,Math.max(.5,r.d*.02));let up=false;if(Math.abs(CAM.near-nr)>.01){CAM.near=nr;up=true;}
  const fv=r.fov||28,sh=r.shift||0;if(CAM.fov!==fv){CAM.fov=fv;up=true;}if(sh>0){if(!CAM.view||!CAM.view.enabled||Math.abs(CAM.view.offsetY+innerHeight*sh)>.5||CAM.view.fullWidth!==innerWidth||CAM.view.fullHeight!==innerHeight){CAM.setViewOffset(innerWidth,innerHeight,0,-innerHeight*sh,innerWidth,innerHeight);up=false;}}else if(CAM.view&&CAM.view.enabled){CAM.clearViewOffset();up=false;}
  if(up)CAM.updateProjectionMatrix();};   // near grows with distance: depth precision at world zoom; A2 close-up fov + vertical lens shift (sky strip)
+// G1 r1: ground point under a screen position (ray vs analytic terrain, 4 fixed-point steps; no mesh raycast) -> wheel zoom-to-cursor
+FA.ZCUR=Q.get('zcur')!=='0';
+FA.groundAt=function(cx,cy){const v=new THREE.Vector3((cx/innerWidth)*2-1,-(cy/innerHeight)*2+1,.5);CAM.updateMatrixWorld();v.unproject(CAM);
+ const o=CAM.position,dir=v.sub(o).normalize();if(dir.y>-.02)return null;let y=FA.rig.ty,p=null;
+ for(let i=0;i<4;i++){const t=(y-o.y)/dir.y;if(!(t>0))return null;p={x:o.x+dir.x*t,z:o.z+dir.z*t};if(Math.abs(p.x)>TW/2||Math.abs(p.z)>TD/2)return null;y=FA.H(p.x,p.z);}
+ p.y=y;return p;};
 {let drag=null;const el=R.domElement;el.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:FA.rig.yaw,pitch:FA.rig.pitch};FA.kick();});
  addEventListener('pointerup',()=>drag=null);addEventListener('pointermove',e=>{if(!drag)return;FA.rig.yaw=drag.yaw-(e.clientX-drag.x)*.005;FA.rig.pitch=Math.min(1.35,Math.max(.12,drag.pitch+(e.clientY-drag.y)*.004));FA.applyCam();FA.kick();});
- el.addEventListener('wheel',e=>{e.preventDefault();FA.rig.d=Math.min(330,Math.max(FA.VIEW==='close'?6:14,FA.rig.d*Math.exp(e.deltaY*.0012)));FA.applyCam();FA.kick();},{passive:false});
+ el.addEventListener('wheel',e=>{e.preventDefault();const rg=FA.rig,d0=rg.d,d1=Math.min(330,Math.max(FA.VIEW==='close'?6:14,d0*Math.exp(e.deltaY*.0012)));
+  // G1 r1: world view zooms toward the ground point under the cursor (map-style: that point stays under the cursor), so the site
+  // the owner points at becomes the orbit target (LOD cap priority, lod.js rankFlags). ?zcur=0 = zoom to the fixed target.
+  if(FA.ZCUR&&FA.VIEW==='world'&&d1!==d0){const p=FA.groundAt(e.clientX,e.clientY);if(p){const f=d1/d0,m=FA.TW/2-12,n=FA.TD/2-12;
+   rg.tx=Math.max(-m,Math.min(m,p.x+(rg.tx-p.x)*f));rg.tz=Math.max(-n,Math.min(n,p.z+(rg.tz-p.z)*f));rg.ty=p.y+(rg.ty-p.y)*f;}}
+  rg.d=d1;FA.applyCam();FA.kick();},{passive:false});
  addEventListener('keydown',()=>FA.kick());}
 addEventListener('resize',()=>{CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);FA.kick();});
 

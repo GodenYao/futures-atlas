@@ -26,6 +26,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0B1230;color:var(--t1
 .mk .pl b{display:block;font:500 13px var(--f2);letter-spacing:.06em}.mk .pl em{font:400 10px var(--f3);font-style:normal;color:var(--t2)}
 .mk.cur i{border-color:var(--acc);width:16px;height:16px;left:-10px;top:-10px}.mk.cur .pl{display:block}
 .mk.big i{display:none}.mk.big .pl{display:block;left:28px;top:-26px;padding:6px 12px 7px}.mk.big .pl b{font-size:18px}.mk.big .pl em{font-size:11px}
+/* G1 P0: NOW hub = floating word on the drop line (no ring, no plate, not pickable) */
+.mk.now i{display:none}.mk.now .pl{left:0;top:-10px;transform:translateX(-50%);background:none;border:0;padding:0;pointer-events:none}.mk.now .pl b{font:600 15px var(--f2);letter-spacing:.32em;color:rgba(236,230,216,.92);text-shadow:0 1px 3px rgba(0,0,0,.7)}.mk.now .pl em{display:none}
 #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font:400 12px var(--f3);color:var(--t3);letter-spacing:.1em}
 body.ready #load{display:none}
 </style></head>

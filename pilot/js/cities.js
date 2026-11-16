@@ -240,6 +240,8 @@ FA.start=async function(){const t0=performance.now();if(FA.A2&&document.fonts)aw
  if(LD){LD.capture('gatekeeper',()=>FA.buildGK(LD.site('gatekeeper')));LD.capture('reversion',()=>FA.buildRV(LD.site('reversion')));}else{FA.buildGK();FA.buildRV();}FA.scatter();if(LD)LD.far();if(FA.PROFLORA&&FA.PROFLORA.on){FA.PROFLORA.build();FA.mover&&FA.mover({fn:()=>FA.PROFLORA.moving(),n:'wind'});}FA.buildTerrain(FA.colorHook);if(FA.tuftList.length)FA.tufts(FA.tuftList);const n=FA.buildInstances();
  const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();if(LD)LD.collect();
  FA.marker('gatekeeper','Gatekeeper','eye on the spire',FA.GK.x,FA.GK.top,FA.GK.z);FA.marker('reversion','Reversion','water wheel, windmill',FA.RV.x-1.5,H(FA.RV.x-1.5,FA.RV.z),FA.RV.z);
+ // G1 P0: NOW hub at the v4.4 origin (FA.NOW, published with FA.SITE_TABLE): floating word + thin drop line + one ground dot; not pickable
+ if(FA.NOW&&FA.QS.get('now')!=='0'){FA.marker('now','NOW','the present',FA.NOW.x,H(FA.NOW.x,FA.NOW.z),FA.NOW.z);const m=FA.markers[FA.markers.length-1];m.now=1;m.el.classList.add('now');}
  if(LD)LD.markers();
  FA.setView();FA.frame();FA.loop();FA.boot={farm:FA.PROFARM&&FA.PROFARM.on?FA.PROFARM.info:null,loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,pk:FA.RVSITE&&FA.PROCOTTAGE?FA.PROCOTTAGE.info:null,fl:FA.PROFLORA&&FA.PROFLORA.on?FA.PROFLORA.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};
 FA.start().catch(e=>window.__errs.push('start:'+e.message));
