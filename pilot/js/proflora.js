@@ -15,7 +15,7 @@ const NW={conifer:.72,broad:.95,park:.62,orchard:1,shrub:1};
 // atlas cells [u0,v0,u1,v1]
 const NE=[.004,.004,.496,.496],LA=[.504,.004,.996,.496],LB=[.004,.504,.496,.996],BL=[.504,.504,.746,.996],BK=[.80,.56,.96,.94];
 const W1=[1,1,1],Z3=[0,0,0];
-let TEX=null,TEXN=1024,MAT=null,MATG=null,DEP=null,BLUE=true,HI=true,RN=28,BARKC=W1,FRUITC=W1,PAL=null;
+let TEX=null,TEXN=1024,MAT=null,MATG=null,MATH=null,DEP=null,BLUE=true,HI=true,RN=28,BARKC=W1,FRUITC=W1,PAL=null;
 const GEO={},REC=[],IL={},SETS={},ALL=[];
 const M4=new THREE.Matrix4(),Q4=new THREE.Quaternion(),EU=new THREE.Euler(),V3=new THREE.Vector3(),S3=new THREE.Vector3(),TC=new THREE.Color(),TH=new THREE.Color();
 
@@ -83,7 +83,7 @@ const V_WIND=['{',
 ' vPf=aW.y*(1.-aW.z);}'].join('\n');
 function patchV(s,col){s=s.replace('#include <common>','#include <common>\n'+V_HEAD).replace('#include <begin_vertex>','#include <begin_vertex>\n'+V_WIND);
  return col?s.replace('#include <color_vertex>','#include <color_vertex>\n#ifdef USE_COLOR\nvColor.xyz=mix(vColor.xyz,color.xyz,aW.z);\n#endif'):s;} // bark / fruit keep their own colour (no instance tint)
-function patchF(s){return s.replace('#include <common>','#include <common>\nuniform vec3 pfSun,pfLC,pfHz;varying float vPf;')
+function patchF(s,hedge){return s.replace('#include <common>','#include <common>\nuniform vec3 pfSun,pfLC,pfHz;varying float vPf;')
  // bent crown normals must not flip on back faces (the crown shades as one soft volume)
  .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\n#ifdef DOUBLE_SIDED\nnormal*=faceDirection;\n#endif')
  // keep coverage in the far mips + soft dithered edge
@@ -91,24 +91,28 @@ function patchF(s){return s.replace('#include <common>','#include <common>\nunif
   'diffuseColor.a+=(fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)-.5)*.2;\n#include <alphatest_fragment>')
  // transmission toward the key light (back-lit leaves) + wrap + cool indirect fill (never black)
  .replace('#include <lights_fragment_end>','#include <lights_fragment_end>\n{vec3 pl=normalize((viewMatrix*vec4(pfSun,0.)).xyz),pv=normalize(vViewPosition);'+
-  'float tr=.7*pow(clamp(dot(-pv,pl),0.,1.),2.)+.3*clamp(.6-.4*dot(normal,pl),0.,1.);reflectedLight.directDiffuse+=diffuseColor.rgb*pfLC*tr*vPf;'+
-  'reflectedLight.indirectDiffuse+=diffuseColor.rgb*pfHz*(.4+.6*vPf);}');}
-function mkMat(sway,flut,a2c){const TU=FA.TU||{},sun=FA.sun;
+  'float tr=.7*pow(clamp(dot(-pv,pl),0.,1.),2.)+.3*clamp(.6-.4*dot(normal,pl),0.,1.);reflectedLight.directDiffuse+=diffuseColor.rgb*pfLC*tr*vPf'+(BLUE?'*vec3(.8,1.,.85)*clamp(1.4-length(vViewPosition)/45.,.3,1.)':'')+';'+ // C6: far crowns - no cold-white back-light rim
+  'reflectedLight.indirectDiffuse+=diffuseColor.rgb*pfHz*(.4+.6*vPf);'+
+  // C6: no frosty IBL sheen on the cards at blue hour (far broadleaf crowns read white-blue); hedges get a green top-light + faint rim
+  (BLUE?'reflectedLight.indirectSpecular*=.25;reflectedLight.directSpecular*=.3;':'')+
+  (hedge?'vec3 pu=normalize((viewMatrix*vec4(0.,1.,0.,0.)).xyz);float tl=clamp(dot(normal,pu),0.,1.);float rim=pow(1.-clamp(abs(dot(normal,pv)),0.,1.),3.);'+
+   'reflectedLight.indirectDiffuse+=diffuseColor.rgb*vec3(.10,.19,.07)*(.3+.7*tl)'+(BLUE?'+vec3(.010,.022,.008)*rim*(.5+.5*tl)':'')+';':'')+'}');}
+function mkMat(sway,flut,a2c,hedge){const TU=FA.TU||{},sun=FA.sun;
  const U={uT:TU.uT||{value:0},uAn:TU.uAn||{value:1},uWd:PF.uWind,pfK:{value:new THREE.Vector2(sway,flut)},
   pfSun:{value:FA.SUNDIR||new THREE.Vector3(-.5,.7,.3).normalize()},pfLC:{value:sun?sun.color.clone().multiplyScalar(sun.intensity*.35):new THREE.Color(.3,.25,.2)},
   pfHz:{value:BLUE?new THREE.Vector3(.16,.20,.30):new THREE.Vector3(.10,.10,.08)}};
  const m=new THREE.MeshStandardMaterial({color:C('#ffffff').multiplyScalar(BLUE?.85:1),map:TEX,alphaTest:.42,side:THREE.DoubleSide,vertexColors:true,roughness:.88,metalness:0,envMapIntensity:BLUE?1:.7});
- m.alphaToCoverage=a2c;m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.vertexShader=patchV(sh.vertexShader,true);sh.fragmentShader=patchF(sh.fragmentShader);};
- m.customProgramCacheKey=()=>'pflora'+TEXN;m.userData.U=U;return m;}
+ m.alphaToCoverage=a2c;m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.vertexShader=patchV(sh.vertexShader,true);sh.fragmentShader=patchF(sh.fragmentShader,hedge);};
+ m.customProgramCacheKey=()=>'pflora'+TEXN+(hedge?'h':'');m.userData.U=U;return m;}
 function mats(){const R=FA.R;let a2c=false;try{a2c=!!(R.capabilities.isWebGL2&&R.getContextAttributes().antialias);}catch(e){}
- MAT=mkMat(.035,.012,a2c);MATG=mkMat(.10,0,a2c);const U=MAT.userData.U;
+ MAT=mkMat(.035,.012,a2c);MATG=mkMat(.10,0,a2c);MATH=mkMat(.035,.012,a2c,true);const U=MAT.userData.U;MATH.userData.U.pfK=U.pfK; // C6: hedge material (green top-light)
  DEP=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:TEX,alphaTest:.42,side:THREE.DoubleSide});
  DEP.onBeforeCompile=sh=>{Object.assign(sh.uniforms,{uT:U.uT,uAn:U.uAn,uWd:U.uWd,pfK:U.pfK});sh.vertexShader=patchV(sh.vertexShader,false);};
  DEP.customProgramCacheKey=()=>'pfloraD';}
 // palettes (sRGB): blue hour = cool blue-green / slate-teal / muted olive; day = fresher greens
 function palette(){const col=(h,k)=>{const c=C(h);return[c.r*k,c.g*k,c.b*k];};
  PAL=BLUE?{conifer:['#3C5A60','#42625C','#38545E','#466660'],broad:['#4C6658','#55694F','#476260','#5A6C56'],park:['#4A6660','#506A58','#46625E'],
-   orchard:['#566A50','#4E6654','#5C6C52'],hedge:['#4E6E4E','#587248','#4A6A56'],shrub:['#4E6E4E','#587248'],tuft:['#62784E','#6C7C48','#5A7456']} // C5 integration: hedge/tuft ~10% greener + lighter (readback: they sank into the violet ground)
+   orchard:['#566A50','#4E6654','#5C6C52'],hedge:['#3F6A45','#48703F','#3B6449'],shrub:['#4E6E4E','#587248'],tuft:['#62784E','#6C7C48','#5A7456']} // C5 integration: hedge/tuft ~10% greener + lighter; C6: hedges deeper green (less violet-grey)
   :{conifer:['#3F6146','#48694A','#3A5A48'],broad:['#5E7A48','#6F8650','#587350'],park:['#4F6B46','#5E7A48','#6F8650','#587350'],
    orchard:['#6A8650','#5E7E4C'],hedge:['#506B40','#5A7444'],shrub:['#506B40','#5A7444'],tuft:['#7A8E52','#6E8648']};
  BARKC=col('#4A4038',BLUE?.8:1);FRUITC=col(BLUE?'#7A5648':'#A8523C',BLUE?.8:1);}
@@ -207,17 +211,17 @@ function expand(){const R=FA.rng(7711),H=FA.H;for(const k of KINDS)IL[k]=[];
    tree(con?'conifer':'broad',x+Math.cos(a)*d,null,z+Math.sin(a)*d,hh*(con?.46:.85),hh,R()*TAU,null,true);}
   if(ao&&FA.AOS)FA.AOS.push({x:x,z:z,r:w*.62+.3,k:.3});};
  const tuftAt=(x,z,hex,sc)=>{if(!nearC(x,z,FA.GK)&&!nearC(x,z,FA.RV))return;if(!HI&&FA.hash&&FA.hash(x*1.31,z*.77)>.4)return;
-  const hh=Math.min(.24,.1+.14*(sc||.45)*(.6+.8*R())),c=tint('tuft',hex,R),w=hh*1.3;IL.tuft.push([x,H(x,z)-.01,z,w,hh,w,R()*TAU,c.r,c.g,c.b,0,0]);};
+  const hh=Math.min(.24,.1+.14*(sc||.45)*(.6+.8*R())),c=tint('tuft',hex,R),w=hh*1.3;IL.tuft.push([x,(FA.Hm||H)(x,z)-.01,z,w,hh,w,R()*TAU,c.r,c.g,c.b,0,0]);}; // C6: exact facet height
  for(const e of REC){const k=e[0],x=e[1],y=e[2],z=e[3],s=e[4],sy=e[5]==null?s:e[5];
   if(k==='clump')clump(x,z,s,true);
-  else if(k==='hedge'){const c=tint(k,e[7],R);IL.hedge.push([x,(y==null?H(x,z):y)-.02,z,.46,sy*2,.24+.06*R(),(e[8]||0)+e[6],c.r,c.g,c.b,0,0]);}
+  else if(k==='hedge'){const c=tint(k,e[7],R);IL.hedge.push([x,(y==null?H(x,z):y)-.02,z,.46,sy*2,.30+.08*R(),(e[8]||0)+e[6],c.r,c.g,c.b,0,0]);} // C6: deeper (.24 -> .30) masses
   else if(k==='tuft')tuftAt(x,z,e[7],s);
   else{const m=KM[k];tree(k,x,y,z,m[0]*s,m[1]*sy,e[6],e[7],k!=='park');if(k!=='park'&&FA.AOS)FA.AOS.push({x:x,z:z,r:m[0]*s*.55+.15,k:.3});}}
  for(const t of FA.FARTREES||[])clump(t.x,t.z,t.w,false);            // scatter already pushed their contact decals
  for(const t of FA.tuftList||[])tuftAt(t[0],t[1],t[2],t[3]);}
 
 // ======================= (7) instanced meshes + LOD sets =======================
-function mkIM(geo,list,cast,grass){const n=list.length,im=new THREE.InstancedMesh(geo,grass?MATG:MAT,n),cc=new Float32Array(n*3);
+function mkIM(geo,list,cast,grass,mat){const n=list.length,im=new THREE.InstancedMesh(geo,mat||(grass?MATG:MAT),n),cc=new Float32Array(n*3);
  for(let i=0;i<n;i++){const e=list[i];EU.set(e[10],e[6],e[11],'YXZ');Q4.setFromEuler(EU);M4.compose(V3.set(e[0],e[1],e[2]),Q4,S3.set(e[3],e[4],e[5]));im.setMatrixAt(i,M4);cc[i*3]=e[7];cc[i*3+1]=e[8];cc[i*3+2]=e[9];}
  im.instanceMatrix.needsUpdate=true;im.instanceColor=new THREE.InstancedBufferAttribute(cc,3);
  im.castShadow=!!cast;im.receiveShadow=true;im.frustumCulled=false;if(cast)im.customDepthMaterial=DEP;im.name='pf_flora';FA.SC.add(im);ALL.push(im);return im;}
@@ -225,9 +229,9 @@ function mkIM(geo,list,cast,grass){const n=list.length,im=new THREE.InstancedMes
 // ng / nr = full-card sets near Gatekeeper / Reversion (visible only in that close-up). Tufts have no LOD set (none in the world view).
 function meshes(){for(const k of KINDS){const L=IL[k];if(!L||!L.length)continue;const O=[],G=[],V=[];
   for(const e of L)(nearC(e[0],e[2],FA.GK)?G:nearC(e[0],e[2],FA.RV)?V:O).push(e);
-  const s=SETS[k]={n0:O.length,n1:O.length+G.length,g:G.length,v:V.length,big:k==='conifer'||k==='broad'},tf=k==='tuft';
-  if(!tf){if(s.n1)s.m1=mkIM(GEO[k][1],O.concat(G),s.big);if(V.length)s.m2=mkIM(GEO[k][1],V,s.big);}
-  if(G.length)s.ng=mkIM(GEO[k][0],G,!tf,tf);if(V.length)s.nr=mkIM(GEO[k][0],V,!tf,tf);}}
+  const s=SETS[k]={n0:O.length,n1:O.length+G.length,g:G.length,v:V.length,big:k==='conifer'||k==='broad'},tf=k==='tuft',hm=k==='hedge'?MATH:null;
+  if(!tf){if(s.n1)s.m1=mkIM(GEO[k][1],O.concat(G),s.big,false,hm);if(V.length)s.m2=mkIM(GEO[k][1],V,s.big,false,hm);}
+  if(G.length)s.ng=mkIM(GEO[k][0],G,!tf,tf,hm);if(V.length)s.nr=mkIM(GEO[k][0],V,!tf,tf,hm);}}
 // last resort: the old look (faceted crowns + trunks, 2 instanced draws) so nothing disappears
 function fallback(){const L=[];for(const k of KINDS)if(k!=='tuft'&&IL[k])for(const e of IL[k])L.push(e);if(!L.length)return;
  const cn=new THREE.ConeGeometry(.36,.78,6);cn.translate(0,.6,0);const tk=new THREE.CylinderGeometry(.03,.045,.3,5);tk.translate(0,.15,0);
@@ -245,7 +249,7 @@ function stats(){const tr=g=>g?g.index.count/3:0;let w=0,cg=0,cr=0,dw=0,dg=0,dr=
 
 // ======================= (8) API: build / setView / moving =======================
 function build(){const t0=now();if(!PF.on)return PF.info;
- try{expand();meshes();stats();}
+ try{expand();meshes();stats();PF.IL=IL;}
  catch(e){errs().push('proflora:build:'+(e&&e.message));
   for(const m of ALL)FA.SC.remove(m);ALL.length=0;for(const k in SETS)delete SETS[k];
   try{fallback();}catch(e2){errs().push('proflora:fallback:'+(e2&&e2.message));}}

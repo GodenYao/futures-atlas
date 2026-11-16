@@ -433,11 +433,27 @@ FA.buildTerrain=function(colorHook){const T=LOOK.ter;if(T.facet)return buildFace
 // quad diagonal by the smaller height difference, non-indexed, one colour per face snapped to palette bands (+-2 %), horizon AO per vertex.
 function axis(min,max,a,b,fine,coarse){const out=[];const seg=(s,e,st)=>{const n=Math.max(1,Math.ceil((e-s)/st));for(let i=0;i<n;i++)out.push(s+(e-s)*i/n);};const mid=(fine+coarse)/2,T=10; // graded fine->mid->coarse (no visible density seam)
  seg(min,a-T,coarse);seg(a-T,a,mid);seg(a,b,fine);seg(b,b+T,mid);seg(b+T,max,coarse);out.push(max);return out;}
-function buildFacetTerrain(colorHook){const T=LOOK.ter;const xs=axis(-TW/2,TW/2,6,49,T.fine,T.cell),zs=axis(-TD/2,TD/2,-32,22,T.fine,T.cell);const NX=xs.length,NZ=zs.length;FA.EDGE={xs,zs};
- const VX=new Float32Array(NX*NZ),VZ=new Float32Array(NX*NZ),VH=new Float32Array(NX*NZ),VA=new Float32Array(NX*NZ);
+// C6: the facet grid is shared (lazy, deterministic) so other modules can drape on the REAL terrain triangles before the mesh exists.
+// Root cause of the jagged field edges (C5): terrain faces got the balk colour per face (1.1-u triangles) around the field rectangles and
+// field vertices sat on the analytic height (+.05), not on the facet planes. FA.Hm = exact facet height; FA.terTris(i,j) = the cell's 2 triangles.
+let TGR=null;
+function tgrid(){if(TGR)return TGR;const T=LOOK.ter;const xs=axis(-TW/2,TW/2,6,49,T.fine,T.cell),zs=axis(-TD/2,TD/2,-32,22,T.fine,T.cell);const NX=xs.length,NZ=zs.length;
+ const VX=new Float32Array(NX*NZ),VZ=new Float32Array(NX*NZ),VH=new Float32Array(NX*NZ);
  for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const k=j*NX+i;let x=xs[i],z=zs[j];
   if(i>0&&i<NX-1&&j>0&&j<NZ-1){const cx=Math.min(xs[i+1]-x,x-xs[i-1]),cz=Math.min(zs[j+1]-z,z-zs[j-1]);x+=(hash(i*1.3,j*.7)-.5)*.5*cx;z+=(hash(i*.9+7,j*1.7+3)-.5)*.5*cz;}
   VX[k]=x;VZ[k]=z;VH[k]=FA.H(x,z);}
+ TGR={xs,zs,NX,NZ,VX,VZ,VH};return TGR;}
+FA.tgrid=()=>LOOK.ter.facet?tgrid():null;
+FA.terTris=function(i,j){const G=tgrid(),NX=G.NX,VH=G.VH,k00=j*NX+i,k10=k00+1,k01=k00+NX,k11=k01+1;
+ return Math.abs(VH[k00]-VH[k11])<=Math.abs(VH[k10]-VH[k01])?[[k00,k01,k11],[k00,k11,k10]]:[[k00,k01,k10],[k10,k01,k11]];};
+FA.terCell=function(x,z){const G=tgrid();const bs=(a,v)=>{let lo=0,hi=a.length-2;while(lo<hi){const m=(lo+hi+1)>>1;if(a[m]<=v)lo=m;else hi=m-1;}return lo;};return [bs(G.xs,x),bs(G.zs,z)];};
+FA.Hm=function(x,z){if(!LOOK.ter.facet)return FA.H(x,z);const G=tgrid(),c=FA.terCell(x,z),X=G.VX,Z=G.VZ,Y=G.VH;
+ for(let dj=0;dj<=2;dj++)for(let di=0;di<=2;di++){const i=c[0]+(di===2?-1:di),j=c[1]+(dj===2?-1:dj);if(i<0||j<0||i>G.NX-2||j>G.NZ-2)continue;
+  for(const t of FA.terTris(i,j)){const a=t[0],b=t[1],d=t[2];const x1=X[b]-X[a],z1=Z[b]-Z[a],x2=X[d]-X[a],z2=Z[d]-Z[a],den=x1*z2-x2*z1;if(Math.abs(den)<1e-9)continue;
+   const px=x-X[a],pz=z-Z[a],u=(px*z2-x2*pz)/den,v=(x1*pz-px*z1)/den;if(u>=-1e-5&&v>=-1e-5&&u+v<=1+1e-5)return Y[a]+(Y[b]-Y[a])*u+(Y[d]-Y[a])*v;}}
+ return FA.H(x,z);};
+function buildFacetTerrain(colorHook){const T=LOOK.ter;const G=tgrid(),xs=G.xs,zs=G.zs,NX=G.NX,NZ=G.NZ;FA.EDGE={xs,zs};
+ const VX=G.VX,VZ=G.VZ,VH=G.VH,VA=new Float32Array(NX*NZ);
  // horizon AO (8 dirs x 2 radii) sampled from the analytic height
  for(let k=0;k<NX*NZ;k++){const x=VX[k],z=VZ[k],h=VH[k];let occ=0;for(let a=0;a<8;a++){const ca=Math.cos(a*.785),sa=Math.sin(a*.785);for(const rr of[2.8,8.4]){occ+=Math.max(0,FA.H(x+ca*rr,z+sa*rr)-h)*1.4/rr;}}VA[k]=1-Math.min(.42,occ*.085);}
  const P={};for(const kk in T.P)P[kk]=C(T.P[kk]);const pos=[],col=[];const wpos=[],wdep=[];const c=new THREE.Color(),a=new THREE.Vector3(),b=new THREE.Vector3(),nn=new THREE.Vector3();

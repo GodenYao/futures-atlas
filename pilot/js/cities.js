@@ -202,9 +202,10 @@ FA.scatter=function(){const r=FA.rng(5),tufts=[];const gk=FA.GK,rv=FA.RV;
   else if(sl>.38&&sl<.9&&r()<.05)FA.put('rock',x,z,{w:.7+r()*1.1,ry:r()*6.3,sink:.15});
   if((dg<34||dr<34)&&sl<.4&&r()<.45)tufts.push([x+(r()-.5)*2,z+(r()-.5)*2]);}
  for(let i=0;i<450;i++){const a=r()*6.283,d=8+r()*20,x=rv.x+Math.cos(a)*d,z=rv.z+Math.sin(a)*d;if(Math.abs(x-FA.riverX(z))>2.8)tufts.push([x,z]);}
+ if(L.archviz)for(let i=0;i<700;i++){const a=FA.hash(i*.37+.1,1.13)*6.283,d=6+Math.sqrt(FA.hash(i*.91+.3,2.31))*22,x=rv.x+Math.cos(a)*d,z=rv.z+Math.sin(a)*d;if(Math.abs(x-FA.riverX(z))>2.8)tufts.push([x,z]);} // C6: more meadow grass near Reversion (hash-placed: RNG stream unchanged)
  FA.tuftList=FA.PROFARM&&FA.PROFARM.on?tufts.filter(t=>!FA.PROFARM.inField(t[0],t[1],.1)):tufts;
  if(FA.RVSITE){const KO=FA.RVSITE.keepOut,RR=36; // C3: no tufts inside the hamlet; around Reversion keep ~1/3, tinted to the dark balk green (were yellow confetti / black spikes)
-  FA.tuftList=FA.tuftList.filter(t=>!KO.some(k=>Math.hypot(t[0]-k.x,t[1]-k.z)<k.r)).filter(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)>RR||FA.hash(t[0]*.37,t[1]*.53)<.34)
+  FA.tuftList=FA.tuftList.filter(t=>!KO.some(k=>Math.hypot(t[0]-k.x,t[1]-k.z)<k.r)).filter(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)>RR||FA.hash(t[0]*.37,t[1]*.53)<(L.archviz?.8:.34)) // C6: keep ~80 % near RV in archviz (grass was sparse)
    .map(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)<RR?[t[0],t[1],'#56603F']:t);
   // C4: no tufts on the lanes; around Reversion tufts shrink to knee-high clumps (were house-sized black spikes at the close-up distance) and lift off near-black
   if(FA.PROROAD&&FA.PROROAD.polys.length)FA.tuftList=FA.tuftList.filter(t=>Math.hypot(t[0]-rv.x,t[1]-rv.z)>40||FA.PROROAD.dist(t[0],t[1])>.12)
