@@ -2063,9 +2063,29 @@ function render(busy){const t0=performance.now(),t=tnow();frames++;TU.uT.value=t
 // Their own anim(t) runs from the v4.4 render loop (ANIM list) under the v4.4 fps rules; under reduced motion it is frozen at t=0.
 const G1Q=new URLSearchParams(location.search);
 const G1={res:{},stats:{},NEAR_D:95,HYS:6,FADE:500,_v:new THREE.Vector3(),U:{uG1Fd:{value:1},uG1M:{value:0}},animN:0,fades:0,
- AMB:+(G1Q.get('g1amb')||.76),GAMB:+(G1Q.get('g1gamb')||0),FLOOR:+(G1Q.get('g1floor')||.22),GAIN:+(G1Q.get('g1gain')||1.55),
+ AMB:+(G1Q.get('g1amb')||.76),GAMB:+(G1Q.get('g1gamb')||0),FLOOR:+(G1Q.get('g1floor')||.22),MFLOOR:+(G1Q.get('g1mfloor')||.16),GAIN:+(G1Q.get('g1gain')||1.15),
  GK:+(G1Q.get('g1gk')||.7),NGAIN:+(G1Q.get('g1ngain')||1.3),NAMBK:+(G1Q.get('g1nambk')||.65),
- MAMBK:+(G1Q.get('g1mambk')||1),MGLOW:+(G1Q.get('g1mglow')||.85),MCAP:+(G1Q.get('g1mcap')||1.6),MSAT:+(G1Q.get('g1msat')||.85),MWIN:+(G1Q.get('g1mwin')||1),MSH:+(G1Q.get('g1msh')||.9),dome:{}};
+ MAMBK:+(G1Q.get('g1mambk')||.5),MGLOW:+(G1Q.get('g1mglow')||.85),MCAP:+(G1Q.get('g1mcap')||1.6),MSAT:+(G1Q.get('g1msat')||1.25),MWIN:+(G1Q.get('g1mwin')||.7),MSH:+(G1Q.get('g1msh')||.9),dome:{},
+ MNK:+(G1Q.get('g1mnk')??.76),MALB:+(G1Q.get('g1malb')??.5),NNK:+(G1Q.get('g1nnk')??.12),MWR:+(G1Q.get('g1mwr')??.75),MPOOL:+(G1Q.get('g1mpool')??.55),
+ MGNK:+(G1Q.get('g1mgnk')??.6),MGK:+(G1Q.get('g1mgk')??.9),MG:{egalitarian:+(G1Q.get('g1mgeg')||1.5),protector:+(G1Q.get('g1mgpt')||1.5)},
+ MWS:{egalitarian:+(G1Q.get('g1mweg')||2),protector:+(G1Q.get('g1mwpt')||2)}};
+// r4b (vision on the r4 world shot): egalitarian + protector are small and far, and after the night grade lost their shape -> per-site
+// MID gain x MG and MID facade-window gain x MWS (sparse amber points like the v4.4 hamlets); Bloc A lights still read cyan -> MWR .6 -> .75;
+// the MID apron read as a warm disc -> MGNK/MGK (below).
+// r4 defaults (fitted on the GPU box against the v4.4 dioramas in the same world frame): MID GAIN 1.55 -> 1.15, MID emission x.5
+// (MAMBK; NEAR keeps AMB .76 x its per-site factor), MID facade-window gain x.7 (MWIN), MSAT .85 -> 1.25 (the night lerp already
+// desaturates; HSV S was 30-40 % BELOW v4.4, i.e. the cities read as pale / white, not as violet slate), MID luminance floor .16
+// (FLOOR .22 stays for NEAR). NEAR: NNK .12 hue cast at constant luminance (close-up luminance/saturation unchanged vs r3).
+// r3 MID look: ?g1mnk=0&g1nnk=0&g1mwr=0&g1mpool=1&g1gain=1.55&g1mambk=1&g1msat=.85&g1mfloor=.22&g1mwin=1
+// r4 grade (owner: far view of the new cities too saturated / bright, not in harmony with the scene). Cause: NOT missing fog - the
+// generator materials are MeshStandardMaterial with fog:true and get the same THREE.Fog(#3E3C78, 210..460) as v4.4 (measured, see
+// PREVIEW_NOTES r4). The v4.4 dioramas sink into the dusk because their ALBEDO is pre-graded at build time (fa4_build.js nightCol:
+// hex lerped 76 % toward LOOK.night #1E2644, x(.8+.75 l), max channel capped .5) and their lights are remapped to sodium amber
+// (glowRemap -> LOOK.win #FFC266); that grade lives in the v4.4 instance-colour builder, so generator vertex colours never got it.
+// Fix (vertex colours, per tier): MID solids get the same night lerp (MNK, toward LOOK.night) + the (.8+.75 l) relief + an albedo cap
+// (MALB) before the MID gain; NEAR gets a light touch (NNK) so the approved close-ups stay close to r3. MID light vertex colours are
+// pulled toward LOOK.win (MWR, intensity kept); additive light pools are dimmed (MPOOL) and half-desaturated.
+// ?g1mnk=0&g1nnk=0&g1mwr=0&g1mpool=1 restores the r3 look.
 // r3 exposure (owner: new cities over-exposed at world zoom; close-ups fine): MID-only. The MID tier's lit colours ran > 1 (gamma lift x
 // GAIN 1.55 + AMB .76 emission) and its window/light vertex colours up to 1.74; v4.4 has no tone mapping and an 8-bit scene target, so
 // they clipped per channel to white and fed the bloom high-pass (th .70) -> white towers + halo. Fix: MSH = in-shader hue-preserving
@@ -2100,21 +2120,36 @@ const g1Glow=mt=>!mt||mt===G1.mats.light||mt.isMeshBasicMaterial||mt.blending===
 // pipeline: lift albedo to display space (c^(1/2.2)), then a luminance floor so no part (pylons, plinth sides) goes near-black.
 // Ground decals (owner D5) are mixed toward the terrain-B colour under each vertex, 55 % in the core and up to 100 % where the vertex
 // alpha feathers out, so the apron never shows as a slab, smudge or halo against the terrain.
-function g1Tone(r,o){const done=new Set(),c=[0,0,0],P=1/2.2,FL=G1.FLOOR;
- for(const g of[r.near,r.mid])if(g){const GN=g===r.near?G1.ng(r.id)[0]:G1.GAIN;g.traverse(m=>{if(!m.isMesh||!m.geometry)return;const mt=g1Mts(m)[0],gr=g1Ground(m,mt),gl=g1Glow(mt);
+function g1Tone(r,o){const done=new Set(),c=[0,0,0],P=1/2.2;
+ for(const g of[r.near,r.mid])if(g){const GN=g===r.near?G1.ng(r.id)[0]:G1.GAIN*(G1.MG[r.id]||1),FL=g===r.mid?G1.MFLOOR:G1.FLOOR;g.traverse(m=>{if(!m.isMesh||!m.geometry)return;const mt=g1Mts(m)[0],gr=g1Ground(m,mt),gl=g1Glow(mt);
   for(const x of g1Mts(m))g1Patch(x,gl?0:/dome|glass/i.test(x.name||'')?.08:gr?G1.GAMB:G1.AMB);
   const ca=m.geometry.attributes.color;if(!ca||done.has(m.geometry))return;
-  if(gl){if(g===r.mid&&G1.MGLOW>0&&mt&&mt.isMeshBasicMaterial&&mt.blending!==THREE.AdditiveBlending){done.add(m.geometry);g1Shoulder(ca,G1.MGLOW);}return;}
-  done.add(m.geometry);const CAP=g===r.mid?G1.MCAP:1.6;
+  if(gl){if(g===r.mid&&mt){if(mt.blending===THREE.AdditiveBlending){if(G1.MPOOL!==1){done.add(m.geometry);g1Pool(ca,G1.MPOOL);}}
+   else if(mt.isMeshBasicMaterial){done.add(m.geometry);if(G1.MWR>0)g1Warm(ca,G1.MWR);if(G1.MGLOW>0)g1Shoulder(ca,G1.MGLOW);}}return;}
+  done.add(m.geometry);const CAP=g===r.mid?G1.MCAP:1.6,NK=g===r.mid?G1.MNK:G1.NNK,ALB=g===r.mid?G1.MALB:0;
   const pa=m.geometry.attributes.position,a=ca.array,s=ca.itemSize;
   for(let i=0;i<ca.count;i++){const k=i*s;let R=Math.pow(Math.max(0,a[k]),P),G=Math.pow(Math.max(0,a[k+1]),P),B=Math.pow(Math.max(0,a[k+2]),P);
+   if(!gr&&NK>0){const l=(R+G+B)/3;if(g===r.mid){const f=.8+.75*l;R=(R+(G1NC.r-R)*NK)*f;G=(G+(G1NC.g-G)*NK)*f;B=(B+(G1NC.b-B)*NK)*f;const am=Math.max(R,G,B);if(ALB>0&&am>ALB){const q=ALB/am;R*=q;G*=q;B*=q;}} // r4: v4.4 nightCol grade
+    else{const ly=.2126*R+.7152*G+.0722*B,k=ly/G1NL;R+=(G1NC.r*k-R)*NK;G+=(G1NC.g*k-G)*NK;B+=(G1NC.b*k-B)*NK;}} // NEAR: night-hue cast at constant luminance (no darkening, close-ups stay as approved)
    if(gr&&pa&&!m.isInstancedMesh){const X=o.X+pa.getX(i),Z=o.Z+pa.getZ(i);faceColB(X,Z,hAt(X,Z),1,c);const al=s>3?Math.min(1,Math.max(0,a[k+3])):1,w=.55+.45*(1-al);
-    R=(R*(1-w)+c[0]*w)*G1.GK;G=(G*(1-w)+c[1]*w)*G1.GK;B=(B*(1-w)+c[2]*w)*G1.GK;}
+    R=(R*(1-w)+c[0]*w)*G1.GK;G=(G*(1-w)+c[1]*w)*G1.GK;B=(B*(1-w)+c[2]*w)*G1.GK;
+    // r4: MID apron read warmer/brighter than the terrain shader beside it (box mean 42,40,71 vs bare terrain 33,36,79) -> a warm
+    // disc once the city above it was graded; night-hue cast at constant luminance (MGNK) + MGK dim on the MID apron only
+    if(g===r.mid&&G1.MGNK>0){const ly=(.2126*R+.7152*G+.0722*B)*G1.MGK,k=ly/G1NL;R+=(G1NC.r*k-R)*G1.MGNK;G+=(G1NC.g*k-G)*G1.MGNK;B+=(G1NC.b*k-B)*G1.MGNK;R*=G1.MGK;G*=G1.MGK;B*=G1.MGK;}}
    else if(!gr){R*=GN;G*=GN;B*=GN;if(g===r.mid&&G1.MSAT!==1){const l=.2126*R+.7152*G+.0722*B;R=Math.max(0,l+(R-l)*G1.MSAT);G=Math.max(0,l+(G-l)*G1.MSAT);B=Math.max(0,l+(B-l)*G1.MSAT);}
     const L=.2126*R+.7152*G+.0722*B;if(L<FL){const f=L>.01?FL/L:0;if(f){R*=f;G*=f;B*=f;}else{R=G=B=FL;}}}
    const mx=Math.max(R,G,B);if(!gr&&mx>CAP){const f=CAP/mx;R*=f;G*=f;B*=f;}
    a[k]=Math.min(1.6,R);a[k+1]=Math.min(1.6,G);a[k+2]=Math.min(1.6,B);}
   ca.needsUpdate=true;});}}
+// r4: v4.4 night albedo target + sodium window colour (same LOOK tokens as fa4_build.js nightCol / glowRemap)
+const G1NC=new THREE.Color(LOOK.night),G1WC=new THREE.Color(LOOK.win),G1NL=.2126*G1NC.r+.7152*G1NC.g+.0722*G1NC.b;
+// MID light vertex colours -> toward LOOK.win (amber), intensity (max channel) kept, so lights read as v4.4 sodium points
+function g1Warm(ca,K){const a=ca.array,s=ca.itemSize,wm=Math.max(G1WC.r,G1WC.g,G1WC.b);
+ for(let i=0;i<ca.count;i++){const k=i*s,mx=Math.max(a[k],a[k+1],a[k+2]);if(mx<=0)continue;const f=mx/wm*.92;
+  a[k]+=(G1WC.r*f-a[k])*K;a[k+1]+=(G1WC.g*f-a[k+1])*K;a[k+2]+=(G1WC.b*f-a[k+2])*K;}ca.needsUpdate=true;}
+// MID additive light pools: dimmed + half-desaturated (they added saturated colour washes at world zoom)
+function g1Pool(ca,K){const a=ca.array,s=ca.itemSize;
+ for(let i=0;i<ca.count;i++){const k=i*s,l=.2126*a[k]+.7152*a[k+1]+.0722*a[k+2];for(let j=0;j<3;j++)a[k+j]=(l+(a[k+j]-l)*.5)*K;}ca.needsUpdate=true;}
 // MID glow shoulder: the generators author window/light vertex colours up to ~1.7 for a tone-mapped pipeline; v4.4 writes them raw
 // into an 8-bit target (clip to white) and the bloom high-pass (th .70) turns every MID window into a halo at world zoom. Compress the
 // max channel softly into [0, K] (hue kept), so lights stay the brightest thing in the city but sit under the v4.4 diorama highlights.
@@ -2129,7 +2164,7 @@ function g1Mats(){if(G1.mats)return G1.mats;const S=o=>new THREE.MeshStandardMat
 // per-draw tier mask: every mesh of a tier sets the shared fade uniforms before it is drawn (materials are shared by NEAR and MID)
 function g1Hook(grp,tier,r){const NK=G1.ng(r.id)[1];grp.traverse(m=>{if(!m.isMesh)return;const ms=g1Mts(m);
  m.onBeforeRender=function(){const md=r.fade<1?(tier===r.tier?1:2):0;G1.U.uG1M.value=md;G1.U.uG1Fd.value=r.fade;
-  for(const x of ms)if(x){x.uniformsNeedUpdate=true;const u=x.userData.g1A;if(u){if(u.b==null)u.b=u.value;u.value=tier==='near'?u.b*NK:u.b*G1.MAMBK;}const w=x.userData.g1W;if(w){if(w.b==null)w.b=w.value;w.value=tier==='near'?w.b:w.b*G1.MWIN;}const sh=x.userData.g1S;if(sh)sh.value=tier==='near'?0:G1.MSH;}};});}
+  for(const x of ms)if(x){x.uniformsNeedUpdate=true;const u=x.userData.g1A;if(u){if(u.b==null)u.b=u.value;u.value=tier==='near'?u.b*NK:u.b*G1.MAMBK;}const w=x.userData.g1W;if(w){if(w.b==null)w.b=w.value;w.value=tier==='near'?w.b:w.b*G1.MWIN*(G1.MWS[r.id]||1);}const sh=x.userData.g1S;if(sh)sh.value=tier==='near'?0:G1.MSH;}};});}
 // ---- protector: nothing may poke through the dome; the road meets the dome wall at a gate portal ----
 function g1DomeFix(r,o,id){const out={clampedV:0,shrunkI:0,hiddenI:0};const v=new THREE.Vector3(),M=new THREE.Matrix4(),Mi=new THREE.Matrix4(),bb=new THREE.Box3();
  for(const g of[r.near,r.mid]){if(!g)continue;g.updateMatrixWorld(true);let dm=null;g.traverse(m=>{if(m.isMesh&&/dome/i.test(m.name||'')&&!/grp/i.test(m.name||''))dm=m;});if(!dm)continue;
@@ -2182,6 +2217,24 @@ function g1Build(){const ctx={THREE,LOOK:{mood:'blue'},mats:g1Mats(),heightAt:(x
    nearDraws:r.stats&&r.stats.nearDraws,midDraws:r.stats&&r.stats.midDraws,dome:dfx};
   if(id==='enslaved')g1Labels(r,o,y);}
  g1Text();G1.bootMs=+(performance.now()-T0).toFixed(1);window.__g1=G1;}
+// r4 test hook: world-view colour stats of every diorama (pixels that change when the site models are hidden) -> mean HSV S, mean hue,
+// luminance, near-white %, warm/cyan %. Used by the harness (eval '()=>__g1.grade()'); renders 3 frames, no state change.
+G1.grade=()=>{const gl=RD.getContext(),W=gl.drawingBufferWidth,H=gl.drawingBufferHeight,N=W*H*4,NEW=new Set(Object.keys(G1.res));render();const A=new Uint8Array(N);gl.readPixels(0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,A);
+ const hid=[];for(const e of IM){const m=e[0];if(m.visible){m.visible=false;hid.push(m);}}for(const d of DYN){if(d.m&&d.m.visible){d.m.visible=false;hid.push(d.m);}}
+ for(const id in G1.res){const r=G1.res[id];for(const g of[r.mid,r.near])if(g&&g.visible)g.traverse(x=>{if(x.isMesh&&x.visible&&!g1Ground(x,g1Mts(x)[0])){x.visible=false;hid.push(x);}});}
+ render();const B=new Uint8Array(N);gl.readPixels(0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,B);for(const m of hid)m.visible=true;render();
+ const out={},Z=()=>({n:0,S:0,hx:0,hy:0,nw:0,L:0,wm:0,cy:0}),pool=Z(),v=new THREE.Vector3(),hu=s=>+((Math.atan2(s.hy,s.hx)*180/Math.PI+360)%360).toFixed(0),pc=(a,n)=>n?+(100*a/n).toFixed(2):null;
+ for(const o of Object.values(byId)){if(o.X==null||!o.id)continue;const id=o.id,R=id==='enslaved'?16:(G1GEN[id]?G1GEN[id].R:9);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(const a of[-1,1])for(const b of[-1,1])for(const h of[0,12]){v.set(o.X+a*R,(o.gy||0)+h,o.Z+b*R).project(CAM);const X=(v.x*.5+.5)*W,Y=(v.y*.5+.5)*H;x0=Math.min(x0,X);x1=Math.max(x1,X);y0=Math.min(y0,Y);y1=Math.max(y1,Y);}
+  x0=Math.max(0,x0|0);y0=Math.max(0,y0|0);x1=Math.min(W-1,x1|0);y1=Math.min(H-1,y1|0);const s=Z();
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=(y*W+x)*4,r=A[i],g=A[i+1],b=A[i+2];if(Math.abs(r-B[i])+Math.abs(g-B[i+1])+Math.abs(b-B[i+2])<18)continue;
+   const mx=Math.max(r,g,b),mn=Math.min(r,g,b),S=mx?(mx-mn)/mx:0;let h=0;if(mx>mn){h=mx===r?((g-b)/(mx-mn))%6:mx===g?(b-r)/(mx-mn)+2:(r-g)/(mx-mn)+4;h*=60;if(h<0)h+=360;}
+   const w=S*mx/255;s.n++;s.S+=S;if(S>.35&&h>=12&&h<=70)s.wm++;if(S>.3&&h>=160&&h<=215)s.cy++;s.hx+=w*Math.cos(h*Math.PI/180);s.hy+=w*Math.sin(h*Math.PI/180);s.L+=.2126*r+.7152*g+.0722*b;if(mn>=225)s.nw++;}
+  out[id]={n:s.n,S:s.n?+(s.S/s.n).toFixed(3):null,hue:hu(s),L:s.n?+(s.L/s.n).toFixed(1):null,nw:pc(s.nw,s.n),warm:pc(s.wm,s.n),cyan:pc(s.cy,s.n),dist:+CAM.position.distanceTo(v.set(o.X,o.gy||0,o.Z)).toFixed(0),gen:NEW.has(id)?1:0};
+  if(!NEW.has(id))for(const k in pool)pool[k]+=s[k];}
+ out._v44={n:pool.n,S:+(pool.S/pool.n).toFixed(3),hue:hu(pool),L:+(pool.L/pool.n).toFixed(1),nw:pc(pool.nw,pool.n),warm:pc(pool.wm,pool.n),cyan:pc(pool.cy,pool.n)};
+ const fg=new Set();for(const id in G1.res)for(const g of[G1.res[id].mid,G1.res[id].near])g&&g.traverse(x=>{if(x.isMesh)for(const mt of g1Mts(x))fg.add(mt.type+':'+(mt.fog!==false));});
+ out._fog=[SC.fog.near,SC.fog.far,[...fg]];return out;};
 ANIM.push(t=>{const now=performance.now();for(const id in G1.res){const r=G1.res[id],o=byId[id];
   if(r.mid){const d=CAM.position.distanceTo(G1._v.set(o.X,o.gy||0,o.Z)),foc=view!=='world'&&focusO===o;
    const want=foc||d<(r.tier==='near'?G1.NEAR_D+G1.HYS:G1.NEAR_D-G1.HYS)?'near':'mid';
