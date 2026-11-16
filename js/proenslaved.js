@@ -35,9 +35,10 @@ const tone=(c,k)=>[c[0]*k,c[1]*k,c[2]*k];
 
 // ---- palettes: same structure for both blocs; grammar differs, not quality ----
 const BLOC={
- A:{name:'Bloc A',walls:['#58708A','#667E98','#4E6580','#7590A8'],roof:'#3A4656',roof2:'#465466',ground:'#4C5868',deck:'#465264',
+ // C1 r5: Bloc A walls lifted ~12 % (owner: Bloc A too dark in close-up), Bloc B ground desaturated (world view: an orange patch)
+ A:{name:'Bloc A',walls:['#7489A0','#8498AE','#697D94','#90A2B8'],roof:'#5E6A78',roof2:'#6A7684',ground:'#5A6472',deck:'#62707E',
   light:'#CFEFFF',core:'#A8E0F0',pod:'#8FA4BA'},
- B:{name:'Bloc B',walls:['#C29A62','#D0AA74','#B08A58','#DAB884'],roof:'#7E6044','roof2':'#8E6E4C',ground:'#80694A',deck:'#A2845C',
+ B:{name:'Bloc B',walls:['#C29A62','#D0AA74','#B08A58','#DAB884'],roof:'#7E6044','roof2':'#8E6E4C',ground:'#58564F',deck:'#8E7A60',
   light:'#F2C894',core:'#F2C894',pod:'#C4A274'}};
 const PAL={strip:'#7A776E',gravel:'#8C887D',asph:'#34363B',kerb:'#8E8A82',earth:'#6E6048',concrete:'#8E8A84',concL:'#A39F97',dark:'#2E3136',
  steel:'#7C8086',warm:'#FFC890',glassD:'#2A3038',mono:'#2A3038',sphere:'#6A5E50',cable:'#22252A',foliage:'#3E5238',trunk:'#5A4A3A',
@@ -507,14 +508,14 @@ function mastA(B,S,K,ms,y,cor,mid){const T=B.T,k=T.k,m=K.mono,st=hex(PAL.steel,.
  strut(S.metal,[ms.x,ym+ms.h*.72,ms.z],[best[0],y+m.hang+m.h*.5,best[1]],.02*k,cab);
  box(S.metal,ms.x,ym+ms.h-.05*k,ms.z,.55*k,.32*k,.55*k,-ms.a,dk);
  box(S.light,ms.x,ym+ms.h+.27*k,ms.z,.08*k,.08*k,.08*k,0,glow(B,PAL.beacon,1.7));
- for(const f of[.3,.55])prism(S.light,rectPts(ms.x,ms.z,.44*k,.44*k,-ms.a),ym+ms.h*f,ym+ms.h*f+.04*k,glow(B,K.P.core,1.3),false);}
+ for(const f of[.3,.55])prism(S.light,rectPts(ms.x,ms.z,.44*k,.44*k,-ms.a),ym+ms.h*f,ym+ms.h*f+.04*k,glow(B,K.P.core,.75),false);}
 function* coreA(B,S,K,mid){const T=B.T,k=T.k,c=K.core,m=K.mono,cx=c.x,cz=c.z,se=seatC(T,cx,cz,c.r*.85),y=se.hi,n=mid?16:32;K.y=y;m.ry=-(K.mastA0-PI/4);
  const cd=hex(PAL.concrete,.62*T.A),cl=hex(PAL.concL,.8*T.A),dk=hex(PAL.dark,T.A),st=hex(PAL.steel,.65*T.A);
  // stepped cooling basin: three rings rising outward around the pit floor (reads as a sunken ring pit), glowing floor ring
  let hp=0;for(let i=0;i<3;i++){const r0=c.pit+i*.38*k,r1=r0+.38*k,h=(.18+i*.2)*k;cylIn(S.building,cx,y+hp,cz,r0,r0,h-hp,n,tone(cd,.8));annulus(S.building,cx,y+h,cz,r0,r1,n,i%2?cl:cd);hp=h;}
  cyl(S.building,cx,se.lo-.15,cz,c.pit+1.2*k,c.pit+1.14*k,y+hp-se.lo+.15,n,cd);
- annulus(S.building,cx,y+.02,cz,0,c.pit,n,dk);annulus(S.light,cx,y+.035,cz,.45*k,1.1*k,mid?8:16,glow(B,K.P.core,1.5));
- if(!mid)lightPt(B,cx,y+1.2*k,cz,K.P.core,1.0,10*k);
+ annulus(S.building,cx,y+.02,cz,0,c.pit,n,dk);annulus(S.light,cx,y+.035,cz,.45*k,1.1*k,mid?8:16,glow(B,K.P.core,.5));   // C1 r5: base glow 1.5 -> .5 (too strong)
+ if(!mid)lightPt(B,cx,y+1.2*k,cz,K.P.core,.5,8*k);
  yield 1;
  // radial heat-sink fin field following the basin steps
  if(!mid){const F=K.fins;for(let i=0;i<F.n;i++){const a=i*TAU/F.n,ca=Math.cos(a),sa=Math.sin(a);
@@ -532,7 +533,7 @@ function* coreB(B,S,K,mid){const T=B.T,k=T.k,c=K.core,cx=c.x,cz=c.z,se=seatC(T,c
  // earthwork terraces rising to the crater rim, crater wall + floor, light spilling from under the sphere
  let hp=0;for(let i=0;i<te.n;i++){const ro=te.r1-i*dr,h=te.h*(i+1)/te.n;
   cyl(S.building,cx,i?y+hp:se.lo-.15,cz,ro+(i?0:.12*k),ro,i?h-hp:y+h-se.lo+.15,n,i%2?e2:e1);annulus(S.building,cx,y+h,cz,ro-dr,ro,n,tone(i%2?e2:e1,1.12));hp=h;}
- cylIn(S.building,cx,y,cz,te.r0,te.r0,te.h,n,tone(e2,.6));annulus(S.building,cx,y+.02,cz,0,te.r0,n,dk);annulus(S.light,cx,y+.04,cz,sp.r*1.02,sp.r*1.2,mid?12:24,gl);
+ cylIn(S.building,cx,y,cz,te.r0,te.r0,te.h,n,tone(e2,.6));annulus(S.building,cx,y+.02,cz,0,te.r0,n,dk);annulus(S.light,cx,y+.04,cz,sp.r*1.02,sp.r*1.2,mid?12:24,mid?glow(B,P.core,.8):gl);   // C1 r5: MID crater spill dimmed (orange patch at world zoom)
  if(!mid){const wcol=hex('#9FC2D6',T.day?.4:.62);   // cooling cascades down the terraces (dimmed: read as water, not white stairs)
   for(const a of K.casc){let h0=0;for(let i=0;i<te.n;i++){const ro=te.r1-i*dr,h=te.h*(i+1)/te.n,r2=ro+.012*k;
     annulus(S.light,cx,y+h+.012*k,cz,ro-dr,r2,1,wcol,a-.05,a+.05);
@@ -560,14 +561,22 @@ function* coreB(B,S,K,mid){const T=B.T,k=T.k,c=K.core,cx=c.x,cz=c.z,se=seatC(T,c
 
 // ======================= the divide: trench walls, buttresses, sensor masts, hex block fields =======================
 function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL,.8*T.A),cd=hex(PAL.concrete,.62*T.A),er=hex(PAL.earth,.9*T.A),st=hex(PAL.steel,.65*T.A),dk=hex(PAL.dark,T.A);
- const segL=(mid?3:1.5)*k,yt=(s,z)=>T.yl(s*t.top,z)+t.wallH;
+ const segL=(mid?3:1.5)*k,yt=(s,z)=>T.yl(s*t.top,z)+t.wallH,DTR=hex('#2A2E38',T.A);
+ // C1 r5: solid dark trench floor (building family, so the apron blend cannot wash it out) = the dark divide line at world zoom
+ for(let z=t.z0;z<t.z1-.01;z+=segL){const e=Math.min(t.z1,z+segL),P=(x,zz)=>[x,T.yl(x,zz)+.03,zz];
+  quadUp(S.building,P(-t.fl,z),P(0,z),P(0,e),P(-t.fl,e),tone(DTR,.8));quadUp(S.building,P(0,z),P(t.fl,z),P(t.fl,e),P(0,e),tone(DTR,.8));}
  for(const s of[-1,1]){
-  for(let z=t.z0;z<t.z1-.01;z+=segL){const e=Math.min(t.z1,z+segL),zc=(z+e)/2,ya=yt(s,z),ye=yt(s,e);
-   quadO(S.building,[s*t.fl,T.yl(s*t.fl,z)-.1,z],[s*t.fl,T.yl(s*t.fl,e)-.1,e],[s*t.top,ye,e],[s*t.top,ya,z],tone(cc,(Math.round(z/segL)&1)?1:.92),[s*t.out*3,ya,zc]);
-   quadUp(S.building,[s*t.top,ya,z],[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.top,ye,e],cd);
+  for(let z=t.z0;z<t.z1-.01;z+=segL){const e=Math.min(t.z1,z+segL),zc=(z+e)/2,ya=yt(s,z),ye=yt(s,e),sg=(Math.round(z/segL)&1)?1:.92;
+   // C1 r5 (owner: the trench read as a WALL): depth shading - the inner face is split in two bands, dark toward the floor
+   // (shadowed shaft) and mid-tone toward the lip, so the cut reads as sunken; the lip itself is pale (lit edge)
+   const fa0=T.yl(s*t.fl,z)-.1,fe0=T.yl(s*t.fl,e)-.1,mx=s*(t.fl+(t.top-t.fl)*.55),ma=lerp(fa0,ya,.55),me=lerp(fe0,ye,.55);
+   quadO(S.building,[s*t.fl,fa0,z],[s*t.fl,fe0,e],[mx,me,e],[mx,ma,z],tone(DTR,sg),[s*t.out*3,ya,zc]);
+   quadO(S.building,[mx,ma,z],[mx,me,e],[s*t.top,ye,e],[s*t.top,ya,z],tone(cc,.62*sg),[s*t.out*3,ya,zc]);
+   quadUp(S.building,[s*t.top,ya,z],[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.top,ye,e],tone(cc,1.12));
+   if(mid||(Math.round(z/segL)&1)===0)box(S.light,s*(t.top+.03*k),ya-.005,zc,(mid?.07:.035)*k,.03*k,(e-z)*(mid?.92:.7),0,glow(B,PAL.cool,mid?.9:.5));   // lit lip: dashed edge light (MID: near-continuous line = the divide at world zoom)
    quadO(S.building,[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.out,T.yl(s*t.out,e)-.03,e],[s*t.out,T.yl(s*t.out,z)-.03,z],er,[0,ya-9,zc]);}
   yield 1;
-  for(let z=t.z0+t.butt*.5;z<t.z1;z+=t.butt*(mid?2:1)){const yf=T.yl(s*t.fl,z)-.05;fin(S.building,s*t.fl*.62,z,s*t.top,z,yf,yf,.06*k,yt(s,z)-yf,.24*k,cc);}
+  for(let z=t.z0+t.butt*.5;z<t.z1;z+=t.butt*(mid?2:1)){const yf=T.yl(s*t.fl,z)-.05;fin(S.building,s*t.fl*.62,z,s*t.top,z,yf,yf,.06*k,(yt(s,z)-yf)*.55,.24*k,tone(DTR,1.25));}
   yield 1;}
  let nl=0;for(const m of L.masts){const y=yt(m.s,m.z);
   if(mid)box(S.metal,m.x,y,m.z,.07*k,m.h,.07*k,0,st);
@@ -578,7 +587,7 @@ function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL
  const H=L.hexF,stp=H.step/Math.max(.6,T.q);let i=0;
  for(let z=H.z0;z<H.z1;z+=stp,i++){if(Math.abs(z-t.zm)<H.gap)continue;
   for(let r=0;r<H.rows;r++){const x=(r-(H.rows-1)/2)*t.fl*.6,zz=z+(r&1)*stp*.5,y=T.yl(x,zz);
-   prism(S.building,polyPts(x,zz,H.r,6,0),y-.03,y+(.1+.08*hash2(i,r))*k,cd,tone(cd,1.15));}
+   prism(S.building,polyPts(x,zz,H.r,6,0),y-.03,y+(.1+.08*hash2(i,r))*k,tone(DTR,1.1),tone(DTR,1.45));}
   if(i%12===11)yield 1;}}
 
 // ======================= ground: feathered two-tone underlay, trench floor, core pads, streets =======================

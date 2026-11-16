@@ -35,11 +35,11 @@ const PRESETS={
  normaltech:{layout:'grid',lit:.62,em:1.8,walls:SP('concrete0 concrete1 brick0 brick1'),roofs:SP('roof0 roof1'),roof:'mix',storeys:[2,4],density:.8,blockMin:3.3,
   streetW:.62,jitter:.4,green:.25,props:1,cars:36,moving:4,lamps:1,lampStep:2.6,trees:40,out:0,fray:.7,fields:12,farms:5,pz:[4,3],special:SP('square regulator substation pylons datacenter')},
  o1984:{layout:'strict',lit:.45,em:1.7,alb:.7,walls:SP('concrete0 concrete1'),roofs:SP('roof0'),roof:'flat',storeys:[9,12],density:1,blockMin:4,
-  streetW:.8,jitter:0,green:0,props:.6,cars:5,moving:0,lamps:1,lampStep:4,trees:0,out:0,fray:.8,fields:0,farms:0,pz:[12,2],special:SP('camPoles checkpoints ministry searchlights')},
+  streetW:.8,jitter:0,green:0,props:.6,cars:5,moving:0,lamps:1,lampStep:4,trees:0,out:0,fray:.8,fields:0,farms:0,pz:[12,2],under:0,special:SP('camPoles checkpoints ministry searchlights')},
  protector:{layout:'organic',lit:.7,em:1.9,walls:SP('timber timberL stone'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,3],density:.92,blockMin:3,
-  streetW:.54,jitter:.6,green:.9,props:1,cars:8,moving:2,lamps:1,lampStep:2.4,trees:130,out:0,fray:.8,fields:10,farms:5,pz:[4,3],special:SP('dome anomaly')},
+  streetW:.54,jitter:.6,green:.9,props:1,cars:8,moving:2,lamps:1,lampStep:2.4,trees:130,out:0,fray:.8,fields:10,farms:5,pz:[4,3],midWin:.75,midWinK:2,midWinY:.62,special:SP('dome anomaly')},
  egalitarian:{layout:'ring',lit:.65,em:1.8,walls:SP('timber concrete1'),roofs:SP('greenRoof'),roof:'green',storeys:[2,2],density:1,blockMin:3,
-  streetW:.44,jitter:0,green:.6,props:1,cars:0,moving:0,lamps:1,lampStep:3.2,trees:70,out:0,fray:.6,fields:9,farms:0,pz:[3,2],special:SP('commons amphitheatre workshop library')},
+  streetW:.44,jitter:0,green:.6,props:1,cars:0,moving:0,lamps:1,lampStep:3.2,trees:70,out:0,fray:.6,fields:9,farms:0,pz:[3,2],under:0,midWin:.7,midWinK:2,special:SP('commons amphitheatre workshop library')},
  zookeeper:{layout:'cluster',lit:.9,em:2.2,alb:1.06,walls:SP('concrete1 brick1 timberL'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,2],density:1,blockMin:3,
   streetW:.42,jitter:.2,green:.3,props:1,cars:0,moving:0,lamps:1,lampStep:2.8,trees:0,out:0,fray:0,fields:0,farms:0,pz:[3,2],special:SP('enclosure gardens playground tree')},
  descendants:{layout:'old',lit:.3,em:1.6,walls:SP('stone brick0 brick1'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[3,5],density:.84,blockMin:2.4,
@@ -515,7 +515,7 @@ function ground(B,S,mid){const it=groundGen(B,S,mid);while(!it.next().done);}
 // B2 r2: generator so buildSteps can slice it (r2 kerbs + dashes + zebras made the NEAR ground step ~2x slower)
 function* groundGen(B,S,mid){const T=B.T,L=B.L,g=GCOL[T.P.layout]||GCOL.grid,col=hex(PAL[g[0]],g[1]*T.A),lay=T.P.layout;
  // B2 r3: no round plate - a wide feathered underlay (alpha T.fa: warped boundary, fades to 0 before R) with the same tone
- disc(S.ground,T,0,0,T.R*1.02,mid?6:12,mid?32:56,col,-.03);yield 1;
+ if(T.P.under!==0)disc(S.ground,T,0,0,T.R*1.02,mid?6:12,mid?32:56,col,-.03);yield 1;   // C1 r5: o1984/egalitarian under:0 = no underlay (D5: it read as a plate)
  // B2 r3 street readability: every street gets an edge strip that contrasts with its surface (roads: pale kerb + dark asphalt
  // + centre dashes; old-quarter lanes: pale kerb + dark setts; garden paths: dark edge + pale gravel). MID keeps the strips.
  const KERB=hex(PAL.kerb,.95*T.A),EDGE=hex('#4A4840',T.A),SETT=hex('#3A3734',T.A),GRAV=hex('#A8A08A',T.A);
@@ -547,8 +547,11 @@ function emitLot(B,l,S,mid){const T=B.T,P=T.P,b=S.building,pts=rectPts(l.x,l.z,l
  prism(b,pts,y0,y1,wc,win,rk==='pitched'?false:rc);
  const rh=Math.min(l.w,l.d)*(.34+.1*hash2(l.seed,1.7))*(T.id==='descendants'?1.45:1);   // r4: descendants = steep old roofs (NEAR+MID)
  if(rk==='pitched')roof(b,l.x,y1,l.z,l.w,l.d,l.ry,rh,l.seed%4===0?'hip':'gable',rc,.05,wc);
- else if(rk==='green')box(b,l.x,y1,l.z,l.w+.1,.05,l.d+.1,l.ry,tone(wc,.8),null,hex(PAL.greenRoof,T.A));
- if(mid)return;
+ else if(rk==='green')box(b,l.x,y1,l.z,l.w+.1,.05,l.d+.1,l.ry,tone(wc,.8),null,hex(PAL.greenRoof,T.A*(mid?1.35:1)));   // C1 r5: MID roofs lighter so each house reads against the ring lane
+ if(mid){   // C1 r5: MID-only sparse warm window points (world zoom: the facade shader's distance glow averages into the wall, so
+  // egalitarian/protector showed 0 % warm pixels); one small lit pane per chosen house, alternating faces; P.midWin = share of lots
+  if(P.midWin&&hash2(l.seed*.77,5.3)<P.midWin){const sd=l.seed%2?1:-1,o=rotP(0,sd*(l.d/2+.02),l.ry);box(S.light,l.x+o[0],y0+h*(P.midWinY||.36),l.z+o[1],l.w*.5,Math.min(.32,h*.45),.03,l.ry,em(B,PAL.warm,P.midWinK||1));}
+  return;}
  if(rk==='green')box(S.metal,l.x,y1+.05,l.z,l.w*.45,.03,l.d*.5,l.ry,hex(PAL.solar,1));
  if(rk==='pitched'&&l.seed%2){const o=rotP(l.w*.25,0,l.ry);box(b,l.x+o[0],y1,l.z+o[1],.09,rh+.1,.09,l.ry,hex(PAL.brick0,T.A*.9));}
  if(k==='house'||k==='cottage'||k==='plain'){const o=rotP(l.w*.15,l.d/2+.07,l.ry);box(b,l.x+o[0],s.lo-.1,l.z+o[1],.3,y0-s.lo+.36,.14,l.ry,tone(wc,.8),null,rc);}
