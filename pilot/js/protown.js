@@ -25,14 +25,14 @@ function hex(h,k){let c=HEXC[h];if(!c){const n=parseInt(h.slice(1),16),f=v=>{v/=
  k=k==null?1:k;return[c[0]*k,c[1]*k,c[2]*k];}
 const tone=(c,k)=>[c[0]*k,c[1]*k,c[2]*k];
 const PAL={concrete0:'#8E8A84',concrete1:'#A29E96',brick0:'#7A4E3C',brick1:'#8C5A44',timber:'#6B5440',timberL:'#86705A',stone:'#8A8274',
- glass:'#5F7380',asphalt:'#25272B',roof0:'#4B4F55',roof1:'#5A4A3E',greenRoof:'#55654A',foliage:'#3E5238',grass:'#46553A',pave:'#6C6964',
+ glass:'#5F7380',asphalt:'#34363B',roof0:'#4B4F55',roof1:'#5A4A3E',greenRoof:'#55654A',foliage:'#3E5238',grass:'#4C5B3F',pave:'#7C7871',
  path:'#8A826E',dark:'#33363B',steel:'#7C8086',warm:'#FFB870',lamp:'#FFC890',cool:'#9FD8E6',solar:'#1E2A3C',soil:'#4A3E32',kerb:'#8E8A82',mark:'#BDB7A8'};
 
 // ======================= (2) presets (any field overridable via site.params) =======================
 const SP=s=>s.split(' ');
 // B2 r3: fray (irregular footprint strength), fields / farms (outskirts), pz (window patch size bays x storeys), alb (albedo)
 const PRESETS={
- normaltech:{layout:'grid',lit:.62,em:1.8,walls:SP('concrete0 concrete1 brick0 brick1'),roofs:SP('roof0 roof1'),roof:'mix',storeys:[2,6],density:.88,blockMin:3.3,
+ normaltech:{layout:'grid',lit:.62,em:1.8,walls:SP('concrete0 concrete1 brick0 brick1'),roofs:SP('roof0 roof1'),roof:'mix',storeys:[2,4],density:.8,blockMin:3.3,
   streetW:.62,jitter:.4,green:.25,props:1,cars:36,moving:4,lamps:1,lampStep:2.6,trees:40,out:0,fray:.7,fields:12,farms:5,pz:[4,3],special:SP('square regulator substation pylons datacenter')},
  o1984:{layout:'strict',lit:.45,em:1.7,alb:.7,walls:SP('concrete0 concrete1'),roofs:SP('roof0'),roof:'flat',storeys:[9,12],density:1,blockMin:4,
   streetW:.8,jitter:0,green:0,props:.6,cars:5,moving:0,lamps:1,lampStep:4,trees:0,out:0,fray:.8,fields:0,farms:0,pz:[12,2],special:SP('camPoles checkpoints ministry searchlights')},
@@ -42,8 +42,8 @@ const PRESETS={
   streetW:.44,jitter:0,green:.6,props:1,cars:0,moving:0,lamps:1,lampStep:3.2,trees:70,out:0,fray:.6,fields:9,farms:0,pz:[3,2],special:SP('commons amphitheatre workshop library')},
  zookeeper:{layout:'cluster',lit:.9,em:2.2,alb:1.06,walls:SP('concrete1 brick1 timberL'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,2],density:1,blockMin:3,
   streetW:.42,jitter:.2,green:.3,props:1,cars:0,moving:0,lamps:1,lampStep:2.8,trees:0,out:0,fray:0,fields:0,farms:0,pz:[3,2],special:SP('enclosure gardens playground tree')},
- descendants:{layout:'old',lit:.5,em:1.6,walls:SP('stone brick0 brick1'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[3,5],density:.84,blockMin:2.4,
-  streetW:.48,jitter:.5,green:.1,props:.7,cars:0,moving:0,lamps:1,lampStep:3.4,trees:14,out:.12,fray:1,fields:6,farms:3,pz:[4,3],special:SP('plaza seam emptying')}
+ descendants:{layout:'old',lit:.3,em:1.6,walls:SP('stone brick0 brick1'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[3,5],density:.84,blockMin:2.4,
+  streetW:.48,jitter:.5,green:.1,props:.7,cars:0,moving:0,lamps:1,lampStep:3.4,trees:14,out:.3,fray:1,fields:6,farms:3,pz:[4,3],special:SP('plaza seam emptying')}
 };
 const ALIAS={'1984':'o1984','normal':'normaltech','normal-tech':'normaltech','protectorgod':'protector','egalitarianutopia':'egalitarian','zoo':'zookeeper'};
 
@@ -107,11 +107,13 @@ function facadeMat(T,U){const THREE=T.THREE,m=new THREE.MeshStandardMaterial({co
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+WIN_FS_HEAD)
    .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n'+WIN_FS_BODY+'\n');};
  m.customProgramCacheKey=()=>'ptFacade4';m.name='pt_facade';return m;}
-function domeMat(T,U){const THREE=T.THREE,c=hex('#BFD6E6');
+function domeMat(T,U){const THREE=T.THREE,c=hex('#9AB0CC');   // B2 r5: sky-blue tone (was pale #BFD6E6), blends into the blue-hour sky
+ // B2 r5 (vision r4: the dome was the loudest element; Tegmark: the protector hides so well many doubt it exists): no bright
+ // rim - alpha ~.006 face-on, max ~.11 at grazing, faded out near the ground (no footing line) and toward the apex (no cap glint)
  const m=new THREE.ShaderMaterial({uniforms:{uT:U.uT,uC:{value:new THREE.Vector3(c[0],c[1],c[2])},uK:{value:T.mood==='day'?.5:1}},
-  vertexShader:'varying vec3 vN;varying vec3 vV;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}',
-  fragmentShader:'uniform float uT,uK;uniform vec3 uC;varying vec3 vN;varying vec3 vV;void main(){float f=1.-abs(dot(normalize(vN),normalize(vV)));'+
-   'float a=(.018+.44*pow(f,2.4)+.17*pow(f,9.))*(.93+.07*sin(uT*.35+vN.y*9.))*uK;a=min(a,.62);gl_FragColor=vec4(uC,a);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}',
+  vertexShader:'varying vec3 vN;varying vec3 vV;varying float vH;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);vH=normal.y;gl_Position=projectionMatrix*mv;}',
+  fragmentShader:'uniform float uT,uK;uniform vec3 uC;varying vec3 vN;varying vec3 vV;varying float vH;void main(){float f=1.-abs(dot(normalize(vN),normalize(vV)));'+
+   'float a=(.01+.15*pow(f,3.)+.03*pow(f,8.))*(.9+.1*sin(uT*.21+vN.y*7.))*uK*smoothstep(.02,.3,abs(vH))*(1.-.5*smoothstep(.7,1.,abs(vH)));a=min(a,.17);gl_FragColor=vec4(uC,a);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}',
   transparent:true,depthWrite:false,side:THREE.DoubleSide});m.name='pt_dome';return m;}
 // B2 r3 searchlight beam (vision r2: grey wedges in stills): additive soft cone, smooth radial normals -> bright core, edges
 // fade to 0 (facing^1.6), fades along the beam (tip 0, short ramp at the lamp), fades with view distance (no fog:false
@@ -142,6 +144,9 @@ function makeMats(T){const THREE=T.THREE,cm=T.ctx.mats||{},used={},M={};
  M.ground=std({roughness:.95,metalness:0,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});M.ground.name='pt_ground_feather';
  used.ground=cm.ground&&cm.ground.isMaterial?'own feather (ctx.ground supplied, not used: vertex alpha)':'own feather';
  M.light=pick('light',()=>new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true}));
+ // B2 r5 street-level brightness: additive warm lamp pools on the ground (radial vertex alpha), one NEAR draw
+ M.pool=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,
+  polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});M.pool.name='pt_lamp_pool';
  M.glass=pick('glass',()=>std({roughness:.08,metalness:.3,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide}));
  M.foliage=pick('foliage',()=>std({roughness:.95,metalness:0,flatShading:true}));
  M.beam=beamMat(T);
@@ -235,12 +240,21 @@ function addSlot(L,name,o,hard){L.slots[name]=o;if(hard!==false)L.ko.push({x:o.x
 function segDist(px,pz,a,e){const dx=e[0]-a[0],dz=e[1]-a[1],l2=dx*dx+dz*dz||1e-9,t=clamp(((px-a[0])*dx+(pz-a[1])*dz)/l2,0,1);return Math.hypot(px-a[0]-dx*t,pz-a[1]-dz*t);}
 function nearStreet(L,x,z,rad,skip){for(let i=0;i<L.streets.length;i++){const s=L.streets[i];if(s===skip)continue;const p=s.pts,lim=s.w/2+rad;
   for(let j=1;j<p.length;j++)if(segDist(x,z,p[j-1],p[j])<lim)return true;}return false;}
-function obbHit(a,b){const dx=b.x-a.x,dz=b.z-a.z;if(dx*dx+dz*dz>(a.r+b.r)*(a.r+b.r))return false;
+function obbHit(a,b){const dx=b.x-a.x,dz=b.z-a.z,PAD=lotAligned(a,b)?.04:LOTPAD;if(dx*dx+dz*dz>(a.r+b.r+PAD)*(a.r+b.r+PAD))return false;
  for(let k=0;k<2;k++){const p=k?b:a,q=k?a:b,c=Math.cos(p.ry),s=Math.sin(p.ry),cq=Math.cos(q.ry),sq=Math.sin(q.ry);
   for(let i=0;i<2;i++){const ux=i?s:c,uz=i?c:-s,ext=i?p.d/2:p.w/2;
    const proj=Math.abs(ux*cq-uz*sq)*q.w/2+Math.abs(ux*sq+uz*cq)*q.d/2;
-   if(Math.abs(dx*ux+dz*uz)>ext+proj+.04)return false;}}
+   if(Math.abs(dx*ux+dz*uz)>ext+proj+PAD)return false;}}
  return true;}
+// aligned = same orientation (mod 90 deg): terraced rows may share a party wall; skewed neighbours keep LOTPAD clear
+function lotAligned(a,b){const d=Math.abs((((a.ry||0)-(b.ry||0))%(PI/2)+PI/2)%(PI/2));return d<.03||d>PI/2-.03;}
+// B2 r5 (vision r4: lots interpenetrate in descendants / protector / zookeeper): lot-lot clearance = eaves + relief (.05 eaves
+// and up to ~.07 sills/pilasters per side) -> LOTPAD .16; lots vs keep-outs test the RECTANGLE (corners), not the inner
+// half-width circle (r4 let lot corners cut into slots / spires). Conformance checks real footprints (res.footprints).
+const LOTPAD=.16;
+function rectCircleDist(o,x,z){const c=Math.cos(o.ry||0),s=Math.sin(o.ry||0),dx=x-o.x,dz=z-o.z,lx=dx*c-dz*s,lz=dx*s+dz*c;
+ return Math.hypot(Math.max(0,Math.abs(lx)-o.w/2),Math.max(0,Math.abs(lz)-o.d/2));}
+function koHitRect(L,o,pad){for(let i=0;i<L.ko.length;i++){const k=L.ko[i];if(rectCircleDist(o,k.x,k.z)<k.r+pad)return true;}return false;}
 function koHit(L,x,z,rad){for(let i=0;i<L.ko.length;i++){const k=L.ko[i];if(Math.hypot(x-k.x,z-k.z)<k.r+rad)return true;}return false;}
 // o={x,z,w,d,ry,st,kind}; chk = also reject lots that sit on a street (skip = own street)
 function addLot(T,L,o,chk,skip){if(L.lots.length>=T.maxLots)return false;o.ry=o.ry||0;o.r=Math.hypot(o.w,o.d)/2;const mn=Math.min(o.w,o.d)/2;
@@ -249,9 +263,10 @@ function addLot(T,L,o,chk,skip){if(L.lots.length>=T.maxLots)return false;o.ry=o.
  if(!o.out&&T.fray>0){const r=Math.hypot(o.x,o.z),b=T.bAt(o.x,o.z);if(r>b)return false;const f=ss(.55*b,b,r);
   if(hash2(o.x*1.73+T.seed*.013,o.z*2.31)<f*.8*T.fray)return false;
   if(o.kind!=='slab'&&o.st>T.P.storeys[0])o.st=Math.max(T.P.storeys[0],Math.round(lerp(o.st,T.P.storeys[0],f)));}
- if(koHit(L,o.x,o.z,mn))return false;
+ if(koHitRect(L,o,.08))return false;
  if(chk&&nearStreet(L,o.x,o.z,mn*.9,skip))return false;
  for(let i=0;i<L.lots.length;i++)if(obbHit(o,L.lots[i]))return false;
+ for(let i=0;i<L.gardens.length;i++){const g=L.gardens[i];g.r=g.r||Math.hypot(g.w,g.d)/2;if(obbHit(o,g))return false;}   // r5: no lot on a garden
  o.seed=1+Math.floor(T.rnd()*997);L.lots.push(o);return true;}
 // lots on both sides of a street polyline. o={w:[a,b],d:[a,b],set:[a,b],gap:[a,b],st:[a,b],kind,t0,t1,sides:[1,-1]}
 function lotsAlong(T,L,s,o){const pts=s.pts,c=cum(pts),len=c[c.length-1],rr=T.rr,sides=o.sides||[1,-1];
@@ -267,7 +282,8 @@ function fillBlock(T,L,x0,z0,x1,z1){const P=T.P,rnd=T.rnd,m=P.streetW/2+.14;x0+=
   while(x<x1-.7){const w=Math.min(x1-x,lerp(.85,1.9,rnd())),d=dl*(.72+.28*rnd()),cx=x+w/2,cz=row?z1-d/2:z0+d/2;x+=w;
    if(rnd()>P.density){if(rnd()<P.green+.35)L.trees.push({x:cx,z:cz,s:.8+.4*rnd(),t:0});continue;}
    const near=1-clamp(Math.hypot(cx,cz)/T.R,0,1),st=clamp(Math.round(lerp(lo,hi,rnd()*(.25+1.1*near))),lo,hi);
-   addLot(T,L,{x:cx,z:cz,w:w-.06,d:d,ry:row?0:PI,st:st,kind:st>=5?'mid':(rnd()<.45?'terrace':'house')},false);}}}
+   // B2 r5 (normaltech "less downtown"): top storey band = 'mid' (mixed office), the rest a terrace/house mix
+   addLot(T,L,{x:cx,z:cz,w:w-.06,d:d,ry:row?0:PI,st:st,kind:(st>=5||(hi<=4&&st>=4&&rnd()<.6))?'mid':(rnd()<.45?'terrace':'house')},false);}}}
 function freeSpot(L,x,z,rad){if(koHit(L,x,z,rad)||nearStreet(L,x,z,rad))return false;
  for(let i=0;i<L.lots.length;i++){const l=L.lots[i];if(Math.hypot(x-l.x,z-l.z)<l.r*.85+rad)return false;}return true;}
 function scatterTrees(T,L,n,r0,r1,s0,s1){n=Math.round(n*T.q);for(let i=0,tries=0;i<n&&tries<n*6;tries++){const a=T.rnd()*TAU,r=Math.sqrt(lerp(r0*r0,r1*r1,T.rnd())),x=Math.cos(a)*r,z=Math.sin(a)*r;
@@ -302,9 +318,11 @@ function* layGrid(T,L){const R=T.R,P=T.P,sw=P.streetW,hs=2.15,xs=gridLines(T,hs)
  addSlot(L,'regulator',{x:0,z:-sq/2+.75,r:1.3,w:2.5,d:1.0,ry:0},false);
  const bx=[-R].concat(xs,[R]),bz=[-R].concat(zs,[R]);
  const aS=T.rnd()*TAU;let c=cellCentre(bx,bz,Math.cos(aS)*(R-3.6),Math.sin(aS)*(R-3.6));if(Math.hypot(c[0],c[1])>R-2.1)c=[Math.cos(aS)*(R-3.2),Math.sin(aS)*(R-3.2)];
- const sub=addSlot(L,'substation',{x:c[0],z:c[1],r:1.45,w:2.0,d:1.6,ry:0});
+ const sub=addSlot(L,'substation',{x:c[0],z:c[1],r:1.62,w:2.4,d:1.9,ry:0});   // B2 r5: bigger fenced yard (was 2.0 x 1.6)
  const aD=aS+PI*T.rr(.7,1.3);c=cellCentre(bx,bz,Math.cos(aD)*(R-4),Math.sin(aD)*(R-4));if(Math.hypot(c[0],c[1])>R-2.7)c=[Math.cos(aD)*(R-3.8),Math.sin(aD)*(R-3.8)];
- addSlot(L,'datacenter',{x:c[0],z:c[1],r:2.1,w:3.2,d:1.5,ry:Math.abs(Math.cos(aD))>.7?PI/2:0});
+ // B2 r5: data-centre campus = fenced yard (two long low halls inside), clamped to the cell so the fence never crosses a street
+ {const ry=Math.abs(Math.cos(aD))>.7?PI/2:0,cw=(a,v)=>{for(let i=1;i<a.length;i++)if(v>=a[i-1]&&v<a[i])return a[i]-a[i-1];return 9;},iw=cw(bx,c[0])-sw-.3,id=cw(bz,c[1])-sw-.3;
+  const W=clamp(ry?id:iw,2.6,3.7),D=clamp(ry?iw:id,1.7,2.35);addSlot(L,'datacenter',{x:c[0],z:c[1],r:Math.hypot(W,D)/2+.1,w:W,d:D,ry:ry});}
  // pylon line: leaves the substation obliquely and runs out to the town edge
  const py=[];for(const tw of[.95,0]){py.length=0;const sa=Math.atan2(sub.z,sub.x)+tw,dx=Math.cos(sa),dz=Math.sin(sa);
   for(let k=0;k<4;k++){const x=sub.x+dx*(1.9+2.5*k),z=sub.z+dz*(1.9+2.5*k);if(Math.hypot(x,z)<R-.5)py.push({x:x,z:z,r:.32,a:sa});}
@@ -373,15 +391,15 @@ function* layCluster(T,L){const R=T.R,P=T.P,sw=P.streetW,re=R*.85,rl=R*.3,a0=T.r
  const sLane=addStreet(L,lane,sw,'path');
  const hw=1.1,hd=.9,rH=rl+sw/2+.4+hd/2+R*.02,n=Math.floor(TAU*rH/(hw+.75));
  for(let i=0;i<n;i++){const a=a0+(i+.5)*TAU/n+T.rr(-.03,.03),r=rH+T.rr(0,.2),lot={x:Math.cos(a)*r,z:Math.sin(a)*r,w:hw,d:hd,ry:ryIn(a),st:2,kind:'cottage'};
-  if(addLot(T,L,lot,true,sLoop))L.gardens.push({x:Math.cos(a)*(r+hd/2+.62),z:Math.sin(a)*(r+hd/2+.62),w:hw+.35,d:1.0,ry:lot.ry});}
+  if(addLot(T,L,lot,true,sLoop))L.gardens.push({x:Math.cos(a)*(r+hd/2+.62),z:Math.sin(a)*(r+hd/2+.62),w:hw+.35,d:1.0,ry:lot.ry,o:L.lots.length-1});}
  const before=L.lots.length;yield 1;lotsAlong(T,L,sLane,{w:[1.05,1.15],d:[.85,.95],set:[.3,.4],gap:[.6,.9],st:[2,2],kind:'cottage',t0:2.3,t1:.9});yield 1;
- for(let i=before;i<L.lots.length;i++){const l=L.lots[i],b=rotP(0,-(l.d/2+.6),l.ry);L.gardens.push({x:l.x+b[0],z:l.z+b[1],w:l.w+.3,d:.95,ry:l.ry});}
+ for(let i=before;i<L.lots.length;i++){const l=L.lots[i],b=rotP(0,-(l.d/2+.6),l.ry);L.gardens.push({x:l.x+b[0],z:l.z+b[1],w:l.w+.3,d:.95,ry:l.ry,o:i});}
  // B2 child fix (vision 11-16: town tiny inside an oversized enclosure): second ring path + outer ring of cottages, then the
  // enclosure is fitted around the built area (machine landscape outside it is procompute's, not drawn here)
  const rP=rH+hd/2+1.35+sw/2;addStreet(L,ringPts(T,rP,48,R*.015,R*.01),sw,'path',true);
  const rH2=rP+sw/2+.4+hd/2,n2=Math.floor(TAU*rH2/(hw+.85));
  for(let i=0;i<n2;i++){const a=a0+(i+.25)*TAU/n2+T.rr(-.02,.02),r=rH2+T.rr(0,.15);if(r+hd/2+1.7>re)break;const lot={x:Math.cos(a)*r,z:Math.sin(a)*r,w:hw,d:hd,ry:ryIn(a),st:2,kind:'cottage'};
-  if(addLot(T,L,lot,true,null))L.gardens.push({x:Math.cos(a)*(r+hd/2+.62),z:Math.sin(a)*(r+hd/2+.62),w:hw+.35,d:1.0,ry:lot.ry});}
+  if(addLot(T,L,lot,true,null))L.gardens.push({x:Math.cos(a)*(r+hd/2+.62),z:Math.sin(a)*(r+hd/2+.62),w:hw+.35,d:1.0,ry:lot.ry,o:L.lots.length-1});}
  let mr=0;for(const l of L.lots)mr=Math.max(mr,Math.hypot(l.x,l.z)+l.r);for(const g of L.gardens)mr=Math.max(mr,Math.hypot(g.x,g.z)+.6);
  L.slots.enclosure.r=Math.min(re,Math.max(rl+2.5,mr+1.1));
  for(const l of L.lots)L.lamps.length<Math.round(10*T.q)&&L.lamps.push({x:l.x*.84,z:l.z*.84,k:'lantern'});
@@ -391,6 +409,11 @@ function* layCluster(T,L){const R=T.R,P=T.P,sw=P.streetW,re=R*.85,rl=R*.3,a0=T.r
 function* layOld(T,L){const R=T.R,P=T.P,sw=P.streetW,rp=R*.19,aS=T.rnd()*TAU,all=[];
  addSlot(L,'plaza',{x:0,z:0,r:rp});
  const seam=addSlot(L,'seam',{x:Math.cos(aS)*(R-1.7),z:Math.sin(aS)*(R-1.7),r:1.45,a:aS});
+ // B2 r5 (vision r4: spires read as detached antennas, ribs cut into terraces): the machine edge is reserved BEFORE any lot -
+ // 5 spire plinths along the seam edge + the conduit runs between them are keep-outs, seamSpires() builds exactly here
+ L.spires=[];{const ox=Math.cos(aS),oz=Math.sin(aS);for(const q of[[.55,-2.3,3.0],[.85,-1.15,4.0],[1.0,0,4.9],[.85,1.15,3.6],[.55,2.3,2.6]]){
+  const x=seam.x+ox*q[0]-oz*q[1],z=seam.z+oz*q[0]+ox*q[1];if(Math.hypot(x,z)>R-.75)continue;L.spires.push([x,z,q[2]]);L.ko.push({x:x,z:z,r:.6,n:'spire'});}
+  for(let i=1;i<L.spires.length;i++){const p=L.spires[i-1],e=L.spires[i];L.ko.push({x:(p[0]+e[0])/2,z:(p[1]+e[1])/2,r:.42,n:'conduit'});}}
  for(let k=0;k<6;k++){const a0=aS+k*TAU/6+(k?T.rr(-.16,.16):0),ph=T.rnd()*TAU,amp=k?T.rr(.05,.13):0,end=k?R-.5:R-3.2,pts=[];
   for(let j=0;j<=8;j++){const r=lerp(rp-.1,end,j/8),a=a0+amp*Math.sin(j*1.1+ph)*(j/8);pts.push([Math.cos(a)*r,Math.sin(a)*r]);}
   all.push(addStreet(L,pts,sw*(k%3===0?1.2:1),'path'));if(k)L.entries.push({x:pts[8][0],z:pts[8][1],a:a0});}
@@ -426,7 +449,9 @@ function outskirts(T,L){const P=T.P,R=T.R,nf=Math.round((P.fields||0)*T.q),nh=P.
  for(let i=0,k=0;i<nh&&k<nh*6;k++){const a=hash2(k*2.9,T.seed*.37)*TAU,b=T.rb(a),r=lerp(b*.95,Math.min(R-1.1,b*1.25),hash2(T.seed*.19,k*1.3)),x=Math.cos(a)*r,z=Math.sin(a)*r;
   if(!freeSpot(L,x,z,.8))continue;let f=false;for(const q of L.fields)if(Math.hypot(q.x-x,q.z-z)<q.r+.5)f=true;if(f)continue;
   if(addLot(T,L,{x:x,z:z,w:.95+.3*hash2(k,1.1),d:.8+.2*hash2(1.1,k),ry:-a+PI/2*Math.round(hash2(k,4.4)*3),st:2,kind:'house',out:true},false)){
-   const l=L.lots[L.lots.length-1],o=rotP(0,-(l.d/2+.5),l.ry);(L.gardens.push({x:l.x+o[0],z:l.z+o[1],w:l.w+.4,d:.8,ry:l.ry,yard:1}));
+   const l=L.lots[L.lots.length-1],o=rotP(0,-(l.d/2+.5),l.ry),gy={x:l.x+o[0],z:l.z+o[1],w:l.w+.4,d:.8,ry:l.ry};gy.r=Math.hypot(gy.w,gy.d)/2;
+   let yh=false;for(let j=0;j<L.lots.length-1&&!yh;j++)if(obbHit(gy,L.lots[j]))yh=true;if(yh){L.lots.pop();continue;}   // r5: yard must not cut a lot
+   (L.gardens.push({x:gy.x,z:gy.z,w:gy.w,d:gy.d,ry:l.ry,yard:1,o:L.lots.length-1}));
    L.trees.push({x:l.x-o[0]*1.6+.4,z:l.z-o[1]*1.6,s:.9,t:1});i++;}}}
 function layout(T){const it=layoutSteps(T);let r=it.next();while(!r.done)r=it.next();return r.value;}
 
@@ -441,9 +466,10 @@ const now=()=>(typeof performance!=='undefined'&&performance.now)?performance.no
 const palHex=k=>PAL[k]||(typeof k==='string'&&k[0]==='#'&&k.length===7?k:PAL.concrete0);
 const wallCol=(T,sd)=>{const w=T.P.walls;return hex(palHex(w[sd%w.length]),T.A*(.86+.26*hash2(sd,3.1)));};
 const roofCol=(T,sd)=>{const w=T.P.roofs;return hex(palHex(w[sd%w.length]),T.A*(.85+.2*hash2(sd,7.7)));};
-function newBuild(T,L,MM){const THREE=T.THREE,mk=()=>({building:buf(true),metal:buf(),ground:buf(false,T.fa),light:buf(),glass:buf(),foliage:buf()});
+function newBuild(T,L,MM){const THREE=T.THREE;T.pc=[0,0,1];const poolA=(x,z)=>1-clamp(Math.hypot(x-T.pc[0],z-T.pc[1])/T.pc[2],0,1);
+ const mk=()=>({building:buf(true),metal:buf(),ground:buf(false,T.fa),light:buf(),glass:buf(),foliage:buf(),pool:buf(false,poolA)});
  return{T:T,L:L,M:MM.M,U:MM.U,used:MM.used,N:mk(),D:mk(),F:{building:buf(),metal:buf(),ground:buf(),light:buf()},farSp:0,day:T.mood==='day',
-  inst:{tree0:[],tree1:[],car:[],lamp:[],pole:[],bench:[],bin:[],shelter:[]},beams:[],moving:[],movers:[],lights:[],anims:[],extra:[],extraMid:[],subTop:null,
+  inst:{tree0:[],tree1:[],car:[],lamp:[],pole:[],bench:[],bin:[],shelter:[]},beams:[],solids:[],moving:[],movers:[],lights:[],anims:[],extra:[],extraMid:[],subTop:null,
   walkers:[],bots:[],drones:[],r4:mulberry32(((T.seed|0)*2654435761)^0x5bd1e995),inB:()=>true,put:()=>false,peoCol:()=>[.5,.5,.5],
   m4:new THREE.Matrix4(),q:new THREE.Quaternion(),v:new THREE.Vector3(),s:new THREE.Vector3(),one:new THREE.Vector3(1,1,1),eul:new THREE.Euler()};}
 const em=(B,h,k)=>hex(h,k*(B.day?.35:1));                       // emissive colour for the light family (HDR at blue hour)
@@ -575,18 +601,22 @@ function regulator(B,S,mid,sl){const T=B.T,b=S.building,pts=rectPts(sl.x,sl.z,sl
  for(let i=0;i<6;i++){const o=rotP((i-2.5)*sl.w/6,sl.d/2+.3,sl.ry);cyl(b,sl.x+o[0],y0,sl.z+o[1],.045,.04,h,6,tone(c,1.05));}
  const o=rotP(0,sl.d/2+.5,sl.ry);box(b,sl.x+o[0],s.lo-.15,sl.z+o[1],sl.w*.7,y0-s.lo+.09,.3,sl.ry,tone(c,.75));
  farBox(B,'building',sl.x,s.lo,sl.z,sl.w,h+.3,sl.d,sl.ry,c,hex(PAL.roof0,T.A));}
+// B2 r5: substation reads as one - gravel yard, 3 transformers with radiator fins + bushings, two H-frame gantries, a tall
+// 3-rail fence with posts every ~.35 u, brick control hut. Yard size from the slot (2.4 x 1.9).
 function substation(B,S,mid,sl){if(mid)return;const T=B.T,m=S.metal,y=T.yl(sl.x,sl.z),st=hex(PAL.steel,.8*T.A),dk=hex(PAL.dark,T.A);
- rectGrid(S.ground,T,sl.x,sl.z,sl.w,sl.d,0,3,3,hex(PAL.pave,.5*T.A),.035);
- for(let i=0;i<3;i++){const x=sl.x-.55+i*.55,z=sl.z+.2;box(m,x,y-.05,z,.34,.35,.26,0,st);box(m,x,y+.06,z,.4,.18,.2,0,dk);
-  for(let k=-1;k<=1;k++)cyl(m,x+k*.1,y+.3,z,.015,.01,.12,4,hex(PAL.concrete1,T.A));}
- const g0=[sl.x-.8,y+.95,sl.z-.4],g1=[sl.x+.8,y+.95,sl.z-.4];
- strut(m,[g0[0],y-.1,g0[2]],g0,.025,st);strut(m,[g1[0],y-.1,g1[2]],g1,.025,st);strut(m,g0,g1,.022,st);B.subTop=[sl.x,y+.95,sl.z-.4];
- box(S.building,sl.x+.7,y-.1,sl.z+.5,.4,.42,.36,0,hex(PAL.brick0,T.A),{lit:.3,seed:5},hex(PAL.roof0,T.A));
+ rectGrid(S.ground,T,sl.x,sl.z,sl.w,sl.d,0,3,3,hex(PAL.pave,.78*T.A),.035);
+ for(let i=0;i<3;i++){const x=sl.x-.7+i*.62,z=sl.z+.25;box(m,x,y-.05,z,.42,.44,.32,0,st);box(m,x,y+.08,z,.48,.2,.24,0,dk);
+  for(const s of[-1,1])for(let f=0;f<4;f++)box(m,x+(f-1.5)*.09,y,z+s*.2,.02,.32,.08,0,tone(st,.85));                     // radiator fins
+  for(let k=-1;k<=1;k++)cyl(m,x+k*.12,y+.39,z,.018,.012,.18,4,hex(PAL.concrete1,1.1*T.A));}
+ for(const gx of[-.85,.85]){const g0=[sl.x+gx,y+1.05,sl.z-.55-.18],g1=[sl.x+gx,y+1.05,sl.z-.55+.18];
+  strut(m,[g0[0],y-.1,g0[2]],g0,.022,st);strut(m,[g1[0],y-.1,g1[2]],g1,.022,st);strut(m,g0,g1,.02,st);}
+ strut(m,[sl.x-.85,y+1.05,sl.z-.55],[sl.x+.85,y+1.05,sl.z-.55],.018,st);B.subTop=[sl.x,y+1.05,sl.z-.55];
+ box(S.building,sl.x+.8,y-.1,sl.z+.62,.5,.46,.38,0,hex(PAL.brick0,T.A),{lit:.3,seed:5},hex(PAL.roof0,T.A));
  const hw=sl.w/2,hd=sl.d/2,C=[[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]];
- for(let i=0;i<4;i++){const a=C[i],e=C[(i+1)%4];
-  for(let k=0;k<5;k++){const x=sl.x+lerp(a[0],e[0],k/5),z=sl.z+lerp(a[1],e[1],k/5),yy=T.yl(x,z);strut(m,[x,yy-.03,z],[x,yy+.2,z],.008,dk);}
-  for(const hh of[.1,.19])strut(m,[sl.x+a[0],T.yl(sl.x+a[0],sl.z+a[1])+hh,sl.z+a[1]],[sl.x+e[0],T.yl(sl.x+e[0],sl.z+e[1])+hh,sl.z+e[1]],.005,dk);}
- farBox(B,'metal',sl.x,y,sl.z,1.2,.4,.5,0,st);}
+ for(let i=0;i<4;i++){const a=C[i],e=C[(i+1)%4],n=Math.max(4,Math.round(Math.hypot(e[0]-a[0],e[1]-a[1])/.35));
+  for(let k=0;k<n;k++){const x=sl.x+lerp(a[0],e[0],k/n),z=sl.z+lerp(a[1],e[1],k/n),yy=T.yl(x,z);strut(m,[x,yy-.03,z],[x,yy+.38,z],.009,dk);}
+  for(const hh of[.1,.24,.37])strut(m,[sl.x+a[0],T.yl(sl.x+a[0],sl.z+a[1])+hh,sl.z+a[1]],[sl.x+e[0],T.yl(sl.x+e[0],sl.z+e[1])+hh,sl.z+e[1]],.005,dk);}
+ farBox(B,'metal',sl.x,y,sl.z,1.6,.5,.6,0,st);}
 function pylons(B,S,mid,py){if(mid)return;const T=B.T,m=S.metal,H=2.4,st=hex(PAL.steel,.75*T.A),wc=hex(PAL.dark,.8);
  const att=(p,i)=>{const y=T.yl(p.x,p.z),px=-Math.sin(p.a),pz=Math.cos(p.a),s=i===1?1:-1;return i?[p.x+px*.42*s,y+H*.74,p.z+pz*.42*s]:[p.x,y+H,p.z];};
  const wire=(a,e)=>{let q=a;for(let k=1;k<=5;k++){const t=k/5,n=[lerp(a[0],e[0],t),lerp(a[1],e[1],t)-.88*t*(1-t),lerp(a[2],e[2],t)];strut(m,q,n,.006,wc);q=n;}};
@@ -594,13 +624,33 @@ function pylons(B,S,mid,py){if(mid)return;const T=B.T,m=S.metal,H=2.4,st=hex(PAL
   strut(m,[p.x,y+H*.82,p.z],att(p,0),.014,st);strut(m,att(p,1),att(p,2),.013,st);
   for(let i=0;i<3;i++){if(j)wire(att(py[j-1],i),att(p,i));else if(B.subTop)wire(B.subTop,att(p,i));}
   farBox(B,'metal',p.x,y,p.z,.14,H,.14,0,st);}}
-function datacenter(B,S,mid,sl){const T=B.T,b=S.building,pts=rectPts(sl.x,sl.z,sl.w,sl.d,sl.ry),s=seat(T,pts),y0=s.hi+.04,h=1.0,c=hex(PAL.concrete0,.85*T.A),rc=hex(PAL.roof0,T.A);
- prism(b,rectPts(sl.x,sl.z,sl.w+.06,sl.d+.06,sl.ry),s.lo-.15,y0,tone(c,.6));prism(b,pts,y0,y0+h,c,null,rc);
+// B2 r5 (scope: "identifiable data centre + substation"): campus yard (gravel, perimeter fence with gate) holding two long low
+// windowless halls with a service lane between them; rows of rooftop cooling fans, a ground chiller row and backup generator
+// containers at one end, loading doors, a raised cable tray running to the substation. MID = the two halls.
+function datacenter(B,S,mid,sl){const T=B.T,b=S.building,m=S.metal,ry=sl.ry,W=sl.w-.7,D1=(sl.d-.6-.3)/2,c=hex(PAL.concrete1,.82*T.A),rc=hex('#53585C',T.A),st=hex(PAL.steel,.85*T.A),dk=hex(PAL.dark,T.A);
+ const at=(lx,lz)=>{const o=rotP(lx,lz,ry);return[sl.x+o[0],sl.z+o[1]];},y=T.yl(sl.x,sl.z);let lo=1e9,hi=-1e9;
+ for(const s of[-1,1]){const p=at(-.12,s*(D1/2+.15)),pts=rectPts(p[0],p[1],W,D1,ry),q=seat(T,pts);lo=Math.min(lo,q.lo);hi=Math.max(hi,q.hi);
+  prism(b,rectPts(p[0],p[1],W+.05,D1+.05,ry),q.lo-.15,q.hi+.04,tone(c,.6));prism(b,pts,q.hi+.04,q.hi+.66,c,null,rc);   // long low windowless hall
+  if(mid)continue;const y0=q.hi+.04;box(b,p[0],y0+.62,p[1],W+.04,.06,D1+.04,ry,tone(c,.72));                              // parapet band
+  const nf=Math.max(3,Math.floor(W/.48));for(let i=0;i<nf;i++){const f=at(-.12+(i-(nf-1)/2)*W/nf,s*(D1/2+.15));                   // rooftop cooling fans
+   box(m,f[0],y0+.66,f[1],.34,.1,.34,ry,st);cyl(m,f[0],y0+.76,f[1],.13,.13,.012,10,dk);}
+  for(const e of[-1,1]){const d=at(-.12+e*W*.3,s*(D1+.155+.012));box(b,d[0],y0-.02,d[1],.3,.36,.02,ry,hex(PAL.dark,1.2*T.A));     // loading doors on the outer faces
+   const lq=at(-.12+e*W*.3,s*(D1+.155+.03));box(S.light,lq[0],y0+.38,lq[1],.04,.02,.012,ry,em(B,PAL.cool,.9));}}
  if(mid)return;
- for(const hh of[.32,.62])box(b,sl.x,y0+hh,sl.z,sl.w+.03,.07,sl.d+.03,sl.ry,tone(c,.55));
- for(let i=0;i<6;i++){const o=rotP((i-2.5)*sl.w/6.6,0,sl.ry);box(S.metal,sl.x+o[0],y0+h,sl.z+o[1],.3,.13,sl.d*.55,sl.ry,hex(PAL.steel,.8*T.A));}
- for(let i=0;i<5;i++){const o=rotP((i-2)*.55,sl.d/2+.012,sl.ry);box(S.light,sl.x+o[0],y0+.82,sl.z+o[1],.025,.025,.012,sl.ry,em(B,PAL.cool,1.5));}
- farBox(B,'building',sl.x,s.lo,sl.z,sl.w,h+.1,sl.d,sl.ry,c,rc);}
+ rectGrid(S.ground,T,sl.x,sl.z,sl.w,sl.d,ry,4,3,hex(PAL.pave,.82*T.A),.032);                                                  // gravel yard
+ for(let i=0;i<3;i++){const g=at(sl.w/2-.25,(i-1)*.42),gy=T.yl(g[0],g[1]);box(m,g[0],gy-.05,g[1],.32,.3,.34,ry,hex('#5B625A',T.A));   // backup generators
+  cyl(m,g[0],gy+.25,g[1],.025,.025,.2,5,dk);}
+ for(let i=0;i<4;i++){const h=at(-sl.w/2+.2,(i-1.5)*.36),hy=T.yl(h[0],h[1]);box(m,h[0],hy-.05,h[1],.26,.24,.3,ry,st);cyl(m,h[0],hy+.19,h[1],.09,.09,.01,8,dk);}   // chiller row
+ const hw=sl.w/2,hd=sl.d/2,C=[[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]];                                                          // perimeter fence, gate gap on one long side
+ for(let i=0;i<4;i++){const a=C[i],e=C[(i+1)%4],L2=Math.hypot(e[0]-a[0],e[1]-a[1]),n=Math.max(2,Math.round(L2/.45));
+  for(let k=0;k<n;k++){const u=k/n;if(i===0&&Math.abs(u-.5)<.12)continue;const p=at(lerp(a[0],e[0],u),lerp(a[1],e[1],u)),py=T.yl(p[0],p[1]);strut(m,[p[0],py-.03,p[1]],[p[0],py+.34,p[1]],.009,dk);}
+  for(const hh of[.12,.32]){const segs=i===0?[[0,.38],[.62,1]]:[[0,1]];for(const sg of segs){const p0=at(lerp(a[0],e[0],sg[0]),lerp(a[1],e[1],sg[0])),p1=at(lerp(a[0],e[0],sg[1]),lerp(a[1],e[1],sg[1]));
+   strut(m,[p0[0],T.yl(p0[0],p0[1])+hh,p0[1]],[p1[0],T.yl(p1[0],p1[1])+hh,p1[1]],.006,dk);}}}
+ let ss=null,sd2=1e9;for(const q of[B.L.slots.substation].concat(B.L.slots.pylons||[])){if(!q)continue;const d=Math.hypot(q.x-sl.x,q.z-sl.z);if(d<sd2){sd2=d;ss=q;}}
+ if(ss){const dx=ss.x-sl.x,dz=ss.z-sl.z,dl=Math.hypot(dx,dz);if(dl<13){const ux=dx/dl,uz=dz/dl,t0=Math.hypot(sl.w,sl.d)/2+.1,t1=dl-(ss.w?1.35:.4);   // cable tray to the grid
+  const n=Math.max(1,Math.round((t1-t0)/.9));let prev=null;for(let k=0;k<=n;k++){const t=lerp(t0,t1,k/n),x=sl.x+ux*t,z=sl.z+uz*t;
+   if(inLot(B.L,x,z,.1)||nearStreet(B.L,x,z,.05)){prev=null;continue;}const p=[x,T.yl(x,z)+.22,z];strut(m,[x,p[1]-.25,z],p,.012,dk);if(prev)strut(m,prev,p,.022,st);prev=p;}}}
+ farBox(B,'building',sl.x,lo,sl.z,sl.w-.6,hi-lo+.7,sl.d-.6,ry,c,rc);}
 
 // ======================= (12) specials: o1984 =======================
 function camPoles(B,S,mid){if(mid)return;const T=B.T,o=T.P.streetW/2+.06;
@@ -644,8 +694,8 @@ function searchlights(B,S,mid,list){const T=B.T,H=4,st=hex(PAL.steel,.6*T.A);
 function dome(B,S,mid,sl){const T=B.T,THREE=T.THREE;
  if(!B.domeG){B.domeG=new THREE.SphereGeometry(sl.r,40,14,0,TAU,0,PI/2);B.domeG.scale(1,sl.h/sl.r,1);B.M.dome.side=THREE.BackSide;}
  const m=new THREE.Mesh(B.domeG,B.M.dome);m.position.set(sl.x,-.6,sl.z);m.renderOrder=6;m.name=mid?'pt_mid_dome':'pt_dome';(mid?B.extraMid:B.extra).push(m);
- // B2 r2: faint footing band where the shell meets the ground, so the rim line reads from oblique views too (same shader)
- if(!mid){if(!B.domeB)B.domeB=new THREE.CylinderGeometry(sl.r*.995,sl.r,.7,64,1,true);const bd=new THREE.Mesh(B.domeB,B.M.dome);bd.position.set(sl.x,-.3,sl.z);bd.renderOrder=6;bd.name='pt_dome_band';B.extra.push(bd);}}
+ // B2 r5: footing band removed (it drew a bright line where the shell meets the ground)
+}
 function lampGeos(B){if(B.gLamp)return;const T=B.T,p=buf(),h=buf();cyl(p,0,-.05,0,.014,.01,.63,4,hex(PAL.dark,1));box(p,0,.57,0,.05,.012,.05,0,hex(PAL.dark,1));
  box(h,0,.586,0,.05,.03,.05,0,[1,1,1]);B.gLamp=geomOf(T,p);B.gHead=geomOf(T,h);}
 function anomaly(B,S,mid,sl){if(mid)return;const T=B.T,THREE=T.THREE;lampGeos(B);
@@ -667,8 +717,12 @@ function amphitheatre(B,S,mid,sl){const T=B.T,b=S.building,y=T.yl(sl.x,sl.z),c=h
  const span=5.25,n=mid?14:30,NR=mid?4:8,rS=1.05,rT=3.45,rO=4.4,H=1.0,P3=(r,a,h)=>[sl.x+Math.cos(a)*r,y+h,sl.z+Math.sin(a)*r];
  cyl(b,sl.x,y-.12,sl.z,rS,rS,.15,mid?12:28,tone(c,.75),tone(c,.95));                       // stage at the bottom of the bowl
  for(let k=0;k<NR;k++){const r0=lerp(rS+.12,rT,k/NR),r1=lerp(rS+.12,rT,(k+1)/NR),h=H*(k+1)/NR,tc=tone(c,.62+.42*k/NR),w=2*r1*Math.sin(span/n/2)+.03;
-  for(let i=0;i<n;i++){if(!mid&&(i===Math.floor(n/4)||i===Math.floor(n/2)||i===Math.floor(3*n/4)))continue;   // three radial aisles
-   const a=a0-span/2+(i+.5)*span/n,rm=(r0+r1)/2;box(b,sl.x+Math.cos(a)*rm,y-.14,sl.z+Math.sin(a)*rm,w,h+.14,r1-r0+.02,ryIn(a),tone(tc,.85),null,tc);}}
+  for(let i=0;i<n;i++){const a=a0-span/2+(i+.5)*span/n,rm=(r0+r1)/2;
+   if(!mid&&(i===Math.floor(n/4)||i===Math.floor(n/2)||i===Math.floor(3*n/4))){   // three radial aisles: B2 r5 paved stone steps (r4 gap showed a grass wedge)
+    box(b,sl.x+Math.cos(a)*rm,y-.14,sl.z+Math.sin(a)*rm,w,h+.14-H/NR*.5,r1-r0+.02,ryIn(a),tone(c,.8),null,tone(c,1.12));continue;}
+   box(b,sl.x+Math.cos(a)*rm,y-.14,sl.z+Math.sin(a)*rm,w,h+.14,r1-r0+.02,ryIn(a),tone(tc,.85),null,tc);}}
+ // B2 r5: the open mouth is a paved stone forecourt from the stage out to the berm foot (no grass wedge into the bowl)
+ {const m0=a0+span/2,mspan=TAU-span,nm=mid?3:8;for(let i=0;i<nm;i++){const a=m0+i*mspan/nm,e=m0+(i+1)*mspan/nm;quadUp(b,P3(rS,a,-.035),P3(rS,e,-.035),P3(rO,e,-.035),P3(rO,a,-.035),tone(c,.9));}}
  // berm: flat rim walk + outer grassed slope down to the commons (open at the mouth)
  for(let i=0;i<n;i++){const a=a0-span/2+i*span/n,e=a+span/n;
   quadUp(b,P3(rT,a,H),P3(rT,e,H),P3(rT+.3,e,H),P3(rT+.3,a,H),tone(c,1.05));
@@ -695,12 +749,18 @@ function library(B,S,mid,sl){const T=B.T,b=S.building,pts=rectPts(sl.x,sl.z,sl.w
  farBox(B,'building',sl.x,s.lo,sl.z,sl.w,h+.2,sl.d,sl.ry,c,rc);}
 
 // ======================= (15) specials: zookeeper =======================
-function enclosure(B,S,mid,sl){const T=B.T,n=mid?24:48,r=sl.r,top=T.yl(sl.x,sl.z)+sl.h,gc=hex(PAL.glass,1),st=hex(PAL.steel,.9*T.A);
- const P3=(i,up)=>{const a=(i%n)*TAU/n,x=sl.x+Math.cos(a)*r,z=sl.z+Math.sin(a)*r;return[x,up?top:T.yl(x,z)-.12,z];};
- for(let i=0;i<n;i++){quad(S.glass,P3(i,0),P3(i+1,0),P3(i+1,1),P3(i,1),gc,null);tri(S.glass,[sl.x,top,sl.z],P3(i,1),P3(i+1,1),gc);}
+// B2 r5 (vision r4: \"reads as a wireframe cage\", bright stray rib + base line across houses): a calm glass garden reserve -
+// low planted stone plinth, faint glass from the plinth up, only 8 thin dark mullions, a thin dark eaves ring, no roof spokes,
+// a hedge + shrub belt along the inside of the plinth. FAR keeps 8 thin posts.
+function enclosure(B,S,mid,sl){const T=B.T,n=mid?24:48,r=sl.r,top=T.yl(sl.x,sl.z)+sl.h,gc=hex('#8FA6A8',1),mu=hex('#4A5258',T.A),stn=hex(PAL.stone,.95*T.A),PH=.32;
+ const P3=(i,up,rr)=>{const a=(i%n)*TAU/n,R0=rr||r,x=sl.x+Math.cos(a)*R0,z=sl.z+Math.sin(a)*R0;return[x,up===1?top:up===2?T.yl(x,z)+PH:T.yl(x,z)-.12,z];};
+ for(let i=0;i<n;i++){quad(S.glass,P3(i,2),P3(i+1,2),P3(i+1,1),P3(i,1),gc,null);tri(S.glass,[sl.x,top,sl.z],P3(i,1),P3(i+1,1),gc);
+  const a=(i+.5)*TAU/n,x=sl.x+Math.cos(a)*r,z=sl.z+Math.sin(a)*r;box(S.building,x,T.yl(x,z)-.12,z,2*r*Math.sin(PI/n)+.03,PH+.12,.26,-a+PI/2,stn,null,tone(stn,1.08));}
  if(mid)return;
- for(let i=0;i<n;i++){strut(S.metal,P3(i,1),P3(i+1,1),.022,st);if(!(i&1))strut(S.metal,P3(i,0),P3(i,1),.024,st);
-  if(i%8===0){strut(S.metal,P3(i,1),[sl.x,top,sl.z],.016,st);const p=P3(i,0);farBox(B,'metal',p[0],p[1],p[2],.12,sl.h,.12,0,st);}}}
+ for(let i=0;i<n;i++){strut(S.metal,P3(i,1),P3(i+1,1),.012,mu);if(i%6===0){strut(S.metal,P3(i,2),P3(i,1),.012,mu);const p=P3(i,0);farBox(B,'metal',p[0],p[1],p[2],.06,sl.h,.06,0,mu);}
+  const a=(i+.5)*TAU/n,ri=r-.32,x=sl.x+Math.cos(a)*ri,z=sl.z+Math.sin(a)*ri,y=T.yl(x,z);
+  box(S.foliage,x,y-.04,z,2*ri*Math.sin(PI/n)+.02,.24,.2,-a+PI/2,hex(PAL.foliage,1.05*T.A),null,hex(PAL.foliage,1.2*T.A));
+  if(i%3===1){const q=r-.62,sx=sl.x+Math.cos(a)*q,sz=sl.z+Math.sin(a)*q;if(!inLot(B.L,sx,sz,.15))cyl(S.foliage,sx,T.yl(sx,sz)-.03,sz,.2,0,.55+.25*hash2(i,3.1),6,hex(PAL.foliage,(.95+.2*hash2(i,1.7))*T.A));}}}
 function gardens(B,S,mid){if(mid)return;const T=B.T;
  for(const g of B.L.gardens){rectGrid(S.ground,T,g.x,g.z,g.w,g.d,g.ry,2,2,hex(PAL.grass,1.3*T.A),.03);
   for(let i=-1;i<=1;i++){const o=rotP(i*g.w*.28,.05,g.ry),x=g.x+o[0],z=g.z+o[1];box(S.ground,x,T.yl(x,z)-.04,z,.17,.08,g.d*.62,g.ry,hex(PAL.soil,T.A),null,hex(PAL.foliage,(1+.2*i)*T.A));}
@@ -761,8 +821,13 @@ function propsTrees(B){const T=B.T,L=B.L,fc=hex(PAL.foliage,1);
  for(let i=0;i<L.trees.length;i+=step){const t=L.trees[i],y=T.yl(t.x,t.z);cyl(B.D.foliage,t.x,y,t.z,.5*t.s,0,1.0*t.s,5,tone(fc,.9*T.A));}}
 // B2 r3 lamp bloom (B1 vision: oversized): dimmer heads (1.8 -> 1.1), engine glow sprites at half size (dist 4 -> 2.2,
 // sprite = dist*.25) and lower intensity, FAR lamp quads fewer + smaller (row of horizontal quads read as a slab edge-on)
+// B2 r5: soft additive warm pool under each lamp (centre bright -> rim 0 via radial vertex alpha), follows the terrain
+function lampPool(B,x,z,r,yo,k){const T=B.T,b=B.N.pool,n=12,c=hex(PAL.lamp,(B.day?.06:.3)*k);T.pc[0]=x;T.pc[1]=z;T.pc[2]=r;
+ const P=a=>{const px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;return[px,T.yl(px,pz)+yo+.025,pz];},C=[x,T.yl(x,z)+yo+.025,z];
+ for(let i=0;i<n;i++)tri(b,C,P((i+1)*TAU/n),P(i*TAU/n),c);}
 function propsStreet(B){const T=B.T,L=B.L,lc=em(B,PAL.lamp,1.1),n=Math.min(L.lamps.length,160),ls=Math.max(1,Math.ceil(n/6)),fs=Math.max(1,Math.ceil(n/10));
  for(let i=0;i<n;i++){const l=L.lamps[i],y=T.yl(l.x,l.z)+(l.y||0),sc=l.k==='lantern'?.55:1;B.inst.lamp.push([l.x,y,l.z,1,sc,1,hash2(l.x,l.z)*TAU,lc]);
+  {const st=l.k==='street'&&l.tx!=null,ox=st?l.tz*l.sd*.25:0,oz=st?-l.tx*l.sd*.25:0;lampPool(B,l.x+ox,l.z+oz,l.k==='lantern'?.5:.9,l.y||0,l.k==='lantern'?.6:1);}
   if(i%ls===0)addLight(B,l.x,y+.6*sc,l.z,PAL.lamp,.5,2.2);
   if(i%fs===0){const a=.06,yy=y+.6*sc;quad(B.F.light,[l.x-a,yy,l.z+a],[l.x+a,yy,l.z+a],[l.x+a,yy,l.z-a],[l.x-a,yy,l.z-a],lc,null);}}
  for(let i=0;i<L.cars.length;i++){const c=L.cars[i];B.inst.car.push([c.x,T.yl(c.x,c.z)+.02,c.z,1,1,1,c.ry,hex(CARC[Math.floor(hash2(c.x,c.z)*CARC.length)],T.A)]);}
@@ -783,7 +848,7 @@ function propGeos(B){const T=B.T,fc=hex(PAL.foliage,1),tk=hex(PAL.timber,.6),t0=
  box(bench,0,.085,0,.28,.022,.085,0,tb);box(bench,0,.11,-.04,.28,.075,.016,0,tb);for(const s of[-1,1])box(bench,s*.11,0,0,.02,.085,.07,0,dk);
  cyl(bin,0,0,0,.032,.036,.1,6,hex('#4A5056',1),hex('#2A2E33',1));
  for(const s of[-1,1])box(sh,s*.24,0,-.05,.025,.3,.025,0,dk);box(sh,0,.3,0,.56,.022,.22,0,hex(PAL.steel,.8));box(sh,0,.04,-.09,.5,.24,.012,0,gl);box(sh,0,.06,-.04,.36,.02,.07,0,tb);
- return{tree0:geomOf(T,t0),tree1:geomOf(T,t1),car:geomOf(T,car),pole:geomOf(T,pole),beam:beamGeo(T),bench:geomOf(T,bench),bin:geomOf(T,bin),shelter:geomOf(T,sh)};}
+ return{tree0:geomOf(T,t0),tree1:geomOf(T,t1),car:geomOf(T,car).scale(1.22,1.25,1.22),pole:geomOf(T,pole),beam:beamGeo(T),bench:geomOf(T,bench),bin:geomOf(T,bin),shelter:geomOf(T,sh)};}
 
 // ======================= (17b) B2 r4: ending-fidelity cues + fineness of detail (NEAR unless noted) =======================
 // Owner after r3: "image precision, fineness of detail, rendering that matches each ending's description". Cue list per
@@ -794,7 +859,7 @@ const PEOC=['#6E6A64','#4D5560','#7A6250','#5E6B5A','#8A8478','#3E4450','#9A7E62
 const PEO={normaltech:{st:.95,walk:26,bench:.5,bot:5,drone:3,spd:.1},o1984:{st:.08,walk:3,bench:0,file:4,spd:.08},protector:{st:.5,walk:16,bench:.55,spd:.06},
  egalitarian:{st:.4,walk:18,bench:.6,spd:.08},zookeeper:{st:.5,walk:4,bench:.6,bot:6,spd:.05},descendants:{st:.16,walk:5,bench:.3,spd:.045}};
 // one tiny figure (~1.9 m): legs, torso (clothing colour), head; seat=1 -> seated (short legs); s = overall scale (children .7)
-function personAt(b,x,y,z,ry,c,seat,s){s=(s||1)*1.15;const lg=(seat?.03:.085)*s;box(b,x,y,z,.05*s,lg,.03*s,ry,tone(c,.5),null,false);
+function personAt(b,x,y,z,ry,c,seat,s){s=(s||1)*1.55;const lg=(seat?.03:.085)*s;box(b,x,y,z,.05*s,lg,.03*s,ry,tone(c,.5),null,false);   // B2 r5: 1.15 -> 1.55 (street-level readability)
  box(b,x,y+lg,z,.062*s,.068*s,.036*s,ry,c,null,false);box(b,x,y+lg+.068*s,z,.034*s,.036*s,.034*s,ry,SKIN);}
 // o1984 (cue 5, "bans certain kinds of AI research"): one fenced block whose slabs are unlit; set BEFORE NEAR + MID emit
 function r4Prep(T,L){if(T.id!=='o1984')return;const p=T.R/3.5,C=[[2,1],[1,-2],[-2,-1],[-1,2],[2,-1],[-2,1]],k=Math.floor(hash2(T.seed*.71,2.3)*C.length);
@@ -838,7 +903,7 @@ function lotRelief(B,l,S,y0,y1,wc,rc,rk,rh,at){const T=B.T,L=B.L,b=S.building,k=
    cyl(S.foliage,q[0],yq-.02,q[1],.09,.12,.07,6,hex(PAL.foliage,1.05*T.A));cyl(S.foliage,q[0],yq+.05,q[1],.12,.03,.1,6,hex(PAL.foliage,1.15*T.A));}}}
 // static people (merged, foliage family) on pavements, benches, squares; walkers + bots + drones collected for instancing
 function propsPeople(B){const T=B.T,L=B.L,R=T.R,cf=PEO[T.id]||PEO.normaltech,r=B.r4,id=T.id,f=B.N.foliage,I=B.inst;
- const col=i=>hex(id==='o1984'?'#5C6066':PEOC[i%PEOC.length],T.A*(.85+.3*r()));let np=0;
+ const col=i=>hex(id==='o1984'?'#5C6066':PEOC[i%PEOC.length],T.A*(1.15+.35*r()));let np=0;   // B2 r5: brighter clothing (was .85 + .3 r)
  const inB=B.inB=(x,z)=>{const q=Math.hypot(x,z);return q<R-.6&&q<T.bAt(x,z)*1.04;};B.peoCol=col;
  const put=B.put=(x,z,ry,seat,s,c)=>{if(!inB(x,z))return false;personAt(f,x,T.yl(x,z)+(seat?.075:0),z,ry,c||col(np),seat,s);np++;return true;};
  for(let i=0;i<L.lamps.length;i++){const l=L.lamps[i];if(l.k!=='street'||l.tx==null)continue;if(r()>cf.st)continue;
@@ -942,24 +1007,28 @@ function r4Zoo(B){const T=B.T,L=B.L,S=B.N,THREE=T.THREE,r=B.r4,sl=L.slots.enclos
  // airlock / supply hatch in the enclosure wall (glass vestibule, frame, dark door) - no road leads out
  const aH=hash2(T.seed*.37,5.5)*TAU,hx=sl.x+Math.cos(aH)*sl.r,hz=sl.z+Math.sin(aH)*sl.r,hy=T.yl(hx,hz),ry=ryIn(aH);
  box(S.building,hx,hy-.05,hz,.9,.95,.6,ry,tone(pale,.92),null,tone(pale,.8));box(S.building,hx,hy+.9,hz,1.0,.07,.7,ry,st);   // solid lock chamber through the wall
+ B.solids.push({n:'airlock',x:hx,z:hz,w:1.0,d:.7,ry:ry});if(pad)B.solids.push({n:'podpad',x:pad[0],z:pad[1],r:.34});
  for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]]){const o=rotP(c[0]*.45,c[1]*.3,ry);strut(S.metal,[hx+o[0],hy-.05,hz+o[1]],[hx+o[0],hy+.9,hz+o[1]],.02,st);}
  {for(const q of[.31,-.31]){const o=rotP(0,q,ry);box(S.building,hx+o[0],hy-.05,hz+o[1],.42,.72,.02,ry,hex(PAL.dark,T.A));}
   const o=rotP(0,-.32,ry);box(S.light,hx+o[0],hy+.74,hz+o[1],.3,.03,.012,ry,em(B,PAL.cool,.9));}
  // people standing at the glass looking out; children at the playground
- for(let i=0;i<6;i++){const a=aH+.7+i*.85+.2*r(),x=sl.x+Math.cos(a)*(sl.r-.28),z=sl.z+Math.sin(a)*(sl.r-.28);if(inLot(L,x,z,.05))continue;
+ for(let i=0;i<6;i++){const a=aH+.7+i*.85+.2*r(),x=sl.x+Math.cos(a)*(sl.r-.52),z=sl.z+Math.sin(a)*(sl.r-.52);if(inLot(L,x,z,.05))continue;   // r5: inside the hedge belt
   personAt(f,x,T.yl(x,z),z,Math.atan2(Math.cos(a),Math.sin(a)),B.peoCol(i+70));}
  if(pg)for(let i=0;i<4;i++){const o=rotP((r()-.5)*1.2,(r()-.5)*1.0,pg.ry||0),x=pg.x+o[0],z=pg.z+o[1];personAt(f,x,T.yl(x,z),z,r()*TAU,B.peoCol(i+80),0,.68);}}
 // descendants: pale slender machine spires growing at the seam edge of the old quarter (MID too: silhouette), few cool dots
-function seamSpires(B,S,mid){const T=B.T,L=B.L,sl=L.slots.seam;if(!sl)return;const a=sl.a==null?Math.atan2(sl.z,sl.x):sl.a,ox=Math.cos(a),oz=Math.sin(a),pc=hex('#B6BEC4',T.A),out=[];
- // vision r4: "radio-mast cluster on one spot" -> spread along the edge of the quarter (lateral -2.3..2.3), skip lots, dimmer
- const SP=[[.55,-2.3,3.0],[.85,-1.15,4.0],[1.0,0,4.9],[.85,1.15,3.6],[.55,2.3,2.6]];
- for(const q of SP){let x=0,z=0,ok=false;for(const dr of[0,.35,-.35,.7]){x=sl.x+ox*(q[0]+dr)-oz*q[1];z=sl.z+oz*(q[0]+dr)+ox*q[1];if(Math.hypot(x,z)<T.R-.5&&!inLot(L,x,z,.22)){ok=true;break;}}
-  if(!ok)continue;const y=T.yl(x,z);out.push([x,y,z,q[2]]);
-  cyl(S.building,x,y-.08,z,.17,.045,q[2],6,pc,true);if(mid)continue;cyl(S.building,x,y-.08,z,.27,.17,.24,6,tone(pc,.8));
-  if(out.length%2)for(let k=1;k<=2;k++)box(S.light,x,y+q[2]*k*.3,z,.028,.028,.028,0,em(B,PAL.cool,.8));farBox(B,'metal',x,y,z,.2,q[2],.2,0,pc);}
- if(mid)return;for(let i=1;i<out.length;i++){const p=out[i-1],e=out[i],h=Math.min(p[3],e[3])*.55;strut(S.building,[p[0],p[1]+h,p[2]],[e[0],e[1]+h*.9,e[2]],.03,pc);}
- // low pale ribs running from the spires into the quarter (the machine city growing out of it)
- for(const p of out){const x1=p[0]-ox*1.1,z1=p[2]-oz*1.1;box(S.building,(p[0]+x1)/2,T.yl((p[0]+x1)/2,(p[2]+z1)/2)-.04,(p[2]+z1)/2,.07,.08,1.1,Math.atan2(ox,oz),tone(pc,.9));}}
+// B2 r5: integrated machine structures - each spire stands on an old-stone plinth with a pale machine collar, three thin fins,
+// low conduits join the plinths along the edge (positions reserved in layOld: L.spires, no lot can touch them), one dim cool dot
+function seamSpires(B,S,mid){const T=B.T,L=B.L,sl=L.slots.seam;if(!sl||!L.spires)return;const a=sl.a==null?Math.atan2(sl.z,sl.x):sl.a,pc=hex('#B6BEC4',T.A),stn=hex(PAL.stone,T.A),out=[];
+ for(const q of L.spires){const x=q[0],z=q[1],H=q[2],y=T.yl(x,z);out.push([x,y,z,H]);
+  box(S.building,x,y-.12,z,.62,.42,.62,a,tone(stn,.92),null,tone(stn,1.05));                         // old-stone plinth
+  cyl(S.building,x,y+.3,z,.3,.2,.34,8,tone(pc,.85),true);cyl(S.building,x,y+.6,z,.17,.045,H-.6,6,pc,true);   // collar + spire
+  if(mid)continue;
+  for(let k=0;k<3;k++){const b=a+k*TAU/3,o=[Math.cos(b)*.15,Math.sin(b)*.15];box(S.building,x+o[0],y+.62,z+o[1],.025,(H-.6)*.55,.1,-b,tone(pc,.92));}
+  if(out.length===3)box(S.light,x,y+H*.62,z,.03,.03,.03,0,em(B,PAL.cool,.6));
+  farBox(B,'metal',x,y,z,.24,H,.24,0,pc);}
+ for(let i=1;i<out.length;i++){const p=out[i-1],e=out[i],mx=(p[0]+e[0])/2,mz=(p[2]+e[2])/2,L2=Math.hypot(e[0]-p[0],e[2]-p[2]),ry=Math.atan2(e[0]-p[0],e[2]-p[2]);
+  box(S.building,mx,T.yl(mx,mz)-.06,mz,.2,.22,L2-.5,ry,tone(pc,.78),null,tone(pc,.95));                   // low conduit hall between plinths
+  if(mid)continue;B.solids.push({n:'conduit',x:mx,z:mz,w:.2,d:L2-.5,ry:ry});const h=Math.min(p[3],e[3])*.55;strut(S.building,[p[0],p[1]+h,p[2]],[e[0],e[1]+h*.9,e[2]],.03,pc);}}
 function r4Desc(B){const T=B.T,L=B.L,S=B.N,pl=L.slots.plaza,stn=hex(PAL.stone,T.A);seamSpires(B,S,false);if(!pl)return;
  // planters with shrubs around the plaza (kept tidy), lit portico on the lot nearest the plaza
  for(let i=0;i<8;i++){const a=i*TAU/8+.2,x=pl.x+Math.cos(a)*(pl.r-.35),z=pl.z+Math.sin(a)*(pl.r-.35),y=T.yl(x,z);if(nearStreet(L,x,z,.05))continue;
@@ -984,7 +1053,7 @@ function r4Geos(B){const T=B.T,pe=buf(),bo=buf(),dr=buf(),dk=hex(PAL.dark,1);
  personAt(pe,0,0,0,0,[1,1,1]);box(bo,0,0,0,.075,.05,.1,0,[1,1,1]);box(bo,0,.05,-.015,.06,.02,.05,0,[.5,.52,.55]);
  box(dr,0,0,0,.06,.022,.06,0,dk);box(dr,0,.008,0,.24,.008,.016,PI/4,dk);box(dr,0,.008,0,.24,.008,.016,-PI/4,dk);
  for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]])box(dr,c[0]*.085,.016,c[1]*.085,.06,.004,.06,0,[.5,.52,.56]);
- return{person:geomOf(T,pe),bot:geomOf(T,bo),drone:geomOf(T,dr)};}
+ return{person:geomOf(T,pe),bot:geomOf(T,bo).scale(1.5,1.5,1.5),drone:geomOf(T,dr).scale(1.4,1.4,1.4)};}   // B2 r5: bots / drones larger
 
 // ======================= (18) merge: near, mid, far =======================
 function wrap(B,name){const THREE=B.T.THREE,g=new THREE.Group(),inner=new THREE.Group();g.name=name;inner.name=name+'_rot';inner.rotation.y=B.T.rot;g.add(inner);return{g:g,inner:inner};}
@@ -1009,9 +1078,9 @@ function geomRange(T,b,t0,t1){const THREE=T.THREE,g=new THREE.BufferGeometry(),a
  if(b.w){const aw=t0*12,nw=(t1-t0)*12,W=new Float32Array(nw);for(let i=0;i<nw;i++)W[i]=b.w[aw+i];g.setAttribute('aWin',new THREE.BufferAttribute(W,4));}
  g.computeBoundingSphere();return g;}
 function nearJobs(B){const W=B._W=wrap(B,'pt_near'),jobs=[],THREE=B.T.THREE;B.casters=[];
- for(const k of['ground','building','metal','light','foliage','glass']){const b=B.N[k],nt=b?bufTris(b):0;if(!nt)continue;const CK=k==='ground'?4000:CHUNK;   // B2 r3: RGBA ground chunks smaller (cold 10.6 ms)
+ for(const k of['ground','building','metal','light','foliage','glass','pool']){const b=B.N[k],nt=b?bufTris(b):0;if(!nt)continue;const CK=k==='ground'?4000:CHUNK;   // B2 r3: RGBA ground chunks smaller (cold 10.6 ms)
   for(let t=0;t<nt;t+=CK){const t0=t,t1=Math.min(nt,t+CK),sfx=nt>CK?'_'+(t0/CK):'';
-   jobs.push(()=>{const m=new THREE.Mesh(geomRange(B.T,b,t0,t1),B.M[k]);m.name='pt_'+k+sfx;m.receiveShadow=k!=='light'&&k!=='glass';if(k==='glass')m.renderOrder=3;if(k==='ground')m.renderOrder=1+t0/CK*.001;
+   jobs.push(()=>{const m=new THREE.Mesh(geomRange(B.T,b,t0,t1),B.M[k]);m.name='pt_'+k+sfx;m.receiveShadow=k!=='light'&&k!=='glass'&&k!=='pool';if(k==='glass')m.renderOrder=3;if(k==='ground')m.renderOrder=1+t0/CK*.001;if(k==='pool')m.renderOrder=2;
     if(k==='building'||k==='metal'){m.castShadow=true;B.casters.push(m);}W.inner.add(m);});}}
  return jobs;}
 function mergeNearB(B){const W=B._W,I=B.inst,G=propGeos(B),add=m=>{if(m)W.inner.add(m);return m;};
@@ -1035,6 +1104,16 @@ function mergeFar(B){const T=B.T,lots=B.L.lots.slice().sort((a,b)=>b.w*b.d*b.st-
  B.far=out;B.farTris=tris;}
 
 // ======================= (19) result, buildSteps, build =======================
+// B2 r5: footprints in the LAYOUT frame (before site.rot) for the conformance overlap check (tools/protown_conformance.js):
+// lots = wall rect + eaves [x,z,w,d,ry], solids = special structures {n,x,z,w,d,ry}|{n,x,z,r}, gardens [x,z,w,d,ry,ownerLot]
+const SOLID={regulator:1,substation:1,datacenter:1,ministry:1,workshop:1,library:1,amphitheatre:1,playground:1,tree:1,seam:1};
+function footOf(B){const L=B.L,sol=[],SR={amphitheatre:4.4,seam:.55,tree:.4,playground:.85};
+ for(const n in L.slots){const s=L.slots[n];if(!SOLID[n]||!s||Array.isArray(s))continue;
+  if(s.w&&s.d)sol.push({n:n,x:s.x,z:s.z,w:s.w,d:s.d,ry:s.ry||0});else sol.push({n:n,x:s.x,z:s.z,r:SR[n]||s.r});}
+ for(const p of(L.slots.pylons||[]))sol.push({n:'pylon',x:p.x,z:p.z,r:.2});
+ for(const q of(L.spires||[]))sol.push({n:'spire',x:q[0],z:q[1],r:.44});
+ for(const s of B.solids)sol.push(s);
+ return{frame:'layout',lots:L.lots.map(l=>[l.x,l.z,l.w+.1,l.d+.1,l.ry,l.out?1:0]),solids:sol,gardens:L.gardens.map(g=>[g.x,g.z,g.w,g.d,g.ry,g.o==null?-1:g.o])};}
 function emptyResult(id,msg){perr(msg);return{near:null,mid:null,far:[],casters:[],movers:[],lights:[],stats:{tris:0,ms:0,nearTris:0,midTris:0,farTris:0,nearDraws:0,midDraws:0,steps:[]},
  anim:function(){},anchors:{square:null,seam:null,entries:[]},keepOut:[],uniforms:{uT:{value:0},uOut:{value:0},uLit:{value:1}},ending:id};}
 function finalize(B,steps,ms){const T=B.T,L=B.L,U=B.U,an=B.anims,P3=(x,z,y)=>{const q=T.toLocal(x,z);return{x:q[0],y:y==null?T.yl(x,z):y,z:q[1]};};
@@ -1046,7 +1125,7 @@ function finalize(B,steps,ms){const T=B.T,L=B.L,U=B.U,an=B.anims,P3=(x,z,y)=>{co
   anim:function(t){t=+t||0;U.uT.value=t;for(let i=0;i<an.length;i++)an[i](t);},
   anchors:{square:P3(L.anchors.square[0],L.anchors.square[1]),seam:L.anchors.seam?P3(L.anchors.seam[0],L.anchors.seam[1]):null,entries:L.entries.map(e=>P3(e.x,e.z))},
   keepOut:L.ko.map(k=>{const q=T.toLocal(k.x,k.z);return{x:q[0],z:q[1],r:k.r};}),
-  uniforms:{uT:U.uT,uOut:U.uOut,uLit:U.uLit},ending:T.id,matsUsed:B.used};
+  uniforms:{uT:U.uT,uOut:U.uOut,uLit:U.uLit},ending:T.id,matsUsed:B.used,footprints:safe('footprints',()=>footOf(B))};
  safe('anim(0)',()=>res.anim(0));
  PT.info.last={ending:T.id,stats:res.stats};PT.info.matsUsed=B.used;return res;}
 // B2 r2: time-sliced steps. SL = slice budget per step (ms, site.sliceMs overrides); loops stop starting new work once SL is

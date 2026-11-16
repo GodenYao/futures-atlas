@@ -17,6 +17,8 @@ const NE=[.004,.004,.496,.496],LA=[.504,.004,.996,.496],LB=[.004,.504,.496,.996]
 const W1=[1,1,1],Z3=[0,0,0];
 let TEX=null,TEXN=1024,MAT=null,MATG=null,MATH=null,DEP=null,BLUE=true,HI=true,RN=28,BARKC=W1,FRUITC=W1,PAL=null;
 const GEO={},REC=[],IL={},SETS={},ALL=[];
+// B1 r5: distance-tiered flora in the Reversion close-up (?rvfl=0 = old whole-map LOD set; ?rvfd = full-card radius around RV; ?fbk = far band tone)
+const QF=new URLSearchParams(location.search),RVTIER=QF.get('rvfl')!=='0',RVFD=+(QF.get('rvfd')||60),FBK=+(QF.get('fbk')||.8),BAND=[];
 const M4=new THREE.Matrix4(),Q4=new THREE.Quaternion(),EU=new THREE.Euler(),V3=new THREE.Vector3(),S3=new THREE.Vector3(),TC=new THREE.Color(),TH=new THREE.Color();
 
 // ======================= (1) GPU atlas bake =======================
@@ -227,11 +229,31 @@ function mkIM(geo,list,cast,grass,mat){const n=list.length,im=new THREE.Instance
  im.castShadow=!!cast;im.receiveShadow=true;im.frustumCulled=false;if(cast)im.customDepthMaterial=DEP;im.name='pf_flora';FA.SC.add(im);ALL.push(im);return im;}
 // per archetype: m1 = LOD of [others | near GK] (count switches the near-GK tail off in the GK close-up), m2 = LOD of [near RV],
 // ng / nr = full-card sets near Gatekeeper / Reversion (visible only in that close-up). Tufts have no LOD set (none in the world view).
-function meshes(){for(const k of KINDS){const L=IL[k];if(!L||!L.length)continue;const O=[],G=[],V=[];
+function meshes(){const RV=FA.RV,dR=e=>RV?Math.hypot(e[0]-RV.x,e[2]-RV.z):0,FB=[];
+ for(const k of KINDS){const L=IL[k];if(!L||!L.length)continue;let O=[];const G=[],V=[];
   for(const e of L)(nearC(e[0],e[2],FA.GK)?G:nearC(e[0],e[2],FA.RV)?V:O).push(e);
-  const s=SETS[k]={n0:O.length,n1:O.length+G.length,g:G.length,v:V.length,big:k==='conifer'||k==='broad'},tf=k==='tuft',hm=k==='hedge'?MATH:null;
+  // B1 r5: O sorted by distance to Reversion -> in the RV close-up m1.count = the instances within RVFD (the rest is the far band)
+  if(RVTIER){O=O.map(e=>[dR(e),e]).sort((a,b)=>a[0]-b[0]).map(p=>p[1]);}
+  let nR=O.length;if(RVTIER){nR=0;while(nR<O.length&&dR(O[nR])<RVFD)nR++;if(k!=='hedge'&&k!=='shrub')for(let i=nR;i<O.length;i++)FB.push([k,O[i]]);}
+  const s=SETS[k]={n0:O.length,n1:O.length+G.length,nR:nR,g:G.length,v:V.length,big:k==='conifer'||k==='broad'},tf=k==='tuft',hm=k==='hedge'?MATH:null;
   if(!tf){if(s.n1)s.m1=mkIM(GEO[k][1],O.concat(G),s.big,false,hm);if(V.length)s.m2=mkIM(GEO[k][1],V,s.big,false,hm);}
-  if(G.length)s.ng=mkIM(GEO[k][0],G,!tf,tf,hm);if(V.length)s.nr=mkIM(GEO[k][0],V,!tf,tf,hm);}}
+  if(G.length)s.ng=mkIM(GEO[k][0],G,!tf,tf,hm);if(V.length)s.nr=mkIM(GEO[k][0],V,!tf,tf,hm);}
+ if(FB.length)farBand(FB);}
+// B1 r5 RV close far band: every tree beyond RVFD (60 u) from Reversion as ONE cheap faceted silhouette (10 tris instead of the
+// 22-36 tri LOD cards), no shadows, visible only in the RV close-up. Keeps the horizon tree line.
+function farBand(FB){
+ // hand-built fans (no degenerate cone-tip quads): conifer = two stacked 5-sided pyramids (10 tris), broad = 5-sided bicone (10 tris)
+ const fan=(P,r,y0,y1,n,a0,dn)=>{for(let i=0;i<n;i++){const a=a0+i/n*6.2832,b=a0+(i+1)/n*6.2832;const p=[Math.cos(a)*r,y0,Math.sin(a)*r],q=[Math.cos(b)*r,y0,Math.sin(b)*r];
+   if(dn)P.push(...p,0,y1,0,...q);else P.push(...q,0,y1,0,...p);}};
+ const geo=P=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.computeVertexNormals();return g;};
+ const pc=[];fan(pc,.42,.2,.8,5,0,false);fan(pc,.3,.55,1.0,5,.6,false);const cone=geo(pc);
+ const pb=[];fan(pb,.5,.62,1.0,5,0,false);fan(pb,.5,.62,.24,5,0,true);const bic=geo(pb);
+ const mat=new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.95,metalness:0,flatShading:true,side:THREE.DoubleSide,envMapIntensity:.6});
+ const mk=(g,list)=>{if(!list.length)return;const im=new THREE.InstancedMesh(g,mat,list.length),cc=new Float32Array(list.length*3);
+  list.forEach((e,i)=>{Q4.setFromAxisAngle(V3.set(0,1,0),e[6]);const w=e[3]*NW[e.k]||e[3];M4.compose(V3.set(e[0],e[1],e[2]),Q4,S3.set(w,e[4],w));im.setMatrixAt(i,M4);
+   cc[i*3]=e[7]*FBK;cc[i*3+1]=e[8]*FBK;cc[i*3+2]=e[9]*FBK;});
+  im.instanceColor=new THREE.InstancedBufferAttribute(cc,3);im.castShadow=false;im.receiveShadow=true;im.frustumCulled=false;im.visible=false;im.name='pf_farband';FA.SC.add(im);ALL.push(im);BAND.push(im);};
+ const C1=[],C2=[];for(const p of FB){const e=p[1].slice();e.k=p[0];(p[0]==='conifer'?C1:C2).push(e);}mk(cone,C1);mk(bic,C2);PF.info.farBand=FB.length;}
 // last resort: the old look (faceted crowns + trunks, 2 instanced draws) so nothing disappears
 function fallback(){const L=[];for(const k of KINDS)if(k!=='tuft'&&IL[k])for(const e of IL[k])L.push(e);if(!L.length)return;
  const cn=new THREE.ConeGeometry(.36,.78,6);cn.translate(0,.6,0);const tk=new THREE.CylinderGeometry(.03,.045,.3,5);tk.translate(0,.15,0);
@@ -257,8 +279,9 @@ function build(){const t0=now();if(!PF.on)return PF.info;
  PF.info.buildMs=Math.round(now()-t0);PF.info.tier=FA.Q||'high';if(FA.VIEW)setView();return PF.info;}
 function setView(){if(!PF.on)return;const cl=FA.VIEW==='close',g=cl&&FA.CITY==='gatekeeper',r=cl&&FA.CITY==='reversion';
  for(const k in SETS){const s=SETS[k];
-  if(s.m1){s.m1.count=g?s.n0:s.n1;s.m1.visible=s.m1.count>0;}
+  if(s.m1){s.m1.count=g?s.n0:r&&RVTIER?s.nR:s.n1;s.m1.visible=s.m1.count>0;}
   if(s.m2)s.m2.visible=!r;if(s.ng)s.ng.visible=g;if(s.nr)s.nr.visible=r;}
+ for(const b of BAND)b.visible=r&&RVTIER;
  FA.shadowDirty=true;}
 function moving(){if(!PF.on||FA.VIEW!=='close'||!FA.TU||!(FA.TU.uAn.value>0)||!(PF.uWind.value>0))return false;
  const g=FA.CITY==='gatekeeper';for(const k in SETS){const s=SETS[k];if(g?s.ng:s.nr)return true;}return false;}

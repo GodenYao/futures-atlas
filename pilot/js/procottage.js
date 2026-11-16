@@ -49,12 +49,13 @@ const BAKE_FS=[
 // 7 compacted dirt
 ' else{float n=pn(u*5.,vec2(5.))*.4+pn(u*20.,vec2(20.))*.35+pn(u*70.,vec2(70.))*.25;float pb=smoothstep(.72,.8,pn(u*34.,vec2(34.)));c=vec3(.72+.24*n)+.04*pb;h=n*.7+pb*.3;}',
 ' gl_FragColor=vec4(c,h);}'].join('\n');
-function bake(){const t0=performance.now(),R=FA.R,sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+let BAKED=null;   // B1 r5: seed-independent bake -> once, reused by every stand-in build
+function bake(){if(BAKED){TEX=BAKED;PK.info.bakeMs=0;return;}const t0=performance.now(),R=FA.R,sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
  const mat=new THREE.ShaderMaterial({uniforms:{fam:{value:0}},vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:BAKE_FS,depthTest:false,depthWrite:false});
  const q=new THREE.Mesh(new THREE.PlaneGeometry(2,2),mat);q.frustumCulled=false;sc.add(q);const prev=R.getRenderTarget();TEX=[];
  [256,256,512,512,512,256,256,256].forEach((N,f)=>{const rt=new THREE.WebGLRenderTarget(N,N,{depthBuffer:false,generateMipmaps:true,minFilter:THREE.LinearMipmapLinearFilter,magFilter:THREE.LinearFilter,wrapS:THREE.RepeatWrapping,wrapT:THREE.RepeatWrapping,anisotropy:4});
   mat.uniforms.fam.value=f;R.setRenderTarget(rt);R.render(sc,cam);TEX.push(rt.texture);});
- R.setRenderTarget(prev);mat.dispose();q.geometry.dispose();PK.info.bakeMs=Math.round(performance.now()-t0);}
+ R.setRenderTarget(prev);mat.dispose();q.geometry.dispose();BAKED=TEX;PK.info.bakeMs=Math.round(performance.now()-t0);}
 
 // ======================= (2) materials =======================
 // world-space projection from vFogWP (patched fog chunks, as procity.js): u = distance along the horizontal face tangent, v = world y
@@ -327,12 +328,18 @@ function result(D){const vx=D.vx,vz=D.vz,b=D.barn,lanes=[],KO=[];
  KO.push({x:b.x,z:b.z,r:2.9},{x:D.mill.x,z:D.mill.z,r:1.9},{x:D.wheel.x,z:D.wheel.z,r:1.4},{x:D.wind.x,z:D.wind.z,r:2.8},{x:D.bridge.x-3,z:D.bridge.z,r:1.4},{x:vx,z:vz,r:2.9},{x:vx+1.25,z:vz-11,r:3.2});
  return{vx,vz,homes:D.homes.map(h=>({x:h.x,z:h.z,h:h.h,ry:h.ry,door:{x:h.door.x,z:h.door.z},lit:h.lit||0})),wheel:{x:D.wheel.x,z:D.wheel.z},mill:{x:D.wind.x,z:D.wind.z},millHouse:{x:D.mill.x,z:D.mill.z},
   barn:{x:b.x,z:b.z,ry:b.ry},bridge:{x:D.bridge.x,z:D.bridge.z,y:D.bridge.y},lanes,keepOut:KO};}
-function build(opts){const t0=performance.now();
+// B1 r5: generator build (buildSteps), sliced between parts; same call order / rnd() draws -> identical geometry by seed.
+// build() drains it (sync API kept for the Reversion detail city). One build at a time (module state lives across the yields).
+function build(opts){const it=buildSteps(opts);let r;while(!(r=it.next()).done);return r.value;}
+PK.buildSteps=buildSteps;
+function* buildSteps(opts){const t0=performance.now();
  try{const c=FA.RV,vx=c.x-1.5,vz=c.z;rnd=FA.rng(2031);SETS={main:{},wheel:{},sails:{}};TRIS=DRAWS=LIT=WINS=0;
-  bake();mats();use('main');const D=layout(c,vx,vz);
-  green(vx,vz);well(vx,vz);bonfire(D.fire.x,D.fire.z);D.homes.forEach((h,i)=>cottage(h,i));barn(D.barn);mill(D.mill);waterwheel(D.wheel);windmill(D.wind);bridge(D.bridge);
-  props(D);lights(D);
-  for(const bk in SETS.main)mesh(SETS.main,bk,M[bk],FA.SC,bk!=='dirt');
+  bake();yield 'pk:bake';mats();use('main');const D=layout(c,vx,vz);yield 'pk:layout';
+  green(vx,vz);well(vx,vz);bonfire(D.fire.x,D.fire.z);yield 'pk:green';
+  for(let i=0;i<D.homes.length;i++){cottage(D.homes[i],i);if(i%3===2)yield 'pk:cottage';}
+  barn(D.barn);yield 'pk:barn';mill(D.mill);waterwheel(D.wheel);yield 'pk:mill';windmill(D.wind);yield 'pk:windmill';bridge(D.bridge);yield 'pk:bridge';
+  props(D);lights(D);yield 'pk:props';
+  let n=0;for(const bk in SETS.main){mesh(SETS.main,bk,M[bk],FA.SC,bk!=='dirt');if((++n&3)===0)yield 'pk:mesh';}
   const out=result(D);
   Object.assign(PK.info,{draws:DRAWS,tris:Math.round(TRIS),homes:D.homes.length,lit:LIT,windows:WINS,sailTip:+D.wind.tip.toFixed(2),buildMs:Math.round(performance.now()-t0)});
   return out;}

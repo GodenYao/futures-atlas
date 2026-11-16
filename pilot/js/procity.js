@@ -19,7 +19,7 @@ const fl=n=>Math.max(FLR,Math.round(n/FLR)*FLR);
 const rot=(ox,oz,ry)=>[ox*Math.cos(ry)+oz*Math.sin(ry),-ox*Math.sin(ry)+oz*Math.cos(ry)];
 const pt=(r,a,y)=>new THREE.Vector3(cx+Math.cos(a)*r,y,cz+Math.sin(a)*r);
 const free=(x,z,rad)=>{for(const k of KO)if(Math.hypot(x-k[0],z-k[1])<k[2]+rad)return false;return true;};
-let SIL,DARK;
+let SIL,DARK;const NNC={};
 
 // ======================= (1) GPU texture bake =======================
 const BAKE_FS=[
@@ -46,12 +46,13 @@ const BAKE_FS=[
 '  float d=max(abs(g.x),dot(abs(g),vec2(.5,.8660254)));vec2 id=p-g;vec2 ci=mod(vec2(floor(id.x*2.+.5),floor(id.y/.8660254+.5)),vec2(12.,8.));',
 '  float j=1.-smoothstep(.44,.475,d);float tone=.9+.1*floor(h1(ci+3.3)*3.)/2.;c=vec4(vec3(tone)*mix(.55,1.,j),j);}',
 ' gl_FragColor=c;}'].join('\n');
-function bake(){const t0=performance.now(),sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+let BAKED=null;   // B1 r5: the bake is seed-independent (shader + family uniform only) -> bake once, reuse for every stand-in (was 6 new RTs + GPU stall per build)
+function bake(){if(BAKED){TEX=BAKED;PC.info.bakeMs=0;return;}const t0=performance.now(),sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
  const mat=new THREE.ShaderMaterial({uniforms:{fam:{value:0}},vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:BAKE_FS,depthTest:false,depthWrite:false});
  const q=new THREE.Mesh(new THREE.PlaneGeometry(2,2),mat);q.frustumCulled=false;sc.add(q);const prev=R.getRenderTarget();TEX=[];
  [512,512,256,256,256,512].forEach((N,f)=>{const rt=new THREE.WebGLRenderTarget(N,N,{depthBuffer:false,generateMipmaps:true,minFilter:THREE.LinearMipmapLinearFilter,magFilter:THREE.LinearFilter,wrapS:THREE.RepeatWrapping,wrapT:THREE.RepeatWrapping,anisotropy:4});
   mat.uniforms.fam.value=f;R.setRenderTarget(rt);R.render(sc,cam);TEX.push(rt.texture);});
- R.setRenderTarget(prev);mat.dispose();q.geometry.dispose();PC.info.bakeMs=Math.round(performance.now()-t0);}
+ R.setRenderTarget(prev);mat.dispose();q.geometry.dispose();BAKED=TEX;PC.info.bakeMs=Math.round(performance.now()-t0);}
 
 // ======================= (2) world-space materials =======================
 // The baked family is sampled in the fragment shader from the world position (vFogWP, provided by the patched fog chunks,
@@ -195,7 +196,7 @@ function ground(){ring(0,RC0,Y,M.pave);ring(RC1,RB0,Y,M.pave);ring(RB0,RB1,Y,M.a
 
 // ======================= (5) ring canal: water, quay walls, bridges, piers, boats =======================
 // B2 (Fable crit fix 7): dark sky-mirror water, calmer normals, waterline light seams
-function canal(){const blue=P.mood!=='day',yw=Y-.45,wn=FA.noiseNormal(128,1.8,37);wn.repeat.set(11,11);
+function canal(){const blue=P.mood!=='day',yw=Y-.45,wn=NNC.w||(NNC.w=FA.noiseNormal(128,1.8,37));wn.repeat.set(11,11); // B1 r5: one shared (deterministic) normal map; was ~20 ms CPU per stand-in build
  const wm=new THREE.MeshStandardMaterial({color:blue?'#0C1826':'#0F2233',roughness:blue?.08:.05,metalness:.7,normalMap:wn,normalScale:new THREE.Vector2(.1,.1),envMapIntensity:blue?1.5:1.5});
  // C2b moat: no black void - sky gradient by view angle (fresnel) + broken vertical streaks of the warm city lights on the far quay,
  // rippled by time; all in the emissive slot (cheap, no reflection pass)
@@ -363,13 +364,20 @@ function perimeter(){const rr=P.R-.55,gap=.075,arc=Math.PI/2-2*gap;
  for(let i=0;i<72;i++){const a=(i+.5)*TAU/72,d=Math.abs(((a+Math.PI/4)%(Math.PI/2))-Math.PI/4);if(d<gap)continue;B.metal.add(cx+Math.cos(a)*rr,Y,cz+Math.sin(a)*rr,.04,.36,.04,-a,SIL);}}
 
 // ======================= (11) build =======================
-function build(opts){const t0=performance.now();const c=FA.GK;cx=c.x;cz=c.z;Y=c.top;rnd=FA.rng(1505);KO.length=0;TC=0;POOLS.length=0;
- bake();mats();geos();ground();canal();plaza();buildEye(spire());
- towers();twist();icons();slabs();honey();garden();transit();traffic();perimeter();
- const pools=(()=>{if(P.mood!=='day')for(let i=0;i<44;i++){const a=(i+.5)*TAU/44,rr=P.R+2.2;pool(cx+Math.cos(a)*rr,cz+Math.sin(a)*rr,5.0,.085,Y-.25);} // C1 warm spill onto the apron
-  return buildPools();})();
- let inst=0,draws=0;for(const k in B){const n=B[k].done();if(n){inst+=n;draws++;}}
+// B1 r5: the build is a generator (buildSteps) sliced between plan parts, so the LOD host can spread a stand-in build over frames
+// (each step a few ms). Same call order and the same rnd() draws as before -> identical geometry by seed. build() = drain it (sync API
+// kept for the two detail cities). Module state (cx, cz, Y, rnd, M, B, G, KO, POOLS) lives across the yields: one build at a time.
+function* buildSteps(opts){const t0=performance.now();const c=FA.GK;cx=c.x;cz=c.z;Y=c.top;rnd=FA.rng(1505);KO.length=0;TC=0;POOLS.length=0;
+ bake();yield 'pc:bake';mats();geos();yield 'pc:mats';ground();yield 'pc:ground';canal();yield 'pc:canal';plaza();yield 'pc:plaza';
+ const top=spire();yield 'pc:spire';buildEye(top);yield 'pc:eye';
+ towers();yield 'pc:towers';twist();yield 'pc:twist';icons();yield 'pc:icons';slabs();yield 'pc:slabs';honey();yield 'pc:honey';garden();yield 'pc:garden';
+ transit();yield 'pc:transit';traffic();yield 'pc:traffic';perimeter();yield 'pc:perimeter';
+ if(P.mood!=='day')for(let i=0;i<44;i++){const a=(i+.5)*TAU/44,rr=P.R+2.2;pool(cx+Math.cos(a)*rr,cz+Math.sin(a)*rr,5.0,.085,Y-.25);} // C1 warm spill onto the apron
+ const pools=buildPools();yield 'pc:pools';
+ let inst=0,draws=0,k2=0;for(const k in B){const n=B[k].done();if(n){inst+=n;draws++;}if((++k2&3)===0)yield 'pc:batch';}
  // data-layer road stub (kept): arrives at the south gate of the base plate
  FA.road([[cx+16,cz+92],[cx+7,cz+52],[cx+1.6,cz+34],[cx,cz+P.R+2.1]],.9,L.road);
  Object.assign(PC.info,{buildMs:Math.round(performance.now()-t0),instances:inst,instDraws:draws,R:P.R,mood:P.mood,pools:pools});return PC.info;}
+function build(opts){const it=buildSteps(opts);let r;while(!(r=it.next()).done);return r.value;}
+PC.buildSteps=buildSteps;
 })();

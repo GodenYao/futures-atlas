@@ -299,37 +299,58 @@ L.markers=function(){const st=SITES.filter(s=>!s.real);if(!st.length)return;cons
 // globals (scoped to the generator call, restored in finally). Output = contract result: near (LOCAL coords around the site centre,
 // scale k baked into the group), mid (engine-derived: big parts only), casters, fx (per-site glow/smoke batch), kit (per-site instancing).
 const MIDR=+(Q.get('midr')||.45);   // MID keeps statics / direct meshes whose bounding radius (generator units) >= MIDR
-function* mergeList(list,out){const groups={};for(const m of list){m.updateMatrix();const k=m.material.uuid+'|'+m.castShadow+'|'+m.receiveShadow;(groups[k]=groups[k]||[]).push(m);}
+function* mergeList(list,out){yield 'merge0';const groups={};for(const m of list){m.updateMatrix();const k=m.material.uuid+'|'+m.castShadow+'|'+m.receiveShadow;(groups[k]=groups[k]||[]).push(m);}
  let tw=performance.now();const tick=()=>performance.now()-tw>L.BUDGET*.7;   // B1: yields inside the merge (between source meshes) -> steps stay ~<= budget
  for(const k in groups){const Lm=groups[k],mat=Lm[0].material;
+  if(tick()){yield 'merge1';tw=performance.now();}   // r5: also between groups (single-mesh groups had no yield)
   if(Lm.length===1){const o=Lm[0].clone();o.matrixAutoUpdate=true;out.push(o);continue;}
-  const useUV=!!mat.map,useC=!!mat.vertexColors;const pos=[],nor=[],uv=[],col=[];
-  for(const m of Lm){const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry.clone());g.applyMatrix4(m.matrix);const p=g.attributes.position,q=g.attributes.normal;
-   for(let i=0;i<p.count;i++){pos.push(p.getX(i),p.getY(i),p.getZ(i));nor.push(q.getX(i),q.getY(i),q.getZ(i));
-    if(useUV){const a=g.attributes.uv;uv.push(a?a.getX(i):0,a?a.getY(i):0);}if(useC){const a=g.attributes.color;col.push(a?a.getX(i):1,a?a.getY(i):1,a?a.getZ(i):1);}}g.dispose();
+  // B1 r5: preallocated typed arrays, transform in place (no toNonIndexed clone / applyMatrix4 / JS array push); yields INSIDE big meshes too
+  const useUV=!!mat.map,useC=!!mat.vertexColors;let NV=0;for(const m of Lm){const g=m.geometry;NV+=g.index?g.index.count:g.attributes.position.count;}
+  const pos=new Float32Array(NV*3),nor=new Float32Array(NV*3),uv=useUV?new Float32Array(NV*2):null,col=useC?new Float32Array(NV*3):null;let o=0;
+  const nm=new THREE.Matrix3();
+  for(const m of Lm){const g=m.geometry,I=g.index?g.index.array:null,n=I?I.length:g.attributes.position.count,P=g.attributes.position,N=g.attributes.normal,UV=g.attributes.uv,CC=g.attributes.color;
+   const e=m.matrix.elements;nm.getNormalMatrix(m.matrix);const q=nm.elements;
+   for(let t=0;t<n;t++){const i=I?I[t]:t,x=P.getX(i),y=P.getY(i),z=P.getZ(i),w=1/(e[3]*x+e[7]*y+e[11]*z+e[15]),j=o*3;
+    pos[j]=(e[0]*x+e[4]*y+e[8]*z+e[12])*w;pos[j+1]=(e[1]*x+e[5]*y+e[9]*z+e[13])*w;pos[j+2]=(e[2]*x+e[6]*y+e[10]*z+e[14])*w;
+    if(N){const a=N.getX(i),b=N.getY(i),c=N.getZ(i);let nx=q[0]*a+q[3]*b+q[6]*c,ny=q[1]*a+q[4]*b+q[7]*c,nz=q[2]*a+q[5]*b+q[8]*c;const l=Math.hypot(nx,ny,nz)||1;nor[j]=nx/l;nor[j+1]=ny/l;nor[j+2]=nz/l;}
+    if(useUV){uv[o*2]=UV?UV.getX(i):0;uv[o*2+1]=UV?UV.getY(i):0;}if(useC){col[j]=CC?CC.getX(i):1;col[j+1]=CC?CC.getY(i):1;col[j+2]=CC?CC.getZ(i):1;}
+    o++;if((t&4095)===4095&&tick()){yield 'merge';tw=performance.now();}}
    if(tick()){yield 'merge';tw=performance.now();}}
-  const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));G.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));
-  if(useUV)G.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));if(useC)G.setAttribute('color',new THREE.Float32BufferAttribute(col,3));G.computeBoundingSphere();
+  const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.BufferAttribute(pos,3));G.setAttribute('normal',new THREE.BufferAttribute(nor,3));
+  if(useUV)G.setAttribute('uv',new THREE.BufferAttribute(uv,2));if(useC)G.setAttribute('color',new THREE.BufferAttribute(col,3));G.computeBoundingSphere();
   const me=new THREE.Mesh(G,mat);me.castShadow=Lm[0].castShadow;me.receiveShadow=Lm[0].receiveShadow;me.renderOrder=Lm[0].renderOrder;out.push(me);}
  return out;}
 const radOf=o=>{if(!o.geometry)return 1e9;if(!o.geometry.boundingSphere)o.geometry.computeBoundingSphere();const s=o.scale?Math.max(o.scale.x,o.scale.y,o.scale.z):1;return o.geometry.boundingSphere.radius*s;};
 function trisOf(root){let t=0;root.traverse(m=>{if(!(m.isMesh||m.isInstancedMesh)||!m.geometry)return;const g=m.geometry,n=(g.index?g.index.count:g.attributes.position.count)/3;t+=n*(m.isInstancedMesh?m.count:1);});return Math.round(t);}
-function* standinSteps(site,ctx){const s=L.site(site.id),T=()=>performance.now();let t0=T();const a=snap();
- const sv={GK:FA.GK,RV:FA.RV,rng:FA.rng,eye:FA.eyePos,pc:FA.PROCITY&&FA.PROCITY.info,pk:FA.PROCOTTAGE&&FA.PROCOTTAGE.info,fl:FA.PROFLORA&&FA.PROFLORA.add,rvs:FA.RVSITE};
- const R0=sv.rng,off=s.seed;const city=s.g==='city';
- try{FA.rng=seed=>R0(((seed|0)+off)>>>0);if(FA.PROFLORA)FA.PROFLORA.add=()=>false;
-  if(city){if(!FA.PROCITY)throw new Error('no procity');FA.GK={x:s.x,z:s.z,top:s.h0+1.3};FA.PROCITY.build();}
-  else{if(!FA.PROCOTTAGE)throw new Error('no procottage');FA.RV={x:s.x+1.5,z:s.z};if(!FA.PROCOTTAGE.build({}))throw new Error('procottage returned null');}
-  s.genInfo=JSON.parse(JSON.stringify((city?FA.PROCITY:FA.PROCOTTAGE).info||{}));}
- finally{FA.GK=sv.GK;FA.RV=sv.RV;FA.rng=R0;FA.eyePos=sv.eye;if(FA.PROCITY)FA.PROCITY.info=sv.pc;if(FA.PROCOTTAGE)FA.PROCOTTAGE.info=sv.pk;if(FA.PROFLORA)FA.PROFLORA.add=sv.fl;FA.RVSITE=sv.rvs;}
- // pull the generator's side effects out of the global lists IMMEDIATELY (before yielding, so nothing else sees them)
+// B1 r5: procity / procottage expose buildSteps (generator, identical geometry). The adapter runs ONE generator step at a time with the
+// globals swapped in (FA.GK / FA.RV / FA.rng / PROFLORA.add / generator info) and swapped back right after that step, then pulls that
+// step's side effects out of the global lists (per-step snapshot diff), so nothing else ever sees a half-built stand-in or the swapped
+// globals between frames. ?legslice=0 = old one-call build (before/after comparison).
+L.LEGSLICE=Q.get('legslice')!=='0';
+L.legSliced=city=>L.LEGSLICE&&!!(city?FA.PROCITY&&FA.PROCITY.buildSteps:FA.PROCOTTAGE&&FA.PROCOTTAGE.buildSteps);
+function* standinSteps(site,ctx){const s=L.site(site.id),T=()=>performance.now();let t0=T();
+ const city=s.g==='city',GM=city?FA.PROCITY:FA.PROCOTTAGE;if(!GM)throw new Error(city?'no procity':'no procottage');
+ const R0=FA.rng,off=s.seed,gi={};
+ const acc={gl:[],sm:[],kit:{},ao:[],st:[],objs:[],an:[],mv:[]};
+ const it=L.legSliced(city)?GM.buildSteps({}):(function*(){return GM.build({});})();let r=null;
+ for(;;){const a=snap();const sv={GK:FA.GK,RV:FA.RV,rng:FA.rng,eye:FA.eyePos,info:GM.info,fl:FA.PROFLORA&&FA.PROFLORA.add,rvs:FA.RVSITE,pools:FA.PROROAD&&FA.PROROAD.pools};
+  try{FA.rng=seed=>R0(((seed|0)+off)>>>0);if(FA.PROFLORA)FA.PROFLORA.add=()=>false;GM.info=gi;
+   if(city)FA.GK={x:s.x,z:s.z,top:s.h0+1.3};else FA.RV={x:s.x+1.5,z:s.z};
+   r=it.next();}
+  finally{FA.GK=sv.GK;FA.RV=sv.RV;FA.rng=sv.rng;FA.eyePos=sv.eye;GM.info=sv.info;if(FA.PROFLORA)FA.PROFLORA.add=sv.fl;FA.RVSITE=sv.rvs;if(FA.PROROAD)FA.PROROAD.pools=sv.pools;
+   // pull this step's side effects out of the global lists IMMEDIATELY (before yielding, so nothing else sees them)
+   acc.gl.push(...FA.GLOWS.splice(a.gl));acc.sm.push(...FA.SMOKES.splice(a.sm));
+   for(const kk in FA.PL){const n0=a.pl[kk]||0;if(FA.PL[kk].length>n0)(acc.kit[kk]=acc.kit[kk]||[]).push(...FA.PL[kk].splice(n0));}
+   if(FA.lanes)FA.lanes.length=a.ln;   // lanes only paint the terrain colour (already built) -> dropped
+   acc.ao.push(...FA.AOS.splice(a.ao));acc.st.push(...FA.STATIC.splice(a.st));
+   const no=FA.SC.children.filter(o=>!a.sc.has(o));for(const o of no){FA.SC.remove(o);acc.objs.push(o);}
+   acc.an.push(...FA.anims.splice(a.an));acc.mv.push(...FA.MOVERS.splice(a.mv));}
+  if(r.done)break;yield String(r.value||'gen');}
+ if(!r.value)throw new Error((city?'procity':'procottage')+' returned null');
+ s.genInfo=JSON.parse(JSON.stringify(gi));t0=T();
  const k=s.k,cx=s.x,cy=s.h0,cz=s.z,G=city?30:26,far=(x,z)=>Math.hypot(x-cx,z-cz)>G,tx=(x,y,z)=>[cx+(x-cx)*k,cy+(y-cy)*k,cz+(z-cz)*k];
- const glows=FA.GLOWS.splice(a.gl).filter(h=>!far(h.x,h.z)),smokes=FA.SMOKES.splice(a.sm).filter(h=>!far(h.x,h.z));
- const kit={};for(const kk in FA.PL){const n0=a.pl[kk]||0;if(FA.PL[kk].length>n0)kit[kk]=FA.PL[kk].splice(n0);}
- if(FA.lanes)FA.lanes.length=a.ln;   // lanes only paint the terrain colour (already built) -> dropped
- const aos=FA.AOS.splice(a.ao).filter(d=>!far(d.x,d.z));const stat=FA.STATIC.splice(a.st);
- const newObjs=FA.SC.children.filter(o=>!a.sc.has(o));for(const o of newObjs)FA.SC.remove(o);
- const newAn=FA.anims.splice(a.an),newMv=FA.MOVERS.splice(a.mv);
+ const glows=acc.gl.filter(h=>!far(h.x,h.z)),smokes=acc.sm.filter(h=>!far(h.x,h.z)),kit=acc.kit;
+ const aos=acc.ao.filter(d=>!far(d.x,d.z)),stat=acc.st,newObjs=acc.objs,newAn=acc.an,newMv=acc.mv;
  const res={near:new THREE.Group(),mid:new THREE.Group(),far:null,casters:[],movers:[],lights:[],fxObjs:[],decals:[],anims:newAn,legacyMovers:newMv,stats:{}};
  res.near.scale.setScalar(k);res.mid.scale.setScalar(k);res.legacyTx=tx;res.k=k;
  const local=o=>{o.position.x-=cx;o.position.y-=cy;o.position.z-=cz;return o;};const bs=new THREE.Sphere(),wp=new THREE.Vector3();let dropped=0;
@@ -514,7 +535,7 @@ function done(j){const s=j.s;pending=JOBS.length?JOBS[0].s.id:null;const ms=Math
  if(!j.err){LRU.push(s.id);for(let i=0;LRU.length>L.CACHE&&i<LRU.length;){const ev=LRU[i];if(L.tiers[ev]==='far'&&ev!==s.id){LRU.splice(i,1);dispose(site(ev));}else i++;}}
  if(L.farDirty){L.farDirty=false;L.farAsync();}   // B1 r2: FAR re-merge time-sliced over frames (the site is NEAR, its FAR slot is hidden by VIS anyway)
  const td=performance.now();L.update(true);FA.shadowDirty=true;FA.kick&&FA.kick(600);L.log[L.log.length-1].doneMs=+(performance.now()-td).toFixed(1);}
-function queueBuild(s,pre){if(JOBS.some(j=>j.s===s))return;const R0=GEN.resolve(s);const j={s,it:hostSteps(s),steps:[],work:0,t0:performance.now(),heavy:!!(R0.g&&R0.g.legacy),pre:!!pre};
+function queueBuild(s,pre){if(JOBS.some(j=>j.s===s))return;const R0=GEN.resolve(s);const j={s,it:hostSteps(s),steps:[],work:0,t0:performance.now(),heavy:!!(R0.g&&R0.g.legacy&&!L.legSliced(s.g==='city')),pre:!!pre};
  if(!L.SPLIT){pending=s.id;setTimeout(()=>{try{let r;do{r=j.it.next();}while(!r.done);}catch(e){j.err=e.message;(window.__errs=window.__errs||[]).push('lod build '+s.id+': '+e.message);}
    j.work=performance.now()-j.t0;j.steps.push(['sync',+j.work.toFixed(1)]);done(j);pending=null;},0);return;}
  JOBS.push(j);pending=JOBS[0].s.id;schedule();}
