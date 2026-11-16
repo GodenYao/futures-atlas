@@ -36,7 +36,14 @@ function pavingTex(R,builds){const N=512,c=document.createElement('canvas');c.wi
  const gr=g.createRadialGradient(N/2,N/2,7.2*s,N/2,N/2,7.9*s);gr.addColorStop(0,'rgba(10,10,18,0)');gr.addColorStop(1,'rgba(10,10,18,.5)');g.fillStyle=gr;g.fillRect(0,0,N,N);
  const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
 
-FA.buildGK=function(){if(L.archviz&&FA.PROCITY){FA.PROCITY.build();return;}const c=FA.GK,r=FA.rng(15),top=c.top,cx=c.x,cz=c.z;
+// B1 host API: city builders take a SITE argument ({x,z,top?} or a FA.SITE_TABLE row). The legacy bodies still read FA.GK / FA.RV,
+// so the swap is scoped here (restored in finally) instead of callers mutating the globals. No argument = the pilot position.
+FA.withSite=function(key,site,fn){if(!site)return fn();const keep=FA[key],o=Object.assign({},keep);
+ if(key==='RV'){o.x=site.x+(site.vx==null?1.5:site.vx);o.z=site.z;}else{o.x=site.x;o.z=site.z;if(site.top!=null)o.top=site.top;}
+ FA[key]=o;try{return fn();}finally{FA[key]=keep;}};
+FA.buildGK=function(site){return FA.withSite('GK',site&&site.x!==FA.GK.x?site:null,buildGK0);};
+FA.buildRV=function(site){return FA.withSite('RV',site&&Math.abs(site.x+1.5-FA.RV.x)>.01?site:null,buildRV0);};
+function buildGK0(){if(L.archviz&&FA.PROCITY){FA.PROCITY.build();return;}const c=FA.GK,r=FA.rng(15),top=c.top,cx=c.x,cz=c.z;
  const CR=!!L.contact,EM=L.cm?1.6:1; // CR: crease bands (darker wall bases); EM: env gain where the sky IBL is the only ambient
  const A=FA.A2; // A2: GPU-baked world-space material families (js/a2.js, style=bluefacet only)
  const stone=A?A.mat(0,G.stone,{vc:CR,env:.5*EM}):new THREE.MeshStandardMaterial({color:G.stone,roughness:.85,envMapIntensity:.5*EM,vertexColors:CR});
@@ -118,7 +125,7 @@ FA.buildGK=function(){if(L.archviz&&FA.PROCITY){FA.PROCITY.build();return;}const
 // Technology rolled back to a pre-industrial level (Amish-like): farms, a water wheel on the stream, a windmill,
 // chimney smoke, sparse fire light; no paved roads, no power lines, no electric light.
 FA.fields=[];FA.lanes=[];
-FA.buildRV=function(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
+function buildRV0(){const c=FA.RV,r=FA.rng(20),vx=c.x-1.5,vz=c.z;
  // C3: style=archviz -> procedural hamlet (js/procottage.js); KayKit village stays as fallback (build() -> null) and for other presets
  const PKV=FA.RVSITE=(L.archviz&&FA.PROCOTTAGE)?FA.PROCOTTAGE.build({}):null;
  // C4: procedural lane network (js/proroad.js) replaces procottage's straight radial lanes (they painted light spokes from the plaza) + the grey road stub
@@ -225,11 +232,18 @@ FA.go=function(city,view){if(city)FA.CITY=city;if(view)FA.VIEW=view;const q=new 
 document.querySelectorAll('[data-city]').forEach(b=>b.addEventListener('click',()=>FA.go(b.dataset.city)));
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>FA.go(null,b.dataset.view)));
 addEventListener('keydown',e=>{if(e.key==='1')FA.go('gatekeeper');if(e.key==='2')FA.go('reversion');if(e.key==='v')FA.go(null,FA.VIEW==='world'?'close':'world');});
+// B1 bug fix (GPU world view, Reversion white blowout): profarm.js pfN() builds the field-row bump normal from screen derivatives;
+// at world-view distance dFdx/dFdy(viewPos) underflow -> normalize(0) = NaN on ANGLE-GL (T4), bloom spreads it to a white blob.
+// profarm.js is not B1-owned, so the guard is chained here onto the field / verge materials: no bump beyond 70 u or on a bad normal.
+FA.guardNaN=function(root){const seen=new Set();(root||FA.SC).traverse(o=>{const M=o.material;if(!M)return;for(const m of (Array.isArray(M)?M:[M])){
+  if(seen.has(m)||!m.customProgramCacheKey||m.userData.nanG)continue;seen.add(m);const k=m.customProgramCacheKey();if(k!=='pfField'&&k!=='pfVerge')continue;
+  const ob=m.onBeforeCompile;m.onBeforeCompile=(sh,r)=>{ob.call(m,sh,r);sh.fragmentShader=sh.fragmentShader.replace(/(normal=pfN\([^;]*;)/,'$1\nif(!(dot(normal,normal)>.5)||length(vViewPosition)>70.)normal=geometryNormal;');};
+  m.customProgramCacheKey=()=>k+'_g';m.userData.nanG=1;m.needsUpdate=true;}});};
 FA.start=async function(){const t0=performance.now();if(FA.A2&&document.fonts)await document.fonts.load('64px "Plex Mono"').catch(()=>{});await FA.load(FA.LIST);const t1=performance.now();
  if(L.archviz&&FA.PROFLORA&&FA.QS.get('flora')!=='0')FA.PROFLORA.prepare(); // C5: procedural vegetation (js/proflora.js); prepare fails or ?flora=0 -> PROFLORA.on=false -> old stamps
  const LD=FA.LOD&&FA.LOD.on?FA.LOD:null;   // B0 (lod.js): per-site capture for tiers/shadows, FAR proxies before terrain/decals
- if(LD){LD.capture('gatekeeper',()=>FA.buildGK());LD.capture('reversion',()=>FA.buildRV());}else{FA.buildGK();FA.buildRV();}FA.scatter();if(LD)LD.far();if(FA.PROFLORA&&FA.PROFLORA.on){FA.PROFLORA.build();FA.mover&&FA.mover({fn:()=>FA.PROFLORA.moving(),n:'wind'});}FA.buildTerrain(FA.colorHook);if(FA.tuftList.length)FA.tufts(FA.tuftList);const n=FA.buildInstances();
- const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();if(LD)LD.collect();
+ if(LD){LD.capture('gatekeeper',()=>FA.buildGK(LD.site('gatekeeper')));LD.capture('reversion',()=>FA.buildRV(LD.site('reversion')));}else{FA.buildGK();FA.buildRV();}FA.scatter();if(LD)LD.far();if(FA.PROFLORA&&FA.PROFLORA.on){FA.PROFLORA.build();FA.mover&&FA.mover({fn:()=>FA.PROFLORA.moving(),n:'wind'});}FA.buildTerrain(FA.colorHook);if(FA.tuftList.length)FA.tufts(FA.tuftList);const n=FA.buildInstances();
+ const fx=FA.buildFx().length,ms=FA.mergeStatic(),dc=FA.buildDecals();FA.buildFarTrees();FA.guardNaN();if(LD)LD.collect();
  FA.marker('gatekeeper','Gatekeeper','eye on the spire',FA.GK.x,FA.GK.top,FA.GK.z);FA.marker('reversion','Reversion','water wheel, windmill',FA.RV.x-1.5,H(FA.RV.x-1.5,FA.RV.z),FA.RV.z);
  if(LD)LD.markers();
  FA.setView();FA.frame();FA.loop();FA.boot={farm:FA.PROFARM&&FA.PROFARM.on?FA.PROFARM.info:null,loadMs:Math.round(t1-t0),buildMs:Math.round(performance.now()-t1),instGroups:n,fxDraws:fx,staticDraws:ms,decals:dc,pc:L.archviz&&FA.PROCITY?FA.PROCITY.info:null,pk:FA.RVSITE&&FA.PROCOTTAGE?FA.PROCOTTAGE.info:null,fl:FA.PROFLORA&&FA.PROFLORA.on?FA.PROFLORA.info:null,a2:FA.A2?{bakeMs:FA.A2.bakeMs,gk:FA.A2.gkInfo,rv:FA.A2.rvInfo}:null};document.body.classList.add('ready');window.__ready=true;};

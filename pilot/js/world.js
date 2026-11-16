@@ -166,6 +166,7 @@ if(Q.has('ao'))LOOK.contact=Q.get('ao')==='1';              // ?ao=0 / ?ao=1 tog
 FA.TER=(()=>{const t=(Q.get('ter')||'').toLowerCase();if(!LOOK.ter.facet)return 'a';if(t==='a'||t==='b'||t==='c')return t;return LOOK.archviz?'b':'a';})();  // owner 11-16: smooth terrain B is the archviz default (C/A via ?ter=)
 if(FA.TER==='c')Object.assign(LOOK.ter,{terr:1.6,hard:.93,cell:1.9});
 if(FA.TER==='b')Object.assign(LOOK.ter,{terr:0,cell:2.2});
+const TERB=FA.TER==='b'&&!!LOOK.ter.facet; // B1: smooth game-style terrain (per-vertex slope/height colour blend, undulation, grain)
 // colour management (r149): with legacyMode off, hex/CSS colours are sRGB and converted to linear, so palettes render as written.
 THREE.ColorManagement.legacyMode=!LOOK.cm;
 const C=h=>new THREE.Color(h);
@@ -282,17 +283,17 @@ FA.puffTex=(function(){const c=document.createElement('canvas');c.width=c.height
 FA.GLOWS=[];FA.SMOKES=[];
 FA.glow=function(x,y,z,size,hex,k,an){const h={x,y,z,size,c:C(hex).multiplyScalar((k==null?.6:k)*LOOK.glowK),material:{opacity:1},an:an||null};FA.GLOWS.push(h);return h;}; // C2: an = [amp, period, phase, switch] (shader breath)
 FA.smoke=function(x,y,z,period,phase,hex){FA.SMOKES.push({x,y,z,period,phase,c:C(LOOK.smokeC||hex||'#C9C5D0')});}; // C2b: LOOK.smokeC tints smoke toward the fog
-FA.buildFx=function(){const out=[];
- if(FA.GLOWS.length){const N=FA.GLOWS.length,g=new THREE.InstancedBufferGeometry();const b=new THREE.PlaneGeometry(1,1);g.index=b.index;g.setAttribute('position',b.attributes.position);g.setAttribute('uv',b.attributes.uv);
-  const P=new Float32Array(N*3),Cc=new Float32Array(N*4),O=new Float32Array(N),BA=new Float32Array(N*4);FA.GLOWS.forEach((h,i)=>{P.set([h.x,h.y,h.z],i*3);Cc.set([h.c.r,h.c.g,h.c.b,h.size],i*4);O[i]=1;if(h.an)BA.set(h.an,i*4);});
+FA.buildFx=function(GL,SM){const out=[];GL=GL||FA.GLOWS;SM=SM||FA.SMOKES; // B1: optional arrays -> per-site FX batch (lod.js lazy stand-ins); default = the global lists
+ if(GL.length){const N=GL.length,g=new THREE.InstancedBufferGeometry();const b=new THREE.PlaneGeometry(1,1);g.index=b.index;g.setAttribute('position',b.attributes.position);g.setAttribute('uv',b.attributes.uv);
+  const P=new Float32Array(N*3),Cc=new Float32Array(N*4),O=new Float32Array(N),BA=new Float32Array(N*4);GL.forEach((h,i)=>{P.set([h.x,h.y,h.z],i*3);Cc.set([h.c.r,h.c.g,h.c.b,h.size],i*4);O[i]=1;if(h.an)BA.set(h.an,i*4);});
   g.setAttribute('iP',new THREE.InstancedBufferAttribute(P,3));g.setAttribute('iC',new THREE.InstancedBufferAttribute(Cc,4));g.setAttribute('iB',new THREE.InstancedBufferAttribute(BA,4));const oa=new THREE.InstancedBufferAttribute(O,1);oa.setUsage(THREE.DynamicDrawUsage);g.setAttribute('iO',oa);g.instanceCount=N;
   const m=new THREE.ShaderMaterial({uniforms:{map:{value:FA.glowTex},uT:FA.TU.uT,uAn:FA.TU.uAn},transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
    vertexShader:'uniform float uT;'+FA.BREATH_GLSL+'attribute vec3 iP;attribute vec4 iC;attribute vec4 iB;attribute float iO;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vU=uv;vC=iC.rgb;vO=iO*faBr(iB,uT);vec4 mv=modelViewMatrix*vec4(iP,1.);mv.xy+=position.xy*iC.a;gl_Position=projectionMatrix*mv;}',
    fragmentShader:'uniform sampler2D map;varying vec2 vU;varying vec3 vC;varying float vO;void main(){float t=texture2D(map,vU).a;float a=t*vO;'+
     (LOOK.post?'gl_FragColor=vec4(vC*(1.+t*t*'+LOOK.post.glowHDR.toFixed(2)+'),a);':'gl_FragColor=vec4(vC,a);')+'\n#include <encodings_fragment>\n}'}); // A2: HDR hot core -> threshold bloom on lamps/hearths only
-  const me=new THREE.Mesh(g,m);me.frustumCulled=false;me.renderOrder=8;SC.add(me);FA.anims.push(()=>{let ch=false;FA.GLOWS.forEach((h,i)=>{const v=h.material.opacity;if(O[i]!==v){O[i]=v;ch=true;}});if(ch)oa.needsUpdate=true;});out.push(me);}
- if(FA.SMOKES.length){const N=FA.SMOKES.length,g=new THREE.InstancedBufferGeometry();const b=new THREE.PlaneGeometry(1,1);g.index=b.index;g.setAttribute('position',b.attributes.position);g.setAttribute('uv',b.attributes.uv);
-  const P=new Float32Array(N*3),S=new Float32Array(N*2),Cc=new Float32Array(N*3);FA.SMOKES.forEach((h,i)=>{P.set([h.x,h.y,h.z],i*3);S.set([h.period,h.phase],i*2);Cc.set([h.c.r,h.c.g,h.c.b],i*3);});
+  const me=new THREE.Mesh(g,m);me.frustumCulled=false;me.renderOrder=8;SC.add(me);FA.anims.push(()=>{if(!me.visible)return;let ch=false;GL.forEach((h,i)=>{const v=h.material.opacity;if(O[i]!==v){O[i]=v;ch=true;}});if(ch)oa.needsUpdate=true;});out.push(me);}
+ if(SM.length){const N=SM.length,g=new THREE.InstancedBufferGeometry();const b=new THREE.PlaneGeometry(1,1);g.index=b.index;g.setAttribute('position',b.attributes.position);g.setAttribute('uv',b.attributes.uv);
+  const P=new Float32Array(N*3),S=new Float32Array(N*2),Cc=new Float32Array(N*3);SM.forEach((h,i)=>{P.set([h.x,h.y,h.z],i*3);S.set([h.period,h.phase],i*2);Cc.set([h.c.r,h.c.g,h.c.b],i*3);});
   g.setAttribute('iP',new THREE.InstancedBufferAttribute(P,3));g.setAttribute('iS',new THREE.InstancedBufferAttribute(S,2));g.setAttribute('iC',new THREE.InstancedBufferAttribute(Cc,3));g.instanceCount=N;
   const m=new THREE.ShaderMaterial({uniforms:{map:{value:FA.puffTex},uT:FA.TU.uT},transparent:true,depthWrite:false,
    vertexShader:'uniform float uT;attribute vec3 iP;attribute vec2 iS;attribute vec3 iC;varying vec2 vU;varying vec3 vC;varying float vO;void main(){vU=uv;vC=iC;float u=fract(uT/iS.x+iS.y);'+
@@ -328,6 +329,9 @@ function Hraw(x,z){let h=2.4+(fbm(x*.016+3.1,z*.016-1.7,Math.min(5,OC))-.5)*7;
  const r=fbm(x*.028+11,z*.028+5,Math.min(4,OC));h+=Math.pow(Math.max(0,r-.5),1.5)*30;
  h+=smooth(-30,-95,z)*(9+fbm(x*.035,z*.035,Math.min(5,OC))*20);               // back range (silhouette against the horizon glow)
  h+=smooth(90,135,Math.abs(x))*16*fbm(x*.05,z*.05+9,Math.min(4,OC));          // side rims
+ // B1 terrain B (game-style smooth): gentle large-scale undulation (~90 u swells, +-1.5 u) + small surface noise (~8 u, +-.22 u);
+ // faded out over low ground so no new puddles appear below the waterline. City / stand-in basins flatten it again in FA.H.
+ if(TERB){const u=(fbm(x*.011+5.3,z*.011-2.9,3)-.5)*3.0+(fbm(x*.13+1.7,z*.13+8.1,2)-.5)*.45;h+=u*smooth(WL+.4,WL+2.6,h);}
  const s=LOOK.ter.terr;if(s>0){const q=h/s;h=(Math.floor(q)+smooth(LOOK.ter.hard,1,q-Math.floor(q)))*s;} // style terraces (risers = 1-hard of the step)
  return h;}
 // river profile for facet terrain: width 0.8-2.6 along the course, deep line shifted to the outer bend, shallow shelf both sides,
@@ -423,7 +427,9 @@ function terrainMat(T){const mat=new THREE.MeshStandardMaterial({vertexColors:tr
   'vec2 g=abs(fract(wp/10.+.5)-.5)*10.;vec2 ln=1.-smoothstep(vec2(0.),fw*1.3,g);float gl=max(ln.x,ln.y);float hq=vFogWP.y/2.6;float fh=max(fwidth(hq),1e-4);float cl=1.-smoothstep(0.,1.1,abs(fract(hq-.5)-.5)/fh);'+
   'vec2 c5=abs(fract(wp/50.+.5)-.5)*50.;float cr=(1.-smoothstep(0.,fw.x*1.3,min(c5.x,c5.y)))*step(max(c5.x,c5.y),1.1);float e=max(max(gl*.13,cl*.10)*band,cr*.18);outgoingLight*=1.-e;}\n':'';
  mat.onBeforeCompile=sh=>{sh.uniforms.uT=FA.TU.uT;
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>',TER_COMMON).replace('#include <output_fragment>','#ifdef USE_FOG\n'+CLOUD+CL+SV+'#endif\n#include <output_fragment>');
+  // B1 terrain B: small-scale albedo grain (2 octaves, +-7 %) so smooth slopes do not read as plastic at close range
+  const GR=TERB?'{vec2 p=vFogWP.xz;float g=cN2(p*.55)*.6+cN2(p*1.9+5.)*.4;outgoingLight*=.93+.14*g;}\n':'';
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>',TER_COMMON).replace('#include <output_fragment>','#ifdef USE_FOG\n'+GR+CLOUD+CL+SV+'#endif\n#include <output_fragment>');
   if(LOOK.archviz){const SHc=LOOK.shore||{mud:'#463E31',sand:'#9A8E76',silt:'#4E5E60'},v3=h=>{const q=C(h);return 'vec3('+q.r.toFixed(4)+','+q.g.toFixed(4)+','+q.b.toFixed(4)+')';};
    // C7: smooth-normal blend (aSN) + analytic shore band: silt -> sand under the shallow water, wet mud ~1 u above the waterline,
    // a faint pale gravel strip fading into the meadow. All keyed on rvD (distance to the river spline), never on the grid.
@@ -500,7 +506,20 @@ function buildFacetTerrain(colorHook){const T=LOOK.ter;const G=tgrid(),xs=G.xs,z
    if(FA.TER==='b')m=1;else if(FA.TER==='c'&&FA.SITEB_ALL)for(const s of FA.SITEB_ALL)m=Math.max(m,smooth(s.rb+3,s.rb-2,Math.hypot(x-s.x,z-s.z)));  // B0 ter C: smooth basins
    if(m<=0)continue;
    const gx=(FA.H(x+e,z)-FA.H(x-e,z))/(2*e),gz=(FA.H(x,z+e)-FA.H(x,z-e))/(2*e),l=Math.hypot(gx,1,gz);SNv[k*4]=-gx/l;SNv[k*4+1]=1/l;SNv[k*4+2]=-gz/l;SNv[k*4+3]=m;}}
+ // B1 terrain B: colour PER VERTEX (interpolated across faces -> no per-face bands / steps). Slope from the analytic smooth normal,
+ // height bands with noisy soft edges, dirt/scree at the mountain foot + slope breaks, rock on steep faces; palette = the look's ter.P.
+ let VC=null;if(SNv&&TERB){VC=new Float32Array(NX*NZ*3);const q=new THREE.Color(),PH=P.heath||P.mid,PK=P.rock.clone().lerp(P.snow,.5);
+  for(let k=0;k<NX*NZ;k++){const x=VX[k],z=VZ[k],h=VH[k],sl=1-SNv[k*4+1],mo=fbm(x*.05+40,z*.05-20,3),n2=fbm(x*.19+3.7,z*.19-6.1,2)-.5;
+   q.copy(P.lo).lerp(P.mid,smooth(.36,.66,mo));                                                   // meadow: 2 moisture tones, blended
+   q.lerp(PH,smooth(4.5,9,h+n2*3));q.lerp(P.hi,smooth(10,16,h+n2*4));q.lerp(PK,smooth(19,30,h+n2*5)*.7); // upland bands, noisy soft edges
+   const foot=smooth(.06,.16,sl+n2*.05)*(1-smooth(.30,.44,sl));q.lerp(P.bank,foot*.42*(1-smooth(14,20,h))); // dirt / scree at slope breaks
+   q.lerp(P.rock,smooth(.24+n2*.12,.47,sl));                                                      // rock on steep faces
+   if(h<WL-.2)q.lerp(P.bed,.8);
+   if(colorHook)colorHook(x,z,h,sl,q);
+   const v=1-T.vary/2+T.vary*hash(x*.37,z*.53);q.multiplyScalar(VA[k]*v*(.97+.06*n2));VC[k*3]=q.r;VC[k*3+1]=q.g;VC[k*3+2]=q.b;}}
  const face=(k0,k1,k2)=>{const x=(VX[k0]+VX[k1]+VX[k2])/3,z=(VZ[k0]+VZ[k1]+VZ[k2])/3,h=(VH[k0]+VH[k1]+VH[k2])/3;
+  if(VC){for(const kk of[k0,k1,k2]){pos.push(VX[kk],VH[kk],VZ[kk]);col.push(VC[kk*3],VC[kk*3+1],VC[kk*3+2]);snA.push(SNv[kk*4],SNv[kk*4+1],SNv[kk*4+2],SNv[kk*4+3]);}
+   if(Math.min(VH[k0],VH[k1],VH[k2])<WL){for(const kk of[k0,k1,k2]){wpos.push(VX[kk],WL,VZ[kk]);wdep.push(WL-VH[kk]);}}return;}
   a.set(VX[k1]-VX[k0],VH[k1]-VH[k0],VZ[k1]-VZ[k0]);b.set(VX[k2]-VX[k0],VH[k2]-VH[k0],VZ[k2]-VZ[k0]);nn.crossVectors(b,a).normalize();if(nn.y<0)nn.negate();const sl=1-nn.y;
   const mo=fbm(x*.05+40,z*.05-20,3),dx=Math.abs(x-FA.riverX(z));
   // palette bands: meadow (2 moisture tiers) -> heath -> upland -> snow-rock; risers/steep faces = rock; river sand bar / bed
