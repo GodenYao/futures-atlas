@@ -118,16 +118,21 @@ function domeMat(T,U){const THREE=T.THREE,c=hex('#9AB0CC');   // B2 r5: sky-blue
 // B2 r3 searchlight beam (vision r2: grey wedges in stills): additive soft cone, smooth radial normals -> bright core, edges
 // fade to 0 (facing^1.6), fades along the beam (tip 0, short ramp at the lamp), fades with view distance (no fog:false
 // stray beam on the horizon), instanced. aU = 0 at the lamp .. 1 at the tip.
-function beamMat(T){const THREE=T.THREE,c=hex('#DCE6F0');
- const m=new THREE.ShaderMaterial({uniforms:{uC:{value:new THREE.Vector3(c[0],c[1],c[2])},uK:{value:T.mood==='day'?.05:.3}},
-  vertexShader:'attribute float aU;varying float vU;varying vec3 vN;varying vec3 vV;void main(){vec4 p=vec4(position,1.);vec3 n=normal;\n#ifdef USE_INSTANCING\np=instanceMatrix*p;n=mat3(instanceMatrix)*n;\n#endif\nvec4 mv=modelViewMatrix*p;vN=normalize(normalMatrix*n);vV=-mv.xyz;vU=aU;gl_Position=projectionMatrix*mv;}',
-  fragmentShader:'uniform vec3 uC;uniform float uK;varying float vU;varying vec3 vN;varying vec3 vV;void main(){float d=length(vV);float f=abs(dot(normalize(vN),vV/d));'+
-   'float a=pow(f,1.6)*pow(1.-vU,1.4)*smoothstep(0.,.06,vU)*(1.-smoothstep(45.,170.,d))*uK;gl_FragColor=vec4(uC,a);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}',
-  transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});m.name='pt_beam';return m;}
-function beamGeo(T){const THREE=T.THREE,Lb=5.5,rb=.8,n=16,P=[],N=[],U=[];
- for(let i=0;i<n;i++){const a0=i*TAU/n,a1=(i+1)*TAU/n,am=(a0+a1)/2;
-  P.push(0,0,0,Lb,Math.cos(a1)*rb,Math.sin(a1)*rb,Lb,Math.cos(a0)*rb,Math.sin(a0)*rb);
-  N.push(0,Math.cos(am),Math.sin(am),0,Math.cos(a1),Math.sin(a1),0,Math.cos(a0),Math.sin(a0));U.push(0,1,1);}
+// B2 o1984 pass (owner: "four big soft white orbs, no visible beams"): the beam is now THE readable element and never blooms -
+// additive cool cone, output capped (a <= .34, colour <= .9 -> 4 overlapping beams stay under the bloom threshold 1.4),
+// toneMapped off (fixed intensity), fade near the camera (1-4 u, no wash when the street camera stands in a beam) and a long
+// distance fade (150-420 u) so the sweep reads at world zoom; truncated cone with SHARED per-angle normals (the r3 apex used one
+// normal per triangle -> 16 bright wedges = the dashed ellipse in the owner's shot).
+function beamMat(T){const THREE=T.THREE,c=hex('#C9D6E4');
+ const m=new THREE.ShaderMaterial({uniforms:{uC:{value:new THREE.Vector3(c[0],c[1],c[2])},uK:{value:T.mood==='day'?.06:.34}},
+  vertexShader:'attribute float aU;varying float vU;varying vec3 vN;varying vec3 vV;varying float vA;void main(){vec4 p=vec4(position,1.);vec3 n=normal;vec3 ax=vec3(1.,0.,0.);\n#ifdef USE_INSTANCING\np=instanceMatrix*p;n=mat3(instanceMatrix)*n;ax=mat3(instanceMatrix)*ax;\n#endif\nvec4 mv=modelViewMatrix*p;vN=normalize(normalMatrix*n);vV=-mv.xyz;vU=aU;vA=abs(dot(normalize(normalMatrix*ax),normalize(-mv.xyz+vec3(1e-5))));gl_Position=projectionMatrix*mv;}',
+  fragmentShader:'uniform vec3 uC;uniform float uK;varying float vU;varying vec3 vN;varying vec3 vV;varying float vA;void main(){float d=max(length(vV),1e-4);float f=abs(dot(normalize(vN+vec3(1e-5)),vV/d));'+
+   'float g=smoothstep(50.,130.,d);float a=pow(f,1.3)*pow(1.-vU,1.7)*smoothstep(0.,.1,vU)*smoothstep(1.,4.,d)*(1.+.9*g)*(1.-.75*smoothstep(170.,420.,d))*(1.-.85*smoothstep(.86,.98,vA))*uK;a=min(a,mix(.3,.42,g));gl_FragColor=vec4(min(uC,vec3(.9)),a);\n#include <encodings_fragment>\n}',
+  transparent:true,depthWrite:false,toneMapped:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});m.name='pt_beam';return m;}
+function beamGeo(T){const THREE=T.THREE,Lb=7,rb=.95,r0=.05,n=16,P=[],N=[],U=[],ny=(rb-r0)/Lb;
+ for(let i=0;i<n;i++){const a0=i*TAU/n,a1=(i+1)*TAU/n,c0=Math.cos(a0),s0=Math.sin(a0),c1=Math.cos(a1),s1=Math.sin(a1);
+  P.push(0,c0*r0,s0*r0,Lb,c1*rb,s1*rb,Lb,c0*rb,s0*rb, 0,c0*r0,s0*r0,0,c1*r0,s1*r0,Lb,c1*rb,s1*rb);
+  N.push(-ny,c0,s0,-ny,c1,s1,-ny,c0,s0, -ny,c0,s0,-ny,c1,s1,-ny,c1,s1);U.push(0,1,1,0,0,1);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
  g.setAttribute('aU',new THREE.Float32BufferAttribute(U,1));g.computeBoundingSphere();return g;}
 // families: ctx.mats[key] when it is a THREE.Material (except building: own window-capable facade), otherwise own materials
@@ -647,7 +652,7 @@ function datacenter(B,S,mid,sl){const T=B.T,b=S.building,m=S.metal,ry=sl.ry,W=sl
   for(const hh of[.12,.32]){const segs=i===0?[[0,.38],[.62,1]]:[[0,1]];for(const sg of segs){const p0=at(lerp(a[0],e[0],sg[0]),lerp(a[1],e[1],sg[0])),p1=at(lerp(a[0],e[0],sg[1]),lerp(a[1],e[1],sg[1]));
    strut(m,[p0[0],T.yl(p0[0],p0[1])+hh,p0[1]],[p1[0],T.yl(p1[0],p1[1])+hh,p1[1]],.006,dk);}}}
  let ss=null,sd2=1e9;for(const q of[B.L.slots.substation].concat(B.L.slots.pylons||[])){if(!q)continue;const d=Math.hypot(q.x-sl.x,q.z-sl.z);if(d<sd2){sd2=d;ss=q;}}
- if(ss){const dx=ss.x-sl.x,dz=ss.z-sl.z,dl=Math.hypot(dx,dz);if(dl<13){const ux=dx/dl,uz=dz/dl,t0=Math.hypot(sl.w,sl.d)/2+.1,t1=dl-(ss.w?1.35:.4);   // cable tray to the grid
+ if(ss){const dx=ss.x-sl.x,dz=ss.z-sl.z,dl=Math.hypot(dx,dz);if(dl>1e-3&&dl<13){const ux=dx/dl,uz=dz/dl,t0=Math.hypot(sl.w,sl.d)/2+.1,t1=dl-(ss.w?1.35:.4);   // cable tray to the grid
   const n=Math.max(1,Math.round((t1-t0)/.9));let prev=null;for(let k=0;k<=n;k++){const t=lerp(t0,t1,k/n),x=sl.x+ux*t,z=sl.z+uz*t;
    if(inLot(B.L,x,z,.1)||nearStreet(B.L,x,z,.05)){prev=null;continue;}const p=[x,T.yl(x,z)+.22,z];strut(m,[x,p[1]-.25,z],p,.012,dk);if(prev)strut(m,prev,p,.022,st);prev=p;}}}
  farBox(B,'building',sl.x,lo,sl.z,sl.w-.6,hi-lo+.7,sl.d-.6,ry,c,rc);}
@@ -678,17 +683,19 @@ function ministry(B,S,mid,sl){const T=B.T,b=S.building,W=sl.w,pts=rectPts(sl.x,s
    if(i<3){const nf=Math.max(3,Math.round(w/.24));
     for(let f=0;f<=nf;f++){const u=(f/nf-.5)*w;for(let k=0;k<4;k++){const a=k*PI/2,o=rotP(u,w/2+.025,a);box(b,sl.x+o[0],y,sl.z+o[1],.035,h,.06,a,tone(c,.72),null,false);}}}}
   y+=h;}
- const wt=W*.36,lc=em(B,'#DCE4EA',1.5);
+ const wt=W*.36,lc=em(B,'#DCE4EA',1.1);   // o1984 pass: crown band 1.5 -> 1.1 (was the brightest spot, competed with the beams)
  box(S.light,sl.x,y-.42,sl.z,wt+.02,.09,wt+.02,0,lc);box(S.light,sl.x,y-.24,sl.z,wt+.02,.05,wt+.02,0,tone(lc,.7));
- if(!mid){strut(S.metal,[sl.x,y,sl.z],[sl.x,y+1.3,sl.z],.03,hex(PAL.dark,1));box(S.light,sl.x,y+1.3,sl.z,.07,.07,.07,0,em(B,'#E8EEF2',2.2));
-  addLight(B,sl.x,y-.3,sl.z,'#DCE4EA',1.0,4);farBox(B,'light',sl.x,y-.45,sl.z,wt+.04,.14,wt+.04,0,lc);}}
+ if(!mid){strut(S.metal,[sl.x,y,sl.z],[sl.x,y+1.3,sl.z],.03,hex(PAL.dark,1));box(S.light,sl.x,y+1.3,sl.z,.06,.06,.06,0,em(B,'#E8EEF2',.9));   // o1984 pass: mast tip 2.2 -> .9, crown sprite 1.0/4 -> .18/2.4 (no bloom orb on the tower)
+  addLight(B,sl.x,y-.3,sl.z,'#DCE4EA',.18,2.4);farBox(B,'light',sl.x,y-.45,sl.z,wt+.04,.14,wt+.04,0,lc);}}
 function searchlights(B,S,mid,list){const T=B.T,H=4,st=hex(PAL.steel,.6*T.A);
  for(let i=0;i<list.length;i++){const o=list[i],y=T.yl(o.x,o.z);
   if(mid){box(S.metal,o.x,y-.1,o.z,.3,H+.1,.3,0,st);continue;}
   lattice(S.metal,o.x,y-.1,o.z,.3,.13,H+.1,4,st,.014);box(S.metal,o.x,y+H,o.z,.44,.05,.44,0,st);box(S.metal,o.x,y+H+.05,o.z,.16,.14,.16,0,hex(PAL.dark,1));
-  box(S.light,o.x,y+H+.19,o.z,.1,.03,.1,0,em(B,'#E8EEF2',2.4));
-  B.beams.push({x:o.x,y:y+H+.14,z:o.z,ph:o.ph});B.movers.push({x:o.x,y:y+H,z:o.z,r:5.5,n:'searchlight'});
-  addLight(B,o.x,y+H+.2,o.z,'#E8EEF2',1.0,3.5);farBox(B,'metal',o.x,y,o.z,.3,H,.3,0,st);}}
+  // o1984 pass: lamp head small + dim (2.4 -> .75, below the bloom threshold), NO engine glow sprite (the 1.0 x glowK x HDR-core
+  // sprite was the white orb); a tiny dim lens dot stays (0.1 -> .3 u sprite, peak .1*1.2*7 = .84 < thr 1.4)
+  box(S.light,o.x,y+H+.19,o.z,.08,.025,.08,0,em(B,'#C9D6E4',.75));
+  B.beams.push({x:o.x,y:y+H+.14,z:o.z,ph:o.ph});B.movers.push({x:o.x,y:y+H,z:o.z,r:7,n:'searchlight'});
+  addLight(B,o.x,y+H+.2,o.z,'#C9D6E4',.1,1.2);farBox(B,'metal',o.x,y,o.z,.3,H,.3,0,st);}}
 
 // ======================= (13) specials: protector =======================
 function dome(B,S,mid,sl){const T=B.T,THREE=T.THREE;
@@ -1060,8 +1067,10 @@ function wrap(B,name){const THREE=B.T.THREE,g=new THREE.Group(),inner=new THREE.
 function addFam(B,inner,bufs,prefix,casters){const THREE=B.T.THREE;
  for(const k of['ground','building','metal','light','foliage','glass']){const b=bufs[k];if(!b||!bufTris(b))continue;const m=new THREE.Mesh(geomOf(B.T,b),B.M[k]);m.name=prefix+k;m.receiveShadow=k!=='light'&&k!=='glass';
   if(k==='glass')m.renderOrder=3;if(k==='ground')m.renderOrder=1;if(casters&&(k==='building'||k==='metal')){m.castShadow=true;casters.push(m);}inner.add(m);}}
-function animBeams(B,im){const bm=B.beams;return t=>{for(let i=0;i<bm.length;i++){const o=bm[i];B.eul.set(0,o.ph+t*.17*(i&1?-1:1),-(.3+.1*Math.sin(t*.11+o.ph)),'YXZ');B.q.setFromEuler(B.eul);
-  B.m4.compose(B.v.set(o.x,o.y,o.z),B.q,B.one);im.setMatrixAt(i,B.m4);}im.instanceMatrix.needsUpdate=true;};}
+// o1984 pass: the same sweep drives the MID beam copy (B.beamMid, built later in mergeMid) - world zoom shows MID, so the
+// beams must exist there too (r5: MID had only the glow-sprite orbs and no beam)
+function animBeams(B,im){const bm=B.beams;return t=>{const tg=B.beamMid?[im,B.beamMid]:[im];for(let i=0;i<bm.length;i++){const o=bm[i];B.eul.set(0,o.ph+t*.17*(i&1?-1:1),-(.36+.08*Math.sin(t*.11+o.ph)),'YXZ');B.q.setFromEuler(B.eul);
+  B.m4.compose(B.v.set(o.x,o.y,o.z),B.q,B.one);for(const m of tg)m.setMatrixAt(i,B.m4);}for(const m of tg)m.instanceMatrix.needsUpdate=true;};}
 function animCars(B,im){const mv=B.moving;return t=>{for(let i=0;i<mv.length;i++){const c=mv[i],P=c.path,d=((t*c.spd+c.off)%c.len+c.len)%c.len,f=d/c.len*(c.n-1),k=Math.min(c.n-2,Math.floor(f)),u=f-k,j=k*3;
   let dx=P[j+3]-P[j],dz=P[j+5]-P[j+2];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;B.eul.set(0,Math.atan2(-dz,dx),0,'XYZ');B.q.setFromEuler(B.eul);
   B.m4.compose(B.v.set(P[j]+(P[j+3]-P[j])*u-dz*.13,P[j+1]+(P[j+4]-P[j+1])*u,P[j+2]+(P[j+5]-P[j+2])*u+dx*.13),B.q,B.one);im.setMatrixAt(i,B.m4);}im.instanceMatrix.needsUpdate=true;};}
@@ -1088,7 +1097,7 @@ function mergeNearB(B){const W=B._W,I=B.inst,G=propGeos(B),add=m=>{if(m)W.inner.
  add(instMesh(B,'pt_cars',G.car,B.M.metal,I.car));add(instMesh(B,'pt_lamps',B.gLamp,B.M.metal,I.lamp));add(instMesh(B,'pt_lampheads',B.gHead,B.M.light,I.lamp));
  add(instMesh(B,'pt_poles',G.pole,B.M.metal,I.pole));
  add(instMesh(B,'pt_benches',G.bench,B.M.metal,I.bench));add(instMesh(B,'pt_bins',G.bin,B.M.metal,I.bin));add(instMesh(B,'pt_shelters',G.shelter,B.M.metal,I.shelter));
- if(B.beams.length)safe('beams',()=>{const im=add(instMesh(B,'pt_beams',G.beam,B.M.beam,B.beams.map(o=>[o.x,o.y,o.z,1,1,1,o.ph,null])));im.renderOrder=5;im.receiveShadow=false;B.anims.push(animBeams(B,im));});
+ if(B.beams.length)safe('beams',()=>{const im=add(instMesh(B,'pt_beams',G.beam,B.M.beam,B.beams.map(o=>[o.x,o.y,o.z,1,1,1,o.ph,null])));im.renderOrder=5;im.receiveShadow=false;B.gBeam=G.beam;B.anims.push(animBeams(B,im));});
  if(B.moving.length)safe('moving cars',()=>{const im=add(instMesh(B,'pt_movers',G.car,B.M.metal,B.moving.map(c=>[c.path[0],c.path[1],c.path[2],1,1,1,0,c.col])));B.anims.push(animCars(B,im));});
  const G4=safe('r4 geos',()=>r4Geos(B));
  if(G4&&B.walkers.length)safe('walkers',()=>{const im=add(instMesh(B,'pt_walkers',G4.person,B.M.foliage,B.walkers.map(c=>[c.path[0],c.path[1],c.path[2],1,1,1,0,c.col])));B.anims.push(animWalk(B,im,B.walkers));});
@@ -1097,7 +1106,9 @@ function mergeNearB(B){const W=B._W,I=B.inst,G=propGeos(B),add=m=>{if(m)W.inner.
  for(const e of B.extra)W.inner.add(e);
  B.near=W.g;}
 function midLots(B){const L=B.L;ground(B,B.D,true);for(let i=0;i<L.lots.length;i++)emitLot(B,L.lots[i],B.D,true);}
-function mergeMid(B){for(const n of B.T.P.special)special(B,n,true);safe('r4 mid',()=>r4Mid(B));const W=wrap(B,'pt_mid');addFam(B,W.inner,B.D,'pt_mid_',null);for(const e of B.extraMid)W.inner.add(e);B.mid=W.g;}
+function mergeMid(B){for(const n of B.T.P.special)special(B,n,true);safe('r4 mid',()=>r4Mid(B));
+ if(B.beams.length&&B.gBeam)safe('mid beams',()=>{const im=instMesh(B,'pt_mid_beams',B.gBeam,B.M.beam,B.beams.map(o=>[o.x,o.y,o.z,1,1,1,o.ph,null]));im.renderOrder=5;im.receiveShadow=false;B.beamMid=im;B.extraMid.push(im);});
+ const W=wrap(B,'pt_mid');addFam(B,W.inner,B.D,'pt_mid_',null);for(const e of B.extraMid)W.inner.add(e);B.mid=W.g;}
 function mergeFar(B){const T=B.T,lots=B.L.lots.slice().sort((a,b)=>b.w*b.d*b.st-a.w*a.d*a.st).slice(0,120),out=[];
  for(const l of lots){const s=seat(T,rectPts(l.x,l.z,l.w,l.d,l.ry));box(B.F.building,l.x,s.lo-.1,l.z,l.w,s.hi-s.lo+.1+l.st*STOREY+(T.P.roof==='pitched'?.15:0),l.d,l.ry,wallCol(T,l.seed),null,roofCol(T,l.seed));}
  let tris=0;for(const k of['building','metal','ground','light']){const b=B.F[k];if(!bufTris(b))continue;tris+=bufTris(b);out.push({geom:geomOf(T,b,true),family:k});}

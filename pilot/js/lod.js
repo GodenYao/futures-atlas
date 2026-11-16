@@ -59,14 +59,15 @@ if(STRESS)for(const s of CAND)SITES.push(s);
 const PROTOWN_FOR={normaltech:1,o1984:1,protector:1,egalitarian:1};
 // B1 round 2 (contract v2, frozen): zookeeper + descendants = COMPOSITE sites (protown preset part + the plan's other part, see compositeSteps)
 const COMPOSITE_FOR={zookeeper:1,descendants:1};
+const OWN_GEN={enslaved:'proenslaved'};   // per-ending generators (pass #2: js/proenslaved.js -> FA.PROENSLAVED)
 FA.SITE_TABLE=SITES.filter(s=>s.real).concat(CAND).map(s=>({id:s.id,ending:s.name,x:+s.x.toFixed(2),z:+s.z.toFixed(2),
  y:s.id==='gatekeeper'?2.6:s.h0,radius:+s.r.toFixed(2),seed:s.seed||(s.id==='gatekeeper'?1505:2031),
  rot:s.real?0:+((((s.seed||0)*2654435761>>>0)%6283)/1000).toFixed(3),   // layout hint for the generator; the engine does NOT rotate the group
- gen:PROTOWN_FOR[s.id]?'protown':COMPOSITE_FOR[s.id]?'composite':s.g==='city'?'procity':'procottage',standin:s.g==='city'?'procity':'procottage',live:SITES.includes(s)}));
+ gen:OWN_GEN[s.id]||(PROTOWN_FOR[s.id]?'protown':COMPOSITE_FOR[s.id]?'composite':s.g==='city'?'procity':'procottage'),standin:s.g==='city'?'procity':'procottage',live:SITES.includes(s)}));
 for(const s of SITES){const t=FA.SITE_TABLE.find(e=>e.id===s.id);s.gen=t.gen;s.standin=t.standin;s.y=t.y;s.rot=t.rot;}
 // generator registry: name -> {version, build(site,ctx), buildSteps?(site,ctx)}; 'protown' resolves to window.FA.PROTOWN at CALL time
 // (load order free, zero engine edits once js/protown.js is in index.html). Missing generator -> the site's stand-in.
-const GEN=FA.GEN={reg:{},register(n,g){this.reg[n]=g;return g;},get(n){if(n==='protown')return (window.FA&&window.FA.PROTOWN)||null;
+const GEN=FA.GEN={reg:{},register(n,g){this.reg[n]=g;return g;},get(n){if(n==='protown')return (window.FA&&window.FA.PROTOWN)||null;if(n==='proenslaved')return (window.FA&&window.FA.PROENSLAVED)||null;
   if(n==='composite')return (window.FA&&window.FA.PROTOWN)?this.reg.composite:null;return this.reg[n]||null;},   // composite needs protown for its town part
  resolve(s){const g=this.get(s.gen);return g?{name:s.gen,g}:{name:s.standin,g:this.reg[s.standin]};}};
 // shared material families (FA.MATS) for generators: vertex-coloured, sRGB hexes (LOOK.cm colour management), env from the scene IBL
