@@ -114,7 +114,7 @@ function domeMat(T,U){const THREE=T.THREE,c=hex('#9AB0CC');   // B2 r5: sky-blue
   vertexShader:'varying vec3 vN;varying vec3 vV;varying float vH;varying float vD;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);vD=length(mv.xyz);vH=normal.y;gl_Position=projectionMatrix*mv;}',
   // G1 r6 N (world view: 'a pale dome sliver'): grazing rim fades with view distance (x.3 beyond ~190 u); close-ups unchanged
   fragmentShader:'uniform float uT,uK;uniform vec3 uC;varying vec3 vN;varying vec3 vV;varying float vH;varying float vD;void main(){float f=1.-abs(dot(normalize(vN),normalize(vV)));'+
-   'float a=(.01+.15*pow(f,3.)+.03*pow(f,8.))*(.9+.1*sin(uT*.21+vN.y*7.))*uK*smoothstep(.02,.3,abs(vH))*(1.-.5*smoothstep(.7,1.,abs(vH)));a=min(a,.17)*(1.-.7*smoothstep(70.,190.,vD));gl_FragColor=vec4(uC,a);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}',
+   'float a=(.01+.15*pow(f,3.)+.03*pow(f,8.))*(.9+.1*sin(uT*.21+vN.y*7.))*uK*smoothstep(.02,.3,abs(vH))*(1.-.5*smoothstep(.7,1.,abs(vH)));a=min(a,.17)*(1.-.92*smoothstep(55.,150.,vD));gl_FragColor=vec4(uC,a);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}',
   transparent:true,depthWrite:false,side:THREE.DoubleSide});m.name='pt_dome';return m;}
 // B2 r3 searchlight beam (vision r2: grey wedges in stills): additive soft cone, smooth radial normals -> bright core, edges
 // fade to 0 (facing^1.6), fades along the beam (tip 0, short ramp at the lamp), fades with view distance (no fog:false
@@ -525,11 +525,13 @@ function* groundGen(B,S,mid){const T=B.T,L=B.L,g=GCOL[T.P.layout]||GCOL.grid,col
  // r6 N (world vision: normaltech MID = 'a dark rectangular gridded slab'): at MID the grey pave underlay + wide asphalt grid made a
  // plate; normaltech MID now drops the underlay and draws narrower, lighter roads (kerb +.12) so the town sits on the terrain
  const ntm=mid&&T.id==='normaltech';
- if(T.P.under!==0&&!ntm)disc(S.ground,T,0,0,T.R*1.02,mid?6:12,mid?32:56,col,-.03);yield 1;   // C1 r5: o1984/egalitarian under:0 = no underlay (D5: it read as a plate)
+ if(T.P.under!==0&&!ntm&&!(mid&&T.id==='zookeeper'))disc(S.ground,T,0,0,T.R*1.02,mid?6:12,mid?32:56,col,-.03);yield 1;   // C1 r5: o1984/egalitarian under:0 = no underlay (D5: it read as a plate); r7 P: zookeeper MID too (lighter round apron at world zoom)
  // B2 r3 street readability: every street gets an edge strip that contrasts with its surface (roads: pale kerb + dark asphalt
  // + centre dashes; old-quarter lanes: pale kerb + dark setts; garden paths: dark edge + pale gravel). MID keeps the strips.
  const KERB=hex(PAL.kerb,.95*T.A),EDGE=hex('#4A4840',T.A),SETT=hex('#3A3734',T.A),GRAV=hex('#A8A08A',T.A);
+ const zdm=mid&&(T.id==='zookeeper'||T.id==='descendants');   // r7 P (world vision r5/r6: zookeeper 'concentric halo', descendants 'gridded radial disc'): MID ring lanes / radials = one dark ground path, no pale kerb / gravel line
  for(const s of L.streets){const rd=s.kind==='road',old=lay==='old',st=mid?2.2:.7;
+  if(zdm){ribbon(S.ground,T,s.pts,s.w*.8,tone(EDGE,.82),.012,st);yield 1;continue;}
   if(ntm&&rd){ribbon(S.ground,T,s.pts,s.w*.7+.12,tone(KERB,.62),.01,st);ribbon(S.ground,T,s.pts,s.w*.7,tone(hex(PAL.asphalt,T.A),1.1),.02,st);}
   else if(rd||old){ribbon(S.ground,T,s.pts,s.w+(mid?.3:.26),KERB,.01,st);ribbon(S.ground,T,s.pts,s.w,rd?hex(T.id==='protector'?'#5C564E':PAL.asphalt,T.A):SETT,.02,st);}   // r4: protector = warm block paving, not asphalt
   else{ribbon(S.ground,T,s.pts,s.w+.16,EDGE,.01,st);ribbon(S.ground,T,s.pts,s.w,GRAV,.02,st);}
@@ -827,7 +829,7 @@ function library(B,S,mid,sl){const T=B.T,b=S.building,pts=rectPts(sl.x,sl.z,sl.w
 // B2 r5 (vision r4: \"reads as a wireframe cage\", bright stray rib + base line across houses): a calm glass garden reserve -
 // low planted stone plinth, faint glass from the plinth up, only 8 thin dark mullions, a thin dark eaves ring, no roof spokes,
 // a hedge + shrub belt along the inside of the plinth. FAR keeps 8 thin posts.
-function enclosure(B,S,mid,sl){const T=B.T,n=mid?24:48,r=sl.r,top=T.yl(sl.x,sl.z)+sl.h,gc=hex('#8FA6A8',1),mu=hex('#4A5258',T.A),stn=hex(PAL.stone,.95*T.A),PH=.32;
+function enclosure(B,S,mid,sl){const T=B.T,n=mid?24:48,r=sl.r,top=T.yl(sl.x,sl.z)+sl.h,gc=hex(mid?'#66767A':'#8FA6A8',1),mu=hex('#4A5258',T.A),stn=hex(PAL.stone,(mid?.72:.95)*T.A),PH=.32;   // r7 P: MID glass + plinth darker (world: pale halo ring); the enclosure itself stays (ending-defining)
  const P3=(i,up,rr)=>{const a=(i%n)*TAU/n,R0=rr||r,x=sl.x+Math.cos(a)*R0,z=sl.z+Math.sin(a)*R0;return[x,up===1?top:up===2?T.yl(x,z)+PH:T.yl(x,z)-.12,z];};
  for(let i=0;i<n;i++){quad(S.glass,P3(i,2),P3(i+1,2),P3(i+1,1),P3(i,1),gc,null);tri(S.glass,[sl.x,top,sl.z],P3(i,1),P3(i+1,1),gc);
   const a=(i+.5)*TAU/n,x=sl.x+Math.cos(a)*r,z=sl.z+Math.sin(a)*r;box(S.building,x,T.yl(x,z)-.12,z,2*r*Math.sin(PI/n)+.03,PH+.12,.26,-a+PI/2,stn,null,tone(stn,1.08));}
@@ -853,7 +855,7 @@ function treeOne(B,S,mid,sl){if(mid)return;const T=B.T;B.L.trees.push({x:sl.x,z:
  cyl(S.building,sl.x,T.yl(sl.x,sl.z)-.06,sl.z,.36,.36,.12,12,hex(PAL.stone,T.A),hex(PAL.soil,T.A));}
 
 // ======================= (16) specials: descendants =======================
-function plaza(B,S,mid,sl){const T=B.T,st=hex(PAL.stone,T.A);disc(S.ground,T,sl.x,sl.z,sl.r,mid?2:4,mid?14:24,hex(PAL.stone,.78*T.A),.03);if(mid)return;
+function plaza(B,S,mid,sl){const T=B.T,st=hex(PAL.stone,T.A);disc(S.ground,T,sl.x,sl.z,sl.r,mid?2:4,mid?14:24,hex(PAL.stone,(mid?.56:.78)*T.A),.03);if(mid)return;   // r7 P: MID plaza disc darker (hub of the 'radial disc' read)
  const y=T.yl(sl.x,sl.z);cyl(S.building,sl.x,y-.08,sl.z,.34,.34,.18,12,st,tone(st,.45));cyl(S.building,sl.x,y,sl.z,.06,.05,.46,6,st,true);cyl(S.building,sl.x,y+.46,sl.z,.13,.1,.04,8,st,true);
  addLight(B,sl.x+sl.r*.6,y+.4,sl.z,PAL.lamp,.6,2.5);}
 function seam(B,S,mid,sl){const T=B.T;disc(S.ground,T,sl.x,sl.z,sl.r*.9,mid?1:2,mid?10:18,hex(PAL.stone,.7*T.A),.03);
@@ -867,14 +869,15 @@ function emptying(B,S,mid){if(mid)return;const U=B.U,o0=clamp(+B.T.P.out||0,0,.9
 function keepClear(T,x,z,w){const a=T.P.keepA;if(a==null)return false;const ux=Math.cos(a),uz=Math.sin(a),t=x*ux+z*uz;return t>0&&Math.abs(-x*uz+z*ux)<w;}
 function zooMachines(B,S,mid){const T=B.T,L=B.L,sl=L.slots.enclosure;if(!sl)return;
  if(!B._zm){const r=mulberry32(((T.seed|0)*31+977)>>>0),r0=sl.r+1.05,r1=T.R*(+T.P.machR||1.45),it=[];
-  for(let k=0;k<900&&it.length<(+T.P.machN||78);k++){const a=r()*TAU,u=r(),rr=r0+(r1-r0)*u,x=sl.x+Math.cos(a)*rr,z=sl.z+Math.sin(a)*rr,ty=r(),s=.7+r()*.6,ry=r()*PI,hr=r();
+  for(let k=0;k<900&&it.length<(+T.P.machN||78);k++){const a=r()*TAU,u=r(),rr=r0-.6+(r1-r0+.6)*u+(r()-.5)*1.1,x=sl.x+Math.cos(a)*rr,z=sl.z+Math.sin(a)*rr,ty=r(),s=.7+r()*.6,ry=r()*PI,hr=r();   // r7 P: inner edge jittered (no crisp concentric ring of obelisks)
+   if(rr<sl.r+.55)continue;
    if(r()<ss(.3,1,u)*.8)continue;if(keepClear(T,x,z,1.5))continue;const rad=ty<.42?.3*s:ty<.8?.62*s:1.0*s;
    if(it.some(o=>Math.hypot(o.x-x,o.z-z)<o.rad+rad+.25))continue;
    const f=1-.55*u;   // heights fall off outward
    it.push({x,z,ty:ty<.42?'ob':ty<.8?'st':'hall',s,ry,rad,h:(ty<.42?2.6+hr*3.6:ty<.8?1.1+hr*2.2:.45+hr*.35)*f,u,lit:hr>.55});}
   // one slow gantry crane in the machine land (v4.4 cue: a machine crane swinging outside the fence)
   const ca=(T.P.keepA!=null?+T.P.keepA:0)+2.3;B._zm={it,crane:[sl.x+Math.cos(ca)*(r0+1.6),sl.z+Math.sin(ca)*(r0+1.6)]};}
- const ZM=B._zm,dk=hex('#4A4F5B',T.A),dk2=hex('#3B404A',T.A),ob=hex('#8A8AA2',T.A),ob2=hex('#6E6E88',T.A),hall=hex('#565B66',T.A);
+ const ZM=B._zm,dk=hex('#4A4F5B',T.A),dk2=hex('#3B404A',T.A),ob=hex('#6E7080',T.A),ob2=hex('#5A5C6C',T.A),hall=hex('#565B66',T.A);   // r7 P: obelisks '#8A8AA2' -> slate (vision: 'icy spire forest')
  for(const o of ZM.it){const s=seat(T,rectPts(o.x,o.z,o.rad*2,o.rad*2,o.ry)),y=s.lo-.1;
   if(o.ty==='ob'){cyl(S.building,o.x,y,o.z,o.rad*1.25,o.rad*1.1,.22,4,dk2,true);cyl(S.building,o.x,y+.2,o.z,o.rad,o.rad*.18,o.h,4,ob,true);   // crystal obelisk on a dark footing
    if(!mid){cyl(S.building,o.x,y+.2+o.h*.98,o.z,o.rad*.2,.005,o.h*.08,4,ob2,true);if(o.lit)box(S.light,o.x,y+o.h*.55,o.z,.05,.05,.05,0,em(B,PAL.cool,.55));}}
@@ -900,7 +903,7 @@ function descCity(B,S,mid){const T=B.T,L=B.L,sl=L.slots.seam;if(!sl)return;const
   // three towers still being assembled (they rise slowly; host freezes them at t=0 under reduced motion)
   const g=[];for(const o of it)if(o.ty==='tw'&&o.u>.15&&o.u<.6&&g.length<3){o.grow=1;g.push(o);}
   B._dc={it,g};}
- const DC=B._dc,pc=hex('#9CA3AB',T.A),pc2=hex('#858C95',T.A),dk=hex('#5B616B',T.A),THREE=T.THREE;   // r5: pale grey -> 1 step darker (world cstat L 73 -> <=72)
+ const DC=B._dc,pc=hex('#868C94',T.A),pc2=hex('#737980',T.A),dk=hex('#555A63',T.A),THREE=T.THREE;   // r5: pale grey -> 1 step darker; r7 P: one more step ('#9CA3AB'/'#858C95'; vision 'icy-blue spire forest')
  for(const o of DC.it){const s=seat(T,rectPts(o.x,o.z,o.rad*2,o.rad*2,o.ry)),y=s.lo-.1;if(o.grow)continue;
   if(o.ty==='sp'){cyl(S.building,o.x,y,o.z,o.rad*1.2,o.rad,.25,6,dk,true);cyl(S.building,o.x,y+.25,o.z,o.rad*.7,o.rad*.16,o.h,6,pc,true);
    if(!mid){for(let k=0;k<3;k++){const b=o.ry+k*TAU/3,p=[Math.cos(b)*o.rad*.5,Math.sin(b)*o.rad*.5];box(S.building,o.x+p[0],y+.25,o.z+p[1],.02,o.h*.5,.08,-b,pc2);}
@@ -958,7 +961,7 @@ function nearFuture(B,S,mid){const T=B.T,L=B.L,R=T.R,THREE=T.THREE;
  const db=buf();box(db,0,0,0,.16,.06,.16,0,hex('#5A6068',T.A));for(const c of C4)box(db,c[0]*.12,.05,c[1]*.12,.1,.012,.1,0,hex('#3A3E44',T.A));
  const dlb=buf();box(dlb,0,-.03,0,.07*k2,.05*k2,.07*k2,0,em(B,PAL.lamp,.7));
  const PD=NF.pads,mv=PD.filter(p=>!p.park),legs=[];for(let i=0;i<mv.length-1;i++)legs.push([mv[i],mv[i+1]]);if(mv.length>2)legs.push([mv[mv.length-1],mv[0]]);
- const pk=PD.filter(p=>p.park),nL=legs.length*2,nC=3,nT=nL+nC+pk.length,nTr=(nL+nC)*4,nD=mid?6:12;
+ const pk=PD.filter(p=>p.park),nL=legs.length*2,nC=3,nT=nL+nC+pk.length,NTR=6,nTr=(nL+nC)*NTR,nD=mid?6:12;   // r7 P: 6 trail dots (was 4)
  const IM=(bb,mat,n,nm,list)=>{const m=new THREE.InstancedMesh(geomOf(T,bb),mat,n);m.name=nm;m.frustumCulled=false;(mid?B.extraMid:B.extra).push(m);list.push(m);return m;};
  IM(pb,B.M.metal,nT,'pt_evtol',NF.tx);IM(lb,B.M.light,nT,'pt_evtol_nav',NF.tx);IM(trb,B.M.light,nTr,'pt_evtol_trail',NF.trl);
  IM(db,B.M.metal,nD,'pt_drones',NF.drB);IM(dlb,B.M.light,nD,'pt_drone_lights',NF.drL);
@@ -972,8 +975,10 @@ function nearFuture(B,S,mid){const T=B.T,L=B.L,R=T.R,THREE=T.THREE;
    const q=(p-.12)/.76,m=ss(.2,.8,q),y=q<.2?lerp(a.y+.02,h,ss(0,.2,q)):q>.8?lerp(h,e.y+.02,ss(.8,1,q)):h+.1*Math.sin(q*PI*3);return[lerp(a.x,e.x,m),y,lerp(a.z,e.z,m),yw,q>.04&&q<.96?1:0];}
   const i=j-nL,ph=((t/(84+14*i)+i*.33)%1+1)%1,s=(ph<.5?ss(0,.5,ph):1-ss(.5,1,ph))*2-1,c=cor(s*R*1.1,NF.cy+.5+i*.4,(i-1)*1.3);return[c[0],c[1],c[2],-NF.ca+(ph<.5?0:PI),1];};
  B.anims.push(t=>{const put=(ims,i,x,y,z,yaw,sc)=>{O.position.set(x,y,z);O.rotation.set(0,yaw,0);O.scale.setScalar(Math.max(sc,.001));O.updateMatrix();for(const m of ims)if(i<m.count)m.setMatrixAt(i,O.matrix);};
-  for(let j=0;j<nL+nC;j++){const p=pos(j,t);put(NF.tx,j,p[0],p[1],p[2],p[3],1);for(let k=1;k<=4;k++){const q=pos(j,t-k*1.5);put(NF.trl,j*4+k-1,q[0],q[1]+.12,q[2],0,q[4]*p[4]*(1-k*.18));}}
-  for(let i=0;i<pk.length;i++)put(NF.tx,nL+nC+i,pk[i].x,pk[i].y+.02,pk[i].z,-pk[i].ry+.6,1);
+  // r7 P (vision r7: taxis in flight 'small grey, read as drones', trails not seen): flying taxis x1.5, parked x1.25; soft nav-light
+  // trail = 6 dots 1.1 s apart, shrinking 1.5 -> .35 (same .42 lamp emissive, below the .70 bloom threshold)
+  for(let j=0;j<nL+nC;j++){const p=pos(j,t),fs=1.5;put(NF.tx,j,p[0],p[1],p[2],p[3],fs);for(let k=1;k<=NTR;k++){const q=pos(j,t-k*1.1);put(NF.trl,j*NTR+k-1,q[0],q[1]+.18,q[2],0,q[4]*p[4]*1.5*(1-k*.13));}}
+  for(let i=0;i<pk.length;i++)put(NF.tx,nL+nC+i,pk[i].x,pk[i].y+.02,pk[i].z,-pk[i].ry+.6,1.25);
   for(const L2 of[NF.drB,NF.drL])for(const m of L2){const n=m.count;for(let i=0;i<n;i++){const q=((t/55+i/n)%1+1)%1,sc=ss(0,.06,q)*(1-ss(.94,1,q)),d=(q*2-1)*R*1.4,ln=(i%2?.5:-.5),
    x=NF.K[0]+v[0]*d-v[1]*ln,z=NF.K[1]+v[1]*d+v[0]*ln,bl=L2===NF.drL?(((t*.9+i*.37)%1)<.5?1:0):1;O.position.set(x,NF.dy+.25*(i%3),z);O.rotation.set(0,-NF.ca-1.1,0);O.scale.setScalar(Math.max(sc*bl,.001));O.updateMatrix();m.setMatrixAt(i,O.matrix);}}
   for(const m of NF.tx.concat(NF.trl,NF.drB,NF.drL))m.instanceMatrix.needsUpdate=true;

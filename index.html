@@ -289,6 +289,9 @@ ol,ul{padding-left:20px}li{margin:5px 0}
 <script src="js/proenslaved.js"></script>
 <script src="js/procity.js"></script>
 <script src="js/progate.js"></script>
+<script src="js/prorev.js"></script>
+<script src="js/procottage.js"></script>
+<script src="js/proruin.js"></script>
 <script>
 // ======================= DATA (v4 model: Now -> 6 roads -> 13 sites in 4 basins) =======================
 // All numbers are ILLUSTRATIVE sample values (see v4_methods_design §2, §3.9, §4.3). Nothing here is a forecast.
@@ -447,7 +450,10 @@ const G1TXT={
  gatekeeper:'Architecture (§2.3): one round city inside a low perimeter rail with four gates: four avenues cross a ring canal (bridges, piers, small boats) to a central plaza; districts of glass towers, slab blocks on arcs, honeycomb pavilions with solar trees and a garden sector under a ribbed glass dome; an elevated rail loop with a slow train. Landmark: the single tall spire in a lattice frame at the centre, carrying one eye that turns to look around and blinks now and then (it watches; it does not scan).',
  egalitarian:'Architecture (§2.3): identical modest two-storey dwellings with green, solar-topped roofs in three concentric rings around an open commons; a public workshop and a library on the inner ring, shared fields outside; no fences, no towers. Landmark: the open amphitheatre filling the commons.',
   zookeeper:'Architecture (§2.3): a small tidy human reserve inside one round, high glass enclosure on a low planted stone base: two rings of pitched-roof cottages with back gardens along oval paths, a playground, a hedge belt along the inside of the glass, people walking and standing at the glass looking out, small service robots on the paths. Supplies arrive from above: a pod drops through a roof hatch to a pad and rises again. The one road ends at a closed airlock in the glass. Outside the enclosure, a machine landscape that thins toward the hills: crystal obelisks, dark compute stacks with faint cool seams, low halls and a slowly swinging gantry crane, with no people in it. Landmark: the enclosure with a single tree at its centre.',
-  descendants:'Architecture (§2.3): an old human quarter of stone and brick terraces with steep roofs, crooked lanes and an irregular plaza with a fountain and planters; over a slow three-minute cycle its windows go dark one by one, then light up again. At one edge of the quarter, a seam of slender pale machine spires on old-stone footings, joined by low conduits; beyond the seam a new machine city grows outward - pale towers, spires and low decks, densest next to the old quarter and thinning toward the hills, with a few towers still rising inside their frames. Few lights in the new city, all dim and cool. Landmark: the seam where the old quarter meets the new city.'},
+  descendants:'Architecture (§2.3): an old human quarter of stone and brick terraces with steep roofs, crooked lanes and an irregular plaza with a fountain and planters; over a slow three-minute cycle its windows go dark one by one, then light up again. At one edge of the quarter, a seam of slender pale machine spires on old-stone footings, joined by low conduits; beyond the seam a new machine city grows outward - pale towers, spires and low decks, densest next to the old quarter and thinning toward the hills, with a few towers still rising inside their frames. Few lights in the new city, all dim and cool. Landmark: the seam where the old quarter meets the new city.',
+  // swap r7 S: the two new generator cities (js/prorev.js, js/proruin.js); literal description of what is shown, no judgement
+  reversion:'Architecture (§2.3): a small farming hamlet below the western cliff, built with pre-industrial means only: timber-frame cottages with thatch, slate or shingle roofs around a green with a well and a bonfire, an aisled barn, an orchard, carts and a hay wagon on dirt lanes. A brook runs past the foot of the cliff; a stone mill on it turns an undershot water wheel, a trestle bridge crosses it, and a post windmill turns its lattice sails on the open side. Strip fields of grain, pasture and fallow are divided by hedgerows, with haystacks and grazing sheep. Light comes only from fire: a few lit windows, two door lanterns and the bonfire, with chimney smoke. There are no power lines, no paved roads and no electric light. Landmark: the water wheel and the windmill.',
+  selfdestruct:'Architecture (§2.3): a dead city around an old impact crater. Tower stumps stand with their facades broken off at ragged heights and floor slabs hanging out where they broke. Other towers lie in pieces across the streets, low buildings are roofless shells, and rubble and burnt-out vehicles cover a cracked street grid under grey ash. Overgrowth is starting: moss and grass are spreading over the streets toward the edge, shrubs grow at the foot of walls, there are a few young trees and vines climb the stumps. Bare utility masts lean over. The only light is a few smouldering embers in the rubble with thin smoke. Nothing is powered and no one is there. The causes are open: war, an engineered pandemic or another catastrophe. Landmark: the crater and the broken towers.'},
  twinOld:'Two pits, Bloc A and Bloc B, separated by a ridge of mutual deterrence. Identical architecture on both sides; only the colour of the caged core differs (teal vs magenta).',
  twin:'One basin, Bloc A and Bloc B, divided by an engineered trench. The two blocs use different architectural languages (vertical arcology vs horizontal plinths), each built around its own confined AI core (monolith in gimbal rings vs coil-wrapped sphere).',
  labels:{blocA:'BLOC A',blocB:'BLOC B',divide:'ENGINEERED TRENCH',coreA:'monolith in gimbal rings',coreB:'coil-wrapped sphere'}};
@@ -604,7 +610,8 @@ function setValleys(p){VAL=[];for(const o of O){if(o.cliff)continue;const d=dept
   if(o.id==='enslaved'){VAL.push({X:o.X,Z:o.Z,w2:w*w,d:1.25,k:2.0,b:o.b,o,wa:1.0,fk:.8});continue;}
   const G=G1GEN[o.id];if(G.bd!=null&&!o.twin){VAL.push({X:o.X,Z:o.Z,w2:w*w,d:G.bd,k:G.bk||2.0,b:o.b,o,wa:G.bwa||1.0,fk:G.bfk||.8});continue;}   // r6 T: per-site basin depth read here (S2 CONFLICTS r5; the fa4_build wrapper is now a no-op)
   // r6 T: Gatekeeper keeps its depth but gets the soft warped wall (k 2.6 wall at .75-1.2 w = world ring L 33 dip at r 9-10, lit rim 40 on the right)
-  if(o.id==='gatekeeper'){VAL.push({X:o.X,Z:o.Z,w2:w*w,d,k:2.0,b:o.b,o,wa:1.0,fk:.8});continue;}
+  // r7 P: depth 4.2 -> 2.6 (ring L r9/10 R 36.2/36 vs 41 outside, L 35.7 vs 49.9 at r7: the wall slope itself shades the ring; apron/sheds hidden = same)
+  if(o.id==='gatekeeper'){VAL.push({X:o.X,Z:o.Z,w2:w*w,d:+(new URLSearchParams(location.search).get('g1gkd')||2.6),k:2.0,b:o.b,o,wa:1.0,fk:.8});continue;}
   VAL.push({X:o.X,Z:o.Z,w2:w*w,d:o.twin?3.6:d,k:2.6,b:o.b,o});continue;} // G1: one flat-floored basin under a generator city (no twin pits, no ridge)
  if(o.twin){for(const s of[-1,1])VAL.push({X:o.X+s*TWIN,Z:o.Z,w2:PITW*PITW,d:Math.min(9,d*.95),k:3.2,b:o.b,o});}
  else{const w=o.w*100;VAL.push({X:o.X,Z:o.Z,w2:w*w,d,k:2.2,b:o.b,o});}}}
@@ -769,7 +776,12 @@ function faceColB(X,Z,h0,ny,o){const sl=1-ny,h=h0+BAS*.85;G1OW=g1out(X,Z,h,sl);c
   if(dn<1.4){mix(T_SHAL,T_DEEP,1-sm(.3,.95,RDN),_tq);mix(o,_tq,(1-sm(.62,1.35,dn))*(1-RSAND*.85),o);}}
  if(LAKF>.01){mix(o,T_WETE,LAKF*(1-sm(.8,.97,LAKF))*.7,o);if(LAKF>.72)mix(o,T_SHAL,sm(.72,.98,LAKF),o);}
  if(PLZF>0)mix(o,T_PAVE,PLZF*.9,o);
- const k=.97+.08*n2+.03*(g1n(X*.9,Z*.9)-.5);o[0]*=k;o[1]*=k;o[2]*=k;return o;} // G1 r2: smooth jitter (the per-vertex hash term read as speckle)
+ const k=.97+.08*n2+.03*(g1n(X*.9,Z*.9)-.5);o[0]*=k;o[1]*=k;o[2]*=k; // G1 r2: smooth jitter (the per-vertex hash term read as speckle)
+ // r7 P (Gatekeeper 'dark ring band' on its right side): with the city hidden the terrain ring at r 9-10 measured L 36-37 vs 40.5-43
+ // from r 11 out on the east side (west side flat ~37), so lit deck edge -> dark band -> lighter slope read as a dip. A soft,
+ // noise-broken albedo lift on the east side only (r 7.5-12.5) bridges it; faceColB is shared with the apron, so both stay matched.
+ {const G=GKO();if(G){const dx=X-G.X,dz=Z-G.Z,r=Math.sqrt(dx*dx+dz*dz);if(r>7&&r<13){const w=sm(7.5,9.2,r)*(1-sm(9.8,11.8,r))*sm(-.15,.55,dx/r)*(.75+.5*g1n(X*.31+4.1,Z*.31-2.3));if(w>0){const q=1+GKLIFT*w;o[0]*=q;o[1]*=q;o[2]*=q;}}}}
+ return o;}
 function faceColV42(X,Z,h,ny,j,o){
  const wx=X+7*Math.sin(Z*.045+1.3)+3.5*Math.cos(Z*.13-X*.04),wz=Z+6*Math.cos(X*.05-.7)+2.5*Math.sin(X*.15+Z*.07);
  const x=wx/100+.5,y=wz/100+.5,ex=sm(.27,.73,x),so=sm(.3,1.0,y);
@@ -790,6 +802,7 @@ function faceColV42(X,Z,h,ny,j,o){
  if(LAKF>.01){mix(o,ex<.5?C_SHORE:C_SHORE2,LAKF*.8,o);if(LAKF>.97)mix(o,ex<.5?C_WAT:C_WAT2,.6,o);}
  if(PLZF>0)mix(o,C_PAVE,PLZF*.9,o);
  return o;}
+let GKO_=0;const GKLIFT=+(new URLSearchParams(location.search).get('g1gkl')||.32);function GKO(){if(GKO_===0)GKO_=O.find(o=>o.id==='gatekeeper')||null;return GKO_;}
 // G1 r2 perf: the colour pass reuses the hAt side outputs cached by the height pass (was a second full hAt per vertex)
 const G1CK=11,G1C=new Float32Array(NG1*NG1*G1CK);
 function rebuildTerrain(){
@@ -859,6 +872,13 @@ function mergeG(parts){let n=0;const gs=parts.map(([g,m])=>{const q=g.index?g.to
 function scaleScene(p0,d0,h0,cx,cz,s){for(let i=p0;i<PR.length;i++){const p=PR[i];p.X=cx+(p.X-cx)*s;p.Z=cz+(p.Z-cz)*s;p.sx*=s;p.sy*=s;p.sz*=s;p.yo*=s;}
  for(let i=d0;i<DYN.length;i++){const d=DYN[i];d.X=cx+(d.X-cx)*s;d.Z=cz+(d.Z-cz)*s;d.yo*=s;d.m.scale.multiplyScalar(s);}
  for(let i=h0;i<HOUSES.length;i++){const q=HOUSES[i];q.X=cx+(q.X-cx)*s;q.Z=cz+(q.Z-cz)*s;q.w*=s;q.h*=s;q.d*=s;}}
+
+// swap r7 S: two more generator cities. Registered HERE (fa4_scenes.js loads after fa4_world.js, before fa4_build.js / any terrain build;
+// fa4_build.js is owned by the parallel child, see CONFLICTS.md). Both are cliff-lowland sites (fa4_world CLIFF: no basin is carved for
+// them, so bd is recorded for the per-site basin convention but has no effect; the lowland floor is already flat).
+//  reversion    = the pilot Reversion hamlet (js/procottage.js via js/prorev.js), below the western cliff; R 14 = scatter/label radius.
+//  selfdestruct = ruin city around the terrain crater (js/proruin.js); avoid = keep its outskirts off the gatekeeper city (20 u NW).
+Object.assign(G1GEN,{reversion:{R:14,cR:13,gen:'PROREV',seed:2031,bd:1.3,keep:1},selfdestruct:{R:12,cR:11,gen:'PRORUIN',seed:6606,bd:1.3,avoid:1}});
 
 // ======================= MINIATURE SCENES =======================
 // v4.4 r5 U17: Gatekeeper eye clock (Fable icons review §3), shared by the 3D diorama eye and the map icon blink.
@@ -1321,7 +1341,9 @@ const NIGHT=new THREE.Color(LOOK.night);function nightCol(c,hex){c.set(hex);cons
 // v4.3: window bands get their own material MATW (r3: visible at world zoom too = the dioramas' city lights)
 const MATW=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
 const KEEPC=new Set(['#c9a45c','#7fa0b4']); // r3: descriptive light colours kept as authored (toll-gate brass, machine-zone indicators)
-const GLOWT=new THREE.Color(LOOK.win);function glowRemap(c,hex,sid){c.set(hex);if(!sid)return c;if(KEEPC.has(String(hex).toLowerCase()))return c;const Q=Q17A[sid];if(Q)return c.set(Q.c);const l=Math.max(c.r,c.g,c.b);return c.copy(GLOWT).multiplyScalar(.6+.4*l);} // r3 O2: warm amber city light (Q17a sites keep their descriptive light)
+const GLOWT=new THREE.Color(LOOK.win),GLMC=new THREE.Color('#A9A9A6'),GLMUTE={benevolent:[+(URLQ0('g1bvm')||.5),+(URLQ0('g1bvk')||.7)]}; // r7 P: Benevolent's ~archive bands / spire / window props all remapped to the same amber read as one orange-gold cluster at world zoom (vision r6) -> chroma x.5 toward a neutral stone grey, value x.7
+function URLQ0(k){try{return new URLSearchParams(location.search).get(k);}catch(e){return null;}}
+function glowRemap(c,hex,sid){c.set(hex);if(!sid)return c;if(KEEPC.has(String(hex).toLowerCase()))return c;const Q=Q17A[sid];if(Q)return c.set(Q.c);const l=Math.max(c.r,c.g,c.b);c.copy(GLOWT).multiplyScalar(.6+.4*l);const mu=GLMUTE[sid];if(mu)c.lerp(GLMC.clone().multiplyScalar(.6+.4*l),mu[0]).multiplyScalar(mu[1]);return c;} // r3 O2: warm amber city light (Q17a sites keep their descriptive light)
 const MATS=MAT.clone();{const uT={value:0};MATS.onBeforeCompile=sh=>{sh.uniforms.uSw=uT;sh.vertexShader='uniform float uSw;\n'+sh.vertexShader.replace('#include <project_vertex>','vec4 mvPosition=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\nmvPosition=instanceMatrix*mvPosition;\n#endif\nfloat swk=clamp(transformed.y,0.,1.);swk*=swk;float swp=mvPosition.x*.21+mvPosition.z*.17;mvPosition.x+=swk*(.075*sin(uSw*1.25+swp)+.03*sin(uSw*2.9+swp*2.3));mvPosition.z+=swk*.05*cos(uSw*1.05+swp*1.3);\nmvPosition=modelViewMatrix*mvPosition;gl_Position=projectionMatrix*mvPosition;');};MATS.customProgramCacheKey=()=>'fa_sway';
  ANIM.push(t=>{uT.value=RMOT?t:0;});} // r3 U5: gentle tree sway (crowns only, top-weighted, phase by position; GPU-only)
 const IM=[];for(const k in BK){const L=BK[k],kk=k.split('|')[0],win=kk.endsWith('W'),sw=kk.endsWith('S'),glow=win||kk.endsWith('G'),g=(glow||sw)?kk.slice(0,-1):kk;const geo=GEO[g].clone();
@@ -1425,7 +1447,12 @@ function enterBasin(b){if(b==='C')return;view='basin';focus=b;focusO=null;const 
  // r4 U11: frame the basin's sites (bbox centre, nudged south so southern sites clear the timeline; pulled back when the basin is wide) instead of the fixed basin centre
  const S=O.filter(o=>o.b===b&&!o.cliff);let tx=U(B.cx),tz=V(B.cy)+2,d=84;if(S.length){const xs=S.map(o=>o.X),zs=S.map(o=>o.Z),x0=Math.min(...xs),x1=Math.max(...xs),z0=Math.min(...zs),z1=Math.max(...zs);tx=(x0+x1)/2;tz=(z0+z1)/2+4.5;d=clamp(84*Math.max(1,((x1-x0)/2+9)/32,((z1-z0)/2+12)/22),84,108);}
  flyTo({tx,tz,d,pit:.9,yaw:0,ly:0},0,window.CARD&&CARD.vis()?140:0);setNav();} // r6 U: eased fly (card, if any, fades first)
-function enterO(o){view='basin';focus=o.b;focusO=o;const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:46,descendants:48,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};CARD.want=true;flyTo({ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();} // r6 U: CARD.want set before the fly so the card offset rides the same ease; select() -> cardShow reveals the card at ~60 % of the fly
+// r7 P: per-site close-up camera table (overrides the generic d/pit/ly/tz/yaw below; tx/tz are offsets from the site centre).
+// normaltech: lower pitch so the near-future skyline (towers, vertiport decks, air taxis, elevated rail) stands up in the free area
+// left of / below the card + Visions strip instead of being foreshortened under them at ~45 deg top-down. Test hook: window.CLOSECAM.
+var CLOSECAM={normaltech:{d:36,pit:.44,ly:3,dz:3,dx:1,yaw:.7}}; // r7 P probe (5 candidate sets, eval projections @1440x900): pit .44 (~25 deg) + yaw .7 puts towers x 393-681 / y 225-443, taxis + train left of / below the Visions strip (x>=618, y<=315), town x<=906 (card x>=1016); was d 34 pit .78 ly 0 dz 3 yaw -.12
+function enterO(o){const CC=CLOSECAM[o.id];if(CC){view='basin';focus=o.b;focusO=o;CARD.want=true;flyTo({ly:CC.ly,tx:o.X+CC.dx,tz:o.Z+CC.dz,d:CC.d,pit:CC.pit,yaw:CC.yaw});select(o.id);setNav();return;}
+ view='basin';focus=o.b;focusO=o;const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:46,descendants:48,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};CARD.want=true;flyTo({ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();} // r6 U: CARD.want set before the fly so the card offset rides the same ease; select() -> cardShow reveals the card at ~60 % of the fly
 function world(){const cv_=window.CARD&&CARD.vis();view='world';focus=null;focusO=null;closeCard();flyTo({...WORLDV},0,cv_?140:0);setNav();} // r6 U: card fades out first (140 ms head start), then the camera eases back
 document.getElementById('back').onclick=world;
 addEventListener('keydown',e=>{kick();if(e.key==='Escape'){if(document.getElementById('page').style.display==='block')closePage();else if(focusO&&view!=='world'&&focus!=='C'){closeCard();enterBasin(focus);}else world();}
@@ -1705,7 +1732,7 @@ window.POSTO=POSTO;
 
 // ======================= LOD: high-detail scene dressing when the camera is close =======================
 const LOD={cur:'',grp:null,anim:[],n:0};
-const WINC={normaltech:'#E8D9B0',libertarian:'#E8D9B0',egalitarian:'#E8D9B0',o1984:'#E8D9B0',gatekeeper:'#E8D9B0',protector:'#E8D9B0',benevolent:'#E8D9B0',zookeeper:'#E8D9B0',descendants:'#E8D9B0',conquerors:'#7FA0B4',reversion:'#D08A48',selfdestruct:'#8A3E22'}; // v4.3: window.human everywhere; Q17a: Conquerors machine indicators, Reversion fire light, Self-destruction embers
+const WINC={normaltech:'#E8D9B0',libertarian:'#E8D9B0',egalitarian:'#E8D9B0',o1984:'#E8D9B0',gatekeeper:'#E8D9B0',protector:'#E8D9B0',benevolent:'#C4BFB2',zookeeper:'#E8D9B0',descendants:'#E8D9B0',conquerors:'#7FA0B4',reversion:'#D08A48',selfdestruct:'#8A3E22'}; // v4.3: window.human everywhere; Q17a: Conquerors machine indicators, Reversion fire light, Self-destruction embers
 const WINC42={normaltech:'#ffc65a',libertarian:'#ffb02e',egalitarian:'#ffa825',o1984:'#ffd84a',gatekeeper:'#ffb02e',protector:'#ffa825',benevolent:'#5aa0ff',zookeeper:'#9b7bff',descendants:'#a67dff',conquerors:'#ff3020',reversion:'#ffb02e',selfdestruct:'#ff7a1a'};
 const PEOPLE={normaltech:60,libertarian:30,egalitarian:60,enslaved:170,o1984:80,gatekeeper:60,protector:50,benevolent:80,zookeeper:18,descendants:16,conquerors:0,reversion:30,selfdestruct:0};
 let SMOKETX=null;function smokeTex(){if(SMOKETX)return SMOKETX;const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,2,32,32,30);gr.addColorStop(0,'rgba(255,255,255,.9)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);SMOKETX=new THREE.CanvasTexture(c);return SMOKETX;}
@@ -2299,6 +2326,10 @@ function g1Hook(grp,tier,r){const NK=G1.ng(r.id)[1],nr=tier==='near'&&!r.single;
 G1.GKG={nk:+(G1Q.get('g1gknk')||.7),gain:+(G1Q.get('g1gkgain')||.98),alb:.52,hot:+(G1Q.get('g1gkhot')||.74),warm:.55,win:+(G1Q.get('g1gkwin')||.4),
  em:1.1,pool:+(G1Q.get('g1gkpool')||.3),glow:+(G1Q.get('g1gkglow')||.65),gnk:+(G1Q.get('g1gkgnk')||.86),ggain:+(G1Q.get('g1gkggain')||.58),vcl:1.2};
 G1.GW.gatekeeper=G1.GW.gatekeeper??.8;   // apron core mostly terrain colour (vision r4: pale ring outside the deck edge)
+// swap r7 S: reversion fields / selfdestruct ash keep more of their own colour (the strip fields and the cracked grid ARE the content)
+G1.GW.reversion=G1.GW.reversion??+(G1Q.get('g1gwrv')??.3);G1.GW.selfdestruct=G1.GW.selfdestruct??+(G1Q.get('g1gwsd')??.35);
+G1.NG.reversion=G1.NG.reversion||[+(G1Q.get('g1ngrv')||.8),.15];G1.NG.selfdestruct=G1.NG.selfdestruct||[+(G1Q.get('g1ngsd')||.75),.1];
+G1.MG.reversion=G1.MG.reversion||+(G1Q.get('g1mgrv')||1);G1.MG.selfdestruct=G1.MG.selfdestruct||+(G1Q.get('g1mgsd')||.52);   // world box L 70.2 at 1, 57.6 at .72, 56.1 at .6 (ground-dominated; ash darkened too) -> target 48-55
 function g1Night(c,K){let R=c.r,G=c.g,B=c.b;const l=(R+G+B)/3,f=.8+.75*l;R=(R+(G1NC.r-R)*K.nk)*f;G=(G+(G1NC.g-G)*K.nk)*f;B=(B+(G1NC.b-B)*K.nk)*f;
  const am=Math.max(R,G,B);if(am>K.alb){const q=K.alb/am;R*=q;G*=q;B*=q;}R*=K.gain;G*=K.gain;B*=K.gain;
  if(G1.MSAT!==1){const y=.2126*R+.7152*G+.0722*B;R=Math.max(0,y+(R-y)*G1.MSAT);G=Math.max(0,y+(G-y)*G1.MSAT);B=Math.max(0,y+(B-y)*G1.MSAT);}c.setRGB(R,G,B);}
@@ -2362,6 +2393,8 @@ function g1Build(){const ctx={THREE,LOOK:{mood:'blue'},mats:g1Mats(),heightAt:(x
   const y=hMesh(o.X,o.Z)+(G.lift||0),t0=performance.now();let r=null;   // swap r4: lift = flat-deck cities sit just above the basin's rising rim (deck covers the terrain inside)
   // swap r5: keep = pass the road-spur direction (layout frame = world frame at rot 0) so the generator keeps that corridor clear
   let params;if(G.keep){let S=null;for(const rv of ROADV)for(const s of rv.spurs)if(s.site===id)S=s;if(S){const e=S.pts[S.pts.length-1];params={keepA:Math.atan2(e[1]-o.Z,e[0]-o.X)};}}
+  // swap r7 S: avoid = the other generator cities nearby (local frame [dx,dz,radius]) so a sprawling city keeps its outskirts off them
+  if(G.avoid){params=params||{};params.avoid=[];for(const j in G1GEN){if(j===id)continue;const q=byId[j],J=G1GEN[j];if(Math.hypot(q.X-o.X,q.Z-o.Z)<(G.cR||G.R)*1.6+(J.cR||J.R)+2)params.avoid.push([q.X-o.X,q.Z-o.Z,(J.cR||J.R)+1.5]);}}
   try{r=M.build({id,ending:id,name:o.n,x:o.X,z:o.Z,y,radius:G.cR||G.R,seed:G.seed,rot:0,style:'archviz',q:'high',mood:'blue',rm:G1.RM,params},ctx);}catch(e){window.__errs.push('g1 '+id+': '+(e&&e.message));continue;}
   if(!r||!r.near){window.__errs.push('g1 '+id+': empty result');continue;}
   const tb=performance.now();r.id=id;
@@ -2411,7 +2444,9 @@ G1.cstat=id=>{const gl=RD.getContext(),W=gl.drawingBufferWidth,H=gl.drawingBuffe
 // '#3E4450') and descendants (rising block '#625E80' + 6 old-quarter light sprites '#FFD9A0'); they would float inside / clip the new
 // cities. Hidden here by colour + distance once their ambient loop has placed them (frames 3..40); a no-op after fa4_post guards them
 // with G1GEN (requested in CONFLICTS.md). The cities carry their own versions (walkers + bots, crane, emptying windows, growing towers).
-G1.V44P={zookeeper:['#FFE2B8','#3E4450'],descendants:['#625E80','#FFD9A0']};G1.hid44=0;G1._hf=0;
+G1.V44P={zookeeper:['#FFE2B8','#3E4450'],descendants:['#625E80','#FFD9A0'],
+ reversion:['#5E5040','#C07436'],selfdestruct:['#C2502A','#B85A30']};   // swap r7 S: fa4_post props (owned by the other child): reversion wheel torus + hearth fire points, selfdestruct ember / fire points
+G1.hid44=0;G1._hf=0;
 G1.hideV44=()=>{let n=0;for(const id in G1.V44P){if(!G1.res[id])continue;const o=byId[id],R=(G1GEN[id].cR||G1GEN[id].R)*1.3,hs=G1.V44P[id].map(h=>new THREE.Color(h).getHex()),p=new THREE.Vector3();
   for(const m of SC.children){const ms=m.isGroup?m.children:[m];for(const x of ms){const mt=x.material;if(!mt||x.renderOrder!==4||!x.visible||!mt.color||hs.indexOf(mt.color.getHex())<0)continue;
    x.getWorldPosition(p);if(Math.hypot(p.x-o.X,p.z-o.Z)>R)continue;x.visible=false;n++;}}}
