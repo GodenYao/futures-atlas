@@ -2699,8 +2699,9 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
    if(md>36){box=b;break;}if(md>bestS){bestS=md;bestB=b;}}
   if(!box)box=bestB||[x-hw,y-TH2,x+hw,y+TH2];x=box[0]+hw;y=box[1]+TH2;placed.push(box);
   const on=f.includes(rv.r.id),dm=f.length&&!on;og.globalAlpha=dm?.45:1;
-  og.fillStyle='rgba(5,7,10,.86)';og.fillRect(box[0],box[1]+2,2*hw,12);og.strokeStyle=dm?TK.dimR:rv.r.c;og.lineWidth=1;og.strokeRect(box[0]+.5,box[1]+2.5,2*hw-1,11);
-  og.fillStyle=dm?TK.dimR:on?rv.r.cl:TK.t1;og.fillText(tt,x,y+.5);
+  if(dm){og.globalAlpha=.6;og.fillStyle='rgba(5,7,10,.28)';og.fillRect(box[0],box[1]+2,2*hw,12);og.fillStyle=rv.r.c;og.fillText(tt,x,y+.5); // owner 11-17: dimmed tags = quiet road-coloured text on a faint plate (no black blocks)
+  }else{og.fillStyle='rgba(5,7,10,.86)';og.fillRect(box[0],box[1]+2,2*hw,12);og.strokeStyle=rv.r.c;og.lineWidth=1;og.strokeRect(box[0]+.5,box[1]+2.5,2*hw-1,11);
+  og.fillStyle=on?rv.r.cl:TK.t1;og.fillText(tt,x,y+.5);}
   if(selR===rv.r.id){og.strokeStyle=TK.acc;og.lineWidth=1;for(const[sx,sy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){og.beginPath();og.moveTo(x+sx*13,y+sy*5);og.lineTo(x+sx*13,y+sy*10);og.lineTo(x+sx*8,y+sy*10);og.stroke();}}og.globalAlpha=1;});
  // r10 U35: in-scene SAMPLE watermark removed (the HUD badge carries the preview status)
  og.textAlign='center';og.font=`500 11px ${FM}`;
