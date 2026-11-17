@@ -64,7 +64,7 @@ function mkSite(site,ctx){site=site||{};ctx=ctx||{};const THREE=ctx.THREE||root.
  T.fa=(x,z)=>{const r=Math.hypot(x,z),b=T.bAt(x,z),kk=T.k,w=.5+.28*Math.sin((x*.41+z*.17)/kk+q1)+.22*Math.sin((z*.53-x*.29)/kk+q2);
   const sc=(1-ss(T.hw*.9,T.hw*2.3,Math.abs(x)))*(1-ss(b*.98,b*(1.3+.08*Math.sin(z*.7/kk+q3)),r));
   return Math.max(1-ss(b*(.56+.2*w),b*(.98+.1*w),r),sc);};
- T.hw=R*.10;   // half width of the engineered divide (trench + lips)
+ T.hw=R*+(new URLSearchParams(location.search).get('g1enhw')||.13);   // half width of the engineered divide (trench + lips); r10 B: .10 -> .13 (vision r9: the two blocs read as two touching cities -> a clear scar between them)
  return T;}
 
 // ======================= geometry emit (non-indexed soup: position, normal, colour [+ alpha]) =======================

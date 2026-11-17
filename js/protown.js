@@ -38,12 +38,12 @@ const PRESETS={
   streetW:.8,jitter:0,green:0,props:.6,cars:5,moving:0,lamps:1,lampStep:4,trees:0,out:0,fray:.8,fields:0,farms:0,pz:[12,2],under:0,special:SP('camPoles checkpoints ministry searchlights')},
  protector:{layout:'organic',lit:.7,em:1.9,walls:SP('timber timberL stone'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,3],density:.92,blockMin:3,
   streetW:.54,jitter:.6,green:.9,props:1,cars:8,moving:2,lamps:1,lampStep:2.4,trees:130,out:0,fray:.8,fields:10,farms:5,pz:[4,3],midWin:.75,midWinK:2,midWinY:.62,special:SP('dome anomaly')},
- egalitarian:{layout:'ring',lit:.65,em:1.8,walls:SP('timber concrete1'),roofs:SP('greenRoof'),roof:'green',storeys:[2,2],density:1,blockMin:3,
-  streetW:.44,jitter:0,green:.6,props:1,cars:0,moving:0,lamps:1,lampStep:3.2,trees:70,out:0,fray:.6,fields:9,farms:0,pz:[3,2],under:0,midWin:.7,midWinK:2,special:SP('commons amphitheatre workshop library')},
- zookeeper:{layout:'cluster',lit:.9,em:2.2,alb:1.06,walls:SP('concrete1 brick1 timberL'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,2],density:1,blockMin:3,
-  streetW:.42,jitter:.2,green:.3,props:1,cars:0,moving:0,lamps:1,lampStep:2.8,trees:0,out:0,fray:0,fields:0,farms:0,pz:[3,2],special:SP('enclosure gardens playground tree machines')},   // G1 S2 r5: + machines (the machine world outside the fence)
+ egalitarian:{layout:'ring',lit:.5,em:1.5,walls:SP('timber concrete1'),roofs:SP('greenRoof'),roof:'green',storeys:[2,2],density:1,blockMin:3,
+  streetW:.44,jitter:0,green:.6,props:1,cars:0,moving:0,lamps:1,lampStep:4.4,trees:70,out:0,fray:.6,fields:9,farms:0,pz:[3,2],under:0,midWin:.55,midWinK:2,special:SP('commons amphitheatre workshop library')},   // r10 B: lit .65/em 1.8/lamps 3.2/midWin .7 -> orange light ring at world zoom
+ zookeeper:{layout:'cluster',lit:.6,em:1.7,alb:.94,walls:SP('concrete1 brick1 timberL'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,2],density:1,blockMin:3,
+  streetW:.42,jitter:.2,green:.3,props:1,cars:0,moving:0,lamps:1,lampStep:4.0,trees:0,out:0,fray:0,fields:0,farms:0,pz:[3,2],special:SP('enclosure gardens playground tree machines')},   // G1 S2 r5: + machines; r10 B: lit .9/em 2.2/alb 1.06/lamps 2.8 = brightest ring at world zoom (+20 L)
  descendants:{layout:'old',lit:.3,em:1.6,walls:SP('stone brick0 brick1'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[3,5],density:.84,blockMin:2.4,
-  streetW:.48,jitter:.5,green:.1,props:.7,cars:0,moving:0,lamps:1,lampStep:3.4,trees:14,out:.3,fray:1,fields:6,farms:3,pz:[4,3],under:0,special:SP('plaza seam emptying machcity')}   // G1 S2 r5: + machcity (new machine city growing out of the seam), no underlay disc
+  streetW:.48,jitter:.5,green:.1,props:.7,cars:0,moving:0,lamps:1,lampStep:4.6,trees:14,out:.3,fray:1,fields:6,farms:3,pz:[4,3],under:0,special:SP('plaza seam emptying machcity')}   // G1 S2 r5: + machcity (new machine city growing out of the seam), no underlay disc; r10 B: lampStep 3.4 -> 4.6 (world vision: concentric lit rings)
 };
 const ALIAS={'1984':'o1984','normal':'normaltech','normal-tech':'normaltech','protectorgod':'protector','egalitarianutopia':'egalitarian','zoo':'zookeeper'};
 
@@ -525,7 +525,9 @@ function* groundGen(B,S,mid){const T=B.T,L=B.L,g=GCOL[T.P.layout]||GCOL.grid,col
  // r6 N (world vision: normaltech MID = 'a dark rectangular gridded slab'): at MID the grey pave underlay + wide asphalt grid made a
  // plate; normaltech MID now drops the underlay and draws narrower, lighter roads (kerb +.12) so the town sits on the terrain
  const ntm=mid&&T.id==='normaltech';
- if(T.P.under!==0&&!ntm&&!(mid&&T.id==='zookeeper'))disc(S.ground,T,0,0,T.R*1.02,mid?6:12,mid?32:56,col,-.03);yield 1;   // C1 r5: o1984/egalitarian under:0 = no underlay (D5: it read as a plate); r7 P: zookeeper MID too (lighter round apron at world zoom)
+ // r10 B: protector underlay off by default (world vision r9: 'dark disc / dome base'); ?g1ptu=1 restores it (A/B probe)
+ const ptu=T.id!=='protector'||/[?&]g1ptu=1/.test(location.search);
+ if(T.P.under!==0&&ptu&&!ntm&&!(mid&&T.id==='zookeeper'))disc(S.ground,T,0,0,T.R*1.02,mid?6:12,mid?32:56,col,-.03);yield 1;   // C1 r5: o1984/egalitarian under:0 = no underlay (D5: it read as a plate); r7 P: zookeeper MID too (lighter round apron at world zoom)
  // B2 r3 street readability: every street gets an edge strip that contrasts with its surface (roads: pale kerb + dark asphalt
  // + centre dashes; old-quarter lanes: pale kerb + dark setts; garden paths: dark edge + pale gravel). MID keeps the strips.
  const KERB=hex(PAL.kerb,.95*T.A),EDGE=hex('#4A4840',T.A),SETT=hex('#3A3734',T.A),GRAV=hex('#A8A08A',T.A);
@@ -1218,7 +1220,7 @@ function r4Zoo(B){const T=B.T,L=B.L,S=B.N,THREE=T.THREE,r=B.r4,sl=L.slots.enclos
 // descendants: pale slender machine spires growing at the seam edge of the old quarter (MID too: silhouette), few cool dots
 // B2 r5: integrated machine structures - each spire stands on an old-stone plinth with a pale machine collar, three thin fins,
 // low conduits join the plinths along the edge (positions reserved in layOld: L.spires, no lot can touch them), one dim cool dot
-function seamSpires(B,S,mid){const T=B.T,L=B.L,sl=L.slots.seam;if(!sl||!L.spires)return;const a=sl.a==null?Math.atan2(sl.z,sl.x):sl.a,pc=hex('#B6BEC4',T.A),stn=hex(PAL.stone,T.A),out=[];
+function seamSpires(B,S,mid){const T=B.T,L=B.L,sl=L.slots.seam;if(!sl||!L.spires)return;const a=sl.a==null?Math.atan2(sl.z,sl.x):sl.a,pc=hex('#959DA4',T.A),stn=hex(PAL.stone,T.A),out=[];   // r10 B: spires #B6BEC4 -> #959DA4 (pale white spikes at world zoom)
  for(const q of L.spires){const x=q[0],z=q[1],H=q[2],y=T.yl(x,z);out.push([x,y,z,H]);
   box(S.building,x,y-.12,z,.62,.42,.62,a,tone(stn,.92),null,tone(stn,1.05));                         // old-stone plinth
   cyl(S.building,x,y+.3,z,.3,.2,.34,8,tone(pc,.85),true);cyl(S.building,x,y+.6,z,.17,.045,H-.6,6,pc,true);   // collar + spire

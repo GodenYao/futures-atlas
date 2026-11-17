@@ -26,8 +26,8 @@ FA.PRORUIN={build(site,ctx){const K=FA.G1KIT;if(!K)throw new Error('FA.G1KIT mis
  const streetD=(x,z)=>{const[a,b]=toG(x,z),fa=Math.abs(a/BL-Math.round(a/BL))*BL,fb=Math.abs(b/BL-Math.round(b/BL))*BL;return Math.min(fa,fb);};
  const dens=(x,z)=>{const rr=Math.hypot(x,z),ro=rOut(Math.atan2(z,x));return rr<CR?0:(1-smooth(.5,.95,rr/ro))*smooth(CR,CR+1.2,rr);};
  // palette (linear; the host lifts vertex colours to display space and applies the v4.4 night grade)
- const CON=lin('#6E6862'),CON2=lin('#5A5450'),EDGE=lin('#7C766E'),SOOT=lin('#2A2624'),RUST=lin('#5A3E30'),REBAR=lin('#3A2A24'),MOSS=lin('#3A4232'),SCRUB=lin('#4A4C38'),
-  DRY=lin('#5A5440'),ASH=lin('#5E5862'),LIP=lin('#5C524E'),CHAR=lin('#1E1A1E'),DUST=lin('#575050'),ROAD=lin('#242124'),DEAD=lin('#2E2826');   // r9 Q1: LIP '#8A8286' -> warm ash grey (vision r8: pale lip mounds read as snow / ice)
+ const CON=lin('#6E6862'),CON2=lin('#5A5450'),EDGE=lin('#7C766E'),SOOT=lin('#2A2624'),RUST=lin('#5A3E30'),REBAR=lin('#3A2A24'),MOSS=lin('#383A34'),SCRUB=lin('#45433E'),
+  DRY=lin('#4E4A44'),ASH=lin('#5E5862'),LIP=lin('#5C524E'),CHAR=lin('#1E1A1E'),DUST=lin('#575050'),ROAD=lin('#242124'),DEAD=lin('#2E2826');   // r9 Q1: LIP '#8A8286' -> warm ash grey (vision r8: pale lip mounds read as snow / ice)
  const FAC=[CON,lin('#6A5A4E'),lin('#5E6066'),lin('#72685C')],FLR=lin('#4A4038'),FLR2=lin('#5C5046'),RIM=lin('#6E6058');   // r9 Q1: per-tower cladding tones; crater floor = scorched rock (not a black void); warm ash rim highlight
  const cv=(c,k)=>[c.r*k,c.g*k,c.b*k],mix=(a,b,t)=>({r:a.r+(b.r-a.r)*t,g:a.g+(b.g-a.g)*t,b:a.b+(b.b-a.b)*t}),jit=(c,k)=>cv(c,k*(.88+.24*r()));
  const B=mats.building,ST=mats.stone||B,FO=mats.foliage||B,ME=mats.metal||B;
@@ -117,7 +117,8 @@ FA.PRORUIN={build(site,ctx){const K=FA.G1KIT;if(!K)throw new Error('FA.G1KIT mis
  let pool=null;{let mn=1e9,mx=0,mz=0;for(let k=0;k<90;k++){const a=k*2.4,rr=CR*.62*Math.sqrt(k/90),x=Math.cos(a)*rr,z=Math.sin(a)*rr,h=H(x,z);if(h<mn){mn=h;mx=x;mz=z;}}
   const rp=CR*.34;let em=1e9;for(let k=0;k<24;k++){const a=k/24*6.283;em=Math.min(em,H(mx+Math.cos(a)*rp,mz+Math.sin(a)*rp));}const lv=Math.min(mn+.4,em-.06);
   if(lv>mn+.08){const g=new THREE.CircleGeometry(rp,30);g.rotateX(-Math.PI/2);const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),k=1+.18*(vn(x*1.3+9,z*1.3+4)-.5);p.setXYZ(i,mx+x*k,lv,mz+z*k);}
-   const wm=new THREE.MeshStandardMaterial({color:'#34465A',roughness:.12,metalness:.2});wm.name='sd_pool';const m=new THREE.Mesh(g,wm);m.name='sd_pool';m.renderOrder=1;near.add(m);pool={x:mx,z:mz,r:rp,y:lv};
+   const wm=new THREE.MeshStandardMaterial({color:'#1E262E',roughness:.35,metalness:0});   // r10 B: dark rough water (was #34465A r .12 m .2 = sky-blue flat quad)
+   wm.name='sd_pool';const m=new THREE.Mesh(g,wm);m.name='sd_pool';m.renderOrder=1;near.add(m);pool={x:mx,z:mz,r:rp,y:lv};
    glows.push({x:mx+.4,y:lv+.03,z:mz+.5,size:1.6,c:lin('#B84A1E').multiplyScalar(.14),an:[.3,2.2,1.3,0]});}}   // faint ember reflection on the water
  for(let k=0;k<26;k++){const a=r()*6.283,rr=CR*(.15+.62*Math.sqrt(r())),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(pool&&Math.hypot(x-pool.x,z-pool.z)<pool.r*1.05)continue;
   if(k<14)heap(x,z,.22+.28*r(),a);else{const c=.2+.3*r();PT.add(ST,PT.G.ico(0),x,H(x,z)-c*.3,z,c*1.4,c*.6,c,(r()-.5)*.5,r()*3,(r()-.5)*.5,jit(r()<.5?FLR2:CON2,1));}}   // rubble + scorched boulders on the floor
@@ -132,7 +133,7 @@ FA.PRORUIN={build(site,ctx){const K=FA.G1KIT;if(!K)throw new Error('FA.G1KIT mis
   PT.add(ME,PT.G.cyl(5,.75),x,yy-.1,z,.055,hh,.055,lean,ry,0,cv(SOOT,1.2));box(ME,x+Math.sin(lean)*hh*.9*Math.sin(ry),yy+Math.cos(lean)*hh*.92,z+Math.sin(lean)*hh*.9*Math.cos(ry),.8,.045,.045,lean,ry,0,cv(SOOT,1.2));}
  // ---- overgrowth: low irregular scrub + creeping vines thicken outward, a few bare dead trees (no round crowns) ----
  for(let t=0;t<380;t++){const a=r()*6.283,rr=CR+.6+Math.sqrt(r())*(rOut(a)*1.0-CR-.6),x=Math.cos(a)*rr,z=Math.sin(a)*rr,og=smooth(R*.3,R*1.15,rr);if(r()>.13+og*.5||!free(x,z,.2))continue;   // r9 Q1b: sparser (vision: 'lush green ring works against dead city')
-  const q=r();if(q<.05+.06*og)deadTree(x,z);else if(q<.35)vine(x,z,.6+.7*r());else scrub(x,z,.3+.3*r()*(.6+og));}
+  const q=r();if(q<.05+.06*og)deadTree(x,z);else if(q<.35)vine(x,z,.6+.7*r());else if(q>.62)scrub(x,z,.3+.3*r()*(.6+og));}   // r10 B: scrub ~40 % fewer + grey (vision r9: read as healthy foliage)
  // ---- ground: char bowl, pale ash lip, burn streaks radiating over grey ash, cracked dark street grid, moss reclaiming outward ----
  {let E=0;for(let k=0;k<64;k++)E=Math.max(E,rOut(k/64*6.283));E*=1.04;const N=62,pos=[],col=[],idx=[];
   for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const x=-E+2*E*i/N,z=-E+2*E*j/N,rr=Math.hypot(x,z)+1e-4,ro=rOut(Math.atan2(z,x)),h=H(x,z),n1=vn(x*.45+3,z*.45-2),n2=vn(x*1.3,z*1.3),ux=x/rr,uz=z/rr;

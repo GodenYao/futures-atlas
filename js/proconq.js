@@ -50,7 +50,10 @@ FA.PROCONQ={build(site,ctx){const Z=FA.G1Z,k=FA.G1KIT;if(!Z||!k)throw new Error(
    for(let q=-2;q<=2;q++){const p=E.L2W(c.x,c.z,ry,0,q*.5),py=H(p[0],p[1]);E.add(M.ME,E.G.box(),p[0],py+.14,p[1],PIT*.9,.04,.4,.55,ry,0,jc(cv('#26303E'),p[0],p[1],.05));
     if(E.near)for(const s of[-1,1]){const g=E.L2W(p[0],p[1],ry,s*PIT*.38,0);E.box(M.ME,g[0],py-.05,g[1],.04,.22,.04,ry,cv('#4A4E56'));}}solar++;continue;}
   // compute hall: long dark box, eave slit, roof fins (NEAR) + roof units, sparse indicator lights
-  const h=.85+.4*hash(c.i,c.j*1.1),L=PIT*.92,D=PIT*.62;E.box(M.B,c.x,y,c.z,L,h+.15,D,ry,jc(cv(hash(c.i,c.j)<.5?'#363A44':'#3C404A'),c.x,c.z,.05));
+  // r10 B (world vision r9: 'grey disc / plateau slab'): halls shorter + narrower with open service yards between them (~1 u lanes),
+  // ~1 in 5 cells left as bare yard (hash, layout rng untouched)
+  if(hash(c.i*2.3+.4,c.j*1.9)<.2){halls++;continue;}
+  const h=.85+.4*hash(c.i,c.j*1.1),L=PIT*.78,D=PIT*.52;E.box(M.B,c.x,y,c.z,L,h+.15,D,ry,jc(cv(hash(c.i,c.j)<.5?'#363A44':'#3C404A'),c.x,c.z,.05));
   E.box(M.LT,c.x,y+h+.05,c.z,L+.03,.04,D+.03,ry,SLIT);
   for(let q=-3;q<=3;q++){const p=E.L2W(c.x,c.z,ry,q*.33,0);E.box(M.ME,p[0],y+h+.15,p[1],.05,.2,D*.8,ry,cv('#4A505C'),1);}
   for(const s of[-1,1]){const p=E.L2W(c.x,c.z,ry,s*.75,0);E.box(M.ME,p[0],y+h+.15,p[1],.42,.26,.42,ry,cv('#4E5460'));}
@@ -84,7 +87,8 @@ FA.PROCONQ={build(site,ctx){const Z=FA.G1Z,k=FA.G1KIT;if(!Z||!k)throw new Error(
  // haul robots: town -> the construction site, out and back along the road axis
  {const A0=[TX-u[0]*(TR+.4),TZ-u[1]*(TR+.4)],A1=cons?[cons.x,cons.z]:[0,0];E.movers(M.ME,.42,.24,.3,cv('#5A606C'),4,(i,t,o)=>{const q=(t/60+i/4)%1,e=q<.5?q*2:2-q*2,x=A0[0]+(A1[0]-A0[0])*e+v[0]*.35*(i%2?1:-1),z=A0[1]+(A1[1]-A0[1])*e+v[1]*.35*(i%2?1:-1);o.position.set(x,H(x,z)+.14,z);o.rotation.y=ry;});}
  // ---- ground: clean slate paving + service lane grid in the core, gravel outward, solar ground, the town's grass + old streets ----
- const PAV=cv('#3A3C44'),LANE=cv('#2E3038'),GRV=cv('#44464C'),SOL=cv('#383C40'),GR=cv('#4A4E3C'),OST=cv('#54504A'),FND=cv('#4E4C4A'),DRT=cv('#5A5044'),fr=(x,p)=>Math.abs(((x/p)%1+1)%1-.5)*p;
+ // r10 B: paving / gravel nearer the terrain tone (grey slate disc read as a plinth); lanes kept darker, alpha feather starts earlier
+ const PAV=cv('#43443E'),LANE=cv('#34363A'),GRV=cv('#4A4A42'),SOL=cv('#3C403E'),GR=cv('#4A4E3C'),OST=cv('#54504A'),FND=cv('#4E4C4A'),DRT=cv('#5A5044'),fr=(x,p)=>Math.abs(((x/p)%1+1)%1-.5)*p;
  E.ground(E.near?84:58,R*1.75,(x,z,c)=>{const rr=Math.hypot(x,z),a=Math.atan2(z,x),ro=rOut(a),n1=vn(x*.5+5,z*.5-3),n2=vn(x*1.2,z*1.2),au=x*u[0]+z*u[1],av=x*v[0]+z*v[1],td=townD(x,z);
   let col=rr/ro>.6?mx(GRV,SOL,.5):PAV;if(Math.min(fr(au,PIT),fr(av,PIT))<.24)col=mx(col,LANE,.8);
   const tw=1-smooth(TR*.7,TR+1.4,td*(1+.15*(n1-.5)));if(tw>0){let tc=mx(GR,FND,.3*n2);const tu2=(x-TX)*tu[0]+(z-TZ)*tu[1],tv2=(x-TX)*tv[0]+(z-TZ)*tv[1];if(Math.abs(tv2)<.35||fr(tu2,2.5)<.2)tc=OST;for(const q of DEM){const dq=Math.hypot(x-q[0],z-q[1]);if(dq<q[2]){tc=mx(tc,DRT,.8*(1-smooth(.5,1,dq/q[2])));break;}}col=mx(col,tc,tw);}

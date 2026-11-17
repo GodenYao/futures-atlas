@@ -174,11 +174,11 @@ function tree(x,z,s,y){const blue=P.mood!=='day';const g=col((blue?GREENS_B:GREE
 // C2: every pool breathes (an = [amp .10-.15, period 4-9 s, phase, switch]); lamp pools share their lamp's glow params
 const anOf=(x,z,sw)=>{const h1=FA.hash(x*1.7+.3,z*2.9),h2=FA.hash(z*.7,x*3.3+1.1),h3=FA.hash(x+z*1.3,x-z);return[.10+.05*h1,4+5*h2,h3*6.2832,sw&&h1>.9?1:0];};
 function pool(x,z,r,k,y,an,hex){if(P.mood==='day')return;POOLS.push([x,y==null?Y+.06:y,z,r,k,an||anOf(x,z,false),hex||null]);}
-const LAMPC=['#FFB866','#FFC47E','#FFAA5A']; // C2: three lamp temperatures (~2700-3300 K), picked by position hash
+let LNP=0;const LAMPC=['#FFB866','#FFC47E','#FFAA5A']; // C2: three lamp temperatures (~2700-3300 K), picked by position hash
 function lamp(x,z,h,sz){B.metal.add(x,Y,z,.03,h,.03,0,DARK);const hv=FA.hash(x*.71+2.,z*1.31),hx=LAMPC[(hv*3)|0],an=anOf(x,z,true);
  FA.glow(x,Y+h+.05,z,sz||.8,hx,.36*(.85+.3*FA.hash(z*3.7,x*.3)),an);
  // C2b: fewer, larger, softer pools with varied size (~40 % of lamps cast none -> no bead strings); radius x1.5 / k x.5
- const hp=FA.hash(x*2.3+.7,z*.37+5.1);if(P.mood!=='day'&&hp<.40)return;
+ const hp=FA.hash(x*2.3+.7,z*.37+5.1);if(P.mood!=='day'&&hp<.40)return;if(LNP)return;   // r10 B: LNP = lamp without a pool
  pool(x,z,(1.35+2.6*(sz||.8))*(.65+.7*FA.hash(x*3.1,z*1.7)),.33*(.6+.8*FA.hash(z*2.3,x*.9)),null,an,hx);}
 function poolTex(){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);
  [[0,1],[.12,.84],[.28,.52],[.46,.26],[.66,.09],[.84,.02],[1,0]].forEach(s=>gr.addColorStop(s[0],'rgba(255,255,255,'+s[1]+')'));g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);} // C2b: gaussian-like falloff (softer edge)
@@ -200,7 +200,7 @@ function ground(){ring(0,RC0,Y,M.pave);ring(RC1,RB0,Y,M.pave);ring(RB0,RB1,Y,M.a
  // ends at the outer ring road and the host lays a noise-warped, feathered apron (terrain-blended) beyond it. Light lines: only the
  // canal edges and the inner boulevard (outer ring-road / deck-rim lines read as a round outline at world zoom).
  if(!FA.G1)ring(RO1,P.R,Y,M.pave);
- for(const r of(FA.G1?[RC0-.07,RC1+.02,RB0,RB1-.05]:[RC0-.07,RC1+.02,RB0,RB1-.05,RD,RO1-.05,P.R-.12]))ring(r,r+.05,Y+.04,M.warm);
+ for(const r of(FA.G1?[RC0-.07,RC1+.02]:   /* r10 B: boulevard warm lines dropped in G1 (concentric lit rings at world zoom) */[RC0-.07,RC1+.02,RB0,RB1-.05,RD,RO1-.05,P.R-.12]))ring(r,r+.05,Y+.04,M.warm);
  // radial avenues (asphalt strips between the ring roads, bridge span included) with light-line edges
  for(let k=0;k<4;k++){const a=k*Math.PI/2;for(const sp of[[RC0-.15,RB0],[RB1,RD],[RO1,P.R]]){strip(a,sp[0],sp[1],AW*2,Y+.02,M.asph);if(!FA.G1||sp[0]<RD)for(const s of[-1,1])strip(a,sp[0],sp[1],.04,Y+.045,M.warm,s*(AW+.07));}}}
 
@@ -368,8 +368,10 @@ function traffic(){const VC=['#D8D6D0','#8E949C','#2E3238','#B9BEC6'];
  for(let i=0;i<30;i++){const out=i>=13,rm=out?(RD+RO1)/2:(RB0+RB1)/2,a=rnd()*TAU,r=rm+(rnd()<.5?-.33:.33);car(cx+Math.cos(a)*r,cz+Math.sin(a)*r,Math.PI/2-a,i);}
  for(let i=0;i<6;i++){const a=((rnd()*4)|0)*Math.PI/2,r=11+rnd()*6,o=rnd()<.5?-.33:.33;car(cx+Math.cos(a)*r-Math.sin(a)*o,cz+Math.sin(a)*r+Math.cos(a)*o,-a,i);}
  const near=a=>Math.abs(((a+Math.PI/4)%(Math.PI/2))-Math.PI/4);                       // angular distance to the nearest avenue
- for(let i=0;i<20;i++){const a=(i+.5)*TAU/20;lamp(cx+Math.cos(a)*(RB0-.3),cz+Math.sin(a)*(RB0-.3),.55,.75);}
- for(let i=0;i<40;i++){const a=(i+.5)*TAU/40;if(near(a)<.06)continue;lamp(cx+Math.cos(a)*(RO1+.3),cz+Math.sin(a)*(RO1+.3),.5,.6);}
+ for(let i=0;i<20;i++){const a=(i+.5)*TAU/20;if(FA.G1&&i%2)continue;LNP=FA.G1&&i%6!==0?1:0;lamp(cx+Math.cos(a)*(RB0-.3),cz+Math.sin(a)*(RB0-.3),.55,.75);LNP=0;}   // r10 B: G1 10 lamps, pools on 1 in 3 (lit ring)
+ // r10 B (world vision r9: 'lit circular rim' at Gatekeeper): in G1 the outer ring road keeps only lamps near the 4 gates (no round bead
+ // string of 40 lamps + light pools at the deck edge); the inner boulevard ring (RB0) loses its pools too
+ for(let i=0;i<40;i++){const a=(i+.5)*TAU/40;if(near(a)<.06)continue;if(FA.G1){if(near(a)>.2)continue;LNP=1;}lamp(cx+Math.cos(a)*(RO1+.3),cz+Math.sin(a)*(RO1+.3),.5,FA.G1?.45:.6);LNP=0;}
  for(let k=0;k<4;k++){const a=k*Math.PI/2;for(let r=RB1+.8;r<RD-.3;r+=1.5)for(const s of[-1,1]){const o=(AW+.28)*s;
    lamp(cx+Math.cos(a)*r-Math.sin(a)*o,cz+Math.sin(a)*r+Math.cos(a)*o,.45,.55);}}}
 function perimeter(){const rr=P.R-.55,gap=.075,arc=Math.PI/2-2*gap;

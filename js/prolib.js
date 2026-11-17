@@ -118,11 +118,12 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
  let core=null,bd=1e9;for(const L of LM){const q=Math.hypot(L.x-Math.cos(aM)*R*.46,L.z-Math.sin(aM)*R*.46);if(q<bd){bd=q;core=L;}}
  const SEAM=[.17,.28,.36];
  for(const L of LM){const y=E.lowY(L.x,L.z,3.2,3.2)-.18;
-  E.box(M.B,L.x,y,L.z,3.56,.9,3.56,L.ry,jc(cv('#14161B'),L.x,L.z,.04));   // continuous plinth
+  // r10 B (world vision r9: machine zone = 'one raised slab with side faces'): no continuous plinth; each block stands on its own
+  // footing (sunk into the slope) with ~.9 u ground lanes between blocks
   if(L===core){let yy=y;for(const s of[[3.3,4.2],[2.5,3.8],[1.7,3.0]]){E.box(M.B,L.x,yy,L.z,s[0],s[1]+.05,s[0]*.9,L.ry,jc(cv('#121418'),L.x,yy,.04));yy+=s[1];}
    E.box(M.LT,L.x,yy,L.z,1.75,.04,1.58,L.ry,SEAM);
    E.box(M.ME,L.x,yy,L.z,.14,2.4,.14,0,cv('#3E4652'));E.glow(L.x,yy+2.45,L.z,.8,'#6C88A0',.45,[.3,5,0,0]);tall.push({x:L.x,z:L.z,h:yy-y,y});E.anchors.machine={x:L.x,y:yy,z:L.z};continue;}
-  const slab=r()<.35,h=(slab?4.4:2.6)+(slab?2.6:2.6)*(1-smooth(.2,1,L.f))*(.6+.6*r()),w=slab?3.3:3.3*(.9+.08*r()),dd=slab?1.4:3.3*(.9+.08*r());
+  const slab=r()<.35,h=(slab?4.4:2.6)+(slab?2.6:2.6)*(1-smooth(.2,1,L.f))*(.6+.6*r()),w=slab?2.7:2.7*(.9+.08*r()),dd=slab?1.25:2.7*(.9+.08*r());
   const parts=slab?[[0,-.8],[0,.8]]:[[0,0]];
   for(const[ox,oz]of parts){const p=E.L2W(L.x,L.z,L.ry,ox,oz),hh=h*(oz>0?.78:1);
    E.box(M.B,p[0],y,p[1],w,hh+.9,dd,L.ry,jc(cv(r()<.5?'#111317':'#15171C'),p[0],p[1],.04));

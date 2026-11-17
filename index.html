@@ -481,7 +481,7 @@ const G1TXT={
   selfdestruct:'Architecture (§2.3): a dead city around an old impact crater with a raised ash lip. Tower stumps stand with their facades broken off at ragged heights and floor slabs hanging out where they broke. Other towers lie in pieces across the streets, low buildings are roofless shells, and rubble and burnt-out vehicles cover a cracked street grid under grey ash. Overgrowth is starting: moss and grass are spreading over the streets toward the edge, shrubs grow at the foot of walls, there are a few young trees and vines climb the stumps. Bare utility masts lean over. The only light is a few smouldering embers in the rubble, and smoke rises from the smouldering ruins. Nothing is powered and no one is there. The causes are open: war, an engineered pandemic or another catastrophe. Landmark: the crater and the broken towers.',
   // swap r8 W: the last three generator cities (js/prolib.js, js/probene.js, js/proconq.js); literal description of what is shown, no judgement
   libertarian:'Architecture (§2.3): three walled districts radiate from one shared central market with a market hall and a ring of stalls. The machine zone is a block of windowless near-black monoliths on one continuous plinth: big flat-topped cubes and tall paired slabs separated by narrow dark slots, with only dim cool vertical seams and a cool line around each roof, a stepped core tower with a mast, a few dark skybridges and its own perimeter fence. The mixed zone has slim dark-glass towers with warm and cool window floors, crowns and antennas, cyborg-style exoframe towers (a solid core inside an X-braced metal cage) and planted mid-rise blocks; it stays low next to the market. The human-only zone is low: pitched-roof houses on hedged private plots with garden trees, and strip fields at its edge. Every border is a private wall with a pale coping, a lane along it, a gate with two lamps and a few trading stalls (tall dark walls on the machine side, a low stone wall with a hedge between the human and mixed zones); cargo pods run from the machine zone through its gate to the market, a pale paved square with an arcaded hall. The road arrives at an outer gate and becomes the avenue to the market.',
-  benevolent:'Architecture (§2.3): at the centre a stepped stone ziggurat (five dark tiers with pale treads, stair flights with lit step edges on two faces, a small dark top shrine with a dim slate slit) stands on a paved square plaza with four slim sensor masts, inside a ring park of trees, lawns and ponds. Six straight pale boulevards, each with a dense tree row on both sides, run out from the park and divide six dense, tidy sectors, each with one uniform building type: rows of terraced houses with back gardens, rows of identical low slab blocks, domed halls and colonnades, farms with barns and silos, greenhouses and orchards, sports pitches with a pool and pavilions, and a quiet water-garden sector with stacked-roof pavilions. A slim sensor mast with a small dim head pulses slowly at the outer end of each boulevard. Window light is sparse and warm-neutral.',
+  benevolent:'Architecture (§2.3): At the centre a pale octagonal tiered monolith rises from a still round pool ringed by small evenly spaced lights. Eight petal-shaped sectors surround it, each entered through an identical slim gate: a domed library with campus halls around a lawn; an open-air amphitheatre, white gallery blocks and a sculpture lawn; pools with pale decks and flat-roofed pavilions; rows of windowless pod-like domes on a paved precinct; a small walled compound with low blocks and a yard at the far edge; a forest reserve with a pond and no buildings; a village of pitched roofs with fields, hedgerows and an orchard; a cloister around a quiet courtyard beside a temple with a slim tower. Identical slender masts with tiny cool lights stand at every boulevard and in every sector, thin light lines run from the pool into all sectors, and a few slow pods glide along the spotless boulevards.',
   conquerors:'Architecture (§2.3): a vast, clean, orthogonal machine landscape: rows of long dark compute halls with roof fins and a few small cool indicator lights, hyperbolic cooling towers (wide base on an open ring of legs, a narrow waist, a flared pale lip) trailing pale steam, solar fields of tilted panel rows thinning out toward the hills, clean service lanes. One hall is still under autonomous construction: a bare frame with part of its roof, a gantry sliding along it, small build robots shuttling to stacks of panels. Where the old road arrives, the emptied old human town is being taken apart: a few dark intact houses with no light, roofs stripped to the rafters, roofless shells with broken walls and rubble heaps on bare earth, bare foundation slabs, sorted stacks of beams, bricks and roof tiles, a dismantling gantry over one house with a hoist moving up and down, and haul robots carrying material to the machine site. There are no people.'},
  twinOld:'Two pits, Bloc A and Bloc B, separated by a ridge of mutual deterrence. Identical architecture on both sides; only the colour of the caged core differs (teal vs magenta).',
  twin:'One basin, Bloc A and Bloc B, divided by an engineered trench. The two blocs use different architectural languages (vertical arcology vs horizontal plinths), each built around its own confined AI core (monolith in gimbal rings vs coil-wrapped sphere).',
@@ -1497,24 +1497,120 @@ function setNav(){const nv=document.getElementById('nav'),cr=document.getElement
  lodWant();kick();if(typeof visSync==='function')visSync(); // r6 U18 Visions panel follows the close-up
  if(view==='world'){nv.style.display='none';return;}nv.style.display='flex';
  let h=`WORLD ▸ <span style="color:#fff">${BASINS[focus].n.toUpperCase()}</span>`;if(focusO)h+=` ▸ <b style="color:#fff">${focusO.n.toUpperCase()}</b>`;cr.innerHTML=h;}
-function enterBasin(b){if(b==='C')return;view='basin';focus=b;focusO=null;const B=BASINS[b];
+function enterBasin(b){if(b==='C')return;if(typeof playing!=='undefined'&&playing&&typeof stop==='function')stop(); // r10 C: replay runs in the world view only
+ view='basin';focus=b;focusO=null;const B=BASINS[b];
  // r4 U11: frame the basin's sites (bbox centre, nudged south so southern sites clear the timeline; pulled back when the basin is wide) instead of the fixed basin centre
  const S=O.filter(o=>o.b===b&&!o.cliff);let tx=U(B.cx),tz=V(B.cy)+2,d=84;if(S.length){const xs=S.map(o=>o.X),zs=S.map(o=>o.Z),x0=Math.min(...xs),x1=Math.max(...xs),z0=Math.min(...zs),z1=Math.max(...zs);tx=(x0+x1)/2;tz=(z0+z1)/2+4.5;d=clamp(84*Math.max(1,((x1-x0)/2+9)/32,((z1-z0)/2+12)/22),84,108);}
  flyTo({tx,tz,d,pit:.9,yaw:0,ly:0},0,window.CARD&&CARD.vis()?140:0);setNav();} // r6 U: eased fly (card, if any, fades first)
 // r7 P: per-site close-up camera table (overrides the generic d/pit/ly/tz/yaw below; tx/tz are offsets from the site centre).
 // normaltech: lower pitch so the near-future skyline (towers, vertiport decks, air taxis, elevated rail) stands up in the free area
 // left of / below the card + Visions strip instead of being foreshortened under them at ~45 deg top-down. Test hook: window.CLOSECAM.
-var CLOSECAM={normaltech:{d:36,pit:.44,ly:3,dz:3,dx:1,yaw:.7}}; // r7 P probe (5 candidate sets, eval projections @1440x900): pit .44 (~25 deg) + yaw .7 puts towers x 393-681 / y 225-443, taxis + train left of / below the Visions strip (x>=618, y<=315), town x<=906 (card x>=1016); was d 34 pit .78 ly 0 dz 3 yaw -.12
+var CLOSECAM={normaltech:{d:36,pit:.44,ly:3,dz:3,dx:1,yaw:.7}, // r7 P probe (5 candidate sets, eval projections @1440x900): pit .44 (~25 deg) + yaw .7 puts towers x 393-681 / y 225-443, taxis + train left of / below the Visions strip (x>=618, y<=315), town x<=906 (card x>=1016); was d 34 pit .78 ly 0 dz 3 yaw -.12
+ // r10 C: CAMP.search grid (12 yaws x pit .39-.52 (22-30 deg) x d 1.3-2.8 city radius x target shifts x ly 1.5/3, 1440x900, card open,
+ // Visions docked under the card) -> best per site; benevolent = generic bbox framing (its generator is being rebuilt). Comments:
+ // landmark-in-free-area % / landmark visible (not behind taller structures) % / city points in free area % / fill % of free area.
+ reversion:{d:52.6,pit:.52,yaw:.9,ly:1.5,dx:-1.79,dz:2.81},     // 76/74/98/40 (old 66/66/87/40)
+ selfdestruct:{d:55.9,pit:.52,yaw:.3,ly:3,dx:-3.07,dz:-.53},    // 98/78/91/43 (old 52/52/64/69)
+ conquerors:{d:34.6,pit:.48,yaw:-1.25,ly:1.5,dx:-5.52,dz:1.3},  // 100/100/100/45 (old 57/57/68/99)
+ libertarian:{d:51,pit:.52,yaw:.6,ly:1.5,dx:-1.6,dz:-.42},      // 97/97/93/43 (old 71/68/78/86)
+ gatekeeper:{d:26,pit:.39,yaw:-2,ly:1.5,dx:-2.82,dz:-.32},      // 100/100/98/49 (old 100/100/97/24)
+ o1984:{d:31,pit:.52,yaw:-.9,ly:1.5,dx:-.16,dz:2.13},           // 99/37/96/46 (old 91/35/93/47) - dense towers hide each other at any yaw
+ enslaved:{d:60,pit:.39,yaw:.6,ly:3,dx:3.77,dz:.96},            // 100/93/100/44 (old 75/73/75/61)
+ egalitarian:{d:30.7,pit:.52,yaw:-.3,ly:1.5,dx:.59,dz:1.67},    // 95/84/96/38 (old 92/81/97/48)
+ protector:{d:35.4,pit:.52,yaw:-1.25,ly:1.5,dx:-1.83,dz:2.24},  // 97/63/96/46 (old 83/51/92/67)
+ zookeeper:{d:48.7,pit:.48,yaw:-1.6,ly:1.5,dx:-.73,dz:1.04},    // 100/94/98/48 (old 86/86/90/59)
+ descendants:{d:50.2,pit:.52,yaw:-1.6,ly:1.5,dx:.73,dz:5.27},   // 100/80/100/40 (old 83/65/86/54)
+ benevolent:{d:44.9,pit:.48,yaw:-1.6,ly:1.5,dx:-1.78,dz:1.59}}; // generic bbox: city 99 in free area, fill 43 (old 64/60/75/81)
+// r10 C: CAMP = close-up camera probe (test hook; pure projection math, nothing is rendered). For a site it samples the NEAR tier's
+// vertices (instanced meshes: per-instance box tops/centres) into landmark points (tall structures + named key meshes: wheel, fields,
+// pool/crater, ...), city points and street/ground points, then scores a camera {d,pit,yaw,ly,dx,dz} by what lands in the FREE area
+// (left of the right card, below the header/nav, above the timeline, off the ROADS legend and the close-up disc + name plate) and is
+// not hidden behind taller structures (coarse 1 u height grid) - the r7 P method, automated. Rejects cameras under the terrain
+// (hMesh sampled along the view ray) or inside a tower. CAMP.search(id) = grid search, CAMP.ev(id,C|null) = metrics (null = live CAM).
+var CAMP=(()=>{const P={},v=new THREE.Vector3(),bb=new THREE.Box3(),mI=new THREE.Matrix4(),mW=new THREE.Matrix4();let pc=null;
+ const KEY=/wheel|field|pool|crater|zig|spire|dome|tower|mill/i,GRD=/ground|feather|apron|ash|outskirt|brook|water/i;
+ function pts(id){if(P[id])return P[id];const o=byId[id],r=(typeof G1!=='undefined'?G1:window.__g1)&&(typeof G1!=='undefined'?G1:window.__g1).res[id];if(!o||!r||!r.near)return null;const g0=o.gy!=null?o.gy:hMesh(o.X,o.Z);
+  const A=[];r.near.updateMatrixWorld(true);
+  r.near.traverse(m=>{if(!(m.isMesh||m.isPoints)||!m.geometry||!m.geometry.attributes.position)return;const G=m.geometry,nm=m.name||'',k=KEY.test(nm)?2:1,gr=GRD.test(nm)?1:0;
+   if(m.isInstancedMesh){if(!G.boundingBox)G.computeBoundingBox();const n=m.count,st=Math.max(1,Math.ceil(n/240));
+    for(let i=0;i<n;i+=st){m.getMatrixAt(i,mI);mW.multiplyMatrices(m.matrixWorld,mI);bb.copy(G.boundingBox).applyMatrix4(mW);if(!isFinite(bb.min.x))continue;
+     const cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2;A.push([cx,bb.max.y,cz,k,gr],[cx,(bb.min.y+bb.max.y)/2,cz,k,gr]);}}
+   else{const p=G.attributes.position,n=p.count,st=Math.max(1,Math.ceil(n/1500));for(let i=0;i<n;i+=st){v.fromBufferAttribute(p,i).applyMatrix4(m.matrixWorld);if(isFinite(v.x))A.push([v.x,v.y,v.z,k,gr]);}}});
+  if(!A.length)return null;let H=0;for(const a of A)if(!a[4])H=Math.max(H,a[1]-g0);
+  // coarse max-height grid of structures (occlusion + tower clip)
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const a of A){x0=Math.min(x0,a[0]);x1=Math.max(x1,a[0]);z0=Math.min(z0,a[2]);z1=Math.max(z1,a[2]);}
+  const NX=Math.min(160,Math.ceil(x1-x0)+1),NZ=Math.min(160,Math.ceil(z1-z0)+1),HG=new Float32Array(NX*NZ).fill(-1e9),cs=Math.max((x1-x0)/(NX-1||1),(z1-z0)/(NZ-1||1),.5);
+  for(const a of A){if(a[4])continue;const i=Math.round((a[0]-x0)/cs),j=Math.round((a[2]-z0)/cs);if(i>=0&&j>=0&&i<NX&&j<NZ)HG[j*NX+i]=Math.max(HG[j*NX+i],a[1]);}
+  const hg=(x,z)=>{const i=Math.round((x-x0)/cs),j=Math.round((z-z0)/cs);return(i>=0&&j>=0&&i<NX&&j<NZ)?HG[j*NX+i]:-1e9;};
+  // landmarks: tall points (>= 45 % of the city height, 1.5 u dedupe) + key-named meshes; city + ground samples
+  const seen=new Set(),LM=[],CT=[],GD=[];const srt=A.filter(a=>!a[4]).sort((a,b)=>b[1]-a[1]);
+  for(const a of srt){if(a[1]-g0<Math.max(1.6,H*.45))break;const q=Math.round(a[0]/1.5)+','+Math.round(a[2]/1.5);if(seen.has(q))continue;seen.add(q);LM.push([a[0],a[1],a[2],1]);if(LM.length>=60)break;}
+  const ky=A.filter(a=>a[3]>1);for(let i=0;i<ky.length;i+=Math.max(1,Math.ceil(ky.length/40)))LM.push([ky[i][0],ky[i][1],ky[i][2],2]);
+  const nG=A.filter(a=>!a[4]);for(let i=0;i<nG.length;i+=Math.max(1,Math.ceil(nG.length/700)))CT.push(nG[i]);
+  const low=A.filter(a=>a[1]-g0<1.5);for(let i=0;i<low.length;i+=Math.max(1,Math.ceil(low.length/200)))GD.push(low[i]);
+  let sx=0,sz=0;for(const a of CT){sx+=a[0];sz+=a[2];}
+  const R=Math.max(6,Math.hypot(x1-x0,z1-z0)/2);
+  return P[id]={id,g0,H,LM,CT,GD,hg,cx:sx/CT.length,cz:sz/CT.length,R,box:[x0,x1,z0,z1],tops:LM.filter(l=>l[3]===1).slice(0,24)};}
+ function rects(){const W=innerWidth,Hh=innerHeight,hb=document.getElementById('hud').getBoundingClientRect().bottom,lg=document.getElementById('legend'),lr=lg&&getComputedStyle(lg).display!=='none'?lg.getBoundingClientRect():null;
+  return {W,H:Hh,F:[8,W-24-400-10,hb+10+34+6,(typeof tlTopY==='function'?tlTopY():Hh-200)-8],L:null};} // the ROADS legend is hidden in a close-up (measured r10), so it is no obstacle there (lr kept for a future variant)
+ const inR=(r,x,y)=>r&&x>=r[0]&&x<=r[2]&&y>=r[1]&&y<=r[3];
+ // camera pose exactly as camApply builds it for a close-up with the card open (CSH = 1)
+ function pose(o,C){const tx=o.X+C.dx,tz=o.Z+C.dz,ty=hAt(tx,tz)+1+(C.ly||0),sh=C.d*.11,ax=tx+Math.cos(C.yaw)*sh,az=tz-Math.sin(C.yaw)*sh,cp=Math.cos(C.pit);
+  return {p:[ax+C.d*Math.sin(C.yaw)*cp,ty+C.d*Math.sin(C.pit),az+C.d*Math.cos(C.yaw)*cp],t:[ax,ty,az]};}
+ function ev(id,C,RR){const S=pts(id),o=byId[id];if(!S)return null;RR=RR||rects();const{W,H,F,L}=RR;
+  if(!pc){pc=CAM.clone();}pc.aspect=W/H;pc.updateProjectionMatrix();let ps;
+  if(C){ps=pose(o,C);pc.position.set(...ps.p);pc.lookAt(...ps.t);pc.updateMatrixWorld(true);}else{pc.position.copy(CAM.position);pc.quaternion.copy(CAM.quaternion);pc.updateMatrixWorld(true);ps={p:[CAM.position.x,CAM.position.y,CAM.position.z],t:null};}
+  const P3=pc.position,pr=(x,y,z)=>{v.set(x,y,z).project(pc);return[(v.x*.5+.5)*W,(-v.y*.5+.5)*H,v.z<1&&v.z>-1];};
+  // validity: camera above terrain + not in a tower; view ray clear of terrain
+  let bad=0;if(P3.y<hMesh(P3.x,P3.z)+2||P3.y<S.hg(P3.x,P3.z)+1.5)bad=1;
+  if(ps.t)for(let i=1;i<=20&&!bad;i++){const k=i/20*.88,x=P3.x+(ps.t[0]-P3.x)*k,y=P3.y+(ps.t[1]-P3.y)*k,z=P3.z+(ps.t[2]-P3.z)*k;if(y<hMesh(x,z)+.4||(k<.55&&y<S.hg(x,z)+.3))bad=2;}
+  // the top of the free area must still look at the map (cliff / edge sites: never the void beyond the terrain edge)
+  if(!bad&&typeof TER!=='undefined'&&TER.geometry){const G=TER.geometry;if(!G.boundingBox)G.computeBoundingBox();const tb=G.boundingBox,e=TER.matrixWorld.elements;
+   for(const sx of[F[0],(F[0]+F[1])/2,F[1]]){v.set(sx/W*2-1,-(F[2]/H)*2+1,.5).unproject(pc).sub(P3).normalize();if(v.y>-.02){bad=3;break;}const t=(S.g0-P3.y)/v.y,hx=P3.x+v.x*t,hz=P3.z+v.z*t;
+    if(hx<tb.min.x+e[12]+2||hx>tb.max.x+e[12]-2||hz<tb.min.z+e[14]+2||hz>tb.max.z+e[14]-2){bad=3;break;}}}
+  // close-up disc + name plate (fa4_labels layout: disc above the tallest structure in its column, plate to the right)
+  const g=pr(o.X,S.g0+.6,o.Z);let ty=pr(o.X,S.g0+S.H+1.5,o.Z)[1];for(const t of S.tops){const q=pr(t[0],t[1]+1,t[2]);if(q[0]>g[0]-60&&q[0]<g[0]+300)ty=Math.min(ty,q[1]);}
+  const dy=Math.max(104,Math.min(g[1]-70,ty-48)),D=[g[0]-38,dy-38,g[0]+300,dy+38];
+  const vis=(a)=>{const dx=P3.x-a[0],dy_=P3.y-a[1],dz=P3.z-a[2];for(let i=1;i<=14;i++){const k=i*.045,x=a[0]+dx*k,y=a[1]+dy_*k+.25,z=a[2]+dz*k;if(S.hg(x,z)>y)return false;}return true;};
+  const free=(q)=>q[2]&&inR([F[0],F[2],F[1],F[3]],q[0],q[1])&&!inR(L,q[0],q[1])&&!inR(D,q[0],q[1]);
+  let lw=0,ls=0,lf=0;for(const a of S.LM){const q=pr(a[0],a[1],a[2]),w=a[3];lw+=w;if(free(q)){lf+=w;if(vis(a))ls+=w;}}
+  let ci=0,X=[],Y=[];for(const a of S.CT){const q=pr(a[0],a[1],a[2]);if(free(q))ci++;if(q[2]){X.push(q[0]);Y.push(q[1]);}}
+  let gv=0;for(const a of S.GD){const q=pr(a[0],a[1]+.2,a[2]);if(free(q)&&vis([a[0],a[1]+.2,a[2]]))gv++;}
+  X.sort((a,b)=>a-b);Y.sort((a,b)=>a-b);const pq=(A,f)=>A[Math.min(A.length-1,Math.floor(A.length*f))]||0;
+  const bx=[Math.max(F[0],pq(X,.05)),Math.min(F[1],pq(X,.95)),Math.max(F[2],pq(Y,.05)),Math.min(F[3],pq(Y,.95))];
+  const fill=Math.max(0,bx[1]-bx[0])*Math.max(0,bx[3]-bx[2])/((F[1]-F[0])*(F[3]-F[2]));
+  const lm=lw?lf/lw:0,lv=lw?ls/lw:0,cin=S.CT.length?ci/S.CT.length:0,gvis=S.GD.length?gv/S.GD.length:0;
+  const fs=Math.min(fill/.42,1)-Math.max(0,fill-.8)*2;
+  const lit=C?.5+.5*Math.cos(C.yaw+1.0):0;  // sun from the south-west: faces lit when the camera sits at yaw ~ -1
+  const score=bad?-9:2*lv+1*lm+1.5*cin+3*fs+1*gvis+.35*lit;
+  return {score:+score.toFixed(3),lm:+(lm*100).toFixed(1),lmVis:+(lv*100).toFixed(1),cityIn:+(cin*100).toFixed(1),fill:+(fill*100).toFixed(1),gnd:+(gvis*100).toFixed(1),bad,disc:[g[0]|0,dy|0]};}
+ // grid search: yaw x pitch (22-30 deg) x distance (city radius based) x target shifts; generic=true -> bbox-only framing (no landmark terms)
+ function search(id,opt){opt=opt||{};const S=pts(id),o=byId[id];if(!S)return null;const RR=rects();const res=[];
+  const YW=opt.yaws||[-2.0,-1.6,-1.25,-.9,-.6,-.3,0,.3,.6,.9,1.2,1.5],PT=opt.pits||[.39,.44,.48,.52],DK=opt.dk||[1.3,1.55,1.8,2.1,2.45,2.8];
+  for(const yaw of YW)for(const pit of PT)for(const k of DK)for(const s of[-.04,.04])for(const f of[-.12,.12])for(const ly of(opt.lys||[2])){
+   const d=Math.max(26,S.R*k),rx=Math.cos(yaw),rz=-Math.sin(yaw),fx=-Math.sin(yaw),fz=-Math.cos(yaw);
+   const C={d:+d.toFixed(1),pit,yaw,ly,dx:+(S.cx-o.X+rx*s*d+fx*f*S.R).toFixed(2),dz:+(S.cz-o.Z+rz*s*d+fz*f*S.R).toFixed(2)};const m=ev(id,C,RR);
+   if(opt.generic)m.score=m.bad?-9:2*m.cityIn/100+3*(Math.min(m.fill/42,1)-Math.max(0,m.fill/100-.8)*2)+.35*(.5+.5*Math.cos(yaw+1));
+   res.push({C,m});}
+  res.sort((a,b)=>b.m.score-a.m.score);return {id,R:+S.R.toFixed(1),H:+S.H.toFixed(1),nLM:S.LM.length,best:res.slice(0,3)};}
+ return {pts,ev,search,rects,pose,P,tops:id=>{const S=P[id];return S?S.tops:[];}};})();
+window.CAMP=CAMP;
+// r10 C: sample every city once in idle time after boot (one city per idle slice, ~5-30 ms each) so the close-up label never pays it mid-fly
+setTimeout(()=>{const ids=O.map(o=>o.id),ric=window.requestIdleCallback||(f=>setTimeout(f,60));const nx=()=>{const id=ids.shift();if(!id)return;
+ if(FLY.on){ids.unshift(id);setTimeout(()=>ric(nx,{timeout:4000}),300);return;}const t=performance.now();try{const S=CAMP.pts(id);if(S)S.ms=+(performance.now()-t).toFixed(1);}catch(e){}ric(nx,{timeout:4000});};ric(nx,{timeout:4000});},3500);
 function enterO(o){if(typeof G1L!=='undefined')G1L.pre(o.id); // lod r8 (L): prefetch the city's NEAR tier at fly start
-const CC=CLOSECAM[o.id];if(CC){view='basin';focus=o.b;focusO=o;CARD.want=true;flyTo({ly:CC.ly,tx:o.X+CC.dx,tz:o.Z+CC.dz,d:CC.d,pit:CC.pit,yaw:CC.yaw});select(o.id);setNav();return;}
- view='basin';focus=o.b;focusO=o;const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:46,descendants:48,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};CARD.want=true;flyTo({ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();} // r6 U: CARD.want set before the fly so the card offset rides the same ease; select() -> cardShow reveals the card at ~60 % of the fly
+if(typeof playing!=='undefined'&&playing&&typeof stop==='function')stop(); // r10 C (owner): no replay inside a close-up - a city click pauses it
+const CC=CLOSECAM[o.id]||closeCamOld(o);view='basin';focus=o.b;focusO=o;CARD.want=true;flyTo({ly:CC.ly,tx:o.X+CC.dx,tz:o.Z+CC.dz,d:CC.d,pit:o.id==='normaltech'?CC.pit:Math.min(CC.pit,.45),yaw:CC.yaw});select(o.id);setNav();} // r6 U: CARD.want set before the fly so the card offset rides the same ease; select() -> cardShow reveals the card at ~60 % of the fly
+// pre-r10 generic close-up camera (fallback for a site without a CLOSECAM row; also the 'before' baseline of the r10 probe)
+function closeCamOld(o){const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:46,descendants:48,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};
+ return {ly:LY[o.id]||0,dx:0,dz:(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12};}
 function world(){const cv_=window.CARD&&CARD.vis();view='world';focus=null;focusO=null;closeCard();flyTo({...WORLDV},0,cv_?140:0);setNav();} // r6 U: card fades out first (140 ms head start), then the camera eases back
 document.getElementById('back').onclick=world;
 addEventListener('keydown',e=>{kick();if(e.key==='Escape'){if(document.getElementById('page').style.display==='block')closePage();else if(focusO&&view!=='world'&&focus!=='C'){closeCard();enterBasin(focus);}else world();}
  else if((e.key==='t'||e.key==='T')&&e.target===document.body)toggleTL();});
 const RC=new THREE.Raycaster();
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,yaw:tg.yaw,pit:tg.pit,m:false};cv.classList.add('dragging');kick();});
-addEventListener('pointermove',e=>{if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4){drag.m=true;}if(drag.m){tg.yaw=clamp(drag.yaw-dx/320,-.95,.95);tg.pit=clamp(drag.pit+dy/400,.62,1.32);kick();}}}); // v4.2: polar angle clamped (no grazing views); terrain occlusion fade does the rest
+addEventListener('pointermove',e=>{if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4){drag.m=true;}if(drag.m){tg.yaw=clamp(drag.yaw-dx/320,Math.min(-.95,drag.yaw),Math.max(.95,drag.yaw));tg.pit=clamp(drag.pit+dy/400,Math.min(.62,drag.pit),1.32);kick();}}}); // v4.2: polar angle clamped (no grazing views); terrain occlusion fade does the rest. r10 C: the clamp range always includes the drag's start pose, so a low per-site close-up camera (pit < .62, |yaw| > .95) never jumps on the first drag
 addEventListener('pointerup',e=>{cv.classList.remove('dragging');if(drag&&!drag.m&&e.target===cv)clickWorld(e);drag=null;});
 cv.addEventListener('wheel',e=>{e.preventDefault();tg.d=clamp(tg.d*(e.deltaY>0?1.1:.9),26,240);kick();},{passive:false});
 function clickWorld(e){if(HOV){if(HOV.o){enterO(HOV.o);return;}if(HOV.r){openRoad(HOV.r);return;}} // v4.3: markers / roads picked in screen space
@@ -2303,8 +2399,14 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   const[gx,gy,ok]=proj(o.X,o.gy+.6,o.Z);if(!ok||gx<-40||gx>W+40||gy<40||gy>tlT+(big?30:110))continue;
   let lift=big?Math.min(60,AH[o.id]*4+30):Math.max(34,Math.min(70,AH[o.id]*2.6+20));if(!big&&gy-lift>tlT-28)lift=gy-(tlT-28); // r4: icon never sinks under the timeline glass (stem runs down behind it)
   if(RG){const tp_=proj(o.X,o.gy+(AH[o.id]||5)+1.5,o.Z);RGL.push({o,gx,gy,x:clamp(gx,44,W-44),y:clamp(Math.min(gy-Math.max(lift,56),tp_[1]-40),(rectOf('nav')||{bottom:110}).bottom+40,tlT-44)});continue;}
-  if(big&&o===focusO){const K=1.7;lift=Math.max(lift,70);const tp_=proj(o.X,o.gy+(AH[o.id]||5)+1.5,o.Z);const x=gx,y=Math.max(104,Math.min(gy-lift,tp_[1]-48));MK.push({o,x,y}); // U6: enlarged marker on a dark disc backplate + brass ring; drop line kept; r3: disc sits above the tallest structure (never covers the spire)
-   og.save();og.globalAlpha=.55;og.strokeStyle=TK.acc;og.lineWidth=1.2;gLine(og,[x,y+32,x,gy-2]);gDot(og,x,gy,2.4);og.globalAlpha=.92;og.fillStyle='rgba(8,11,16,.9)';og.beginPath();og.arc(x,y,33,0,6.2832);og.fill();og.globalAlpha=1;og.lineWidth=1.5;og.stroke();og.globalAlpha=.4;og.lineWidth=1;gRing(og,x,y,37);og.restore();
+  if(big&&o===focusO){const K=1.7;lift=Math.max(lift,70);const tp_=proj(o.X,o.gy+(AH[o.id]||5)+1.5,o.Z);let tY=tp_[1];
+   // r10 C: with the low per-site close-up cameras the tallest structure is often off the site centre (ziggurat top, towers): lift the
+   // disc above every landmark top that falls under the disc or its name plate column (x gx-60 .. gx+300), from CAMP (NEAR tier samples)
+   if(window.CAMP){const T=CAMP.tops(o.id);for(let i=0;i<T.length;i++){const q=proj(T[i][0],T[i][1]+1,T[i][2]);if(q[2]&&q[0]>gx-60&&q[0]<gx+300)tY=Math.min(tY,q[1]);}}
+   // r10 C: disc + plate stay left of the right card: when the plate would run under it, the disc slides left and its drop line slants to the ground dot
+   const pw=(o.el&&o.el.offsetWidth)||0,xRc=(typeof cardOpen==='function'&&cardOpen()&&W>900)?W-24-400-10:W-8;
+   const x=pw&&gx+44+pw>xRc?Math.max(44,xRc-44-pw):gx,y=Math.max(104,Math.min(gy-lift,tY-48));MK.push({o,x,y}); // U6: enlarged marker on a dark disc backplate + brass ring; drop line kept; r3: disc sits above the tallest structure (never covers the spire)
+   og.save();og.globalAlpha=.55;og.strokeStyle=TK.acc;og.lineWidth=1.2;gLine(og,[x,y+32,gx,gy-2]);gDot(og,gx,gy,2.4);og.globalAlpha=.92;og.fillStyle='rgba(8,11,16,.9)';og.beginPath();og.arc(x,y,33,0,6.2832);og.fill();og.globalAlpha=1;og.lineWidth=1.5;og.stroke();og.globalAlpha=.4;og.lineWidth=1;gRing(og,x,y,37);og.restore();
    o._stem=0;og.save();og.translate(x,y);og.scale(K,K);drawMarker(og,o,0,0,t,st);og.restore();continue;}
   o._stem=lift;const x=gx,y=gy-lift;MK.push({o,x,y});drawMarker(og,o,x,y,t,st);}
  if(RG&&RGL.length){ // discs (r 30) never overlap: push apart sideways first, then vertically; drop line stays on the true ground point (may slant a little)
@@ -2320,7 +2422,10 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   if(RG&&m){const w=el.offsetWidth,h=el.offsetHeight;el.classList.add('cp');const hit=(x,y)=>x<8||x+w>W-8||RGL.some(q=>x<q.x+33&&x+w>q.x-33&&y<q.y+33&&y+h>q.y-33)||PLB.some(b=>x<b[2]+6&&x+w>b[0]-6&&y<b[3]+4&&y+h>b[1]-4); // r4 U11: short name plate always on, beside its disc, never on another disc/plate
    const LO=33*(o._LK||1)+5;let px=m.x+LO,py=m.y-h/2;for(const[cx,cy]of[[m.x+LO,m.y-h/2],[m.x-LO-w,m.y-h/2],[m.x-w/2,m.y+LO-2],[m.x-w/2,m.y-LO+2-h]]){if(!hit(cx,cy)){px=cx;py=cy;break;}}
    px=clamp(px,8,W-w-8);py=clamp(py,60,tlT-h-8);PLB.push([px,py,px+w,py+h]);el.style.transform=`translate(${px|0}px,${py|0}px)`;continue;}
-  if(big){if(m){const w=el.offsetWidth,h=el.offsetHeight;el.classList.add('cp');const px_=clamp(m.x+44,8,W-w-8)|0,py_=clamp(m.y-h/2,60,tlT-h-8)|0;el.style.transform=`translate(${px_}px,${py_}px)`;
+  if(big){if(m){const w=el.offsetWidth,h=el.offsetHeight;el.classList.add('cp');
+    // r10 C: the plate never runs under the right card (long names at the low close-up cameras reached x 1104 > card 1016): flip it to the disc's left
+    const xR=(typeof cardOpen==='function'&&cardOpen()&&W>900)?W-24-400-10:W-8;let pxx=m.x+44;if(pxx+w>xR)pxx=xR-w;
+    const px_=clamp(pxx,8,W-w-8)|0,py_=clamp(m.y-h/2,60,tlT-h-8)|0;el.style.transform=`translate(${px_}px,${py_}px)`;
     if(o===focusO&&window.VIS&&VIS.site===o.id&&typeof visFollow==='function'){const gp=proj(o.X,o.gy+.6,o.Z);visFollow(px_,py_,w,h,gp[0],gp[1]);} // r7 U23: Visions strip hangs under this name plate
     continue;} // U6: name plate beside the enlarged marker
    const nav=rectOf('nav');el.style.transform=`translate(${24}px,${((nav?nav.bottom:110)+10)|0}px)`;continue;}
@@ -2368,7 +2473,7 @@ const G1={res:{},stats:{},NEAR_D:95,HYS:6,FADE:500,_v:new THREE.Vector3(),U:{uG1
  GK:+(G1Q.get('g1gk')||.7),NGAIN:+(G1Q.get('g1ngain')||1.3),NAMBK:+(G1Q.get('g1nambk')||.65),
  MAMBK:+(G1Q.get('g1mambk')||.5),MGLOW:+(G1Q.get('g1mglow')||.85),MCAP:+(G1Q.get('g1mcap')||1.6),MSAT:+(G1Q.get('g1msat')||1.25),MWIN:+(G1Q.get('g1mwin')||.7),MSH:+(G1Q.get('g1msh')||.9),dome:{},
  MNK:+(G1Q.get('g1mnk')??.76),MALB:+(G1Q.get('g1malb')??.5),NNK:+(G1Q.get('g1nnk')??.12),MWR:+(G1Q.get('g1mwr')??.75),MPOOL:+(G1Q.get('g1mpool')??.55),
- MGNK:+(G1Q.get('g1mgnk')??.6),MGK:+(G1Q.get('g1mgk')??.9),MG:{egalitarian:+(G1Q.get('g1mgeg')||.92),normaltech:+(G1Q.get('g1mgnt')||.84),protector:+(G1Q.get('g1mgpt')||1.72)},   // r6 N: protector MID 1.5 -> 1.72 (world box L 41, interior read as a dark hole; still the dimmest town)
+ MGNK:+(G1Q.get('g1mgnk')??.6),MGK:+(G1Q.get('g1mgk')??.9),MG:{o1984:+(G1Q.get('g1mgo8')||.92),enslaved:+(G1Q.get('g1mgen')||.92),egalitarian:+(G1Q.get('g1mgeg')||.85),normaltech:+(G1Q.get('g1mgnt')||.78),protector:+(G1Q.get('g1mgpt')||1.72)},   // r6 N: protector MID 1.5 -> 1.72 (world box L 41, interior read as a dark hole; still the dimmest town)
  MWS:{egalitarian:+(G1Q.get('g1mweg')||2),protector:+(G1Q.get('g1mwpt')||2)},
  // C1 r5: per-site minimum apron blend toward the terrain (egalitarian has no underlay now, its paths/commons/fields keep more of
  // their own tone so the ring plan reads at world zoom), enslaved lobe tone split strength
@@ -2513,7 +2618,7 @@ G1.MG.reversion=G1.MG.reversion||+(G1Q.get('g1mgrv')||1);G1.MG.selfdestruct=G1.M
 // swap r8 W: libertarian / benevolent / conquerors (FA.G1Z cities). Start grades (?g1ng<id> / g1mg<id> / g1gw<id> override); MID light warm
 // pull: conquerors 0 (machine indicators stay cool, Q17a), benevolent .3 (muted warm-neutral, no gold), libertarian .45 (warm human side,
 // cool machine seams keep some of their hue)
-for(const[id,q,ng,mg,gw,wr]of[['libertarian','lib',.8,.85,.4,.45],['benevolent','bv',.8,.6,.42,.3],['conquerors','cq',.78,.3,.45,0]]){ // main r9 merge: cq MID .4 -> .3 (world L 76.1 > 72)
+for(const[id,q,ng,mg,gw,wr]of[['libertarian','lib',.8,.85,.6,.45],['benevolent','bv',.8,.6,.42,.3],['conquerors','cq',.78,.3,.8,0]]){ // main r9 merge: cq MID .4 -> .3 (world L 76.1 > 72); r10 B: ground GW lib .4 -> .6, cq .45 -> .8 (own paving read as a plate)
  G1.NG[id]=G1.NG[id]||[+(G1Q.get('g1ng'+q)||ng),.12];G1.MG[id]=G1.MG[id]||+(G1Q.get('g1mg'+q)||mg);G1.GW[id]=G1.GW[id]??+(G1Q.get('g1gw'+q)??gw);G1.MWRS[id]=G1.MWRS[id]??+(G1Q.get('g1mwr'+q)??wr);}
 function g1Night(c,K){let R=c.r,G=c.g,B=c.b;const l=(R+G+B)/3,f=.8+.75*l;R=(R+(G1NC.r-R)*K.nk)*f;G=(G+(G1NC.g-G)*K.nk)*f;B=(B+(G1NC.b-B)*K.nk)*f;
  const am=Math.max(R,G,B);if(am>K.alb){const q=K.alb/am;R*=q;G*=q;B*=q;}R*=K.gain;G*=K.gain;B*=K.gain;
@@ -2868,7 +2973,13 @@ const playBtn=document.getElementById('play');let pt=null;
 function stop(){playing=false;playBtn.textContent='▶';clearInterval(pt);clearTimeout(pt);}
 // G1 r6 U (D7): weeks with evidence hold ~1.15 s (pulse 1.2 s from NOW + milestone + width morph + pp pill + NOW lean);
 // empty weeks fast-forward at 0.34 s (<= 3 Hz). Reduced motion: the old 0.42 s cadence, static map changes only.
-playBtn.onclick=()=>{if(playing){stop();return;}playing=true;playBtn.textContent='❚❚';kick();if(day>=NDAYS)setDay(0);
+// r10 C (owner): Play from a close-up / region view first flies back to the world map through the shared eased fly (world(): the card
+// fades out first, 140 ms head start); the replay starts when that fly has passed ~60 % (?rplplay goes through this same path).
+playBtn.onclick=()=>{if(playing){stop();return;}playing=true;playBtn.textContent='❚❚';kick();
+ if(typeof view!=='undefined'&&view!=='world'&&typeof world==='function'){world();const t0=performance.now(),w8=()=>{if(!playing)return;
+   if((typeof FLY!=='undefined'&&FLY.on&&FLY.k<.6)||performance.now()-t0<200&&!(FLY&&FLY.on)){pt=setTimeout(w8,50);return;}playGo();};pt=setTimeout(w8,50);return;}
+ playGo();};
+function playGo(){if(!playing)return;if(day>=NDAYS)setDay(0);
  const tick=()=>{if(!playing)return;const nd=day+gran;if(nd>NDAYS&&day>=NDAYS){stop();return;}setDay(Math.min(nd,NDAYS));if(day>=NDAYS){stop();return;}
   pt=setTimeout(tick,!RMOT?420:RPL.has(Math.floor(Math.min(NDAYS,day+gran)/7))?1150:340);};
  pt=setTimeout(tick,RMOT?600:420);};
@@ -3243,7 +3354,12 @@ var VIDEOS={
 // Player = standard youtube.com/embed iframe (r8 U25; was youtube-nocookie) created only on click (no autoplay, no YouTube JS API); removed on close / leaving the close-up (stops playback).
 // r8 U25: every thumbnail and the player bar carry an 'Open on YouTube' link (new tab) for viewers whom YouTube asks to sign in.
 // The right-column site card is back to its full height (VIS.H stays 0).
-var VIS={el:null,site:null,play:null,H:0,collapsed:false,pos:''}; // var (not const): setNav() may call visSync() before this file runs (TDZ)
+var VIS={el:null,site:null,play:null,H:0,collapsed:true,pos:''}; // var (not const): setNav() may call visSync() before this file runs (TDZ)
+// r10 C (owner: the strip under the name plate covered the city): on desktop the panel now DOCKS under the right site card (same right
+// edge + 400 px width, card max-height shrinks by the panel height via VIS.H / fitCard) and starts COLLAPSED to one header line
+// 'VISIONS (N) · curated order · Submit a vision ↗ ▸'; click the header (or ▸) to expand the 3 thumbnails + vote buttons; the choice is
+// kept across close-ups. The player (16:9) opens in the same column. Nothing of the panel sits over the 3D city any more. Phones (<= 900 px)
+// keep the top-left placement under the nav.
 function visKey(s,v){return 'fa_vote:'+s+':'+v.id+':'+(v.start||0);}
 function visVoted(s,v){try{return localStorage.getItem(visKey(s,v))==='1';}catch(e){return false;}}
 function visCount(s,v){return (v.seed||0)+(visVoted(s,v)?1:0);}
@@ -3256,7 +3372,8 @@ function visT(s){s=s|0;return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 function visW(v){return 'https://www.youtube.com/watch?v='+encodeURIComponent(v.id)+(v.start?'&t='+(v.start|0)+'s':'');} // r8 U25: watch link (new tab)
 function visInit(){if(VIS.el)return VIS.el;const st=document.createElement('style');st.textContent=`
 #vis{position:fixed;left:0;top:0;box-sizing:border-box;z-index:13;display:none;background:rgba(10,14,19,.86);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(130,140,160,.22);border-left:2px solid var(--acc,#C9A45C);color:var(--t1,#E9E4D8);padding:6px 9px 6px;font:400 12px/16px var(--f3);will-change:transform}
-#vis.list{width:388px}#vis.ply{width:480px}
+#vis.list{width:400px}#vis.ply{width:400px}
+#vis .vh .vn{cursor:pointer}#vis .vh .vn:hover{color:var(--accH,#EBCB8B)}
 #vis .vh{display:flex;align-items:center;gap:8px;font:500 10.5px/15px var(--f2);letter-spacing:.16em;text-transform:uppercase;color:var(--acc,#C9A45C)}
 #vis .vh .vs{color:#B8B3A7;letter-spacing:.06em;text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;font-size:10.5px}
 #vis .vh a{color:var(--acc,#C9A45C);text-decoration:none;border-bottom:1px dotted var(--accD,#7D6638);letter-spacing:.04em;text-transform:none;white-space:nowrap}
@@ -3295,7 +3412,7 @@ function visInit(){if(VIS.el)return VIS.el;const st=document.createElement('styl
 #vis .yb{flex:0 0 auto;border:1px solid var(--acc,#C9A45C)!important;background:rgba(201,164,92,.14);color:var(--accH,#EBCB8B)!important;padding:1px 7px;font:500 11px/15px var(--f2);letter-spacing:.06em!important;text-transform:none;white-space:nowrap;text-decoration:none}
 #vis .yb:hover,#vis .yb:focus-visible{background:var(--acc,#C9A45C);color:#0A0E13!important;outline:none}
 #vis .vhint{margin-top:4px;font:400 11px/14px var(--f2);color:#C4BFB3}#vis .vhint a{color:var(--accH,#EBCB8B);text-decoration:none;border-bottom:1px dotted var(--acc,#C9A45C)}
-#vis.col .vbody{display:none}#vis.col{width:auto}
+#vis.col .vbody{display:none}
 #vis .vb,#vis .vt,#vis .vv{transition:border-color .15s,color .15s}
 @media (prefers-reduced-motion: reduce){#vis *{transition:none!important}}
 @media (max-width:900px){#vis.list,#vis.ply{width:auto;max-width:calc(100vw - 24px)}#vis .vr{overflow-x:auto}}
@@ -3306,7 +3423,7 @@ function visRender(){const d=visInit(),s=VIS.site,o=byId[s];if(!o){d.style.displ
  d.classList.toggle('col',VIS.collapsed);d.classList.toggle('ply',!!VIS.play);d.classList.toggle('list',!VIS.play);
  let h=`<div class="vh"><span>VISIONS</span>`;
  if(VIS.play)h+=`<span class="vs">· ${visEsc(o.n)}</span><a class="yb" href="${visW(VIS.play.v)}" target="_blank" rel="noopener" title="Open this video on youtube.com in a new tab (uses your YouTube sign-in)">Open on YouTube ↗</a><button class="vb" data-a="back" title="Back to the list (stops the video)">◀ LIST</button><button class="vb" data-a="stop" aria-label="Close player" title="Close player (Esc)">✕</button>`;
- else h+=`<span class="vs">· ${VREL?'curated order':'ranked by votes'}</span><a href="#contribute/visions" data-a="sub" title="Coming: submissions and votes via GitHub Discussions">Submit a vision ↗</a><button class="vb" data-a="col" aria-expanded="${!VIS.collapsed}" title="${VIS.collapsed?'Show':'Hide'} Visions">${VIS.collapsed?'▸':'▾'}</button>`;
+ else{const nL=visList(s).length;h+=`<span class="vs">· ${VREL?'curated order':'ranked by votes'}</span><a href="#contribute/visions" data-a="sub" title="Coming: submissions and votes via GitHub Discussions">Submit a vision ↗</a><button class="vb" data-a="col" aria-expanded="${!VIS.collapsed}" title="${VIS.collapsed?'Show':'Hide'} the ${nL} videos">${VIS.collapsed?'▸':'▾'}</button>`;h=h.replace('<span>VISIONS</span>',`<span class="vn" data-a="col" title="${VIS.collapsed?'Show':'Hide'} the ${nL} videos">VISIONS (${nL})</span>`);}
  h+=`</div><div class="vbody">`;
  // r8 U25: standard youtube.com embed (carries the viewer's own YouTube session; youtube-nocookie did not, so signed-in viewers still got
  // 'Sign in to confirm you're not a bot'). Still created only on click, no autoplay, no JS API; origin = this page (omitted under file://).
@@ -3332,19 +3449,16 @@ function visClick(e){const t=e.target.closest('[data-a]');if(!t||!VIS.site)retur
  if(a==='play'){VIS.collapsed=false;VIS.play={v};visRender();}}
 // anchor = {px,py,pw,ph (name plate rect), gx,gy (diorama ground point)}; set every frame by layoutLabels while a close-up is open
 function visFollow(px,py,pw,ph,gx,gy){VIS.anc={px,py,pw,ph,gx,gy};visPlace();}
-function visPlace(){const d=VIS.el;VIS.H=0;if(!d||d.style.display==='none')return;const W=innerWidth,A=VIS.anc;
+function visPlace(){const d=VIS.el;if(!d||d.style.display==='none'){VIS.H=0;return;}const W=innerWidth,A=VIS.anc;
  const w=VIS.w||d.offsetWidth,h=VIS.h||d.offsetHeight,tl=typeof tlTopY==='function'?tlTopY():innerHeight-200;
  const nv=document.getElementById('nav'),nb=((nv&&nv.getBoundingClientRect().bottom)||90)+8;
  let x,y;
- if(W<=900||!A){x=12;y=nb;}
- else{const cd=document.getElementById('card'),cr=cd&&cd.style.display==='block'?cd.getBoundingClientRect():null,xR=(cr&&cr.width?cr.left:W)-10;
-  x=A.px;y=A.py+A.ph+6; // hang directly under the name plate
-  const F=[A.gx-70,A.gy-46,A.gx+70,A.gy+26],hitF=(x,y)=>x<F[2]&&x+w>F[0]&&y<F[3]&&y+h>F[1]; // diorama focal centre (ground point of the site)
-  if(hitF(x,y))x=F[2]+12; // slide right, off the focal centre
-  if(x+w>xR)x=Math.max(8,xR-w);
-  if(hitF(x,y))y=F[1]-h-8; // still on it: lift the strip above the focal centre
-  if(y+h>tl-8)y=Math.max(nb,A.py-h-6); // never on the timeline: flip above the plate
-  y=Math.max(nb,Math.min(y,tl-8-h));x=Math.max(8,x);}
+ if(W<=900||!A&&!(VIS.site)){x=12;y=nb;VIS.H=0;}
+ else{const cd=document.getElementById('card'),cr=cd&&cd.style.display==='block'?cd.getBoundingClientRect():null,cw=(cd&&cd.offsetWidth)||400;
+  // r10 C: docked under the right card (never over the city); without a card, top-right where the card would be
+  x=W-24-cw;y=cr&&cr.height?cr.bottom+8:60;
+  if(y+h>tl-8)y=Math.max(60,tl-8-h);
+  const nh=h+10;if(Math.abs(nh-VIS.H)>1){VIS.H=nh;if(typeof fitCard==='function')fitCard();}}
  const k=(x|0)+','+(y|0);if(k!==VIS.pos){VIS.pos=k;d.style.transform=`translate(${x|0}px,${y|0}px)`;}
  d.classList.toggle('vh0',!!((window.CARD&&CARD.pend)||(typeof FLY!=='undefined'&&FLY.on&&FLY.k<.6))); // G1 r6 U: the Visions strip fades in with the card, after the camera fly passes ~60 %
  VIS.rect=[x|0,y|0,(x+w)|0,(y+h)|0];}
