@@ -90,7 +90,9 @@ FA.PROGATE={build(site,ctx){const PC=FA.PROCITY;if(!PC||typeof PC.build!=='funct
  // (fa4_build, ends at cR) now lands on the gate road this file lays outside the deck.
  const GKS=+(new URLSearchParams(location.search).get('g1gks')||.88),RAD=(site.radius||12)*GKS,scl=RAD/PR;near.scale.setScalar(scl);
  // r5 T: the apron's own worn-ground tone shows at the inner edge (host terrain blend weight .8 -> .35; read by g1_cities after build)
- try{if(typeof G1!=='undefined'&&G1.GW)G1.GW.gatekeeper=+(new URLSearchParams(location.search).get('g1gkw')||.35);}catch(e){}
+ // r9 Q3 (world vision r8: 'glowing white base ring' under Gatekeeper): at .35 the apron's own grey (.37 linear -> .64 after the host's
+ // display lift) dominated the inner rows = a pale band ~1.5 L x the terrain just outside the deck. .78: mostly terrain tone, a hint of worn ground
+ try{if(typeof G1!=='undefined'&&G1.GW)G1.GW.gatekeeper=+(new URLSearchParams(location.search).get('g1gkw')||.78);}catch(e){}
  const statics=[],glows=[],anims=[],TU={uT:{value:0},uAn:{value:site.rm?0:1}};
  Object.assign(FA,{G1:1,SC:near,R:ctx.renderer,GK:{x:0,z:0,top:0},LOOK:{ai:ctx.ai||'#8FD8E8',human:ctx.human||'#FFC27E',road:'#7A7468',pc:{}},
   addStatic:(...ms)=>{for(const m of ms)statics.push(m);},glow:(x,y,z,size,hex,k,an)=>{const h={x,y,z,size,c:new THREE.Color(hex).multiplyScalar(k==null?.6:k),material:{opacity:1},an:an||null};glows.push(h);return h;},

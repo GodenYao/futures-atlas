@@ -14,7 +14,7 @@ FA.PROCONQ={build(site,ctx){const Z=FA.G1Z,k=FA.G1KIT;if(!Z||!k)throw new Error(
  return Z.city(site,ctx,'conquerors',E=>{
  const{smooth,vn,hash}=k,R=E.R,r=E.r,d=E.d,M=E.M,H=E.H,cv=E.cv,jc=E.jc,mx=E.mix,TAU=Math.PI*2;
  const P=site.params||{},kA=P.keepA!=null?P.keepA:Math.PI/2,avoid=P.avoid||[],free=(x,z,m)=>!avoid.some(a=>Math.hypot(x-a[0],z-a[1])<a[2]+(m||0));
- E.smokeO={k:.2,rise:4.5};
+ E.smokeO={k:.26,rise:2.3,fog:{near:80,far:170}};   // r9 Q2: steam visible in close-ups, faded out at world zoom (world L was 73.5)
  const GA=kA,u=[Math.cos(GA),Math.sin(GA)],v=[-u[1],u[0]],ry=-GA,PIT=2.6;
  const ph=[0,1,2,3].map(i=>hash((site.seed||9)*.23+i,5.3)*TAU),rOut=a=>R*1.12*(1+.1*Math.sin(2*a+ph[0])+.07*Math.sin(3*a+ph[1])+.05*Math.sin(5*a+ph[2])+.03*Math.sin(9*a+ph[3]));
  const TX=u[0]*R*.8,TZ=u[1]*R*.8,TR=3.3,townD=(x,z)=>Math.hypot(x-TX,z-TZ);   // old town at the road end (spur direction kA)
@@ -38,9 +38,14 @@ FA.PROCONQ={build(site,ctx){const Z=FA.G1Z,k=FA.G1KIT;if(!Z||!k)throw new Error(
    const S0=E.L2W(c.x,c.z,ry,1.7,0),S1=E.L2W(c.x,c.z,ry,.2,.3);
    E.movers(M.ME,.32,.18,.26,cv('#5A606C'),3,(i,t,o)=>{const q=(t/16+i/3)%1,e=q<.5?q*2:2-q*2,x=S0[0]+(S1[0]-S0[0])*e,z=S0[1]+(S1[1]-S0[1])*e;o.position.set(x,H(x,z)+.12,z);o.rotation.y=ry;});
    E.glow(c.x,y+2.6,c.z,.55,IND,.4,[.4,3.5,1,0]);E.anchors.construction={x:c.x,y:y+1.4,z:c.z};continue;}
-  if(towers.indexOf(c)>=0){const h=3.6+.6*hash(c.i,c.j),w=1.25;E.add(M.ST,E.G.cyl(16,.5),c.x,y,c.z,w,h*.72,w,0,0,0,jc(cv('#66686E'),c.x,c.z,.04));
-   E.add(M.ST,E.G.cyl(16,1.3),c.x,y+h*.72,c.z,w*.5,h*.28,w*.5,0,0,0,jc(cv('#6A6C72'),c.x,c.z,.04));E.add(M.B,E.G.cyl(16,1),c.x,y+h-.02,c.z,w*.64,.05,w*.64,0,0,0,cv('#24262C'));
-   for(let q=0;q<7;q++)E.smoke(c.x,y+h+.1,c.z,15+hash(c.x,q)*3,q/7,'#9EA2AC',2.2);continue;}
+  if(towers.indexOf(c)>=0){const h=3.7+.5*hash(c.i,c.j),w=1.5,ty=E.lowY(c.x,c.z,w*2,w*2)-.15;   // hyperboloid shell: wide base, clear waist, flared lip, open dark throat, steam
+   E.add(M.ST,E.hyper(),c.x,ty+.3,c.z,w,h-.3,w,0,0,0,jc(cv('#5E6066'),c.x,c.z,.04));
+   E.add(M.B,E.G.cyl(18,1),c.x,ty,c.z,w*1.0,.32,w*1.0,0,0,0,cv('#24262C'));   // dark open base ring (leg colonnade)
+   if(E.near)for(let q=0;q<12;q++){const a=q/12*TAU;E.box(M.ST,c.x+Math.cos(a)*w*.97,ty,c.z+Math.sin(a)*w*.97,.1,.34,.1,-a,cv('#6A6C72'),1);}
+   E.add(M.B,E.G.cyl(18,1),c.x,ty+.3+(h-.3)*.6,c.z,w*.62,.1,w*.62,0,0,0,cv('#121418'));   // dark floor of the throat, seen from above
+   E.box(M.ST,c.x,ty+.3,c.z+w*.86,.06,h*.5,.06,0,cv('#5A5C62'),1);
+   for(let q=0;q<9;q++)E.smoke(c.x,ty+h+.15,c.z,13+hash(c.x,q)*3,q/9,'#8E929C',2.9);continue;}
+  if(towers.some(t=>Math.hypot(t.x-c.x,t.z-c.z)<2.7))continue;   // clear paved yard around each tower
   if(c.f>.6&&hash(c.i*.9,c.j*1.3)<.85){   // solar field: tilted panel rows (NEAR: legs)
    for(let q=-2;q<=2;q++){const p=E.L2W(c.x,c.z,ry,0,q*.5),py=H(p[0],p[1]);E.add(M.ME,E.G.box(),p[0],py+.14,p[1],PIT*.9,.04,.4,.55,ry,0,jc(cv('#26303E'),p[0],p[1],.05));
     if(E.near)for(const s of[-1,1]){const g=E.L2W(p[0],p[1],ry,s*PIT*.38,0);E.box(M.ME,g[0],py-.05,g[1],.04,.22,.04,ry,cv('#4A4E56'));}}solar++;continue;}
@@ -56,10 +61,17 @@ FA.PROCONQ={build(site,ctx){const Z=FA.G1Z,k=FA.G1KIT;if(!Z||!k)throw new Error(
   if(q>TR*(.85+.25*hash(i,j))||!free(x,z,.5)||(i===0))continue;   // i = 0: the old main street (the arriving road) stays open
   const toM=((x-TX)*-u[0]+(z-TZ)*-u[1])/TR,st=hash(i*1.3+2,j*.9)+.35*toM;   // the machine-facing side is further dismantled
   town.push({x,z,st,y:E.lowY(x,z,.9,.8)-.08,ro:tr+(r()<.3?Math.PI/2:0),w:.8+.2*r(),dd:.62+.15*r(),h:.48+.2*r()});}
- let hoistAt=null;for(const t of town){const wc=jc(cv('#5E5A54'),t.x,t.z,.08),rc=jc(cv('#3E3C40'),t.x,t.z,.08);
-  if(t.st<.35){E.box(M.ST,t.x,t.y,t.z,t.w,t.h+.08,t.dd,t.ro,wc);E.add(M.RF,E.prism(),t.x,t.y+t.h+.08,t.z,t.w*1.1,.38,t.dd*1.15,0,t.ro,0,rc);}
-  else if(t.st<.8){for(const[ax,len,o]of[[0,t.w,t.dd/2],[0,t.w,-t.dd/2],[1,t.dd,t.w/2],[1,t.dd,-t.w/2]]){const p=ax?E.L2W(t.x,t.z,t.ro,o,0):E.L2W(t.x,t.z,t.ro,0,o);E.box(M.ST,p[0],t.y,p[1],ax?.08:len,t.h*(.6+.4*hash(t.x+ax,o)),ax?len:.08,t.ro,wc);}if(!hoistAt&&t.st>.7)hoistAt=t;}   // roofless shell
-  else E.box(M.ST,t.x,t.y,t.z,t.w+.1,.1,t.dd+.1,t.ro,cv('#5C5A58'));}   // bare foundation slab
+ let hoistAt=null;const DEM=[];for(const t of town){const wc=jc(cv('#4E4A46'),t.x,t.z,.08),rc=jc(cv('#36343A'),t.x,t.z,.08),ec=jc(cv('#7A7066'),t.x,t.z,.06);   // ec = freshly exposed inner wall faces / broken edges (lighter)
+  if(t.st<.2){E.box(M.ST,t.x,t.y,t.z,t.w,t.h+.08,t.dd,t.ro,wc);E.add(M.RF,E.prism(),t.x,t.y+t.h+.08,t.z,t.w*1.1,.38,t.dd*1.15,0,t.ro,0,rc);}   // still intact, dark
+  else if(t.st<.45){E.box(M.ST,t.x,t.y,t.z,t.w,t.h+.08,t.dd,t.ro,wc);E.box(M.WD,t.x,t.y+t.h+.08+.3,t.z,t.w*1.08,.06,.07,t.ro,cv('#4E4238'));   // roof stripped to the rafters
+   for(let q=-2;q<=2;q++)for(const s of[-1,1]){const p=E.L2W(t.x,t.z,t.ro,q*t.w*.22,s*t.dd*.28);E.add(M.WD,E.G.box(),p[0],t.y+t.h+.08,p[1],.05,.05,t.dd*.62,s*.72,t.ro,0,cv('#4E4238'));}
+   DEM.push([t.x,t.z,.75]);}
+  else if(t.st<.9){for(const[ax,len,o]of[[0,t.w,t.dd/2],[0,t.w,-t.dd/2],[1,t.dd,t.w/2],[1,t.dd,-t.w/2]]){const hh=t.h*(.35+.6*hash(t.x+ax,o));if(hash(o*3.1,t.z+ax)<.25)continue;   // roofless shell, one wall often gone
+    for(const hf of[-.25,.25]){const p=ax?E.L2W(t.x,t.z,t.ro,o,hf*len):E.L2W(t.x,t.z,t.ro,hf*len,o),h2=hh*(hf<0?1:.55+.4*hash(t.x,hf+o));E.box(M.ST,p[0],t.y,p[1],ax?.09:len*.5,h2,ax?len*.5:.09,t.ro,hash(p[0],p[1])<.5?ec:wc);}}   // jagged: two wall halves of different height
+   E.box(M.ST,t.x,t.y,t.z,t.w-.1,.08,t.dd-.1,t.ro,cv('#3A3836'));
+   {const p=E.L2W(t.x,t.z,t.ro,t.w*.62,0);E.add(M.ST,E.G.ico(0),p[0],H(p[0],p[1])-.08,p[1],.4,.2,.34,0,t.ro,0,cv('#5E5650'));}   // rubble heap beside it
+   if(!hoistAt&&t.st>.6)hoistAt=t;DEM.push([t.x,t.z,.95]);}
+  else{E.box(M.ST,t.x,t.y,t.z,t.w+.1,.1,t.dd+.1,t.ro,cv('#625E58'));DEM.push([t.x,t.z,1.0]);}}   // bare foundation slab
  {const x=TX+tv[0]*2.2,z=TZ+tv[1]*2.2,y=E.lowY(x,z,.9,.9)-.05;E.box(M.ST,x,y,z,.8,1.3,.8,tr,cv('#5A5650'));E.add(M.RF,E.G.cone(4),x,y+1.3,z,.62,.8,.62,0,tr+Math.PI/4,0,cv('#3C3A3E'));}   // old hall with a tower (dark)
  // sorted material stacks at the machine side of the town
  {const b=[TX-u[0]*(TR+.6),TZ-u[1]*(TR+.6)];for(let q=0;q<3;q++){const p=E.L2W(b[0],b[1],ry,0,(q-1)*1.0),py=H(p[0],p[1])-.04;
@@ -72,10 +84,10 @@ FA.PROCONQ={build(site,ctx){const Z=FA.G1Z,k=FA.G1KIT;if(!Z||!k)throw new Error(
  // haul robots: town -> the construction site, out and back along the road axis
  {const A0=[TX-u[0]*(TR+.4),TZ-u[1]*(TR+.4)],A1=cons?[cons.x,cons.z]:[0,0];E.movers(M.ME,.42,.24,.3,cv('#5A606C'),4,(i,t,o)=>{const q=(t/60+i/4)%1,e=q<.5?q*2:2-q*2,x=A0[0]+(A1[0]-A0[0])*e+v[0]*.35*(i%2?1:-1),z=A0[1]+(A1[1]-A0[1])*e+v[1]*.35*(i%2?1:-1);o.position.set(x,H(x,z)+.14,z);o.rotation.y=ry;});}
  // ---- ground: clean slate paving + service lane grid in the core, gravel outward, solar ground, the town's grass + old streets ----
- const PAV=cv('#3A3C44'),LANE=cv('#2E3038'),GRV=cv('#44464C'),SOL=cv('#383C40'),GR=cv('#4A4E3C'),OST=cv('#54504A'),FND=cv('#4E4C4A'),fr=(x,p)=>Math.abs(((x/p)%1+1)%1-.5)*p;
+ const PAV=cv('#3A3C44'),LANE=cv('#2E3038'),GRV=cv('#44464C'),SOL=cv('#383C40'),GR=cv('#4A4E3C'),OST=cv('#54504A'),FND=cv('#4E4C4A'),DRT=cv('#5A5044'),fr=(x,p)=>Math.abs(((x/p)%1+1)%1-.5)*p;
  E.ground(E.near?84:58,R*1.75,(x,z,c)=>{const rr=Math.hypot(x,z),a=Math.atan2(z,x),ro=rOut(a),n1=vn(x*.5+5,z*.5-3),n2=vn(x*1.2,z*1.2),au=x*u[0]+z*u[1],av=x*v[0]+z*v[1],td=townD(x,z);
   let col=rr/ro>.6?mx(GRV,SOL,.5):PAV;if(Math.min(fr(au,PIT),fr(av,PIT))<.24)col=mx(col,LANE,.8);
-  const tw=1-smooth(TR*.7,TR+1.4,td*(1+.15*(n1-.5)));if(tw>0){let tc=mx(GR,FND,.3*n2);const tu2=(x-TX)*tu[0]+(z-TZ)*tu[1],tv2=(x-TX)*tv[0]+(z-TZ)*tv[1];if(Math.abs(tv2)<.35||fr(tu2,2.5)<.2)tc=OST;col=mx(col,tc,tw);}
+  const tw=1-smooth(TR*.7,TR+1.4,td*(1+.15*(n1-.5)));if(tw>0){let tc=mx(GR,FND,.3*n2);const tu2=(x-TX)*tu[0]+(z-TZ)*tu[1],tv2=(x-TX)*tv[0]+(z-TZ)*tv[1];if(Math.abs(tv2)<.35||fr(tu2,2.5)<.2)tc=OST;for(const q of DEM){const dq=Math.hypot(x-q[0],z-q[1]);if(dq<q[2]){tc=mx(tc,DRT,.8*(1-smooth(.5,1,dq/q[2])));break;}}col=mx(col,tc,tw);}
   const rd=((x-TX)*u[0]+(z-TZ)*u[1]);if(rd>0&&Math.abs(x*v[0]+z*v[1])<.4)col=OST;   // the old road from the town to the edge
   const f=.9+.18*n1;c[0]=col[0]*f;c[1]=col[1]*f;c[2]=col[2]*f;const q=Math.min(rr/ro,td/(TR+1.6)+.25)*(1+.1*(n1-.5));c[3]=1-smooth(.8,1.03,Math.min(rr/ro*(1+.1*(n1-.5)),q+.2));});
  E.anchors.town={x:TX,y:H(TX,TZ),z:TZ};E.info.halls=halls;E.info.solar=solar;E.info.towers=towers.length;E.info.town=town.length;});}};

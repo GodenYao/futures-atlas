@@ -20,11 +20,18 @@ let PRISM=null;
 function prismGeo(){if(PRISM)return PRISM;const A=[-.5,0,-.5],B=[-.5,0,.5],C=[-.5,1,0],D=[.5,0,-.5],E=[.5,0,.5],F=[.5,1,0],p=[];   // gable roof, ridge along x, base y 0
  for(const t of[[A,B,C],[D,F,E],[A,C,F],[A,F,D],[B,E,F],[B,F,C]])for(const v of t)p.push(v[0],v[1],v[2]);
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.computeVertexNormals();PRISM=g;return g;}
+// r9 Q2: hyperboloid cooling-tower shell (unit: base radius 1, height 1, waist .64 at .68, flared lip .76), non-indexed, outward faces
+let HYP=null;
+function hyperGeo(){if(HYP)return HYP;const pr=[[1,0],[.93,.12],[.82,.3],[.71,.5],[.645,.66],[.645,.76],[.69,.88],[.76,.99],[.81,1.0],[.81,1.035],[.74,1.035],[.69,.93],[.65,.8],[.63,.68]].map(p=>new THREE.Vector2(p[0],p[1]));   // outer shell, flared lip, inner throat wall (open top)
+ const g=new THREE.LatheGeometry(pr,22).toNonIndexed(),p=g.attributes.position.array,V=THREE.Vector3;
+ const a=new V(p[0],p[1],p[2]),b=new V(p[3],p[4],p[5]),c=new V(p[6],p[7],p[8]),n=new V().subVectors(b,a).cross(new V().subVectors(c,a)),m=new V().add(a).add(b).add(c);m.y=0;
+ if(n.dot(m)<0)for(let i=0;i<p.length;i+=9)for(let q=0;q<3;q++){const t=p[i+3+q];p[i+3+q]=p[i+6+q];p[i+6+q]=t;}
+ g.attributes.position.needsUpdate=true;g.computeVertexNormals();HYP=g;return g;}
 function segD(px,pz,ax,az,bx,bz){const dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz;let t=l>0?((px-ax)*dx+(pz-az)*dz)/l:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-ax-dx*t,pz-az-dz*t);}
 // local (lx,lz) of a box rotated by rotation.y = ry, placed at (x,z) -> world
 const L2W=(x,z,ry,lx,lz)=>[x+lx*Math.cos(ry)+lz*Math.sin(ry),z-lx*Math.sin(ry)+lz*Math.cos(ry)];
 function emitter(site,ctx,near,grp,TU,name){const k=K(),y0=site.y,hA=ctx.heightAt||(()=>y0),m=ctx.mats||{},PT=k.Parts(),sd=(site.seed|0)||1;
- const E={near,grp,name,R:site.radius||11,r:k.rng(sd),d:k.rng(sd+7919),PT,G:PT.G,glows:[],smokes:[],anims:[],info:{},anchors:{},glowK:.85,smokeO:null,prism:prismGeo,segD,L2W};
+ const E={near,grp,name,R:site.radius||11,r:k.rng(sd),d:k.rng(sd+7919),PT,G:PT.G,glows:[],smokes:[],anims:[],info:{},anchors:{},glowK:.85,smokeO:null,prism:prismGeo,hyper:hyperGeo,segD,L2W};
  E.H=(x,z)=>hA(site.x+x,site.z+z)-y0;
  E.lowY=(x,z,w,d)=>{let lo=1e9;for(const e of[[-.5,-.5],[.5,-.5],[-.5,.5],[.5,.5],[0,0]])lo=Math.min(lo,E.H(x+e[0]*w,z+e[1]*d));return lo;};
  E.M={B:m.building,ST:m.stone||m.building,ME:m.metal||m.building,FO:m.foliage||m.building,RF:m.roof||m.building,WD:m.wood||m.building,LT:m.light||m.building};
@@ -50,10 +57,11 @@ function emitter(site,ctx,near,grp,TU,name){const k=K(),y0=site.y,hA=ctx.heightA
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,4));g.setIndex(idx);g.computeVertexNormals();
   const ms=new THREE.Mesh(g,m.ground||new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95}));ms.name=name+'_ground';ms.renderOrder=1;grp.add(ms);return ms;};
  E.finish=()=>{E.info.parts=PT.flush(grp,name+'_parts');E.gp=E.glows.length?k.glowPoints(E.glows,grp,TU,ctx,1,E.glowK):null;
-  E.sp=E.smokes.length?k.smokePoints(E.smokes,grp,TU,ctx,1,E.smokeO||{k:.2,rise:3}):null;E.info.glows=E.glows.length;E.info.smokes=E.smokes.length;};
+  const so=E.smokeO||{k:.2,rise:3},sctx=so.fog?Object.assign({},ctx,{fog:so.fog}):ctx;   // r9 Q2: optional own fog range (steam fades out at world zoom)
+  E.sp=E.smokes.length?k.smokePoints(E.smokes,grp,TU,sctx,1,so):null;E.info.glows=E.glows.length;E.info.smokes=E.smokes.length;};
  E.anim=t=>{for(const f of E.anims)f(t);if(E.gp)E.gp.sync();if(E.sp)E.sp.sync();};
  return E;}
-const Z=FA.G1Z={segD,L2W,prismGeo,
+const Z=FA.G1Z={segD,L2W,prismGeo,hyperGeo,
  // run emit(E) once per tier with the same seed: MID now, NEAR now or lazily (site.lazyNear -> out.buildNear() on demand, idempotent)
  city(site,ctx,name,emit){const t0=performance.now(),TU={uT:{value:0},uAn:{value:site.rm?0:1}};
   const mk=nr=>{const g=new THREE.Group();g.name=name+(nr?'_near':'_mid');const E=emitter(site,ctx,nr,g,TU,name+(nr?'_n':'_m'));emit(E);E.finish();return E;};
@@ -88,8 +96,8 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
    for(let j=0;j<n;j++){const t=(j+.5)/n;if(gate&&Math.abs(t-.5)*L<.7)continue;const px=x0+(x1-x0)*t,pz=z0+(z1-z0)*t;if(!free(px,pz,.3))continue;
     const ha=H(x0+(x1-x0)*j/n,z0+(z1-z0)*j/n),hb=H(x0+(x1-x0)*(j+1)/n,z0+(z1-z0)*(j+1)/n),y=Math.min(ha,hb)-.2,dy=Math.abs(ha-hb);   // footing follows the slope (no floating ends)
     E.box(M.ST,px,y,pz,L/n*1.03,T.h+.2+dy,T.w,ry,jc(cv(T.c),px,pz,.06));
-    if(!T.hedge){E.box(M.LT,px,y+T.h+.2+dy,pz,L/n*1.03,.05,T.w*.6,ry,[.2,.3,.36]);if(j%2===0)E.box(M.ST,px+nx*.2,y,pz+nz*.2,.18,T.h*.8,.2,ry,cv('#30343C'),1);}   // dim cool seam on top; buttresses (NEAR)
-    else E.box(M.FO,px+nx*.32*(q===2?-1:1),y,pz+nz*.32*(q===2?-1:1),L/n*1.02,.62,.32,ry,jc(cv('#3E4C30'),px,pz,.12));}   // hedge on the human side
+    if(!T.hedge){E.box(M.ST,px,y+T.h+.2+dy,pz,L/n*1.03,.08,T.w+.08,ry,cv('#6E6C6A'));E.box(M.LT,px,y+T.h+.28+dy,pz,L/n*1.03,.03,T.w*.4,ry,[.2,.3,.36],1);if(j%2===0)E.box(M.ST,px+nx*.2,y,pz+nz*.2,.18,T.h*.8,.2,ry,cv('#30343C'),1);}   // pale coping (reads as a line), cool seam + buttresses (NEAR)
+    else{E.box(M.ST,px,y+T.h+.2+dy,pz,L/n*1.03,.06,T.w+.06,ry,cv('#847A6C'));E.box(M.FO,px+nx*.32*(q===2?-1:1),y,pz+nz*.32*(q===2?-1:1),L/n*1.02,.62,.32,ry,jc(cv('#3E4C30'),px,pz,.12));}}   // stone coping + hedge on the human side
    if(gate){const gx=(x0+x1)/2,gz=(z0+z1)/2,gy=H(gx,gz)-.1,ux=Math.cos(ang),uz=Math.sin(ang),hh=T.h+1.0,pc=cv(T.hedge?'#7A7062':'#3C424C');gates.push({x:gx,z:gz,ang,q});
     for(const s of[-1,1])E.box(M.ST,gx+ux*.78*s,gy,gz+uz*.78*s,.42,hh,.42,ry,pc);E.box(M.ST,gx,gy+hh-.05,gz,2.0,.24,.36,ry,pc);
     for(const s of[-1,1])E.glow(gx+ux*.78*s,gy+hh+.15,gz+uz*.78*s,.6,T.hedge?'#D89A5A':'#7894A8',.5,[.2,6,s,0]);
@@ -104,31 +112,37 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
   for(let i=-n;i<=n;i++)for(let j=-n;j<=n;j++){const a=i*pitch,b=j*pitch,x=a*u[0]+b*v[0],z=a*u[1]+b*v[1],rr=Math.hypot(x,z);if(rr<3||zoneOf(x,z)!==zn)continue;
    const ro=rOut(Math.atan2(z,x),zn);if(rr>ro*.95)continue;if(r()>(acc?acc(rr/ro):1))continue;
    if(borderD(x,z)<pitch*.45+.3||avD(x,z)<pitch*.5+.55||!free(x,z,pitch*.55))continue;out.push({x,z,f:rr/ro,ry:-ga});}return out;};
- // machine zone: dense dark megastructure, no windows; dim cool seams; stepped mega tower; skybridges; roof fins
- const aM=BA[0]+1.22,LM=lots('M',2.35,aM,f=>1-.3*smooth(.75,1,f)),tall=[];
+ // machine zone (r9 Q2): windowless dark monolith megablocks on one continuous plinth - big flat-topped cubes and tall thin slabs,
+ // separated only by narrow dark slots; dim cool vertical seams (MID: one per face, NEAR: three) + a cool roof seam; stepped core tower
+ const aM=BA[0]+1.22,LM=lots('M',3.5,aM,f=>1-.25*smooth(.8,1,f)),tall=[];
  let core=null,bd=1e9;for(const L of LM){const q=Math.hypot(L.x-Math.cos(aM)*R*.46,L.z-Math.sin(aM)*R*.46);if(q<bd){bd=q;core=L;}}
- const SEAM=[.17,.27,.33];
- for(const L of LM){const y=E.lowY(L.x,L.z,2.1,2.1)-.18;
-  if(L===core){let yy=y;for(const s of[[3.6,4.4],[2.7,4.2],[1.9,3.6],[1.1,1.8]]){E.box(M.B,L.x,yy,L.z,s[0],s[1]+.05,s[0]*.88,L.ry,jc(cv('#2E323C'),L.x,yy,.05));E.bands(L.x,yy,L.z,s[0],s[0]*.88,L.ry,s[1],1.1,SEAM,2.2);yy+=s[1];}
-   E.box(M.ME,L.x,yy,L.z,.14,2.4,.14,0,cv('#566070'));E.glow(L.x,yy+2.45,L.z,.9,'#6C88A0',.5,[.3,5,0,0]);tall.push({x:L.x,z:L.z,h:yy-y,y});E.anchors.machine={x:L.x,y:yy,z:L.z};continue;}
-  const h=(2.6+6.6*(1-smooth(.15,1,L.f)))*(.65+.7*r()),w=2.35*(.74+.14*r()),dd=2.35*(.74+.14*r());
-  E.box(M.B,L.x,y,L.z,2.42,1.25,2.42,L.ry,jc(cv('#262A32'),L.x,L.z,.05));   // continuous podium: the lots merge into one megastructure mass
-  E.box(M.B,L.x,y,L.z,w,h+.18,dd,L.ry,jc(cv(r()<.5?'#22262E':'#2A2E38'),L.x,L.z,.08));
-  for(const[fx,fz,sx,sz]of[[0,1,1,0],[0,-1,1,0],[1,0,0,1],[-1,0,0,1]])for(const o of(E.near?[-.3,0,.3]:[0])){const p=E.L2W(L.x,L.z,L.ry,fx*(w/2+.02)+sx*o*w,fz*(dd/2+.02)+sz*o*dd);E.box(M.LT,p[0],y+1.3,p[1],.05,h-1.2,.05,L.ry,SEAM);}   // vertical cool seams (no windows)
-  if(h>4.6&&r()<.6)E.box(M.B,L.x,y+h+.15,L.z,w*.6,h*.32,dd*.6,L.ry,jc(cv('#383C47'),L.x,L.z,.06));
-  for(let f=0;f<4;f++){const p=E.L2W(L.x,L.z,L.ry,0,(f-1.5)*dd*.2);E.box(M.ME,p[0],y+h+.18,p[1],w*.7,.28,.05,L.ry,cv('#4A505C'),1);}   // roof heat fins (NEAR)
-  tall.push({x:L.x,z:L.z,h,y});}
- let nb=0;for(let i=0;i<tall.length&&nb<12;i++)for(let j=i+1;j<tall.length&&nb<12;j++){const a=tall[i],b=tall[j],dd=Math.hypot(a.x-b.x,a.z-b.z);if(dd>3.6||a.h<4||b.h<4)continue;
-  const yy=Math.min(a.y+a.h,b.y+b.h)*.62+Math.max(a.y,b.y)*.38,ang=Math.atan2(b.z-a.z,b.x-a.x);E.box(M.ME,(a.x+b.x)/2,yy,(a.z+b.z)/2,dd,.3,.34,-ang,cv('#454B57'));E.box(M.LT,(a.x+b.x)/2,yy-.03,(a.z+b.z)/2,dd,.04,.12,-ang,SEAM,1);nb++;}
- // mixed zone: glass towers (warm + cool window floors, balcony rings), exoframe towers, planted mid blocks
- const LX=lots('X',1.9,kA,f=>1-.45*smooth(.55,1,f)),dr=[];
- for(const L of LX){const y=E.lowY(L.x,L.z,1.6,1.6)-.12,t=r(),f=1-smooth(.2,1,L.f);
-  if(t<.45){const h=(3+4.6*f)*(.7+.5*r()),w=1.2+.3*r();E.box(M.B,L.x,y,L.z,w,h,w,L.ry,jc(cv('#3C4A5E'),L.x,L.z,.1));
-   let k2=0;for(let yy=y+.5;yy<y+h-.2;yy+=.55,k2++){if(!E.near&&k2%2)continue;E.box(M.LT,L.x,yy,L.z,w+.03,.06,w+.03,L.ry,k2%3===0?[.3,.4,.48]:[.56,.43,.27]);}
-   for(let yy=y+1.1;yy<y+h-.4;yy+=1.1)E.box(M.ST,L.x,yy,L.z,w+.24,.05,w+.24,L.ry,cv('#5A5E66'),1);dr.push({x:L.x,z:L.z,y:y+h});}
-  else if(t<.75){const h=(2.6+4*f)*(.7+.5*r()),w=1.3;E.box(M.B,L.x,y,L.z,w,h,w,L.ry,jc(cv('#434854'),L.x,L.z,.08));E.bands(L.x,y,L.z,w,w,L.ry,h,.8,[.5,.4,.28],1.6);
-   for(const s of[[-1,-1],[1,-1],[-1,1],[1,1]]){const p=E.L2W(L.x,L.z,L.ry,s[0]*(w/2+.06),s[1]*(w/2+.06));E.box(M.ME,p[0],y,p[1],.14,h+.35,.14,L.ry,cv('#68707C'));}
-   if(E.near)for(const s of[-1,1])for(let yy=y+.2;yy<y+h-1;yy+=1.3){const p=E.L2W(L.x,L.z,L.ry,0,s*(w/2+.07));E.add(M.ME,E.G.box(),p[0],yy,p[1],.07,1.5,.07,0,L.ry,s*.62,cv('#5E6672'),1);}   // diagonal braces
+ const SEAM=[.17,.28,.36];
+ for(const L of LM){const y=E.lowY(L.x,L.z,3.2,3.2)-.18;
+  E.box(M.B,L.x,y,L.z,3.56,.9,3.56,L.ry,jc(cv('#14161B'),L.x,L.z,.04));   // continuous plinth
+  if(L===core){let yy=y;for(const s of[[3.3,4.2],[2.5,3.8],[1.7,3.0]]){E.box(M.B,L.x,yy,L.z,s[0],s[1]+.05,s[0]*.9,L.ry,jc(cv('#121418'),L.x,yy,.04));yy+=s[1];}
+   E.box(M.LT,L.x,yy,L.z,1.75,.04,1.58,L.ry,SEAM);
+   E.box(M.ME,L.x,yy,L.z,.14,2.4,.14,0,cv('#3E4652'));E.glow(L.x,yy+2.45,L.z,.8,'#6C88A0',.45,[.3,5,0,0]);tall.push({x:L.x,z:L.z,h:yy-y,y});E.anchors.machine={x:L.x,y:yy,z:L.z};continue;}
+  const slab=r()<.35,h=(slab?4.4:2.6)+(slab?2.6:2.6)*(1-smooth(.2,1,L.f))*(.6+.6*r()),w=slab?3.3:3.3*(.9+.08*r()),dd=slab?1.4:3.3*(.9+.08*r());
+  const parts=slab?[[0,-.8],[0,.8]]:[[0,0]];
+  for(const[ox,oz]of parts){const p=E.L2W(L.x,L.z,L.ry,ox,oz),hh=h*(oz>0?.78:1);
+   E.box(M.B,p[0],y,p[1],w,hh+.9,dd,L.ry,jc(cv(r()<.5?'#111317':'#15171C'),p[0],p[1],.04));
+   E.box(M.LT,p[0],y+hh+.9,p[1],w*.92,.04,dd*.92,L.ry,SEAM);   // roof seam (cool line around the flat top)
+   for(const[fx,fz,sx,sz]of[[0,1,1,0],[0,-1,1,0],[1,0,0,1],[-1,0,0,1]])for(const o of(E.near?[-.33,0,.33]:[0])){const q=E.L2W(p[0],p[1],L.ry,fx*(w/2+.02)+sx*o*w,fz*(dd/2+.02)+sz*o*dd);E.box(M.LT,q[0],y+1.0,q[1],.05,hh-.3,.05,L.ry,SEAM);}   // vertical cool seams, no windows
+   tall.push({x:p[0],z:p[1],h:hh+.9,y});}}
+ let nb=0;for(let i=0;i<tall.length&&nb<8;i++)for(let j=i+1;j<tall.length&&nb<8;j++){const a=tall[i],b=tall[j],dd=Math.hypot(a.x-b.x,a.z-b.z);if(dd<2.5||dd>4.2||a.h<5||b.h<5)continue;
+  const yy=Math.min(a.y+a.h,b.y+b.h)*.7+Math.max(a.y,b.y)*.3,ang=Math.atan2(b.z-a.z,b.x-a.x);E.box(M.ME,(a.x+b.x)/2,yy,(a.z+b.z)/2,dd,.34,.4,-ang,cv('#1C1F25'));nb++;}
+ // mixed zone (r9 Q2): slim dark-glass towers with warm + cool window floors and crowns, cyborg-style exoframe towers (solid core +
+ // structural X-braced metal cage in both tiers), a few planted podium blocks; low near the market so the centre stays open
+ const LX=lots('X',2.15,kA,f=>1-.4*smooth(.55,1,f)),dr=[];
+ for(const L of LX){const y=E.lowY(L.x,L.z,1.6,1.6)-.12,t=r(),f=.25+.75*smooth(.3,.55,L.f)*(1-.5*smooth(.8,1,L.f));
+  if(t<.5){const h=(3.2+4.6*f)*(.75+.45*r()),w=1.0+.2*r();E.box(M.B,L.x,y,L.z,w,h,w,L.ry,jc(cv('#2C3846'),L.x,L.z,.1));
+   let k2=0;for(let yy=y+.45;yy<y+h-.2;yy+=.42,k2++){if(!E.near&&k2%2)continue;E.box(M.LT,L.x,yy,L.z,w+.03,.08,w+.03,L.ry,k2%3===1?[.3,.42,.5]:[.58,.44,.27]);}
+   E.box(M.ME,L.x,y+h,L.z,w*.6,.5,w*.6,L.ry,cv('#5E6672'));E.box(M.ME,L.x,y+h+.5,L.z,.06,.9,.06,0,cv('#6A7280'));   // crown + antenna
+   for(let yy=y+1.1;yy<y+h-.4;yy+=1.1)E.box(M.ST,L.x,yy,L.z,w+.22,.05,w+.22,L.ry,cv('#5A5E66'),1);dr.push({x:L.x,z:L.z,y:y+h});}
+  else if(t<.8){const h=(2.8+3.8*f)*(.75+.45*r()),w=1.15;E.box(M.B,L.x,y,L.z,w,h,w,L.ry,jc(cv('#4A4E58'),L.x,L.z,.08));E.bands(L.x,y,L.z,w,w,L.ry,h,.6,[.52,.42,.3],1.2);
+   const o2=w/2+.14;for(const s of[[-1,-1],[1,-1],[-1,1],[1,1]]){const p=E.L2W(L.x,L.z,L.ry,s[0]*o2,s[1]*o2);E.box(M.ME,p[0],y,p[1],.17,h+.5,.17,L.ry,cv('#7A808A'));}   // exoframe columns
+   for(let yy=y+.9;yy<y+h;yy+=2.0)E.box(M.ME,L.x,yy,L.z,w+.34,.1,w+.34,L.ry,cv('#6E747E'));   // ring beams
+   for(const s of[-1,1])for(const ax of[0,1])for(let yy=y+.2;yy<y+h-1.4;yy+=2.0)for(const sg of[-1,1]){const p=ax?E.L2W(L.x,L.z,L.ry,s*o2,sg*.6):E.L2W(L.x,L.z,L.ry,sg*.6,s*o2);E.add(M.ME,E.G.box(),p[0],yy,p[1],.08,1.85,.08,ax?-sg*.58:0,L.ry,ax?0:sg*.58,cv('#6A707C'));}   // X braces on every face
    dr.push({x:L.x,z:L.z,y:y+h});}
   else{const h=1.4+.8*r(),w=1.5;E.box(M.ST,L.x,y,L.z,w,h,w*.9,L.ry,jc(cv('#5A5650'),L.x,L.z,.08));E.bands(L.x,y,L.z,w,w*.9,L.ry,h,.6,[.55,.42,.27],1.2);
    E.box(M.FO,L.x,y+h,L.z,w*.9,.12,w*.8,L.ry,cv('#46553A'));for(const s of[-1,1]){const p=E.L2W(L.x,L.z,L.ry,s*.35,0);E.add(M.FO,E.G.ico(1),p[0],y+h+.35,p[1],.3,.3,.3,0,0,0,cv('#405236'));}}}
@@ -142,7 +156,8 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
   if(r()<.55){const p=E.L2W(L.x,L.z,L.ry,(r()-.5)*.9,.5),ty=H(p[0],p[1]);E.box(M.WD,p[0],ty,p[1],.07,.4,.07,0,cv('#3A2E26'));E.add(M.FO,E.G.ico(1),p[0],ty+.62,p[1],.34,.36,.34,0,0,0,jc(cv('#3E5232'),p[0],p[1],.15));}
   if(hash(L.x*1.3,L.z*.7)<.35)E.glow(L.x,y+h*.6,L.z,.5,'#D9A066',.42,null);}
  // central market: market hall + stalls ring (avenue kept open); lamps
- {const y=E.lowY(0,0,3,1.4)-.1,ry=-(kA+Math.PI/2);E.box(M.ST,0,y,0,3.0,1.05,1.4,ry,cv('#6A6258'));E.add(M.RF,E.prism(),0,y+1.05,0,3.2,.65,1.6,0,ry,0,cv('#4E4A4C'));
+ {const y=E.lowY(0,0,3,1.4)-.1,ry=-(kA+Math.PI/2);E.box(M.ST,0,y,0,3.2,1.15,1.5,ry,cv('#6E665A'));E.add(M.RF,E.prism(),0,y+1.15,0,3.5,.75,1.75,0,ry,0,cv('#5A4A40'));
+  for(let q=-3;q<=3;q++){const p=E.L2W(0,0,ry,q*.48,.78);E.box(M.ST,p[0],y,p[1],.1,1.15,.1,ry,cv('#8A8072'));const p2=E.L2W(0,0,ry,q*.48,-.78);E.box(M.ST,p2[0],y,p2[1],.1,1.15,.1,ry,cv('#8A8072'));}   // arcade piers
   for(let i=0;i<12;i++){const a=i/12*TAU+.2,x=Math.cos(a)*2.0,z=Math.sin(a)*2.0;if(avD(x,z)<.8)continue;st.push([x,z,-a]);}
   for(const[x,z,ry2]of st){const yy=H(x,z)-.05,ac=cv(['#6A5A48','#4E5A68','#646048','#5A4E58'][(hash(x,z)*4)|0]);E.box(M.WD,x,yy,z,.56,.4,.44,ry2,cv('#4A3E34'));E.add(M.RF,E.G.box(),x,yy+.52,z,.68,.05,.6,.28,ry2,0,ac);
    if(E.near){const p=E.L2W(x,z,ry2,.3,.2);E.box(M.WD,p[0],yy,p[1],.16,.14,.16,ry2,cv('#5A4A3A'));}}
@@ -155,11 +170,11 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
  const CC={C:cv('#5C564E'),M:cv('#2B2E36'),X:cv('#47484E'),H:cv('#4A5838')},LINE=cv('#3C4250'),LANE=cv('#5C5448'),FLD=[cv('#56603C'),cv('#5E5A3C'),cv('#465634')],WALL=cv('#24262C'),AV=cv('#55524C');
  const um=[Math.cos(aM),Math.sin(aM)],uh=[Math.cos(aH),Math.sin(aH)],fr=(v,p)=>Math.abs(((v/p)%1+1)%1-.5)*p;
  E.ground(E.near?84:58,R*1.6,(x,z,c)=>{const rr=Math.hypot(x,z),a=Math.atan2(z,x),zn=zoneOf(x,z),ro=rOut(a,zn),n1=vn(x*.5+3,z*.5-1),n2=vn(x*1.4,z*1.4);let col=CC[zn];
-  if(zn==='M'){const sd=Math.min(fr(x*um[0]+z*um[1],2.35),fr(-x*um[1]+z*um[0],2.35));if(sd<.2)col=mx(col,LINE,.8);}
-  if(zn==='H'){if(rr>ro*.68)col=FLD[(((Math.floor((x*uh[0]+z*uh[1])/1.25)%3)+3)%3)];const sd=Math.min(fr(x*uh[0]+z*uh[1]+.8,1.6),fr(-x*uh[1]+z*uh[0]+.8,1.6));if(sd<.12&&rr<ro*.75)col=mx(col,LANE,.7);}
+  if(zn==='M'){const sd=Math.min(fr(x*um[0]+z*um[1],3.5),fr(-x*um[1]+z*um[0],3.5));if(sd<.14)col=mx(col,LINE,.8);}
+  if(zn==='H'){if(rr>ro*.68)col=FLD[(((Math.floor((x*uh[0]+z*uh[1])/1.25)%3)+3)%3)];const sd=Math.min(fr(x*uh[0]+z*uh[1],1.6),fr(-x*uh[1]+z*uh[0],1.6));if(sd<.12&&rr<ro*.75)col=mx(col,LANE,.7);}
   if(zn==='X'&&n2>.72)col=mx(col,cv('#46553A'),.6);
-  if(avD(x,z)<.65&&rr<ro)col=AV;if(rr<2.5)col=mx(col,cv('#4E4842'),.4*smooth(.3,.7,n2));
-  const bdd=borderD(x,z);if(bdd<.42)col=mx(col,WALL,.65*(1-bdd/.42));
+  if(avD(x,z)<.65&&rr<ro)col=AV;if(rr<2.75){col=mx(cv('#6A6258'),cv('#5A544C'),.5*smooth(.3,.7,n2));if(Math.abs(rr-2.45)<.08||Math.abs(rr-1.6)<.06)col=cv('#4A4640');}   // r9 Q2: pale paved market square with ring kerbs
+  const bdd=borderD(x,z);if(bdd<.42)col=mx(col,WALL,.65*(1-bdd/.42));else if(bdd<.85)col=mx(col,cv('#646058'),.75);   // pale lane along every wall
   const f=.9+.18*n1;c[0]=col[0]*f;c[1]=col[1]*f;c[2]=col[2]*f;const q=rr/ro*(1+.1*(n1-.5));c[3]=1-(zn==='H'?smooth(.66,1.06,q):smooth(.84,1.03,q));});
  E.info.lots={M:LM.length,X:LX.length,H:LH.length,gates:gates.length,stalls:st.length,bridges:nb};});}};
 })();

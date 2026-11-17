@@ -160,7 +160,7 @@ function win(id,f,s,y,w,h,dark){const lit=!dark&&FA.hash(id*.731+3.1,id*1.37+7.7
 function chimney(x,z,top){box('stone',.24,top+.3,.2,x,(top-.3)/2,z,STO);box('stone',.3,.05,.26,x,top+.025,z,tn(STO,.8));box('stone',.15,.07,.12,x,top+.085,z,tn(STO,.55));}
 
 // ======================= (5) cottages + yard extras =======================
-const OBST=[];let CURH=null;
+const OBST=[],PADS=[];let CURH=null;
 // C4 grounding: small front yards (45 % of cottages) - wattle-grey oak paling posts + two rails on three sides, gap at the door
 function yard(h,i,ds){if(FA.hash(i*3.31,1.93)>.45)return;const z0=DW/2+.34,z1=DW/2+.92,x0=-DL/2-.04,x1=DL/2+.04,c=Math.cos(h.ry),s=Math.sin(h.ry),zc=(z0+z1)/2;
  const cx=h.x+zc*s,cz=h.z+zc*c;if(cx>FA.riverX(cz)-3.0)return;for(const o of OBST)if(o!==h&&Math.hypot(cx-o.x,cz-o.z)<(o.r||1.3)+.55)return;
@@ -171,10 +171,12 @@ function yard(h,i,ds){if(FA.hash(i*3.31,1.93)>.45)return;const z0=DW/2+.34,z1=DW
 function cottage(h,i){CURH=h;
  // r8 F (vision r7 'cottages tilted / hovering on the slope'): seat on the low side of the footprint on a level terraced pad (rubble-stone
  // retaining edge on the downhill side, the uphill ground meets the pad = cut into the slope) instead of on the centre height
- {let lo=1e9,hi=-1e9;const c0=Math.cos(h.ry),s0=Math.sin(h.ry);for(const a of[-1,0,1])for(const b of[-1,0,1]){const y=FA.H(h.x+a*(h.L/2+.35)*c0+b*(h.W/2+.35)*s0,h.z-a*(h.L/2+.35)*s0+b*(h.W/2+.35)*c0);lo=Math.min(lo,y);hi=Math.max(hi,y);}
-  h.g=lo+Math.min(.18,.25*(hi-lo));h.pad=h.g-lo+.22;}
+ // r9 Q1 (vision r8: still 'tilted / hovering'): level pad whose TOP clears the highest ground under its 4 corners + edge midpoints and
+ // whose stone footing reaches below the lowest -> the footing meets the terrain on every side (no gap, no buried uphill wall)
+ {let lo=1e9,hi=-1e9;const c0=Math.cos(h.ry),s0=Math.sin(h.ry),ax=h.L/2+.375,bz0=-(h.W/2+.395),bz1=h.W/2+.555;for(const a of[-ax,0,ax])for(const b of[bz0,.08,bz1]){const y=FA.H(h.x+a*c0+b*s0,h.z-a*s0+b*c0);lo=Math.min(lo,y);hi=Math.max(hi,y);}
+  h.g=hi+.08;h.pad=h.g-lo+.24;h.padR=hi-lo;PADS.push(hi-lo);}
  setF(h.x,h.g,h.z,h.ry);DL=h.L;DW=h.W;const e=h.e,th=h.roof===0,pit=th?.87:.74,id=i*16,pv=.88+.16*rnd();
- box('stone',DL+.75,h.pad,DW+.95,0,.02-h.pad/2,.08,tn(STO,.62));box('plain',DL+.7,.03,DW+.9,0,.025,.08,tn(DIRTC,.7));   // terrace pad + trodden top
+ box('stone',DL+.75,h.pad,DW+.95,0,.02-h.pad/2,.08,tn(STO,.55));box('plain',DL+.7,.03,DW+.9,0,.025,.08,tn(DIRTC,.75));   // terrace pad (rubble-stone footing) + trodden top
  // C4: per-house limewash tint (white / ochre / pink / buff / straw) and a night factor (plaster read too bright at blue hour)
  const TW=[[1,1,1],[1.05,.96,.82],[1.04,.92,.87],[.95,.94,.90],[1.03,1,.84]],tw=TW[(FA.hash(i*1.73,4.21)*TW.length)|0],NK=(L.pc&&L.pc.mood!=='day')?.76:1,pc=[PLA[0]*pv*tw[0]*NK,PLA[1]*pv*tw[1]*NK,PLA[2]*pv*tw[2]*NK];
  // C4 grounding: deeper stone plinth (digs into the downhill side) + projecting plinth course
@@ -208,8 +210,10 @@ function garden(h){const zc=-(DW/2+.85),c=Math.cos(h.ry),s=Math.sin(h.ry),gx=h.x
  OBST.push({x:gx,z:gz,r:1.0});h.gard={x:gx,z:gz};}
 
 // ======================= (6) barn, carts, well, yard props =======================
-function barn(b){setF(b.x,b.g,b.z,b.ry);DL=3.3;DW=2.1;const e=1.0,pit=.8,rh=DW/2*Math.tan(pit);
- box('stone',DL+.08,.4,DW+.08,0,-.04,0,STO);box('boards',DL,e-.14,DW,0,(e+.14)/2,0,tn(BRD,.9));timber(.16,e);gables(e,rh,'boards',tn(BRD,.8),true);
+function barn(b){DL=3.3;DW=2.1;{let lo=1e9,hi=-1e9;const c0=Math.cos(b.ry),s0=Math.sin(b.ry);for(const a of[-(DL/2+1.15),0,DL/2+.1])for(const q of[-(DW/2+.12),0,DW/2+.12]){const y=FA.H(b.x+a*c0+q*s0,b.z-a*s0+q*c0);lo=Math.min(lo,y);hi=Math.max(hi,y);}
+  b.g=hi+.02;b.ph=b.g-lo+.4;}   // r9 Q1 (vision r9: barn 'tilted / sheared, hovering'): level on the highest footprint point, stone plinth reaches below the lowest
+ setF(b.x,b.g,b.z,b.ry);const e=1.0,pit=.8,rh=DW/2*Math.tan(pit);
+ box('stone',DL+.08,b.ph,DW+.08,0,.16-b.ph/2,0,STO);box('stone',1.3,b.ph,1.84,-DL/2-.6,.1-b.ph/2,0,tn(STO,.85));box('boards',DL,e-.14,DW,0,(e+.14)/2,0,tn(BRD,.9));timber(.16,e);gables(e,rh,'boards',tn(BRD,.8),true);
  b.h=roof(e,pit,'thatch',tn(THA,.9),.15,.2);const f=face('z',1);
  f(.24,.56,.47,.8,0,'plain',DARK,.012,.004);f(-.24,.56,.47,.8,0,'boards',tn(BRD,.7),.03,.012);f(-.24,.56,.5,.04,.9,'oak',OAK,.02,.03);
  box('boards',.47,.8,.03,.48-.235*Math.cos(.9),.56,DW/2+.02+.235*Math.sin(.9),tn(BRD,.7),0,.9);   // leaf ajar
@@ -236,8 +240,9 @@ function tree(x,z){const ry=rnd()*6;setF(x,FA.H(x,z),z,ry);const s=.85+.4*rnd(),
  cyl('oak',.03*s,.36*s,0,.16*s,0,LOG,5,0,0,.7);add('plain',gIco(1),0,.52*s,0,tn(LEAF,lk),0,0,0,.3*s,.26*s,.3*s);FA.AOS.push({x,z,r:.45*s,k:.3});}
 
 // ======================= (7) mill house, flume, undershot wheel, foam =======================
-function mill(m){setF(m.x,m.g,m.z,0);DL=1.6;DW=1.5;const e=.85,pit=.74,rh=DW/2*Math.tan(pit);
- box('stone',DL,e+.6,DW,0,(e-.6)/2,0,STO);gables(e,rh,'stone',STO,false);m.h=roof(e,pit,'slate',SLA,.05,.12);
+function mill(m){DL=1.6;DW=1.5;let dp=.6;{let lo=1e9,hi=-1e9;for(const a of[-.85,0,.85])for(const q of[-.8,0,.8]){const y=FA.H(m.x+a,m.z+q);lo=Math.min(lo,y);hi=Math.max(hi,y);}m.g=Math.max(m.g,hi-.05);dp=Math.max(.6,m.g-lo+.2);}   // r9 Q1: level, walls reach below the lowest corner
+ setF(m.x,m.g,m.z,0);const e=.85,pit=.74,rh=DW/2*Math.tan(pit);
+ box('stone',DL,e+dp,DW,0,(e-dp)/2,0,STO);gables(e,rh,'stone',STO,false);m.h=roof(e,pit,'slate',SLA,.05,.12);
  const f=face('z',1);door(f,-.3,.3,.18,.08);win(900,f,.35,.5,.13,.15);win(901,face('z',-1),0,.5,.13,.15);win(902,face('x',-1),0,.5,.13,.15);
  chimney(-(DL/2+.09),0,m.h+.22);m.chim=wpt(-(DL/2+.09),m.h+.32,0);FA.AOS.push({x:m.x,z:m.z,r:1.4,k:.5,sq:true,ry:0,sx:DL+.3,sz:DW+.3});}
 // stone piers + bearing blocks, timber flume walls on posts, sluice frame with raised gate; wheel group spins about its axle (local x)
@@ -307,8 +312,9 @@ function bonfire(x,z){const y=FA.H(x,z);setF(x,y,z,0);
  for(let k=0;k<6;k++){const a=k*TAU/6+.3;beam('oak',Math.cos(a)*.2,0,Math.sin(a)*.2,Math.cos(a+2.6)*.03,.36,Math.sin(a+2.6)*.03,.035,tn(LOG,.5+.3*rnd()));}
  for(let k=0;k<8;k++){const a=k*TAU/8;cyl('stone',.05,.05,Math.cos(a)*.3,.02,Math.sin(a)*.3,tn(STO,.6),6);}
  for(const a of[.4,2.5,4.4])cyl('oak',.06,.5,Math.cos(a)*.85,.06,Math.sin(a)*.85,LOG,7,Math.PI/2);
- const bf=new THREE.PointLight('#FF9548',1.3,8,2);bf.position.set(x,y+.7,z);FA.SC.add(bf);const bg=FA.glow(x,y+.42,z,2.4,'#FF7A30',.6);
- const fl=[];for(let k=0;k<4;k++){const a=k*TAU/4+.4;fl.push(FA.glow(x+Math.cos(a)*.12,y+.25+.08*k,z+Math.sin(a)*.12,.55,k%2?'#FF9A40':'#FF6A24',.5,[.25,.7+.3*k,k*1.7,0]));}   // r8 F: brighter bonfire core + flame points (glow points, no light)
+ const bf=new THREE.PointLight('#FF9548',1.3,8,2);bf.position.set(x,y+.7,z);FA.SC.add(bf);const bg=FA.glow(x,y+.42,z,4.0,'#FF7A30',.5);
+ FA.glow(x,y+.18,z,8.5,'#C8561E',.11,[.08,1.9,.7,0]);   // r9 Q1: wide, dim firelight halo on the green (glow point; below the bloom knee)
+ const fl=[];for(let k=0;k<5;k++){const a=k*TAU/5+.4;fl.push(FA.glow(x+Math.cos(a)*.12,y+.22+.08*k,z+Math.sin(a)*.12,.8,k%2?'#FF9A40':'#FF6A24',.55,[.25,.7+.3*k,k*1.7,0]));}   // r8 F: brighter bonfire core + flame points (glow points, no light)
  FA.anims.push(T=>{const f=.8+.2*Math.sin(T*11)*Math.sin(T*4.3);bf.intensity=1.3*f;bg.material.opacity=f;});FA.AOS.push({x,z,r:.6,k:.4});}
 
 // ======================= (10) layout, props, light, build =======================
@@ -325,7 +331,9 @@ function layout(c,vx,vz){const z0=vz+2.5,rx0=FA.riverX(z0),bz=vz-7.5,D={vx,vz};
   {x:vx+1.25,z:vz-11,r:2.9},{x:D.bridge.x-3,z:bz,r:1.2},{x:vx,z:vz,r:2.6});
  D.homes=[];for(let i=0;i<11;i++)for(let t=0;t<14;t++){const a=i/11*TAU+rnd()*.35+.2+t*.21,rr=3.9+rnd()*3.1;let x=vx+Math.cos(a)*rr*1.2;const z=vz+Math.sin(a)*rr;
    const lim=FA.riverX(z)-3.6;if(x>lim)x=lim-rnd()*.8;if(OBST.some(o=>Math.hypot(x-o.x,z-o.z)<(o.r||1.3)+1.15))continue;
-   const h={x,z,r:1.3,g:FA.H(x,z),ry:Math.atan2(vx-x,vz-z)+(rnd()-.5)*.5,L:1.5+rnd()*.5,W:1.1+rnd()*.3,e:.56+rnd()*.16,roof:rnd()<.6?0:rnd()<.5?1:2};D.homes.push(h);OBST.push(h);break;}
+   const h={x,z,r:1.3,g:FA.H(x,z),ry:Math.atan2(vx-x,vz-z)+(rnd()-.5)*.5,L:1.5+rnd()*.5,W:1.1+rnd()*.3,e:.56+rnd()*.16,roof:rnd()<.6?0:rnd()<.5?1:2};
+   if(t<13){let lo=1e9,hi=-1e9;for(const a of[-1.2,0,1.2])for(const b of[-1,0,1]){const y=FA.H(x+a,z+b);lo=Math.min(lo,y);hi=Math.max(hi,y);}if(hi-lo>.5)continue;}   // r9 Q1: flat-ish plots only -> low terraced pads (a steep plot gave a 1.7-unit footing)
+   D.homes.push(h);OBST.push(h);break;}
  return D;}
 function props(D){const vx=D.vx,vz=D.vz,m=D.mill,b=D.barn,sx=Math.sin(b.ry),sz=Math.cos(b.ry);
  for(const h of D.homes)if(rnd()<.6){const c=Math.cos(h.ry),s=Math.sin(h.ry),lx=h.cs*(h.L/2+.2),x=h.x+lx*c+.32*s,z=h.z-lx*s+.32*c;if(rnd()<.5)barrel(x,z);else sack(x,z);}
@@ -333,14 +341,19 @@ function props(D){const vx=D.vx,vz=D.vz,m=D.mill,b=D.barn,sx=Math.sin(b.ry),sz=M
  cart(vx-1.6,vz+1.9,.5,{len:.78,four:true,hay:true});cart(b.x+sx*2.1+.6,b.z+sz*2.1,b.ry+.4,{hay:true});
  barrel(b.x+sx*1.3-sz*.9,b.z+sz*1.3+sx*.9);barrel(b.x+sx*1.3-sz*1.1,b.z+sz*1.3+sx*1.1,1.15);
  lumber(D.fire.x+1.3,D.fire.z+.6,.5);lumber(D.wind.x-.4,D.wind.z+2.1,.4);
- for(let i=0;i<4;i++)for(let j=0;j<3;j++){const x=vx-1+i*1.5+(rnd()-.5)*.3,z=vz-9.5-j*1.5+(rnd()-.5)*.3;if(x<FA.riverX(z)-2.2)tree(x,z);}}
+ // r9 Q1 (vision r8 'orchard not read'): 5 x 3 trees in straight rows (no jitter) on a mown strip painted by prorev (D.orch)
+ for(let i=0;i<5;i++)for(let j=0;j<3;j++){const x=vx+1.25+(i-2)*1.25,z=vz-11+(j-1)*1.35;if(x<FA.riverX(z)-2.2)tree(x,z);}D.orch={x:vx+1.25,z:vz-11,hx:3.2,hz:2.2};}
 // two small door glows (shader breath, no CPU), smoke from 3 cottage chimneys + the mill (7 puffs each, staggered)
 // C4: + warm ground pools (fire light at lit doors / the bonfire) handed to proroad's single additive pool mesh
-function lights(D){let n=0;const PO=[];D.homes.forEach((h,i)=>{if(i%4===1&&n<3){n++;FA.glow(h.door.x,h.door.y+.02,h.door.z,.5,'#FF9040',.4,[.14,3+2*FA.hash(i,1.1),i*1.7,0]);PO.push([h.door.x,h.door.z,.62,.30]);}
+function lights(D){let n=0;const PO=[];D.homes.forEach((h,i)=>{if(i%3===1&&n<4){n++;FA.glow(h.door.x,h.door.y+.02,h.door.z,.9,'#FF9040',.5,[.14,3+2*FA.hash(i,1.1),i*1.7,0]);PO.push([h.door.x,h.door.z,.62,.30]);
+   // r9 Q1: a door lantern on a short oak post beside the step (glazed box = flickering fire light) + its glow
+   const c=Math.cos(h.ry),s=Math.sin(h.ry),lx=h.ds+.34,lz=h.W/2+.42,x=h.x+lx*c+lz*s,z=h.z-lx*s+lz*c,y=h.g+.02;F.identity();gy=-99;
+   box('oak',.035,.62,.035,x,y+.31,z,OAK);box('oak',.12,.025,.12,x,y+.64,z,IRON);box('glaze',.075,.09,.075,x,y+.58,z,[.95,FA.hash(i,5.5),.6]);
+   FA.glow(x,y+.58,z,1.3,'#FF8A38',.5,[.12,2.6+FA.hash(i,6.1),i*1.3,0]);}
   else if(h.lit>0)PO.push([h.door.x,h.door.z,.42,.10+.05*Math.min(2,h.lit)]);
-  // r8 F (vision r7 'almost no warm fire light'): one soft warm window glow in front of each cottage with a lit pane
-  if(h.lit>0){const c=Math.cos(h.ry),s=Math.sin(h.ry),lx=h.ds+(h.ds>0?-1:1)*.38,lz=h.W/2+.06;FA.glow(h.x+lx*c+lz*s,h.g+.14+(h.e-.14)*.68,h.z-lx*s+lz*c,.6,'#FF9A48',.55,[.1,2.5+FA.hash(i,4.4)*2,i*.9,0]);}});
- PO.push([D.fire.x,D.fire.z,1.5,.36]);if(FA.PROROAD)FA.PROROAD.pools=PO;
+  // r8 F (vision r7 'almost no warm fire light'): one soft warm window glow in front of each cottage with a lit pane (r9 Q1: bigger)
+  if(h.lit>0){const c=Math.cos(h.ry),s=Math.sin(h.ry),lx=h.ds+(h.ds>0?-1:1)*.38,lz=h.W/2+.06;FA.glow(h.x+lx*c+lz*s,h.g+.14+(h.e-.14)*.68,h.z-lx*s+lz*c,1.4,'#FF9A48',.55,[.1,2.5+FA.hash(i,4.4)*2,i*.9,0]);}});
+ PO.push([D.fire.x,D.fire.z,2.4,.42]);if(FA.PROROAD)FA.PROROAD.pools=PO;   // r9 Q1: wider firelight pool on the green (vision: 'no light spill')
  const ch=D.homes.filter((h,i)=>i%2===0).slice(0,3).map(h=>h.chim);ch.push(D.mill.chim);
  ch.forEach((p,j)=>{for(let k=0;k<7;k++)FA.smoke(p.x,p.y,p.z,5.5+j*.7,k/7+j*.13,'#C9C5D0');});}
 function result(D){const vx=D.vx,vz=D.vz,b=D.barn,lanes=[],KO=[];
@@ -349,13 +362,13 @@ function result(D){const vx=D.vx,vz=D.vz,b=D.barn,lanes=[],KO=[];
  if(FA.lanes)for(const l of lanes)FA.lanes.push(l);
  KO.push({x:b.x,z:b.z,r:2.9},{x:D.mill.x,z:D.mill.z,r:1.9},{x:D.wheel.x,z:D.wheel.z,r:1.4},{x:D.wind.x,z:D.wind.z,r:2.8},{x:D.bridge.x-3,z:D.bridge.z,r:1.4},{x:vx,z:vz,r:2.9},{x:vx+1.25,z:vz-11,r:3.2});
  return{vx,vz,homes:D.homes.map(h=>({x:h.x,z:h.z,h:h.h,ry:h.ry,door:{x:h.door.x,z:h.door.z},lit:h.lit||0})),wheel:{x:D.wheel.x,z:D.wheel.z},mill:{x:D.wind.x,z:D.wind.z},millHouse:{x:D.mill.x,z:D.mill.z},
-  barn:{x:b.x,z:b.z,ry:b.ry},bridge:{x:D.bridge.x,z:D.bridge.z,y:D.bridge.y},lanes,keepOut:KO};}
+  barn:{x:b.x,z:b.z,ry:b.ry},bridge:{x:D.bridge.x,z:D.bridge.z,y:D.bridge.y},fire:{x:D.fire.x,z:D.fire.z},orch:D.orch||null,lanes,keepOut:KO};}
 // B1 r5: generator build (buildSteps), sliced between parts; same call order / rnd() draws -> identical geometry by seed.
 // build() drains it (sync API kept for the Reversion detail city). One build at a time (module state lives across the yields).
 function build(opts){const it=buildSteps(opts);let r;while(!(r=it.next()).done);return r.value;}
 PK.buildSteps=buildSteps;
 function* buildSteps(opts){const t0=performance.now();
- try{const c=FA.RV,vx=c.x-1.5,vz=c.z;rnd=FA.rng(2031);SETS={main:{},wheel:{},sails:{}};TRIS=DRAWS=LIT=WINS=0;
+ try{const c=FA.RV,vx=c.x-1.5,vz=c.z;rnd=FA.rng(2031);SETS={main:{},wheel:{},sails:{}};TRIS=DRAWS=LIT=WINS=0;PADS.length=0;
   bake();yield 'pk:bake';mats();use('main');const D=layout(c,vx,vz);yield 'pk:layout';
   green(vx,vz);well(vx,vz);bonfire(D.fire.x,D.fire.z);yield 'pk:green';
   for(let i=0;i<D.homes.length;i++){cottage(D.homes[i],i);if(i%3===2)yield 'pk:cottage';}
@@ -363,7 +376,8 @@ function* buildSteps(opts){const t0=performance.now();
   props(D);lights(D);yield 'pk:props';
   let n=0;for(const bk in SETS.main){mesh(SETS.main,bk,M[bk],FA.SC,bk!=='dirt');if((++n&3)===0)yield 'pk:mesh';}
   const out=result(D);
-  Object.assign(PK.info,{draws:DRAWS,tris:Math.round(TRIS),homes:D.homes.length,lit:LIT,windows:WINS,sailTip:+D.wind.tip.toFixed(2),buildMs:Math.round(performance.now()-t0)});
+  Object.assign(PK.info,{draws:DRAWS,tris:Math.round(TRIS),homes:D.homes.length,lit:LIT,windows:WINS,sailTip:+D.wind.tip.toFixed(2),buildMs:Math.round(performance.now()-t0),
+   padMax:+Math.max(0,...PADS).toFixed(2),padMean:+(PADS.reduce((a,b)=>a+b,0)/Math.max(1,PADS.length)).toFixed(2)});   // r9 Q1: terrain rise under each cottage pad (4 corners + mids)
   return out;}
  catch(e){(window.__errs=window.__errs||[]).push('procottage:'+(e&&e.message));return null;}}
 })();

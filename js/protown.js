@@ -829,7 +829,7 @@ function library(B,S,mid,sl){const T=B.T,b=S.building,pts=rectPts(sl.x,sl.z,sl.w
 // B2 r5 (vision r4: \"reads as a wireframe cage\", bright stray rib + base line across houses): a calm glass garden reserve -
 // low planted stone plinth, faint glass from the plinth up, only 8 thin dark mullions, a thin dark eaves ring, no roof spokes,
 // a hedge + shrub belt along the inside of the plinth. FAR keeps 8 thin posts.
-function enclosure(B,S,mid,sl){const T=B.T,n=mid?24:48,r=sl.r,top=T.yl(sl.x,sl.z)+sl.h,gc=hex(mid?'#66767A':'#8FA6A8',1),mu=hex('#4A5258',T.A),stn=hex(PAL.stone,(mid?.72:.95)*T.A),PH=.32;   // r7 P: MID glass + plinth darker (world: pale halo ring); the enclosure itself stays (ending-defining)
+function enclosure(B,S,mid,sl){const T=B.T,n=mid?24:48,r=sl.r,top=T.yl(sl.x,sl.z)+sl.h,gc=hex(mid?'#4E585C':'#8FA6A8',1),mu=hex('#4A5258',T.A),stn=hex(mid?'#4A4E56':PAL.stone,(mid?.8:.95)*T.A),PH=.32;   // r7 P: MID glass + plinth darker (world: pale halo ring); the enclosure itself stays (ending-defining). r9 Q3: still the brightest ring at world zoom (+38 L over the terrain at r ~7.5) -> MID plinth = dark slate, glass '#66767A' -> '#4E585C'
  const P3=(i,up,rr)=>{const a=(i%n)*TAU/n,R0=rr||r,x=sl.x+Math.cos(a)*R0,z=sl.z+Math.sin(a)*R0;return[x,up===1?top:up===2?T.yl(x,z)+PH:T.yl(x,z)-.12,z];};
  for(let i=0;i<n;i++){quad(S.glass,P3(i,2),P3(i+1,2),P3(i+1,1),P3(i,1),gc,null);tri(S.glass,[sl.x,top,sl.z],P3(i,1),P3(i+1,1),gc);
   const a=(i+.5)*TAU/n,x=sl.x+Math.cos(a)*r,z=sl.z+Math.sin(a)*r;box(S.building,x,T.yl(x,z)-.12,z,2*r*Math.sin(PI/n)+.03,PH+.12,.26,-a+PI/2,stn,null,tone(stn,1.08));}

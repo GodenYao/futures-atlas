@@ -24,7 +24,7 @@ const lin=h=>{const c=new THREE.Color(h);c.convertSRGBToLinear();return c;};
 const BREATH='uniform float uAn;float faBr(vec4 b,float t){if(uAn<.5||b.y<=0.)return 1.;float w=1.+b.x*sin(6.2832*t/b.y+b.z);'+
  'if(b.w>0.){float s=floor(t/(b.y*2.7)+b.z);float h=fract(sin(s*91.7+b.z*37.1)*4375.85);w*=1.-.88*step(.72,h);}return w;}\n';
 // ---- glow handles -> one additive Points draw (per-point size / colour / breath; faded by the scene fog distance) ----
-function glowPoints(H,grp,TU,ctx,scl,K){if(!H.length)return null;const n=H.length,P=new Float32Array(n*3),Cc=new Float32Array(n*3),S=new Float32Array(n),O=new Float32Array(n),B=new Float32Array(n*4);
+function glowPoints(H,grp,TU,ctx,scl,K,cap){if(!H.length)return null;const n=H.length,P=new Float32Array(n*3),Cc=new Float32Array(n*3),S=new Float32Array(n),O=new Float32Array(n),B=new Float32Array(n*4);
  H.forEach((h,i)=>{P.set([h.x,h.y,h.z],i*3);Cc.set([h.c.r,h.c.g,h.c.b],i*3);S[i]=h.size;O[i]=1;if(h.an)B.set(h.an,i*4);});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('color',new THREE.BufferAttribute(Cc,3));
  g.setAttribute('aS',new THREE.BufferAttribute(S,1));const ao=new THREE.BufferAttribute(O,1);ao.setUsage(THREE.DynamicDrawUsage);g.setAttribute('aO',ao);g.setAttribute('aB',new THREE.BufferAttribute(B,4));
@@ -32,7 +32,7 @@ function glowPoints(H,grp,TU,ctx,scl,K){if(!H.length)return null;const n=H.lengt
  const m=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
   vertexShader:'attribute vec3 color;attribute float aS;attribute float aO;attribute vec4 aB;uniform float uT,uH,uSc,uFn,uFf,uK;varying vec3 vC;varying float vA;\n'+BREATH+
    'void main(){vec4 mv=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*mv;float d=max(.1,-mv.z);float px=aS*uSc*projectionMatrix[1][1]*uH*.5/d;'+
-   'float a=uK*aO*faBr(aB,uT)*(1.-smoothstep(uFn,uFf,d));if(px<1.6){a*=px/1.6;px=1.6;}gl_PointSize=min(px,64.);vC=color;vA=a;}',
+   'float a=uK*aO*faBr(aB,uT)*(1.-smoothstep(uFn,uFf,d));if(px<1.6){a*=px/1.6;px=1.6;}gl_PointSize=min(px,'+(+(cap||64)).toFixed(1)+');vC=color;vA=a;}',
   fragmentShader:'varying vec3 vC;varying float vA;void main(){vec2 p=gl_PointCoord*2.-1.;float r=dot(p,p);if(r>1.)discard;gl_FragColor=vec4(vC*vA*exp(-r*4.5),1.);}'});
  const pts=new THREE.Points(g,m);pts.name='g1k_glows';pts.frustumCulled=false;pts.renderOrder=3;grp.add(pts);
  return{pts,ao,U,sync(){let ch=0;for(let i=0;i<H.length;i++){const o=H[i].material?H[i].material.opacity:1;if(ao.array[i]!==o){ao.array[i]=o;ch=1;}}if(ch)ao.needsUpdate=true;
@@ -44,8 +44,8 @@ function smokePoints(L,grp,TU,ctx,scl,o){if(!L.length)return null;o=o||{};const 
  const f=ctx.fog||{near:210,far:460},U={uT:TU.uT,uAn:TU.uAn,uH:{value:900},uSc:{value:scl},uFn:{value:f.near},uFf:{value:f.far},uK:{value:o.k!=null?o.k:.3},uRise:{value:o.rise||2.4}};
  const m=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,
   vertexShader:'attribute vec3 aP;attribute vec3 color;uniform float uT,uAn,uH,uSc,uFn,uFf,uK,uRise;varying vec3 vC;varying float vA;\n'+
-   'void main(){float k=uAn>.5?fract(uT/aP.x+aP.y):aP.y;vec3 p=position+vec3(k*.7,k*uRise,-k*.35)*aP.z;vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;'+
-   'float d=max(.1,-mv.z);float px=(.3+k*1.05)*aP.z*uSc*projectionMatrix[1][1]*uH*.5/d;float a=uK*(1.-k)*min(1.,k*6.)*(1.-smoothstep(uFn,uFf,d));if(px<1.2){a*=px/1.2;px=1.2;}gl_PointSize=min(px,72.);vC=color;vA=a;}',
+   'void main(){float k=uAn>.5?fract(uT/aP.x+aP.y):aP.y;vec3 p=position+vec3(k*'+(+(o.dx!=null?o.dx:.7)).toFixed(2)+',k*uRise,k*'+(+(o.dz!=null?o.dz:-.35)).toFixed(2)+')*aP.z;vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;'+
+   'float d=max(.1,-mv.z);float px=(.3+k*1.05)*aP.z*uSc*projectionMatrix[1][1]*uH*.5/d;float a=uK*(1.-k)*min(1.,k*6.)*(1.-smoothstep(uFn,uFf,d));if(px<1.2){a*=px/1.2;px=1.2;}gl_PointSize=min(px,'+(+(o.cap||72)).toFixed(1)+');vC=color;vA=a;}',
   fragmentShader:'varying vec3 vC;varying float vA;void main(){vec2 p=gl_PointCoord*2.-1.;float r=dot(p,p);if(r>1.)discard;gl_FragColor=vec4(vC,vA*exp(-r*2.6));}'});
  const pts=new THREE.Points(g,m);pts.name='g1k_smoke';pts.frustumCulled=false;pts.renderOrder=3;grp.add(pts);
  return{pts,U,sync(){if(ctx.renderer){const s=ctx.renderer.getDrawingBufferSize(new THREE.Vector2());U.uH.value=s.y;}}};}
@@ -92,7 +92,7 @@ FA.PROREV={build(site,ctx){const PK=FA.PROCOTTAGE;if(!PK||typeof PK.build!=='fun
  const R2=rng((site.seed|0)||2031),KO=(D.keepOut||[]).slice(),PT=Parts(),mats=ctx.mats||{};const FR=RAD*1.32/scl;   // field reach (local units)
  const ph=[0,1,2,3].map(i=>hash((site.seed||7)*.11+i,3.3)*6.283),rOut=a=>FR*(1+.1*Math.sin(2*a+ph[0])+.07*Math.sin(3*a+ph[1])+.05*Math.sin(5*a+ph[2]));
  const ang=.32,ux=Math.cos(ang),uz=Math.sin(ang),PW=5.4,PD=2.2;const ty=['wheat','green','fallow','stubble','pasture','wheat','fallow','green'];   // r8 F: long strip fields (was 4.6 x 3.6 parcels)
- const CF={wheat:lin('#C09A48'),green:lin('#4C7A2C'),fallow:lin('#6A4A2E'),pasture:lin('#6C8A46'),stubble:lin('#A08E58')},MEAD=lin('#56603F'),DIRT=lin('#7A6446'),BANK=lin('#44523A'),HEDGE=lin('#26361F'),GRN=lin('#6A8A44');   // r8 F: stronger crop contrast (vision r7: fields invisible)
+ const CF={wheat:lin('#C09A48'),green:lin('#4C7A2C'),fallow:lin('#6A4A2E'),pasture:lin('#6C8A46'),stubble:lin('#A08E58')},MEAD=lin('#56603F'),DIRT=lin('#9A8262'),BANK=lin('#44523A'),HEDGE=lin('#26361F'),GRN=lin('#7A9C46'),EMB=lin('#8A6A3A'),SCOR=lin('#2A2420'),ORC=lin('#6E8A48'),ORR=lin('#4E6436');   // r8 F: stronger crop contrast; r9 Q1: paler lanes, brighter green, orchard sward
  const cellOf=(x,z)=>{const a=x*ux+z*uz,b=-x*uz+z*ux,i=Math.floor(a/PW+.5),j=Math.floor(b/PD+.5);return{i,j,a:a-i*PW,b:b-j*PD,cx:i*PW*ux-j*PD*uz,cz:i*PW*uz+j*PD*ux};};
  const inKO=(x,z,m)=>KO.some(k=>Math.hypot(x-k.x,z-k.z)<k.r+(m||0));
  const fieldAt=(x,z)=>{const c=cellOf(x,z),d=Math.hypot(c.cx+.5,c.cz),rr=Math.hypot(x,z);if(d<7||c.cx>riverX(c.cz)-3.4||rr>rOut(Math.atan2(z,x))*.96)return null;
@@ -108,9 +108,11 @@ FA.PROREV={build(site,ctx){const PK=FA.PROCOTTAGE;if(!PK||typeof PK.build!=='fun
    const f=fieldAt(x,z);if(f){c.copy(CF[f.t]);const s=f.t==='pasture'?1:f.t==='fallow'||f.t==='green'?.9+.14*Math.sin(f.c.b*13+f.h*6):.94+.08*Math.sin(f.c.a*2.2+f.h*6);c.multiplyScalar(s*(.9+.2*f.h));
      const e=Math.max(Math.abs(f.c.a)/(PW/2),Math.abs(f.c.b)/(PD/2));if(e>.86)c.lerp(HEDGE,.45*smooth(.86,1,e));}
    else c.copy(MEAD).multiplyScalar(.94+.12*vn(x*.6,z*.6));
-   const ld=laneD(x,z);if(ld<.75)c.lerp(DIRT,.85*smooth(.75,.3,ld));
+   {const rq=r*(1+.22*(vn(x*1.7,z*1.7)-.5));if(rq<3.9)c.lerp(GRN,.85*smooth(3.9,3.3,rq));if(rq<1.2)c.lerp(DIRT,.7*smooth(1.2,.55,rq));}   // village green (r9 Q1: brighter, crisper edge) with a worn ring at the well
+   const ld=laneD(x,z);if(ld<1.05)c.lerp(DIRT,.9*smooth(1.05,.42,ld));   // r9 Q1: wider, paler dirt lanes, painted AFTER the green (the green used to erase every lane inside the village)
    const bd=Math.abs(x-riverX(z));if(bd<1.6)c.lerp(BANK,.6*smooth(1.6,.6,bd));
-   {const rq=r*(1+.3*(vn(x*1.7,z*1.7)-.5));if(rq<3.8)c.lerp(GRN,.7*smooth(3.8,2.6,rq));if(rq<1.4)c.lerp(DIRT,.6*smooth(1.4,.6,rq));}   // r8 F: village green (grass) with a worn centre
+   if(D.fire){const fd=Math.hypot(x-D.fire.x,z-D.fire.z);if(fd<2.6)c.lerp(EMB,.32*smooth(2.6,.6,fd));if(fd<.7)c.lerp(SCOR,.8*smooth(.7,.35,fd));}   // firelight on the grass + scorched fire pit
+   if(D.orch){const o=D.orch,ox=Math.abs(x-o.x),oz=Math.abs(z-o.z);if(ox<o.hx&&oz<o.hz){const e=smooth(1,.85,Math.max(ox/o.hx,oz/o.hz)),row=Math.abs(((z-o.z)/1.35)-Math.round((z-o.z)/1.35));c.lerp(row<.2?ORR:ORC,.8*e);}}   // orchard: mown sward + darker tree rows
    for(const o of AOS){const d=Math.hypot(x-o.x,z-o.z);if(d<o.r*1.25)c.multiplyScalar(1-.35*(o.k||.4)*smooth(o.r*1.25,o.r*.4,d));}
    let al=1-smooth(.78,1,r/ro);al*=1-smooth(1.4,3.0,h-hc);   // feather: warped outer edge + no field on the cliff face
    if(f){fvt++;if(al>.5)fv++;}
@@ -145,7 +147,7 @@ FA.PROREV={build(site,ctx){const PK=FA.PROCOTTAGE;if(!PK||typeof PK.build!=='fun
   const m=new THREE.Mesh(g,wm);m.name='rv_brook';m.renderOrder=2;near.add(m);}
  const pst=PT.flush(near,'rv_parts');
  // glow + smoke draws (shared by both tiers through the clone; additive / alpha, not graded)
- const gp=glowPoints(glows,near,TU,ctx,scl,.9),sp=smokePoints(smokes,near,TU,ctx,scl,{k:.26,rise:2.6});
+ const gp=glowPoints(glows,near,TU,ctx,scl,.9,150),sp=smokePoints(smokes,near,TU,ctx,scl,{k:.26,rise:2.6});
  // mark the pilot movers for the MID mirror (pk_wheelG / pk_sailsG end in 'G')
  const T=cloneTier(near,'reversion_mid',/^pk_oak$/);   // MID: the oak frame strips (22k tris) are sub-pixel at world zoom
  let tl=null;const r={near,mid:T.mid,TU,
