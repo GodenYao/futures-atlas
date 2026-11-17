@@ -71,6 +71,25 @@ const Z=FA.G1Z={segD,L2W,prismGeo,hyperGeo,
   out.buildNear=()=>{if(!out._N){const t1=performance.now();out._N=mk(true);out.near=out._N.grp;const c=cnt(out.near);out.stats.nearTris=c[0];out.stats.nearDraws=c[1];out.stats.nearMs=+(performance.now()-t1).toFixed(1);out.stats.ninfo=out._N.info;}return out.near;};
   if(!site.lazyNear)out.buildNear();
   out.anim=t=>{TU.uT.value=t;M.anim(t);if(out._N)out._N.anim(t);};return out;}};
+// ---------------- r11 Z kit add-ons (additive only; nothing above changed) ----------------
+// Z.geo(key,mk): cached non-indexed geometry with normals (any THREE geometry) for E.add
+const ZGC={};Z.geo=(key,mk)=>{if(!ZGC[key]){let g=mk();if(g.index)g=g.toNonIndexed();g.computeVertexNormals();ZGC[key]=g;}return ZGC[key];};
+// Z.beam: a box strut from point a to point b (w x h cross-section), vertex colour c, lvl 1 = NEAR only
+Z.beam=(E,mat,ax,ay,az,bx,by,bz,w,c,lvl,h)=>{const dx=bx-ax,dy=by-ay,dz=bz-az,L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
+ E.add(mat,E.G.box(),ax,ay,az,w,L,h||w,Math.acos(Math.max(-1,Math.min(1,dy/L))),Math.atan2(dx,dz),0,c,lvl);};
+// Z.dome(detail): geodesic hemisphere (unit radius, base at y 0): faceted shell geometry + unique strut edges [[x,y,z,x,y,z],..]
+const ZDM={};Z.dome=detail=>{if(ZDM[detail])return ZDM[detail];const ico=new THREE.IcosahedronGeometry(1,detail).toNonIndexed(),p=ico.attributes.position.array,keep=[],ed=new Map();
+ const K=(a)=>a.map(v=>Math.round(v*1e3)).join(',');
+ for(let i=0;i<p.length;i+=9){const cy=(p[i+1]+p[i+4]+p[i+7])/3;if(cy<-.04)continue;const t=[];for(let q=0;q<3;q++)t.push([p[i+q*3],Math.max(0,p[i+q*3+1]),p[i+q*3+2]]);keep.push(t);
+  for(let q=0;q<3;q++){const a=t[q],b=t[(q+1)%3];if(a[1]<.002&&b[1]<.002)continue;const k1=K(a),k2=K(b),k=k1<k2?k1+'|'+k2:k2+'|'+k1;if(!ed.has(k))ed.set(k,[a[0],a[1],a[2],b[0],b[1],b[2]]);}}
+ const pos=[];for(const t of keep)for(const v of t)pos.push(v[0],v[1],v[2]);const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
+ ZDM[detail]={geo:g,edges:[...ed.values()]};return ZDM[detail];};
+// Z.glassMat(hex,op): transparent glass with a view-angle (fresnel) edge: faint face-on, a soft cool rim at grazing angles, never white
+Z.glassMat=(hex,op,rim)=>{const m=new THREE.MeshStandardMaterial({color:hex||'#5A6A74',roughness:.12,metalness:0,transparent:true,opacity:op==null?.1:op,depthWrite:false,side:THREE.DoubleSide});m.name='g1z_glass';
+ const rc=new THREE.Color(rim||'#3A4A58');
+ m.onBeforeCompile=s=>{s.fragmentShader=s.fragmentShader.replace('#include <output_fragment>','{float zf=1.-abs(dot(normalize(normal),normalize(vViewPosition)));zf=zf*zf*zf;'+
+  'outgoingLight+=vec3('+rc.r.toFixed(3)+','+rc.g.toFixed(3)+','+rc.b.toFixed(3)+')*zf;diffuseColor.a=min(.62,diffuseColor.a+zf*.42);}\n#include <output_fragment>');};
+ m.customProgramCacheKey=()=>'g1zglass';return m;};
 // ---------------- Libertarian Utopia ----------------
 FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
  const{smooth,vn,hash}=k,R=E.R,r=E.r,d=E.d,M=E.M,H=E.H,cv=E.cv,jc=E.jc,mx=E.mix,TAU=Math.PI*2;

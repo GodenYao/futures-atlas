@@ -1336,7 +1336,7 @@ function finalize(B,steps,ms){const T=B.T,L=B.L,U=B.U,an=B.anims,P3=(x,z,y)=>{co
  PT.info.last={ending:T.id,stats:res.stats};PT.info.matsUsed=B.used;return res;}
 // B2 r2: time-sliced steps. SL = slice budget per step (ms, site.sliceMs overrides); loops stop starting new work once SL is
 // used, so a step costs <= SL + one unit (one lot / one chunk). Geometry does not depend on where the slices fall.
-function* buildSteps(site,ctx){const steps=[];let ts=now(),total=0;const SL=site&&+site.sliceMs>0?+site.sliceMs:3.5;
+function* buildSteps(site,ctx){if(zooNew(site))return zooG1Z(site,ctx);const steps=[];let ts=now(),total=0;const SL=site&&+site.sliceMs>0?+site.sliceMs:3.5;
  const mark=n=>{const ms=now()-ts;total+=ms;const o={step:n,ms:Math.round(ms*100)/100};steps.push(o);ts=now();return o;};
  // drive a unit generator; yield a step whenever the slice budget is used (a step = <= SL + one unit)
  const run=function*(name,gen){let t0=now(),any=false;for(;;){let r;try{r=gen.next();}catch(e){perr(name+': '+(e&&e.message?e.message:e));break;}
@@ -1365,7 +1365,138 @@ function* buildSteps(site,ctx){const steps=[];let ts=now(),total=0;const SL=site
  safe('merge far',()=>mergeFar(B));yield mark('merge:far');
  const res=safe('finalize',()=>finalize(B,steps,total));
  return res||emptyResult(T.id,'finalize failed');}
-function build(site,ctx){const it=buildSteps(site,ctx);let r=it.next();while(!r.done)r=it.next();return r.value;}
+function build(site,ctx){if(zooNew(site))return zooG1Z(site,ctx);const it=buildSteps(site,ctx);let r=it.next();while(!r.done)r=it.next();return r.value;}
+
+// ======================= (19b) r11 Z: Zookeeper rebuilt from the book cues on the FA.G1Z kit (js/prolib.js) =======================
+// Tegmark, Life 3.0 ch.5 "Zookeeper": an omnipotent AI keeps some humans around, who feel treated like zoo animals and lament their
+// fate; it provides food, safety and enough enrichment to keep them interesting to watch, and uses the rest of Earth for its own ends.
+// Cues Z1-Z5 (PREVIEW_NOTES 'conq+zoo r11 (Z)'); references re-imagined in our own geometry: Eden Project linked geodesic biomes,
+// Biosphere 2, Gardens by the Bay grid-shells; the machine land outside reuses the Conquerors vocabulary at lower detail.
+//  Z1 two linked geodesic glass domes (faceted panes + strut lattice, fresnel-edged glass) standing straight on the ground;
+//  Z2 inside: a tidy idealised village - cottages with pitched roofs round a green with one big tree, a pond, curving paths, garden
+//     plots, an orchard + vegetable rows in the small dome, warm lamps, a few people (some stand at the glass, looking out);
+//  Z3 an angular observation gallery of the AI's world around the domes: raised decks on piers, dark viewing glass facing IN, sensor
+//     booms leaning over the big dome;
+//  Z4 supply conduits from the machine land into feeding hatches at the dome foot (pods glide along them), service drones to a crown
+//     port; the road ends at a closed airlock in the gallery (no road leads inside);
+//  Z5 outside: a dark orthogonal machine landscape (compute blocks, radiator combs, tall stacks, cool seams) that dominates the frame.
+// ?zoov=0 = the r10 protown 'cluster' zookeeper.
+function zooNew(site){if(!site)return false;let id=String(site.ending==null?'':site.ending);id=ALIAS[id]||id;if(id!=='zookeeper')return false;
+ const F=root.FA;if(!F||!F.G1Z||!F.G1Z.dome||!F.G1KIT)return false;try{if(/[?&]zoov=0/.test(root.location&&root.location.search||''))return false;}catch(e){}return true;}
+function zooG1Z(site,ctx){const Z=root.FA.G1Z,k=root.FA.G1KIT,THREE=ctx.THREE||root.THREE;
+ const res=Z.city(site,ctx,'zookeeper',E=>{
+ const{smooth,vn,hash}=k,R=E.R,M=E.M,H=E.H,cv=E.cv,jc=E.jc,mx=E.mix,TAU=Math.PI*2,NR=E.near;
+ const P=site.params||{},kA=P.keepA!=null?P.keepA:Math.PI/2,avoid=P.avoid||[],free=(x,z,m)=>!avoid.some(a=>Math.hypot(x-a[0],z-a[1])<a[2]+(m||0));
+ const GA=kA,u=[Math.cos(GA),Math.sin(GA)],v=[-u[1],u[0]],ry=-GA,W=(a,b)=>[a*u[0]+b*v[0],a*u[1]+b*v[1]],LOC=(x,z)=>[x*u[0]+z*u[1],x*v[0]+z*v[1]];
+ const IND='#5C7A8E',SLIT=[.17,.25,.31],WARM=[.86,.6,.32];
+ // ---- Z1 domes (frame: u = toward the arriving road) ----
+ const D1={c:W(-.4,-1.2),r:4.4,h:3.6},D2={c:W(-.7,3.55),r:2.45,h:2.05},DOM=[D1,D2],S1=D1.r/4.7;
+ // the close-up camera (CLOSECAM zookeeper yaw -1.6, fa4_build.js, V2's row): CBz = direction toward it; the machine land is kept low there
+ const CBz=Math.atan2(Math.cos(-1.6),Math.sin(-1.6)),wrapz=a=>{a=((a%TAU)+TAU)%TAU;return a>Math.PI?a-TAU:a;},dodge=a=>{const d=wrapz(a-kA);return Math.abs(d)<.6?kA+(d<0?-.6:.6):a;};
+ const inDome=(x,z,m)=>DOM.some(d=>Math.hypot(x-d.c[0],z-d.c[1])<d.r-(m||0));
+ const domeY=(d,x,z)=>{const q=Math.hypot(x-d.c[0],z-d.c[1])/d.r;return q>=1?0:d.h*Math.sqrt(1-q*q);};
+ const gm=Z.glassMat('#6E86A0',.2,'#9AB4CA'),strut=cv('#76808A'),rim=cv('#3E4248');
+ for(const d of DOM){const gy=H(d.c[0],d.c[1])-.04,big=d===D1,G=Z.dome(NR?(big?3:2):1);
+  E.add(gm,G.geo,d.c[0],gy,d.c[1],d.r,d.h,d.r,0,0,0,[1,1,1]);
+  const ew=NR?(big?.05:.045):.09;for(const e of G.edges)Z.beam(E,M.ME,d.c[0]+e[0]*d.r,gy+e[1]*d.h,d.c[1]+e[2]*d.r,d.c[0]+e[3]*d.r,gy+e[4]*d.h,d.c[1]+e[5]*d.r,ew,strut);
+  const ns=NR?40:20;for(let q=0;q<ns;q++){const a0=q/ns*TAU,a1=(q+1)/ns*TAU,x0=d.c[0]+Math.cos(a0)*d.r,z0=d.c[1]+Math.sin(a0)*d.r,x1=d.c[0]+Math.cos(a1)*d.r,z1=d.c[1]+Math.sin(a1)*d.r;   // low dark footing (no slab)
+   const mxx=(x0+x1)/2,mzz=(z0+z1)/2;E.box(M.ST,mxx,H(mxx,mzz)-.12,mzz,Math.hypot(x1-x0,z1-z0)*1.03,.26,.16,-Math.atan2(z1-z0,x1-x0),rim);}
+  if(big){E.add(M.ME,E.G.cyl(12,1),d.c[0],gy+d.h-.03,d.c[1],.55,.14,.55,0,0,0,cv('#5A626C'));E.add(M.ME,E.G.cyl(12,.8),d.c[0],gy+d.h+.1,d.c[1],.32,.22,.32,0,0,0,cv('#3E444E'));   // crown port for drones
+   E.glow(d.c[0],gy+d.h+.4,d.c[1],.4,IND,.42,[.4,5,0,0]);E.anchors.crown={x:d.c[0],y:gy+d.h+.3,z:d.c[1]};}}
+ // ---- Z2 village inside the big dome, orchard + plots in the small one ----
+ const cx=D1.c[0],cz=D1.c[1],yA=H(cx,cz),homes=[],TREES=[];
+ {const n=11;for(let q=0;q<n;q++){const a=q/n*TAU+.35,rr=(2.75+.25*((q%2)?1:-1)*.6)*S1,x=cx+Math.cos(a)*rr,z=cz+Math.sin(a)*rr,ro=-a+Math.PI/2;   // ring of cottages facing the green
+   const y=E.lowY(x,z,.8,.7)-.05,w=.74+.12*hash(q,2),dd=.56+.08*hash(q,5),h=.42+.1*hash(q,7);homes.push({x,z,a});
+   E.box(M.ST,x,y,z,w,h,dd,ro,jc(cv(['#B8AC96','#C2B49A','#AEA28E'][q%3]),x,z,.05));
+   E.add(M.RF,E.prism(),x,y+h,z,w*1.12,.34,dd*1.16,0,ro,0,jc(cv(['#7A5244','#6A4E46','#84604A'][q%3]),x,z,.06));
+   if(NR){E.box(M.ST,E.L2W(x,z,ro,w*.3,0)[0],y+h+.12,E.L2W(x,z,ro,w*.3,0)[1],.09,.32,.09,ro,cv('#8A7A6A'));   // chimney
+    for(const s of[-1,1])for(const t of[-.22,.22]){const p=E.L2W(x,z,ro,t*w,s*(dd/2+.01));E.box(M.LT,p[0],y+.15,p[1],.15,.15,.02,ro,WARM);}
+    {const p=E.L2W(x,z,ro,0,dd/2+.12);E.glow(p[0],y+.3,p[1],.42,'#E6A866',.42,null);}   // porch light
+    const g=E.L2W(x,z,ro,0,dd/2+.36);for(const s of[-1,1]){const p=E.L2W(g[0],g[1],ro,s*.42,0);E.box(M.FO,p[0],H(p[0],p[1])-.04,p[1],.06,.16,.5,ro,cv('#4A6034'));}   // front-garden hedges
+    E.box(M.FO,E.L2W(g[0],g[1],ro,0,.26)[0],H(g[0],g[1])-.04,E.L2W(g[0],g[1],ro,0,.26)[1],.86,.14,.06,ro,cv('#4A6034'));}
+   else E.box(M.LT,E.L2W(x,z,ro,0,dd/2+.01)[0],y+.16,E.L2W(x,z,ro,0,dd/2+.01)[1],w*.6,.12,.02,ro,WARM);}}
+ // the one big tree on the green + small trees, gazebo, pond, path lamps
+ E.box(M.WD,cx,yA-.05,cz,.14,1.0,.14,0,cv('#4A3A2C'));for(const[o,s]of[[[0,1.45,0],1.25],[[.5,1.15,.25],.75],[[-.45,1.25,-.3],.8],[[.1,1.95,-.1],.7]])E.add(M.FO,E.G.ico(NR?2:1),cx+o[0],yA+o[1],cz+o[2],s,s*.82,s,0,0,0,jc(cv('#47663A'),cx+o[0],cz+o[2],.12));
+ {const p=[cx+Math.cos(GA+2.3)*1.0,cz+Math.sin(GA+2.3)*1.0];const gx=p[0],gz=p[1],gy=H(gx,gz)-.03;E.add(M.ST,E.G.cyl(8,1),gx,gy,gz,.42,.08,.42,0,0,0,cv('#A49A88'));for(let q=0;q<6;q++){const a=q/6*TAU;E.box(M.WD,gx+Math.cos(a)*.36,gy,gz+Math.sin(a)*.36,.04,.42,.04,0,cv('#6A5A48'),1);}
+  E.add(M.RF,E.G.cone(6),gx,gy+.42,gz,.5,.3,.5,0,0,0,cv('#6E5446'));}
+ const PD=[cx+Math.cos(GA-.7)*1.02,cz+Math.sin(GA-.7)*1.02];   // pond centre (on the green, inside the path ring)
+ for(let q=0;q<10;q++){const a=q/10*TAU+.2,x=cx+Math.cos(a)*1.85*S1,z=cz+Math.sin(a)*1.85*S1,y=H(x,z);E.box(M.ME,x,y-.03,z,.035,.36,.035,0,cv('#4A4E54'),1);E.glow(x,y+.38,z,.5,'#E6B07A',.55,null);}
+ for(let q=0;q<7;q++){const a=q/7*TAU,x=cx+Math.cos(a)*3.9*S1,z=cz+Math.sin(a)*3.9*S1;if(Math.hypot(x-D2.c[0],z-D2.c[1])<D2.r+.3)continue;TREES.push([x,z,.3+.08*hash(q,1)]);}
+ {const c2=D2.c;for(let a=-1;a<=2;a++)for(let b=-1;b<=1;b++){const p=E.L2W(c2[0],c2[1],ry,a*.62,b*.62+.5);if(Math.hypot(p[0]-c2[0],p[1]-c2[1])>D2.r-.5)continue;TREES.push([p[0],p[1],.24]);}}   // orchard grid
+ for(const[x,z,s]of TREES){const y=H(x,z);E.box(M.WD,x,y-.04,z,.05,.34,.05,0,cv('#4A3A2C'),1);E.add(M.FO,E.G.ico(1),x,y+.3+s*.6,z,s,s*.9,s,0,0,0,jc(cv('#4E6E3C'),x,z,.14));}
+ {const c2=D2.c;const p=E.L2W(c2[0],c2[1],ry,-1.25,-.55);E.box(M.ST,p[0],H(p[0],p[1])-.04,p[1],.9,.4,.6,ry,cv('#B4A890'));E.add(M.RF,E.prism(),p[0],H(p[0],p[1])+.36,p[1],1.0,.28,.68,0,ry,0,cv('#7A5A48'));   // garden barn / tool house
+  if(NR)E.box(M.LT,E.L2W(p[0],p[1],ry,.18,-.31)[0],H(p[0],p[1])+.12,E.L2W(p[0],p[1],ry,.18,-.31)[1],.14,.12,.02,ry,WARM);}
+ // people: a few walk the path ring, three stand at the glass looking out (slow; static under reduced motion)
+ E.movers(M.ST,.1,.26,.1,cv('#E0CCB0'),6,(i,t,o)=>{const a=t*.018*(i%2?1:-1)+i*1.05,rr=(1.85+(i%3)*.06)*S1,x=cx+Math.cos(a)*rr,z=cz+Math.sin(a)*rr;o.position.set(x,H(x,z)-.02,z);});
+ {const L=[];for(const a of[GA+.3,GA+2.6,GA-2.2]){L.push([cx+Math.cos(a)*(D1.r-.55),cz+Math.sin(a)*(D1.r-.55)]);}
+  for(const[x,z]of L)for(const s of[0,1]){const p=[x+(s?.12:0),z+(s?.1:0)];E.box(M.ST,p[0],H(p[0],p[1])-.02,p[1],.07,.2-.03*s,.07,0,cv(s?'#9A8C7C':'#B8A890'),0);}}
+ // ---- Z3 observation gallery (octagon of raised decks with dark glass facing IN; gaps at the airlock and the conduits) ----
+ const GC=W(-.5,.3),GU=6.2,GV=7.5,NG=8,gpt=q=>{const a=q/NG*TAU+Math.PI/NG;const l=W(Math.cos(a)*GU,Math.sin(a)*GV);return[GC[0]+l[0],GC[1]+l[1]];};
+ const vg=Z.glassMat('#1E2A34',.42,'#6A8496'),GH=2.0,dark=cv('#2C3038'),deck=cv('#3E434B');let gate=null;
+ for(let q=0;q<NG;q++){const A=gpt(q),B=gpt(q+1),mx_=(A[0]+B[0])/2,mz=(A[1]+B[1])/2,L=Math.hypot(B[0]-A[0],B[1]-A[1]),an=Math.atan2(B[1]-A[1],B[0]-A[0]),r_=-an;
+  const lc=LOC(mx_-GC[0],mz-GC[1]),isGate=lc[0]>3.5&&Math.abs(lc[1])<3.5;const nx=-(mz-GC[1]),nz=(mx_-GC[0]),nl=Math.hypot(nx,nz);
+  const ix=-(mx_-GC[0])/Math.hypot(mx_-GC[0],mz-GC[1]),iz=-(mz-GC[1])/Math.hypot(mx_-GC[0],mz-GC[1]);   // unit vector pointing IN
+  const gy=Math.min(H(A[0],A[1]),H(B[0],B[1]),H(mx_,mz))-.1;
+  if(isGate){gate={x:mx_,z:mz,ry:r_,gy,ix,iz};continue;}
+  const Lx=L*.86;E.box(M.B,mx_,gy+GH,mz,Lx,.16,1.0,r_,deck);E.box(M.LT,mx_,gy+GH-.03,mz,Lx*.98,.03,1.02,r_,SLIT);   // deck + cool soffit seam
+  const np=NR?4:2;for(let s=0;s<np;s++){const t=(s+.5)/np-.5,p=[mx_+Math.cos(an)*t*Lx,mz+Math.sin(an)*t*Lx];E.box(M.ST,p[0],H(p[0],p[1])-.15,p[1],.2,gy+GH-H(p[0],p[1])+.17,.2,r_,dark);}   // slender piers (open below)
+  {const o=[mx_-ix*.45,mz-iz*.45];E.box(M.B,o[0],gy+GH+.16,o[1],Lx,.8,.12,r_,dark);}   // low outer wall (AI side)
+  {const o=[mx_+ix*.45,mz+iz*.45];E.add(vg,E.G.box(),o[0],gy+GH+.16,o[1],Lx,.95,.04,0,r_,0,[1,1,1]);   // inner viewing glass (faces the domes)
+   {const b=[mx_-ix*.3,mz-iz*.3];E.box(M.LT,b[0],gy+GH+.5,b[1],Lx*.9,.05,.02,r_,[.22,.34,.42]);}   // cool lit instrument band behind the glass (the watchers' side)
+   E.box(M.ME,o[0],gy+GH+1.1,o[1],Lx,.06,.08,r_,cv('#4E555E'));E.box(M.ME,o[0],gy+GH+.16,o[1],Lx,.08,.1,r_,cv('#4E555E'));
+   const nm=NR?7:3;for(let s=0;s<=nm;s++){const t=s/nm-.5,p=[o[0]+Math.cos(an)*t*Lx,o[1]+Math.sin(an)*t*Lx];E.box(M.ME,p[0],gy+GH+.16,p[1],.05,.95,.06,r_,cv('#4E555E'));}}   // mullions
+  E.box(M.B,mx_,gy+GH+1.16,mz,Lx*1.02,.08,1.2,r_,cv('#30343C'));   // flat canopy
+  if(NR)for(let s=0;s<3;s++){const t=(s+.5)/3-.5,p=[mx_+Math.cos(an)*t*Lx+ix*.45,mz+Math.sin(an)*t*Lx+iz*.45];E.glow(p[0],gy+GH+1.05,p[1],.26,IND,.32,null);}   // cool downlights under the canopy
+  if(q%3===1){const b0=[mx_-ix*.3,mz-iz*.3],bt=[mx_+ix*3.2,mz+iz*3.2],by=gy+GH+1.5;   // sensor boom leaning over the domes
+   Z.beam(E,M.ME,b0[0],by,b0[1],bt[0],by+2.4,bt[1],.12,cv('#555C66'));Z.beam(E,M.ME,b0[0],gy+GH+.3,b0[1],(b0[0]+bt[0])/2,by+1.2,(b0[1]+bt[1])/2,.07,cv('#4E555E'),1);
+   E.add(M.ME,E.G.ico(1),bt[0],by+2.4,bt[1],.2,.16,.2,0,0,0,cv('#2C3038'));E.glow(bt[0]+ix*.12,by+2.32,bt[1]+iz*.12,.34,'#7E98AA',.5,[.3,6.5,q,0]);}}
+ if(gate){const g=gate,ux_=-g.iz,uz_=g.ix;for(const s of[-1,1])E.box(M.ST,g.x+ux_*1.0*s,g.gy,g.z+uz_*1.0*s,.5,2.9,.9,g.ry,dark);   // closed airlock where the road ends
+  E.box(M.B,g.x,g.gy+2.4,g.z,2.5,.5,1.0,g.ry,dark);E.box(M.ME,g.x,g.gy,g.z,1.5,2.4,.18,g.ry,cv('#454B54'));E.box(M.LT,g.x-g.ix*.1,g.gy+2.1,g.z-g.iz*.1,1.4,.04,.02,g.ry,SLIT);
+  E.glow(g.x-g.ix*.2,g.gy+2.65,g.z-g.iz*.2,.36,IND,.45,[.5,4.4,0,1]);E.anchors.airlock={x:g.x,y:g.gy+1,z:g.z};}
+ // ---- Z4 supply conduits (machine land -> feeding hatches at the dome foot), pods + service drones ----
+ const CON=[],a2=Math.atan2(D2.c[1],D2.c[0]);for(const a of[dodge(CBz+.55),dodge(CBz-.6),dodge(CBz+Math.PI-.3)]){const dd=Math.cos(a-a2)>.55?D2:D1,dx_=Math.cos(a),dz_=Math.sin(a),bq=dd.c[0]*dx_+dd.c[1]*dz_,cq=dd.c[0]*dd.c[0]+dd.c[1]*dd.c[1]-11.0*11.0,Lr=-bq+Math.sqrt(Math.max(0,bq*bq-cq));   // conduit runs out to r 11 (two on the camera side)
+  const hx=dd.c[0]+dx_*dd.r,hz=dd.c[1]+dz_*dd.r,ox=dd.c[0]+dx_*Lr,oz=dd.c[1]+dz_*Lr;
+  const ex=dd.c[0]+Math.cos(a)*(dd.r+.35),ez=dd.c[1]+Math.sin(a)*(dd.r+.35);CON.push([ex,ez,ox,oz]);const hy=H(hx,hz)-.08;
+  const ns=NR?10:5;for(let s=0;s<ns;s++){const t0=s/ns,t1=(s+1)/ns,x0=ex+(ox-ex)*t0,z0=ez+(oz-ez)*t0,x1=ex+(ox-ex)*t1,z1=ez+(oz-ez)*t1;
+   for(const sd of[-1,1]){const px=-(oz-ez)/Math.hypot(ox-ex,oz-ez)*.16*sd,pz=(ox-ex)/Math.hypot(ox-ex,oz-ez)*.16*sd;Z.beam(E,M.ME,x0+px,H(x0,z0)+.32,z0+pz,x1+px,H(x1,z1)+.32,z1+pz,.15,cv(sd>0?'#5E6670':'#525A64'));}
+   if(NR)E.box(M.ST,x0,H(x0,z0)-.1,z0,.12,.42,.44,-Math.atan2(oz-ez,ox-ex),dark);}
+  E.box(M.ME,ex,hy,ez,.7,.75,.6,-a,cv('#4A515A'));E.box(M.LT,ex+Math.cos(a)*.31,hy+.45,ez+Math.sin(a)*.31,.46,.12,.02,-a,WARM);E.glow(ex+Math.cos(a)*.4,hy+.6,ez+Math.sin(a)*.4,.4,'#E6A866',.4,null);}   // hatch (warm = the inside)
+ E.movers(M.ME,.26,.2,.2,cv('#8A929C'),CON.length*2,(i,t,o)=>{const C=CON[i>>1],q=(t/38+(i&1)*.5+i*.13)%1,x=C[2]+(C[0]-C[2])*q,z=C[3]+(C[1]-C[3])*q;o.position.set(x,H(x,z)+.5,z);o.rotation.y=-Math.atan2(C[1]-C[3],C[0]-C[2]);const s=q>.92?Math.max(0,1-(q-.92)/.06):1;o.scale.set(s,s,s);});   // supply pods (into the hatch)
+ {const cr=E.anchors.crown,ST=[];for(let q=0;q<4;q++){const a=GA+.8+q*1.55,p=[GC[0]+Math.cos(a)*7.8,GC[1]+Math.sin(a)*7.8];ST.push(p);}
+  E.movers(M.ME,.34,.1,.34,cv('#AAB2BA'),4,(i,t,o)=>{const S=ST[i],q=(t/30+i*.27)%1,e=q<.5?q*2:2-q*2,s=e*e*(3-2*e),x=S[0]+(cr.x-S[0])*s,z=S[1]+(cr.z-S[1])*s,y=H(S[0],S[1])+3.6+(cr.y+.4-H(S[0],S[1])-3.6)*s+Math.sin(s*Math.PI)*1.2;
+   o.position.set(x,y,z);o.rotation.y=Math.atan2(cr.x-S[0],cr.z-S[1]);const sc=e>.94?Math.max(0,1-(e-.94)/.05):1;o.scale.set(sc,sc,sc);});}   // service drones: machine land -> crown port and back
+ // ---- Z5 the AI's world outside: dark orthogonal machine landscape (lower detail), thickest away from the road ----
+ const ph=[0,1,2].map(i=>hash((site.seed||7)*.31+i,4.1)*TAU),rOut=a=>R*1.27*(1+.05*Math.sin(2*a+ph[0])+.04*Math.sin(3*a+ph[1])+.03*Math.sin(7*a+ph[2]));
+ const galD=(x,z)=>{const l=LOC(x-GC[0],z-GC[1]);return Math.hypot(l[0]/GU,l[1]/GV);},conD=(x,z)=>Math.min(...CON.map(C=>E.segD(x,z,C[0],C[1],C[2],C[3])));
+ const PI_=1.95,mc=[],nn=Math.ceil(R*1.4/PI_);
+ for(let i=-nn;i<=nn;i++)for(let j=-nn;j<=nn;j++){const p=W(i*PI_,j*PI_),x=p[0],z=p[1],rr=Math.hypot(x,z),f=rr/rOut(Math.atan2(z,x));
+  if(f>.95||galD(x,z)<1.3||conD(x,z)<.8||!free(x,z,1.1))continue;if(i*PI_>0&&Math.abs(j*PI_)<1.2)continue;   // road corridor
+  if(hash(i*.71+.3,j*1.37)>1-.7*smooth(.72,.95,f))continue;mc.push({x,z,i,j,f,h:hash(i*1.9,j*.41)});}
+ for(const c of mc){const y=E.lowY(c.x,c.z,1.9,1.9)-.14,fr_=Math.max(0,Math.cos(Math.atan2(c.z,c.x)-CBz)),far=(((c.x-GC[0])*-u[0]+(c.z-GC[1])*-u[1])>0?1:.7)*(1-.72*fr_);   // low toward the camera, tall behind
+  if(c.h<.16){for(let q=0;q<(NR?8:3);q++){const t=(q+.5)/(NR?8:3)-.5,p=E.L2W(c.x,c.z,ry,t*1.7,0);E.box(M.ME,p[0],y,p[1],NR?.05:.12,1.7,1.2,ry,cv('#454C56'));}   // radiator comb
+   E.box(M.ME,c.x,y+1.66,c.z,1.85,.1,.1,ry,cv('#59616C'));continue;}
+  const ht=(.8+2.8*smooth(.5,.95,c.f)*far)*(.7+.6*c.h)*(1-.5*fr_),tall=c.h>.86&&c.f>.6&&fr_<.3,w=tall?1.0:1.5,d=tall?1.0:1.3,bc=jc(cv(['#262A31','#2B2F36','#30343B'][(c.h*3)|0]),c.x,c.z,.04);
+  const hh=tall?ht+2.4:ht;E.box(M.B,c.x,y,c.z,w,hh,d,ry,bc);E.box(M.LT,c.x,y+hh-.08,c.z,w+.03,.035,d+.03,ry,SLIT);
+  if(hh>2.2)E.box(M.B,c.x,y+hh*.62,c.z,w+.08,.06,d+.08,ry,cv('#3A3F48'),1);
+  if(NR){for(const sd of[-1,1]){const p=E.L2W(c.x,c.z,ry,0,sd*(d/2+.02));for(let f=0;f<4;f++){const q=E.L2W(p[0],p[1],ry,(f-1.5)*w*.24,0);E.box(M.ME,q[0],y+.1,q[1],.06,hh-.25,.08,ry,cv('#4A525E'));}}}   // vertical fins
+  E.box(M.ME,c.x,y+hh,c.z,.4,.18,.4,ry,cv('#454B55'),tall?0:1);if(c.h>.7)E.glow(E.L2W(c.x,c.z,ry,w/2+.03,0)[0],y+.5,E.L2W(c.x,c.z,ry,w/2+.03,0)[1],.36,IND,.4,[.45,3+c.h*2,c.i,1]);}
+ // ---- ground: lawns, paths, plots and the pond inside; dark gravel between dome and gallery; slate paving + lanes outside ----
+ const LAWN=cv('#56703F'),PATH=cv('#9A9078'),PLOT=cv('#5E4E38'),POND=cv('#587A92'),GRV=cv('#3C3E40'),PAV=cv('#42433E'),LANE=cv('#323438'),fr=(x,p)=>Math.abs(((x/p)%1+1)%1-.5)*p;
+ E.ground(NR?80:52,R*1.42,(x,z,c)=>{const rr=Math.hypot(x,z),ro=rOut(Math.atan2(z,x)),n1=vn(x*.6+2,z*.6-4),au=x*u[0]+z*u[1],av=x*v[0]+z*v[1];let col;
+  const d1=Math.hypot(x-cx,z-cz),d2=Math.hypot(x-D2.c[0],z-D2.c[1]);
+  if(d1<D1.r-.05||d2<D2.r-.05){col=mx(LAWN,cv('#4E6838'),.5*vn(x*1.7,z*1.7));
+   if(Math.abs(d1-1.85*S1)<.15||Math.abs(d1-3.55*S1)<.12)col=PATH;   // path rings
+   for(const h of homes){const ax=Math.cos(h.a),az=Math.sin(h.a),t=(x-cx)*ax+(z-cz)*az,s=Math.abs(-(x-cx)*az+(z-cz)*ax);if(s<.09&&t>1.85*S1&&t<2.5*S1)col=PATH;   // garden path to each door
+    if(t>3.2*S1&&t<4.2*S1&&s<.4&&d1<D1.r-.3)col=fr(t,.22)<.05?mx(PLOT,LAWN,.4):PLOT;}   // back-garden plots
+   if(Math.hypot(x-PD[0],z-PD[1])<.5*(1+.15*Math.sin(Math.atan2(z-PD[1],x-PD[0])*3)))col=POND;   // r .5
+   if(d2<D2.r-.05&&d1>D1.r){const l=LOC(x-D2.c[0],z-D2.c[1]);if(l[1]<-.2&&Math.abs(l[0])<1.5)col=fr(l[0],.25)<.07?mx(PLOT,LAWN,.5):PLOT;}}   // vegetable rows
+  else if(galD(x,z)<1.12){col=GRV;}
+  else{col=rr/ro>.8?mx(PAV,cv('#3E413E'),.5):PAV;if(fr(au-PI_/2,PI_)<.2||fr(av-PI_/2,PI_)<.2)col=mx(col,LANE,.85);}
+  if(au>0&&Math.abs(av-LOC(gate?gate.x:0,gate?gate.z:0)[1])<.42&&galD(x,z)>1.02)col=mx(col,cv('#56524C'),.8);   // road apron to the airlock
+  const f=.92+.16*n1;c[0]=col[0]*f;c[1]=col[1]*f;c[2]=col[2]*f;c[3]=1-smooth(.82,1.03,rr/ro*(1+.1*(n1-.5)));});
+ E.anchors.square={x:cx,y:yA,z:cz};E.info.homes=homes.length;E.info.machine=mc.length;});
+ res.ending='zookeeper';res.far=res.far||[];res.casters=[];res.movers=[];res.lights=[];res.keepOut=[];res.uniforms={uT:res.TU.uT,uOut:{value:0},uLit:{value:1}};
+ return res;}
 
 // ======================= (20) register =======================
 const PT={version:1,presets:PRESETS,build:build,buildSteps:buildSteps,info:{version:1,presets:Object.keys(PRESETS),last:null,matsUsed:null}};
