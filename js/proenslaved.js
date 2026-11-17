@@ -360,10 +360,10 @@ function plinth(T,S,pts,h,col,top){const s=seat(T,pts);prism(S.building,pts,s.lo
 function bands(B,S,pts,yb,n,sd,mid,sh,bh,minL){const T=B.T,dg=hex(PAL.glassD,1),N=pts.length;sh=sh||ST;bh=bh||.13;minL=minL||.25*T.k;
  for(let f=0;f<N;f++){const a=pts[f],c=pts[(f+1)%N],dx=c[0]-a[0],dz=c[1]-a[1],len=Math.hypot(dx,dz);if(len<minL)continue;
   const ox=-dz/len*.014,oz=dx/len*.014,segs=mid?1:(len>T.k?2:1);
-  for(let k=0;k<n;k+=mid?2:1){const ya=yb+k*sh+.1,yt=ya+(mid?bh*1.4:bh);
-   for(let g=0;g<segs;g++){const hv=hash2(sd*.0137+f*13.1+g*.37,k*7.3+g*1.9),on=hv<B.lit;if(mid&&!on)continue;
-    const t0=(g+.08)/segs,t1=(g+.92)/segs;
-    quad(on?S.light:S.building,[a[0]+dx*t0+ox,ya,a[1]+dz*t0+oz],[a[0]+dx*t1+ox,ya,a[1]+dz*t1+oz],[a[0]+dx*t1+ox,yt,a[1]+dz*t1+oz],[a[0]+dx*t0+ox,yt,a[1]+dz*t0+oz],on?winCol(B,hash2(hv,k)):dg);}}}}
+  for(let k=0;k<n;k+=mid?3:1){const ya=yb+k*sh+.1,yt=ya+(mid?bh*1.4:bh);   // G1 r6 T: MID every 3rd floor, half the lit fraction, bands inset from the corners, x.75 (full-width lit stripes on every lot traced the building edges = 'thin pale wire' at world zoom)
+   for(let g=0;g<segs;g++){const hv=hash2(sd*.0137+f*13.1+g*.37,k*7.3+g*1.9),on=hv<B.lit*(mid?.55:1);if(mid&&!on)continue;
+    const t0=(g+(mid?.22:.08))/segs,t1=(g+(mid?.78:.92))/segs;
+    quad(on?S.light:S.building,[a[0]+dx*t0+ox,ya,a[1]+dz*t0+oz],[a[0]+dx*t1+ox,ya,a[1]+dz*t1+oz],[a[0]+dx*t1+ox,yt,a[1]+dz*t1+oz],[a[0]+dx*t0+ox,yt,a[1]+dz*t0+oz],on?(mid?tone(winCol(B,hash2(hv,k)),.75):winCol(B,hash2(hv,k))):dg);}}}}
 // lit glazing segments around a drum / disc rim
 function drumWin(B,S,x,y,z,r,h,n,sd,frac){const o=[x,y,z],R=r*1.012;
  for(let j=0;j<n;j++){if(hash2(sd*.013+j*1.7,j*.37+sd*.001)>=frac)continue;const a0=(j+.1)*TAU/n,a1=(j+.9)*TAU/n,c0=Math.cos(a0)*R,s0=Math.sin(a0)*R,c1=Math.cos(a1)*R,s1=Math.sin(a1)*R;
@@ -475,7 +475,7 @@ function aqPath(B,q){if(q.p3)return q.p3;const T=B.T,k=T.k,rs=resample(q.pts,q.s
  for(let i=0;i<rs.length;i++){const s=rs[i],over=Math.abs(s[0])<T.hw*1.2,f=i/Math.max(1,rs.length-1);if(!over||!i)yg=T.yl(s[0],s[1]);
   o.push([s[0],yg+q.h+(q.arch?.5*k*Math.sin(PI*f):0),s[1],over?1:0,T.yl(s[0],s[1])]);}
  return q.p3=o;}
-function aqueduct(B,S,q,mid){const T=B.T,k=T.k,P=BLOC[q.bloc],p=aqPath(B,q),cc=hex(q.bloc==='A'?PAL.concrete:P.walls[2],.8*T.A),g=glow(B,q.col,.9),pw=(q.arch?.14:.22)*k;
+function aqueduct(B,S,q,mid){const T=B.T,k=T.k,P=BLOC[q.bloc],p=aqPath(B,q),cc=mid?hex('#5C5A62',.8*T.A):hex(q.bloc==='A'?PAL.concrete:P.walls[2],.8*T.A),g=glow(B,q.col,.9),pw=(q.arch?(mid?.24:.14):.22)*k;   // G1 r6 T: MID aqueduct darker slate + thicker piers (pale concrete arches read as lilac-white outlines at world zoom)
  for(let i=1;i<p.length;i++){const a=p[i-1],e=p[i];beam3(S.building,a,e,q.w,.12*k,cc,tone(cc,.7));
   if(!mid)beam3(S.light,[a[0],a[1]+.012*k,a[2]],[e[0],e[1]+.012*k,e[2]],q.w*.35,.012*k,g);}
  for(let i=0;i<p.length;i+=2){const s=p[i];if(s[3])continue;box(S.building,s[0],s[4]-.12,s[2],pw,s[1]-.12*k-s[4]+.12,pw,0,cc);
@@ -498,14 +498,15 @@ function* infraGen(B,S,mid){const L=B.L;maglev(B,S,mid);yield 1;
 // ======================= centrepiece A : Suspended Monolith =======================
 function ringPose(r,t,Q){if(r.ax===0){Q[3]=r.ph+r.w*t;Q[5]=0;}else{Q[3]=r.ax===1?.6:.6+PI/2;Q[5]=r.ph+r.w*t;}}
 function ringAxes(r){const Q=[0,0,0,0,1,0];ringPose(r,0,Q);const c=Math.cos(Q[3]),s=Math.sin(Q[3]),cp=Math.cos(Q[5]),sp=Math.sin(Q[5]);return[[c,0,-s],[sp*s,cp,sp*c]];}
-function monoSeams(b,B,K,x,y,z,mid){const k=B.T.k,m=K.mono,g=glow(B,K.P.core,mid?1.25:2.0),yb=y+m.hang;
+function monoSeams(b,B,K,x,y,z,mid){const k=B.T.k,m=K.mono,g=glow(B,K.P.core,mid?.78:2.0),yb=y+m.hang;   // G1 r6 T: MID seam = one wider, dimmer band (.035k hairline at 1.25 read as a pale wire at world zoom)
  if(!mid)for(const p of rectPts(x,z,m.w-m.bv*.8,m.d-m.bv*.8,m.ry))strut(b,[p[0],yb+m.bv,p[1]],[p[0],yb+m.h-m.bv,p[1]],.022*k,g);
- for(const f of(mid?[.5]:[.22,.5,.78]))prism(b,chamfPts(x,z,m.w+.02*k,m.d+.02*k,m.ry,m.bv),yb+m.h*f,yb+m.h*f+.035*k,g,false);}
+ for(const f of(mid?[.5]:[.22,.5,.78]))prism(b,chamfPts(x,z,m.w+.02*k,m.d+.02*k,m.ry,m.bv),yb+m.h*f,yb+m.h*f+(mid?.16:.035)*k,g,false);}
 function mastA(B,S,K,ms,y,cor,mid){const T=B.T,k=T.k,m=K.mono,st=hex(PAL.steel,.62*T.A),dk=hex(PAL.dark,T.A),cab=hex(PAL.cable,1),ym=T.yl(ms.x,ms.z);
  let best=cor[0],bd=1e9;for(const p of cor){const d=Math.hypot(p[0]-ms.x,p[1]-ms.z);if(d<bd){bd=d;best=p;}}
  box(S.building,ms.x,ym-.15,ms.z,1.1*k,.15+.22*k,1.1*k,-ms.a,hex(PAL.concrete,.62*T.A));
- strut(S.metal,[ms.x,ym+ms.h-.1*k,ms.z],[best[0],y+m.hang+m.h-m.bv,best[1]],(mid?.045:.026)*k,cab);
- if(mid){loft(S.metal,rectPts(ms.x,ms.z,.7*k,.7*k,-ms.a),ym,rectPts(ms.x,ms.z,.2*k,.2*k,-ms.a),ym+ms.h,st,true);return;}
+ // G1 r6 T: MID mast = one solid matte tapered pylon (no hairline cable; was metal .7 -> .2 + .045k cable = thin pale lines at world zoom)
+ if(mid){loft(S.building,rectPts(ms.x,ms.z,1.0*k,1.0*k,-ms.a),ym,rectPts(ms.x,ms.z,.36*k,.36*k,-ms.a),ym+ms.h*.92,hex('#434A55',T.A),true);return;}
+ strut(S.metal,[ms.x,ym+ms.h-.1*k,ms.z],[best[0],y+m.hang+m.h-m.bv,best[1]],.026*k,cab);
  // heavy clamp mast: tapered solid spine + outer lattice, a clamp head with a dark yoke pointing at the monolith
  loft(S.building,rectPts(ms.x,ms.z,.42*k,.42*k,-ms.a),ym,rectPts(ms.x,ms.z,.16*k,.16*k,-ms.a),ym+ms.h,hex(PAL.dark,1.25*T.A),true);
  latticeMast(S,ms.x,ym+.1*k,ms.z,ms.h*.78,.62*k,.2*k,7,.035*k,st);
@@ -529,7 +530,9 @@ function* coreA(B,S,K,mid){const T=B.T,k=T.k,c=K.core,m=K.mono,cx=c.x,cz=c.z,se=
  bevBox(S.building,cx,y+m.hang,cz,m.w,m.h,m.d,m.ry,m.bv,hex(PAL.mono,mid?1.75:1),hex(PAL.mono,mid?2.0:1.3));   // G1 r5 T: MID body lifted from near-black slate (only its lit seams + thin rings read at world zoom = 'wireframe')
  // G1 r5 T (vision r5: 'bluish wireframe / gyroscope structures look untextured' at world zoom): MID keeps ONE lit seam band (no corner
  // struts, no 3-band cage) and the gimbal rings are solid shaded bands (tube x1.3 -> x2.3, 3 -> 5 sides, 16 -> 24 segments)
- if(mid){monoSeams(S.light,B,K,cx,y,cz,1);for(const r of K.rings){const ax=ringAxes(r);torus(S.metal,[cx,y+m.cy,cz],ax[0],ax[1],r.r,r.tube*2.3,24,5,i=>tone(st,i%6?1:.72));}}
+ // G1 r6 T (vision r5 merge: gimbal complex still a thin pale-blue wireframe): MID = 2 of the 3 rings as thick matte slate bands
+ // (building material: no metal specular glints), tube x2.3 -> x3.6, 6 sides; light/dark facet split gives a shaded mass
+ if(mid){monoSeams(S.light,B,K,cx,y,cz,1);const rk=hex('#505864',T.A);for(const r of[K.rings[0],K.rings[2]]){const ax=ringAxes(r);torus(S.building,[cx,y+m.cy,cz],ax[0],ax[1],r.r,r.tube*3.6,24,6,i=>tone(rk,i%6<3?1.1:.7));}}
  yield 1;
  // four clamp masts + tension cables to the monolith corners
  const cor=rectPts(cx,cz,m.w,m.d,m.ry);for(const ms of K.masts){mastA(B,S,K,ms,y,cor,mid);yield 1;}}
@@ -550,16 +553,17 @@ function* coreB(B,S,K,mid){const T=B.T,k=T.k,c=K.core,cx=c.x,cz=c.z,se=seatC(T,c
  // the sphere: faceted, lit facet joints
  const nl=mid?5:sp.nl,ns=mid?12:sp.ns,yc=sp.yc||0,la0=-Math.asin(clamp(yc/sp.r,0,.9));
  sphere(S.building,cx,y+yc,cz,sp.r,nl,ns,(i,j,h)=>hex(PAL.sphere,T.A*(.8+.4*hash2(i*5.3+j,j*1.9+h))),la0,PI/2);yield 1;
- geoShell(S.light,cx,y+yc,cz,sp.r*1.004,nl,ns,(mid?.02:.011)*k,glow(B,P.core,.85),la0,PI/2);yield 1;
+ if(!mid)geoShell(S.light,cx,y+yc,cz,sp.r*1.004,nl,ns,.011*k,glow(B,P.core,.85),la0,PI/2);yield 1;   // G1 r6 T: MID facet-joint net dropped (a lit wire net at world zoom)
  // three stacked magnetic coil tori on short pylons
- let pc=null;for(const co of K.coils){torus(S.metal,[cx,y+co.y,cz],AXY[0],AXY[1],co.r,co.tube,mid?16:28,mid?3:5,i=>tone(st,i%2?1:.68));
-  torus(S.light,[cx,y+co.y,cz],AXY[0],AXY[1],co.r+co.tube*.9,co.tube*.4,mid?12:28,3,gl);   // E2 patch: lit coil band also in NEAR (coils read as separate bands)
+ let pc=null;for(const co of K.coils){torus(mid?S.building:S.metal,[cx,y+co.y,cz],AXY[0],AXY[1],co.r,co.tube*(mid?1.6:1),mid?16:28,mid?4:5,i=>tone(st,i%2?1:.68));
+  if(!mid||co===K.coils[1])torus(S.light,[cx,y+co.y,cz],AXY[0],AXY[1],co.r+co.tube*(mid?1.4:.9),co.tube*.4,mid?12:28,3,mid?glow(B,P.core,.62):gl);   // E2 patch: lit coil band also in NEAR; r6 T: MID one band at .62 (was 3 bands at 1.5 = clipped white rings)
   if(!mid||!pc)for(let j=0;j<co.pyl;j++){const a=j*TAU/co.pyl+co.i*.39,ca=Math.cos(a),sa=Math.sin(a);
    if(!pc)box(S.building,cx+ca*co.r,y,cz+sa*co.r,.2*k,co.y-co.tube*.8,.2*k,-a,dk);
    else strut(S.metal,[cx+ca*pc.r,y+pc.y+pc.tube*.7,cz+sa*pc.r],[cx+ca*co.r,y+co.y-co.tube*.7,cz+sa*co.r],.035*k,dk);}
   pc=co;yield 1;}
  // open geodesic Faraday lattice hemisphere (crown left open) on a footing ring
- geoShell(S.metal,cx,y,cz,la.r,mid?3:la.nl,mid?10:la.ns,(mid?.04:.028)*k,st,0,PI/2*.8);
+ // G1 r6 T: MID Faraday lattice = a few thick matte members (2 x 6 at .12k, was 3 x 10 hairlines at .04k = wireframe at world zoom)
+ geoShell(mid?S.building:S.metal,cx,y,cz,la.r,mid?2:la.nl,mid?6:la.ns,(mid?.12:.028)*k,mid?hex('#5A5650',T.A):st,0,PI/2*.8);
  if(!mid)torus(S.metal,[cx,y+.06*k,cz],AXY[0],AXY[1],la.r,.06*k,la.ns,3,dk);
  yield 1;
  // radial fin collar on the crater rim
@@ -580,13 +584,13 @@ function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL
    quadO(S.building,[s*t.fl,fa0,z],[s*t.fl,fe0,e],[mx,me,e],[mx,ma,z],tone(DTR,sg),[s*t.out*3,ya,zc]);
    quadO(S.building,[mx,ma,z],[mx,me,e],[s*t.top,ye,e],[s*t.top,ya,z],tone(cc,.62*sg),[s*t.out*3,ya,zc]);
    quadUp(S.building,[s*t.top,ya,z],[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.top,ye,e],tone(cc,1.12));
-   if(mid||(Math.round(z/segL)&1)===0)box(S.light,s*(t.top+.03*k),ya-.005,zc,(mid?.13:.035)*k,.03*k,(e-z)*(mid?.96:.7),0,glow(B,PAL.cool,mid?.8:.5));   // lit lip: dashed edge light (MID: continuous line = the divide at world zoom; r4 T: .07 -> .13 k wide, .9 -> .8)
+   if(mid||(Math.round(z/segL)&1)===0)box(S.light,s*(t.top+.03*k),ya-.005,zc,(mid?.13:.035)*k,.03*k,(e-z)*(mid?.96:.7),0,glow(B,PAL.cool,mid?.5:.5));   // G1 r6 T: MID lip gain .8 -> .5 (pale line at world zoom); lit lip: dashed edge light (MID: continuous line = the divide at world zoom; r4 T: .07 -> .13 k wide, .9 -> .8)
    quadO(S.building,[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.out,T.yl(s*t.out,e)-.03,e],[s*t.out,T.yl(s*t.out,z)-.03,z],mid?tone(cc,.95):er,[0,ya-9,zc]);}   // r4 T: MID backfill = pale lip (was orange earth)
   yield 1;
   for(let z=t.z0+t.butt*.5;z<t.z1;z+=t.butt*(mid?2:1)){const yf=T.yl(s*t.fl,z)-.05;fin(S.building,s*t.fl*.62,z,s*t.top,z,yf,yf,.06*k,(yt(s,z)-yf)*.55,.24*k,tone(DTR,1.25));}
   yield 1;}
  let nl=0;for(const m of L.masts){const y=yt(m.s,m.z);
-  if(mid)box(S.metal,m.x,y,m.z,.07*k,m.h,.07*k,0,st);
+  if(mid){if((nl++)%2)continue;box(S.building,m.x,y,m.z,.18*k,m.h*.8,.18*k,0,tone(DTR,1.5));box(S.light,m.x,y+m.h*.8,m.z,.09*k,.09*k,.09*k,0,glow(B,PAL.beacon,.85));continue;}   // G1 r6 T: MID half the sensor masts, solid matte posts (were .07k metal needles + 1.7 beacons)
   else{latticeMast(S,m.x,y,m.z,m.h,.16*k,.03*k,3,.016*k,st,3);box(S.metal,m.x,y+m.h,m.z,.14*k,.1*k,.14*k,0,dk);if((nl++)%4===0)lightPt(B,m.x,y+m.h,m.z,PAL.beacon,.3,4*k);}
   box(S.light,m.x,y+m.h+(mid?0:.1*k),m.z,.06*k,.06*k,.06*k,0,glow(B,PAL.beacon,1.7));if(!mid)yield 1;}
  if(mid)return;
@@ -707,7 +711,7 @@ function farCores(B){const T=B.T,L=B.L,F=B.F,k=T.k,A=L.blocs[0],Q=L.blocs[1],st=
  cyl(F.building,c.x,y-.3,c.z,c.pit+1.2*k,c.pit+1.14*k,.3+.58*k,12,hex(PAL.concrete,.62*T.A));
  box(F.building,c.x,y+m.hang,c.z,m.w,m.h,m.d,m.ry,hex(PAL.mono,1.75),hex(PAL.mono,2.0));   // G1 r5 T: far body lifted (see MID)
  prism(F.light,chamfPts(c.x,c.z,m.w+.04*k,m.d+.04*k,m.ry,m.bv),y+m.hang+m.h*.5,y+m.hang+m.h*.5+.08*k,hex(A.P.core,1.6*B.gl),false);
- const r=A.rings[0],ax=ringAxes(r);torus(F.metal,[c.x,y+m.cy,c.z],ax[0],ax[1],r.r,r.tube*2.4,16,4,st);
+ const r=A.rings[0],ax=ringAxes(r);torus(F.building,[c.x,y+m.cy,c.z],ax[0],ax[1],r.r,r.tube*3.6,16,6,hex('#505864',T.A));   // G1 r6 T: matte thick band (see MID)
  for(const ms of A.masts){const ym=T.yl(ms.x,ms.z);loft(F.metal,rectPts(ms.x,ms.z,.5*k,.5*k,0),ym-.1,rectPts(ms.x,ms.z,.14*k,.14*k,0),ym+ms.h,st);}
  c=Q.core;y=Q.y!=null?Q.y:T.yl(c.x,c.z);const te=Q.terr,co=Q.coils[1];
  cyl(F.building,c.x,y-.3,c.z,te.r1,te.r0,.3+te.h,12,hex(PAL.earth,.95*T.A),hex(PAL.dark,T.A));

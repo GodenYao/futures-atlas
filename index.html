@@ -124,6 +124,9 @@ body.axanim .axi.wy{transition:left .3s ease-out,top .3s ease-out,transform .3s 
 .nowl span{color:var(--acc);margin-left:0}
 /* card (right panel, only on selection) */
 #card{position:fixed;right:24px;top:60px;width:400px;max-height:calc(100vh - 240px);overflow-y:auto;overflow-x:hidden;padding:16px 18px 18px;display:none;z-index:21;background:var(--pbg);color:var(--t1);scrollbar-width:thin;scrollbar-color:#2a323c transparent;overscroll-behavior:contain}
+#card{transition:opacity .34s ease,transform .36s cubic-bezier(.2,.7,.2,1)}#card.cv0{opacity:0;transform:translateX(18px);pointer-events:none;transition:opacity .16s ease,transform .16s ease} /* G1 r6 U: shared card fade/slide (fa4_ui cardShow/closeCard) */
+#vis{transition:opacity .34s ease}#vis.vh0{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#card,#card.cv0,#vis{transition:none}}
 #card .feed span{min-width:0;overflow-wrap:anywhere}#card .row .small{white-space:normal}#card .row .small .nw{white-space:nowrap}
 #card .small{color:var(--t2)}#card .lk{margin-top:10px;padding:6px 10px;border:1px solid var(--pline);font-size:13px;color:var(--t2)}
 #card .ev .d{color:var(--t3)}
@@ -318,7 +321,7 @@ const BASINS={
 // x: humans decide (0) -> AI decides (1) ; y: many powers (0, north) -> one power (1, south). No welfare field (Q17)
 const O=[
  // v4.4: defs = methods doc v4.2 (20261114_2332) §2.3 "Definition (after Tegmark)" column; W (welfare 0-5) fields removed (Q17)
- {id:'normaltech',n:'Normal technology',al:'muddling through: an ordinary near future',b:'B1',x:.18,y:.30,w:.085,def:'No superintelligence this decade. AI diffuses slowly like electricity: big productivity gains in some sectors, regulation, liability law and audits absorb it; institutions bend but hold. The town shows an ordinary near future (~2035): solar-glass towers, air taxis, delivery drones and a light-rail line.',lock:'Low: ordinary politics can still change course.'},
+ {id:'normaltech',n:'Normal technology',al:'muddling through: an ordinary near future',b:'B1',x:.18,y:.30,w:.085,def:'No superintelligence this decade. AI diffuses slowly like electricity: big productivity gains in some sectors, regulation, liability law and audits absorb it; institutions bend but hold. The town shows an ordinary near future (~2035): a slender solar-glass skyline, air taxis on lit rooftop vertiports, delivery drones and an elevated light-rail line.',lock:'Low: ordinary politics can still change course.'},
  {id:'libertarian',n:'Libertarian Utopia',al:'plural markets of humans and AIs',b:'B1',x:.40,y:.10,w:.08,def:'Humans, cyborgs, uploads and superintelligences coexist peacefully because property rights are respected; the world is split into machine, mixed and human-only zones. Superintelligences hold most wealth by trade.',lock:'Medium.'},
  {id:'egalitarian',n:'Egalitarian Utopia',al:'shared machine abundance',b:'B1',x:.25,y:.15,w:.08,def:'Humans, cyborgs and uploads coexist peacefully thanks to abolished property and a guaranteed income; all know-how is free and open. There is no superintelligence, which in Tegmark’s telling makes the arrangement fragile.',lock:'Medium.'},
  {id:'enslaved',n:'Enslaved God',al:'obedient superintelligence under human control',b:'B2',x:.23,y:.70,w:.10,twin:1,def:'A superintelligent AI is confined by its human controllers, who use it to produce technology and wealth beyond imagination; whether that is good or bad depends entirely on who the controllers are.',lock:'High: whoever holds the obedient AI can entrench.'},
@@ -440,7 +443,7 @@ function domRoad(src){let b=null,bv=-1;for(const k in src)if(src[k]>bv){bv=src[k
 const G1TXT={
  scene:{
   enslaved:'One basin split by an engineered trench between two buttressed walls, with sensor masts and two severed bridge stubs that do not meet. Bloc A (west) rises vertically: a terraced arcology, needle towers with sky-bridges and capsule towers on an orthogonal grid, threaded by a mag-lev spine with pods; at its centre a monolith hangs suspended inside three slowly turning gimbal rings over a ring basin. Bloc B (east) spreads horizontally: plinth decks, dome clusters, disc towers and lattice hangars on a radial plan around earthwork terraces; at its centre a sphere sits in a terraced crater, wrapped by three stacked coil rings inside an open lattice. Aqueducts, operations yards and drones serve each side.',
-  normaltech:'Architecture (§2.3): an ordinary grid town in a near future (~2035), no magic: a core of six- to twenty-storey towers, most with dark solar-glass facades and a few with a dim cool band under the roof, two mass-timber towers with planted terraces; around them two- to four-storey concrete and brick blocks, many flat roofs planted as rooftop farms with small greenhouses, a central square with a four-storey civic block (the regulator\'s office). Air taxis (small pods on four rotors) rise from lit rooftop pads, cruise slowly between them and land; delivery drones stream along one corridor; an elevated light-rail line on pillars crosses the town with a three-car train; driverless cars on the streets, street lamps, fields and farmsteads at the edge. Landmark: a fenced substation with transformers and gantries, a pylon line running out of town, and a data-centre campus of two long low halls joined to the substation by a raised cable tray.',
+  normaltech:'Architecture (§2.3): an ordinary grid town in a near future (~2035), no magic: a skyline of five slender towers of twelve to twenty-two storeys with different tops (two setbacks and a mast light, an offset twin slab, a hipped glass crown, a mast tower carrying a high vertiport deck, one mass-timber tower with planted terraces), dark or blue-grey solar glass with dim cool bands and corner lines; around them four- to seven-storey podium blocks and two- to four-storey concrete and brick blocks, many flat roofs planted as rooftop farms with small greenhouses, a central square with a four-storey civic block (the regulator\'s office). Winged passenger air taxis with small navigation lights wait on three lit-ring vertiports, lift off and cruise slowly on fixed lanes above the roofs, leaving faint light trails; delivery drones with blinking lights stream along one corridor; an elevated light-rail line on T-capped pillars crosses the whole town, with a lit three-car train and a covered station by the square; driverless cars on the streets, street lamps; the streets thin out raggedly into fields and farmsteads at the edge. Landmark: a fenced substation with transformers and gantries, a pylon line running out of town, and a data-centre campus of two long low halls joined to the substation by a raised cable tray.',
  gatekeeper:'Architecture (§2.3): one round city inside a low perimeter rail with four gates: four avenues cross a ring canal (bridges, piers, small boats) to a central plaza; districts of glass towers, slab blocks on arcs, honeycomb pavilions with solar trees and a garden sector under a ribbed glass dome; an elevated rail loop with a slow train. Landmark: the single tall spire in a lattice frame at the centre, carrying one eye that turns to look around and blinks now and then (it watches; it does not scan).',
  egalitarian:'Architecture (§2.3): identical modest two-storey dwellings with green, solar-topped roofs in three concentric rings around an open commons; a public workshop and a library on the inner ring, shared fields outside; no fences, no towers. Landmark: the open amphitheatre filling the commons.',
   zookeeper:'Architecture (§2.3): a small tidy human reserve inside one round, high glass enclosure on a low planted stone base: two rings of pitched-roof cottages with back gardens along oval paths, a playground, a hedge belt along the inside of the glass, people walking and standing at the glass looking out, small service robots on the paths. Supplies arrive from above: a pod drops through a roof hatch to a pad and rises again. The one road ends at a closed airlock in the glass. Outside the enclosure, a machine landscape that thins toward the hills: crystal obelisks, dark compute stacks with faint cool seams, low halls and a slowly swinging gantry crane, with no people in it. Landmark: the enclosure with a single tree at its centre.',
@@ -478,7 +481,7 @@ const LOOK={n:'Cinematic dusk', // deep blue-violet terrain, warm gold city ligh
 /* r2 U7: lens picker lives in the ROADS card header (magnifier + active lens name) with a popover; the HUD keeps title + leading site */
 #hud #lenscard{display:none!important}
 #legend .hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
-#lensbtn{cursor:pointer;color:var(--acc);display:inline-flex;gap:5px;align-items:center;pointer-events:auto;padding:1px 4px;border:1px solid transparent}#lensbtn:hover,#lensbtn.on{border-color:var(--acc)}#lensbtn svg{width:13px;height:13px}
+#lensbtn{cursor:pointer;color:var(--acc);display:inline-flex;gap:5px;align-items:center;pointer-events:auto;padding:1px 4px;border:1px solid transparent}#lensbtn:hover,#lensbtn.on{border-color:var(--acc)}#lensbtn svg{width:21px;height:15px}
 #lenspop{position:fixed;z-index:45;width:330px;background:rgba(10,14,19,.96);border:1px solid #2A3340;border-left:2px solid var(--acc);padding:6px;display:none;backdrop-filter:blur(8px)}#lenspop.on{display:block}
 #lenspop .ph{font:500 10px var(--f2);letter-spacing:.16em;color:var(--t3);padding:2px 8px 6px}
 #lenspop #lens{display:flex!important;flex-direction:column;gap:2px;margin:0!important;position:static!important}#lenspop #lens .lt{display:none}
@@ -599,6 +602,9 @@ function setValleys(p){VAL=[];for(const o of O){if(o.cliff)continue;const d=dept
   // G1 r4 (T): Enslaved basin 3.6 -> 1.25 deep with a softer wall (k 2.6 -> 2.0), a stronger outline warp (wa) and a narrower noise
   // feather (fk): the 3.6 u wall + its AO foot read as a dark round plateau rim (world ring L 39-41 at 1.0-1.3 R vs 53 outside)
   if(o.id==='enslaved'){VAL.push({X:o.X,Z:o.Z,w2:w*w,d:1.25,k:2.0,b:o.b,o,wa:1.0,fk:.8});continue;}
+  const G=G1GEN[o.id];if(G.bd!=null&&!o.twin){VAL.push({X:o.X,Z:o.Z,w2:w*w,d:G.bd,k:G.bk||2.0,b:o.b,o,wa:G.bwa||1.0,fk:G.bfk||.8});continue;}   // r6 T: per-site basin depth read here (S2 CONFLICTS r5; the fa4_build wrapper is now a no-op)
+  // r6 T: Gatekeeper keeps its depth but gets the soft warped wall (k 2.6 wall at .75-1.2 w = world ring L 33 dip at r 9-10, lit rim 40 on the right)
+  if(o.id==='gatekeeper'){VAL.push({X:o.X,Z:o.Z,w2:w*w,d,k:2.0,b:o.b,o,wa:1.0,fk:.8});continue;}
   VAL.push({X:o.X,Z:o.Z,w2:w*w,d:o.twin?3.6:d,k:2.6,b:o.b,o});continue;} // G1: one flat-floored basin under a generator city (no twin pits, no ridge)
  if(o.twin){for(const s of[-1,1])VAL.push({X:o.X+s*TWIN,Z:o.Z,w2:PITW*PITW,d:Math.min(9,d*.95),k:3.2,b:o.b,o});}
  else{const w=o.w*100;VAL.push({X:o.X,Z:o.Z,w2:w*w,d,k:2.2,b:o.b,o});}}}
@@ -712,7 +718,7 @@ const T_LO=hx(LOOK.T.LO),T_MID=hx(LOOK.T.MID),T_HI=hx(LOOK.T.HI),T_ROCK=hx(LOOK.
 function faceCol(X,Z,h,ny,j,o){const t=sm(-7,13,h);if(t<.5)mix(T_LO,T_MID,t*2,o);else mix(T_MID,T_HI,(t-.5)*2,o);
  const rk=sm(.93,.72,ny);if(rk>0)mix(o,T_ROCK,rk*.6,o);
  if(MW>.5&&X<-55){const q=((Math.floor((X+300)/5.2)*7+Math.floor((Z+300)/3.8)*13)%6+6)%6;const k=1+(q-2.5)*.025*(MW-.5)*2;o[0]*=k;o[1]*=k;o[2]*=k;}
- if(MS>.3){const dx=X-CRX,dz=Z-CRZ,r=Math.sqrt(dx*dx+dz*dz);const tt=sm(15,5,r)*MS;if(tt>0)mix(o,T_CHAR,tt*.85,o);}
+ if(MS>.3){const dx=X-CRX,dz=Z-CRZ,r=Math.sqrt(dx*dx+dz*dz);const tt=sm(15,5,r)*MS;if(tt>0)mix(o,T_CHAR,tt*.5,o);} // G1 r6 T: .85 -> .5 (selfdestruct box L 37 at world zoom)
  if(RIVF>.12){const s=sm(.12,.3,RIVF);mix(o,T_SHORE,s*(1-sm(.3,.45,RIVF))*.7,o);if(RIVF>.4)mix(o,T_WAT,sm(.4,.6,RIVF),o);}
  if(LAKF>.01){mix(o,T_SHORE,LAKF*(1-sm(.9,.97,LAKF))*.7,o);if(LAKF>.9)mix(o,T_WAT,sm(.9,.98,LAKF),o);}
  if(PLZF>0)mix(o,T_PAVE,PLZF*.9,o);
@@ -725,7 +731,7 @@ const T_HEATH=[(T_MID[0]+T_HI[0])/2,(T_MID[1]+T_HI[1])/2,(T_MID[2]+T_HI[2])/2],T
 // moist lowland, a warmer dry upland tint, ash (Conquerors / crater scar), worn ground near settlements
 const T_WETE=[T_LO[0]*.62,T_LO[1]*.74,T_LO[2]*.82],T_SHAL=[T_SHORE[0]*1.22+.02,T_SHORE[1]*1.25+.035,T_SHORE[2]*1.2+.06],T_DEEP=[T_SHORE[0]*.95+.008,T_SHORE[1]*1.0+.02,T_SHORE[2]*1.02+.04],
  T_SAND=[T_SHORE[0]*.6+T_HI[0]*.4+.035,T_SHORE[1]*.6+T_HI[1]*.4+.02,T_SHORE[2]*.6+T_HI[2]*.4],T_MOIST=[T_LOM[0]*.9,T_LOM[1]*1.07+.01,T_LOM[2]*1.03+.01],
- T_ASH=[T_CHAR[0]*.6+T_ROCK[0]*.4,T_CHAR[1]*.6+T_ROCK[1]*.4,T_CHAR[2]*.6+T_ROCK[2]*.4],T_WORN=[T_MID[0]*1.08+.012,T_MID[1]*1.05+.008,T_MID[2]*1.0];
+ T_ASH=[T_CHAR[0]*.6+T_ROCK[0]*.4,T_CHAR[1]*.6+T_ROCK[1]*.4,T_CHAR[2]*.6+T_ROCK[2]*.4],T_WORN=[T_MID[0]*1.08+.012,T_MID[1]*1.05+.008,T_MID[2]*1.0],T_DUST=hx('#4A4250'); // r6 T: T_DUST = pale grey-mauve ash of the devastated (selfdestruct) field
 // G1 r2 outskirts land use per ending (Part C idea 4): f = field/hedge/track patchwork strength (thins outward), s = ash/scar gradient
 const G1OUT={normaltech:{f:1},libertarian:{f:.8},egalitarian:{f:1},enslaved:{f:.85},o1984:{f:.9},gatekeeper:{f:1},protector:{f:.75},benevolent:{f:.8},
  zookeeper:{f:.45},descendants:{f:.5},conquerors:{f:0,s:1},reversion:{f:1},selfdestruct:{f:0}}; // crater: its own char gradient (below), no extra ash
@@ -754,7 +760,7 @@ function faceColB(X,Z,h0,ny,o){const sl=1-ny,h=h0+BAS*.85;G1OW=g1out(X,Z,h,sl);c
  if(G1NEAR>0)mix(o,T_WORN,G1NEAR*(.16+.12*(n2+.5)),o);
  // G1 r2: scar gradients (Conquerors ash, crater char) with a noise-warped outline (was a round char disc)
  if(G1SC>0)mix(o,T_ASH,G1SC*(.45+.35*(n2+.5)),o);
- if(MS>.3){const dx=X-CRX,dz=Z-CRZ,r=Math.sqrt(dx*dx+dz*dz)*(1+.45*(g1fbm(X*.12,Z*.12,2)-.5));const tt=sm(13,4,r)*MS;if(tt>0)mix(o,T_CHAR,tt*.42,o);} // G1 r5 T: char .72 -> .42 (crater site lost in the dark at world zoom)
+ if(MS>.3){const dx=X-CRX,dz=Z-CRZ,r=Math.sqrt(dx*dx+dz*dz)*(1+.45*(g1fbm(X*.12,Z*.12,2)-.5));const tt=sm(11.5,4,r)*MS;if(tt>0){mix(o,T_DUST,tt*.62,o);const tc=sm(6.5,2.5,r)*MS;if(tc>0)mix(o,T_CHAR,tc*.38,o);o[0]*=1+.14*tt;o[1]*=1+.04*tt;}} // G1 r6 T: grey ash field with a warm ember cast + char only in the bowl (r5: char .42 over the whole r<13 = site box L 37, lost)
  // G1 r2 natural river: dark wet-earth banks -> point-bar sand -> shallows that catch the dusk sky (lighter than the land, the way
  // water reads at twilight) -> slightly deeper tone toward the fa4_build ribbon core
  if(RDN<3.5){const dn=RDN+n2*.35;mix(o,T_WETE,(1-sm(1.0,2.6,dn))*.7,o);
@@ -779,7 +785,7 @@ function faceColV42(X,Z,h,ny,j,o){
  const rk=sm(.92,.74,ny);if(rk>0)mix(o,ex<.5?C_RKH:C_RKM,rk*.85,o);
  if(h>9)mix(o,C_SNOW,sm(9,26,h)*.85,o);
  if(MW>.5&&X<-55){const f=C_FIELD[((Math.floor((X+300)/5.2)*7+Math.floor((Z+300)/3.8)*13)%6+6)%6];mix(o,f,(MW-.5)*2*.9,o);}
- if(MS>.3){const dx=X-CRX,dz=Z-CRZ,r=Math.sqrt(dx*dx+dz*dz);const t=sm(15,5,r)*MS;if(t>0)mix(o,C_CHAR,t*.85,o);}
+ if(MS>.3){const dx=X-CRX,dz=Z-CRZ,r=Math.sqrt(dx*dx+dz*dz);const t=sm(15,5,r)*MS;if(t>0)mix(o,C_CHAR,t*.5,o);} // G1 r6 T: .85 -> .5
  if(RIVF>.12)mix(o,ex<.5?C_SHORE:C_SHORE2,sm(.12,.4,RIVF)*.75,o);
  if(LAKF>.01){mix(o,ex<.5?C_SHORE:C_SHORE2,LAKF*.8,o);if(LAKF>.97)mix(o,ex<.5?C_WAT:C_WAT2,.6,o);}
  if(PLZF>0)mix(o,C_PAVE,PLZF*.9,o);
@@ -1063,7 +1069,7 @@ descendants(o){const r=rng(18),cx=o.X,cz=o.Z,at=[cx,cz];const st='#cdb88f';
 conquerors(o){const r=rng(19),cx=o.X,cz=o.Z;const dk=['#2b2830','#37313f','#221f27','#403848'];
  scatter(r,cx,cz,5.4,0,34,.95,(X,Z,rr)=>{const w=.5+r()*.6,d=.5+r()*.6,h=(rr<1.8?3.5+r()*2.5:1+r()*2.2),ry=Math.round(r()*2)*.785;P('box',X,Z,w,h,d,dk[(r()*4)|0],{ry,sink:.2});P('box',X,Z,w*1.03,.08,d*1.03,'#ff3b30',{glow:1,ry,yo:h*.72});if(r()<.35){P('cyl',X+w*.3,Z,.16,h+1.2,.16,'#1d1a21');P('box',X+w*.3,Z,.18,.12,.18,'#ff5a3c',{glow:1,yo:h+1.2});}});
  for(let i=0;i<10;i++){const a=i/10*6.283,X=cx+Math.cos(a)*6.3,Z=cz+Math.sin(a)*6.3;P('oct',X,Z,.8,3+r()*3,.8,'#2a2630',{ry:a,tl:(r()-.5)*.4,sink:.4});}
- for(let i=0;i<8;i++){const a=i/8*6.283;P('box',cx+Math.cos(a)*3.2,cz+Math.sin(a)*3.2,6.2,.06,.12,'#ff4433',{glow:1,ry:-a,sink:-.05});}
+ for(let i=0;i<8;i++){const a=i/8*6.283;P('box',cx+Math.cos(a)*3.2,cz+Math.sin(a)*3.2,6.2,.06,.12,'#2E2A32',{ry:-a,sink:-.05});}   // G1 r6 T: 8 radial conveyor lines unlit (were '#ff4433' glow = a lit radial disc pattern)
  // §2.3: power plants (cooling towers), automated mine pit, ruined + overgrown human quarter at the edge; landmark = one broken human tower
  for(const[dx,dz]of[[-5.0,2.6],[-3.4,4.6]]){P('tcyl',cx+dx,cz+dz,2.2,4.2,2.2,'#4a4450');P('cyl',cx+dx,cz+dz,1.8,.12,1.8,'#ff6a3c',{glow:1,yo:4.15});P('cyl',cx+dx,cz+dz,1.4,1.6,1.4,'#c9c2cc',{yo:4.3,tl:0});} // r6: cooling towers moved to the camera side, bigger, pale steam plume
  P('cyl',cx+1.0,cz+5.6,3.2,.05,3.2,'#151217',{sink:-.02});for(const[rr,hh]of[[1.6,.3],[1.2,.18]])ring(cx+1.0,cz+5.6,rr,22,hh,.25,'#2a2430',{});ring(cx+1.0,cz+5.6,1.7,22,.06,.12,'#ff7a1a',{glow:1,yo:.3});P('box',cx+1.0,cz+5.6,.3,1.6,.3,'#403848',{tl:.5}); // mine pit, front, orange rim
@@ -1072,15 +1078,15 @@ conquerors(o){const r=rng(19),cx=o.X,cz=o.Z;const dk=['#2b2830','#37313f','#221f
  const hl=halo(cx,cz,3,3.2,'#ff3b30',.07);ANIM.push(t=>{hl.material.opacity=.05+.035*Math.sin(t*2.4);});}, // G1 r4 (T): red halo r 4 -> 3.2, opacity .09+-.07 -> .05+-.035 (round glow, no neon)
 reversion(o){const r=rng(20),cx=o.X,cz=o.Z;
  // §2.3: villages, farmland, WATER WHEELS (landmark) and workshops; no data centres, no power lines
- for(const[dx,dz]of[[-6,-7],[4,-3],[-1,5],[8,7],[-10,3]]){const X=cx+dx,Z=cz+dz;P('box',X+1.1,Z,1.0,.05,5.2,'#3A4A58',{sink:-.02});house(X,Z,1.1,.85,1.0,'#efe6d6','#9b4a36',0);P('box',X-1.2,Z+.4,.8,.5,.7,'#b89870',{}); // v4.3 r2: mill race is dark water (no glow)
+ for(const[dx,dz]of[[-6,-7],[4,-3],[-1,5],[8,7],[-10,3]]){const X=cx+dx,Z=cz+dz;P('box',X+1.1,Z,1.0,.05,5.2,'#3A4A58',{sink:-.02});house(X,Z,1.1,.85,1.0,'#b4ab9e','#6e4a3c',0);P('box',X-1.2,Z+.4,.8,.5,.7,'#7e6c56',{}); // r6 T: walls/roof/shed muted (#efe6d6/#9b4a36/#b89870); v4.3 r2: mill race is dark water (no glow)
   const wh=new THREE.Group();const wm=new THREE.MeshLambertMaterial({color:'#B8A88E'});const tr=new THREE.Mesh(new THREE.TorusGeometry(1.15,.11,6,24),wm);wh.add(tr);const hub_=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.5,10),wm);hub_.rotation.x=Math.PI/2;wh.add(hub_);
   for(let i=0;i<8;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(.12,1.15,.42),wm);b.position.y=.57;const p=new THREE.Group();p.rotation.z=i*Math.PI/4;p.add(b);wh.add(p);}
   wh.rotation.y=.35;wh.rotation.x=r()*.8;const g=dyn(new THREE.Group(),X+.72,Z,1.0);g.add(wh);} // v4.3 r2: larger pale water wheel (landmark), static - motion only for data
  for(const[dx,dz]of[[-4,-5],[6,-1],[-8,1]]){P('box',cx+dx,cz+dz,.22,.16,.22,'#D08A48',{glow:1,yo:.05});} // Q17a: sparse fire light (hearths)
- for(let i=0;i<7;i++){const[dx,dz]=inDisk(r,11,2);house(cx+dx,cz+dz,.9,.6,.6,'#b5523f','#6f5b4a',r()*3);}
- for(let i=0;i<14;i++){const[dx,dz]=inDisk(r,12,1);P('cyl',cx+dx,cz+dz,.5,.45,.5,'#e8c860');}
+ for(let i=0;i<7;i++){const[dx,dz]=inDisk(r,11,2);house(cx+dx,cz+dz,.9,.6,.6,'#7c5444','#5a4c40',r()*3);}   // G1 r6 T: muted (vision: 'loud orange pods along the river'; pre-industrial = sparse fire light only)
+ for(let i=0;i<14;i++){const[dx,dz]=inDisk(r,12,1);P('cyl',cx+dx,cz+dz,.5,.38,.5,'#8C8058',{sink:.08});}   // r6 T: haystacks '#e8c860' -> straw-grey, seated
  for(let i=0;i<26;i++){const[dx,dz]=inDisk(r,14,3);tree(cx+dx,cz+dz,.6+r()*.4,GREENS[(r()*7)|0],r());}},
-selfdestruct(o){const r=rng(21),cx=o.X,cz=o.Z;const ch=['#4a423d','#5a504a','#3a3330','#665a50']; // G1 r5 T: rubble tones ~+25 % (was '#3d3633','#4b433e','#2d2826','#56493f'; site box L 34 at world zoom, lost in the dark)
+selfdestruct(o){const r=rng(21),cx=o.X,cz=o.Z;const ch=['#5c534c','#6c625a','#4a423d','#7a6c60']; // G1 r6 T: rubble +~20 % again (r5 '#4a423d','#5a504a','#3a3330','#665a50'; box L 37 at world zoom) // G1 r5 T: rubble tones ~+25 % (was '#3d3633','#4b433e','#2d2826','#56493f'; site box L 34 at world zoom, lost in the dark)
  // v4.3 r3 (item 4): rubble = low tilted slabs only (no cube silhouettes, no window bands)
  scatter(r,cx,cz,11.5,5.8,44,.8,(X,Z)=>{P('box',X,Z,.4+r()*.9,.08+r()*.26,.3+r()*.7,ch[(r()*4)|0],{ry:r()*3,tl:(r()-.5)*.8,tz:(r()-.5)*.6,sink:.04,tag:'rubble'});if(r()<.3)P('box',X,Z,.14,.08,.14,'#ff7a2a',{glow:1,yo:.05});});
  for(let i=0;i<0;i++){} // r3: stray charred poles removed (read as floating sticks)
@@ -1377,17 +1383,40 @@ if(OPT.tilt)try{RT=new THREE.WebGLRenderTarget(4,4,{samples:2});
 const WORLDV={tx:WV0.tx,tz:WV0.tz,d:WV0.d,yaw:0,pit:WV0.pit,ly:0}; // v4.4 P1: whole-map framing (WV0 in fa4_world.js); v4.3 r4 (item 3): lower, more cinematic pitch (.78->.70) and target moved north (tz 22->15) so the site field sits lower with a horizon band above (was top-heavy, empty y 580-740) // v4.3 r2: re-centred right of the legend rail
 const cam={...WORLDV},tg={...WORLDV};let view='world',focus=null,focusO=null,sel=null,selR=null,drag=null;
 let DUSK=0;
-function camApply(){let mv=0;for(const k in tg){const d=tg[k]-cam[k];cam[k]+=d*.085;if(Math.abs(d)>(k==='d'?.02:.0006))mv=1;else cam[k]=tg[k];}
- const dt=(view==='world'?0:1)-DUSK;if(Math.abs(dt)>.003){DUSK+=dt*.08;mv=1;}else DUSK=view==='world'?0:1;
+// G1 r6 U (owner: 'NOW / city click is abrupt, the picture shakes'). Shake causes found in the old camApply:
+//  (1) the card offset (tx += d*.11 while the card is open) switched ON/OFF in ONE frame when the card appeared/closed -> sideways jump;
+//  (2) the look-at height snapped from -2 (world) to hAt()+1 (basin) the frame `view` changed, then followed the terrain under the moving
+//      target (hAt(cam.tx,cam.tz)) -> vertical bob over hills; (3) per-frame exponential chase (x.085 per frame) -> speed depended on frame
+//      time, so a 60-200 ms city-build frame made a visible lurch. Fix: ONE time-based eased fly (FLY, easeInOutCubic) that also carries the
+//      card offset (CSH 0..1), the look-at height (CTY, toward the DESTINATION's height) and DUSK on the same curve; frame steps are clamped
+//      (<= 34 ms of fly time per frame) so a hitch slows the move instead of jumping. User input during a fly (drag/wheel changes tg) hands
+//      over to the time-based follow. Card reveal/hide timing lives in fa4_ui.js (cardShow / closeCard) and reads FLY.
+const FLY={on:false,el:0,dur:0,from:null,to:null,tyF:0,shF:0,duF:0};let CSH=0,CTY=null,CAMT=0;
+const easeIO=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+const tyGoal=()=>view==='world'?-2:hAt(tg.tx,tg.tz)+1+(tg.ly||0),shGoal=()=>(cardOpen()&&innerWidth>900)?1:0;
+function flyTo(o,dur,delay){if(o)Object.assign(tg,o);if(!RMOT){Object.assign(cam,tg);FLY.on=false;CSH=shGoal();CTY=tyGoal();DUSK=view==='world'?0:1;kick(600);return;}
+ const dd=Math.hypot(tg.tx-cam.tx,tg.tz-cam.tz)+Math.abs(tg.d-cam.d)*.6+Math.abs(tg.yaw-cam.yaw)*30+Math.abs(tg.pit-cam.pit)*30;
+ FLY.dur=dur||clamp(820+dd*6,900,1500);FLY.el=-(delay||0);FLY.from={...cam};FLY.to={...tg};FLY.tyF=CTY==null?tyGoal():CTY;FLY.shF=CSH;FLY.duF=DUSK;FLY.on=true;FLY.k=0;kick(FLY.dur+(delay||0)+600);}
+function flyLeft(){return FLY.on?Math.max(0,FLY.dur-FLY.el):0;} // ms of fly still to run (card reveal timing)
+function camApply(){let mv=0;const now=performance.now(),dtm=CAMT?clamp(now-CAMT,0,100):16.7;CAMT=now;
+ if(FLY.on){let user=false;for(const k in FLY.to)if(Math.abs(tg[k]-FLY.to[k])>1e-6)user=true;
+  if(user)FLY.on=false;else{FLY.el+=Math.min(dtm,34);const k=clamp(FLY.el/FLY.dur,0,1),e=easeIO(k);FLY.k=k;
+   for(const q in FLY.to)cam[q]=FLY.from[q]+(FLY.to[q]-FLY.from[q])*e;CTY=FLY.tyF+(tyGoal()-FLY.tyF)*e;CSH=FLY.shF+(shGoal()-FLY.shF)*e;DUSK=FLY.duF+((view==='world'?0:1)-FLY.duF)*e;mv=1;
+   if(k>=1)FLY.on=false;}}
+ if(!FLY.on){const a=1-Math.pow(1-.085,dtm/16.7),a2=1-Math.pow(1-.11,dtm/16.7); // same feel as the old per-frame chase at 60 fps, but time-based
+  for(const k in tg){const d=tg[k]-cam[k];cam[k]+=d*a;if(Math.abs(d)>(k==='d'?.02:.0006))mv=1;else cam[k]=tg[k];}
+  const tyg=tyGoal();if(CTY==null)CTY=tyg;{const d=tyg-CTY;if(Math.abs(d)>.005){CTY+=d*a;mv=1;}else CTY=tyg;}
+  {const d=shGoal()-CSH;if(Math.abs(d)>.002){CSH+=d*a2;mv=1;}else CSH=shGoal();}
+  const dt=(view==='world'?0:1)-DUSK;if(Math.abs(dt)>.003){DUSK+=dt*a2*.75;mv=1;}else DUSK=view==='world'?0:1;}
  hemi.intensity=.72-.04*DUSK;sun.intensity=1.0-.15*DUSK;glowLevel(); // v4.3 r4 O2: lifted twilight (was .55/.75); matte graphite stays readable in close-ups
  const yaw=cam.yaw;let tx=cam.tx,tz=cam.tz;
- if(cardOpen()&&innerWidth>900){const sh=cam.d*.11;tx+=Math.cos(yaw)*sh;tz-=Math.sin(yaw)*sh;}
- const ty=view==='world'?-2:hAt(cam.tx,cam.tz)+1+(cam.ly||0);const cp=Math.cos(cam.pit);
+ if(CSH>0){const sh=cam.d*.11*CSH;tx+=Math.cos(yaw)*sh;tz-=Math.sin(yaw)*sh;}
+ const ty=CTY;const cp=Math.cos(cam.pit);
  CAM.position.set(tx+cam.d*Math.sin(yaw)*cp,ty+cam.d*Math.sin(cam.pit),tz+cam.d*Math.cos(yaw)*cp);CAM.lookAt(tx,ty,tz);
  TU.uCam.value.copy(CAM.position);TU.uTgt.value.set(tx,ty,tz);TU.uNow.value.set(NOW.X,0,NOW.Z); // terrain occlusion fade + scan origin
  const ext=clamp(cam.d*.62,26,95);if(Math.abs(SCm.right-ext)>.5){SCm.left=-ext;SCm.right=ext;SCm.top=ext;SCm.bottom=-ext;SCm.updateProjectionMatrix();}
  sun.target.position.set(tx,0,tz);sun.position.set(tx-70,110,tz+45);return mv;}
-const cardOpen=()=>document.getElementById('card').style.display==='block';
+const cardOpen=()=>window.CARD?CARD.want:document.getElementById('card').style.display==='block'; // r6 U: logical 'card wanted' state (the DOM card fades in/out on its own clock)
 function setNav(){const nv=document.getElementById('nav'),cr=document.getElementById('crumb');const hb=(document.getElementById('hud').getBoundingClientRect().bottom+10)+'px';nv.style.top=hb;
  lodWant();kick();if(typeof visSync==='function')visSync(); // r6 U18 Visions panel follows the close-up
  if(view==='world'){nv.style.display='none';return;}nv.style.display='flex';
@@ -1395,9 +1424,9 @@ function setNav(){const nv=document.getElementById('nav'),cr=document.getElement
 function enterBasin(b){if(b==='C')return;view='basin';focus=b;focusO=null;const B=BASINS[b];
  // r4 U11: frame the basin's sites (bbox centre, nudged south so southern sites clear the timeline; pulled back when the basin is wide) instead of the fixed basin centre
  const S=O.filter(o=>o.b===b&&!o.cliff);let tx=U(B.cx),tz=V(B.cy)+2,d=84;if(S.length){const xs=S.map(o=>o.X),zs=S.map(o=>o.Z),x0=Math.min(...xs),x1=Math.max(...xs),z0=Math.min(...zs),z1=Math.max(...zs);tx=(x0+x1)/2;tz=(z0+z1)/2+4.5;d=clamp(84*Math.max(1,((x1-x0)/2+9)/32,((z1-z0)/2+12)/22),84,108);}
- Object.assign(tg,{tx,tz,d,pit:.9,yaw:0,ly:0});setNav();}
-function enterO(o){view='basin';focus=o.b;focusO=o;const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:46,descendants:48,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};Object.assign(tg,{ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();}
-function world(){view='world';focus=null;focusO=null;Object.assign(tg,WORLDV);closeCard();setNav();}
+ flyTo({tx,tz,d,pit:.9,yaw:0,ly:0},0,window.CARD&&CARD.vis()?140:0);setNav();} // r6 U: eased fly (card, if any, fades first)
+function enterO(o){view='basin';focus=o.b;focusO=o;const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:46,descendants:48,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};CARD.want=true;flyTo({ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();} // r6 U: CARD.want set before the fly so the card offset rides the same ease; select() -> cardShow reveals the card at ~60 % of the fly
+function world(){const cv_=window.CARD&&CARD.vis();view='world';focus=null;focusO=null;closeCard();flyTo({...WORLDV},0,cv_?140:0);setNav();} // r6 U: card fades out first (140 ms head start), then the camera eases back
 document.getElementById('back').onclick=world;
 addEventListener('keydown',e=>{kick();if(e.key==='Escape'){if(document.getElementById('page').style.display==='block')closePage();else if(focusO&&view!=='world'&&focus!=='C'){closeCard();enterBasin(focus);}else world();}
  else if((e.key==='t'||e.key==='T')&&e.target===document.body)toggleTL();});
@@ -1567,20 +1596,22 @@ const AMB2=[];{const r=rng(45);const add=f=>AMB2.push(f);
  {const s=S('benevolent'),g=gy(s.X,s.Z),k0=SCALE.benevolent||1;for(let k=0;k<5;k++){const a=k/5*6.2832+.31,p=gs('#8E9FB8'),X=s.X+Math.cos(a)*4.1*k0,Z=s.Z+Math.sin(a)*4.1*k0;
   add(t=>{const q=((t*.35-k/5)%1+1)%1;p.position.set(X,g+.9,Z);p.scale.set(2.2,2.2,1);p.material.opacity=q<.2?.16*Math.sin(q/.2*Math.PI):0;});}} // r4 main: Benevolent pulses halved + muted (were half its world hot pixels)
  // Zookeeper: a few humans walking inside the fence; a machine crane swinging outside it
- {const s=S('zookeeper');for(let k=0;k<4;k++){const p=gs('#FFE2B8');add(t=>{const a=t*.14*(k%2?1:-1)+k*1.6,rr=1.3+k*.22,X=s.X+Math.cos(a)*rr,Z=s.Z+Math.sin(a)*rr;p.position.set(X,gy(X,Z)+.45,Z);p.scale.set(.6,.6,1);p.material.opacity=.6;});}
+ if(!G1GEN.zookeeper){const s=S('zookeeper');/* r6 T: guarded (S2 CONFLICTS r5) */for(let k=0;k<4;k++){const p=gs('#FFE2B8');add(t=>{const a=t*.14*(k%2?1:-1)+k*1.6,rr=1.3+k*.22,X=s.X+Math.cos(a)*rr,Z=s.Z+Math.sin(a)*rr;p.position.set(X,gy(X,Z)+.45,Z);p.scale.set(.6,.6,1);p.material.opacity=.6;});}
   const G=new THREE.Group(),ms=bx(.28,5,.28,'#3E4450',.9),jb=bx(5,.2,.2,'#3E4450',.9);ms.position.y=2.5;jb.position.set(2,5,0);G.add(ms,jb);SC.add(G);const X=s.X+s.R*.95,Z=s.Z-s.R*.3,g=gy(X,Z);add(t=>{G.position.set(X,g,Z);G.rotation.y=Math.sin(t*.18)*.9;});}
  // Descendants: the machine city assembling (a block rising) while lights in the old quarter go out one by one
- {const s=S('descendants');const b=bx(1.3,1,1.3,'#625E80',.9);SC.add(b);const X=s.X+s.R*.4,Z=s.Z-s.R*.2,g=gy(X,Z);add(t=>{const q=(t/14)%1,h=.2+q*3.2;b.scale.set(1,h,1);b.position.set(X,g+h/2,Z);});
+ if(!G1GEN.descendants){const s=S('descendants');/* r6 T: guarded */const b=bx(1.3,1,1.3,'#625E80',.9);SC.add(b);const X=s.X+s.R*.4,Z=s.Z-s.R*.2,g=gy(X,Z);add(t=>{const q=(t/14)%1,h=.2+q*3.2;b.scale.set(1,h,1);b.position.set(X,g+h/2,Z);});
   for(let k=0;k<6;k++){const a=2.6+k*.25,p=gs('#FFD9A0'),x=s.X+Math.cos(a)*s.R*.6,z=s.Z+Math.sin(a)*s.R*.6;add(t=>{const q=(t/30)%1;p.position.set(x,gy(x,z)+.9,z);p.scale.set(1,1,1);p.material.opacity=q>(k+1)/7?0:.42;});}}
  // Conquerors: automated mining arms; machine indicator lights only (no human windows)
  {const s=S('conquerors');for(let k=0;k<2;k++){const G=new THREE.Group(),a=bx(4,.22,.22,'#5A6470',.95);a.position.x=2;G.add(a);SC.add(G);const X=s.X+(k?-1:1)*s.R*.55,Z=s.Z+s.R*.35,g=gy(X,Z);
    add(t=>{G.position.set(X,g+1.2,Z);G.rotation.y=k*Math.PI+Math.sin(t*.35+k)*.7;G.rotation.z=.25+.2*Math.sin(t*.7+k);});}
-  for(let k=0;k<6;k++){const p=gs('#7FA0B4'),a=r()*6.2832,rr=s.R*(.2+r()*.6),X=s.X+Math.cos(a)*rr,Z=s.Z+Math.sin(a)*rr,ph=r()*3;add(t=>{p.position.set(X,gy(X,Z)+2.5,Z);p.scale.set(1.1,1.1,1);p.material.opacity=((t+ph)%3)<.3?.9:.06;});}}
+  for(let k=0;k<6;k++){const p=gs('#6C8494'),a=r()*6.2832,rr=s.R*(.2+r()*.6),X=s.X+Math.cos(a)*rr,Z=s.Z+Math.sin(a)*rr,ph=r()*3;add(t=>{p.position.set(X,gy(X,Z)+2.5,Z);p.scale.set(1.1,1.1,1);p.material.opacity=((t+ph)%3)<.3?.5:.04;});}}   // G1 r6 T: indicator blink peak .9 -> .5, '#7FA0B4' -> slate (icy-blue points over the spires at world zoom)
  // Reversion: a water wheel turning; hearth fire light flickers (chimney smoke = A1)
- {const s=S('reversion');const w=new THREE.Mesh(new THREE.TorusGeometry(1.1,.14,4,12),new THREE.MeshBasicMaterial({color:'#8A6A4A'}));w.renderOrder=4;SC.add(w);const X=s.X+3,Z=s.Z+3,g=gy(X,Z);add(t=>{w.position.set(X,g+1,Z);w.rotation.z=-t*.6;});
-  for(let k=0;k<4;k++){const p=gs('#FF9A48'),a=r()*6.28,rr=r()*3,x=s.X+Math.cos(a)*rr,z=s.Z+Math.sin(a)*rr,ph=r()*6;add(t=>{p.position.set(x,gy(x,z)+.6,z);p.scale.set(1.2,1.4,1);p.material.opacity=.35+.2*Math.sin(t*7+ph)*Math.sin(t*2.3+ph);});}}
+ {const s=S('reversion');const w=new THREE.Mesh(new THREE.TorusGeometry(1.1,.14,4,12),new THREE.MeshLambertMaterial({color:'#5E5040'}));w.renderOrder=4;SC.add(w);const X=s.X+3,Z=s.Z+3,g=gy(X,Z);add(t=>{w.position.set(X,g+.95,Z);w.rotation.z=-t*.6;});   // G1 r6 T: wheel lit timber (was unlit '#8A6A4A' = a floating orange ring at world zoom)
+  for(let k=0;k<4;k++){const p=gs('#C07436'),a=r()*6.28,rr=r()*3,x=s.X+Math.cos(a)*rr,z=s.Z+Math.sin(a)*rr,ph=r()*6;add(t=>{p.position.set(x,gy(x,z)+.3,z);p.scale.set(.8,.9,1);p.material.opacity=.2+.1*Math.sin(t*7+ph)*Math.sin(t*2.3+ph);});}}   // r6 T: hearths = small low fire points (were '#FF9A48' 1.2 x 1.4 at .35-.55, +.6 = floating orange pods)
  // Self-destruction: embers flicker (drifting ash = A1 smoke)
- {const s=S('selfdestruct');for(let k=0;k<6;k++){const p=gs('#C2502A'),a=r()*6.28,rr=r()*7,x=s.X+Math.cos(a)*rr,z=s.Z+Math.sin(a)*rr,ph=r()*6;add(t=>{p.position.set(x,gy(x,z)+.4,z);p.scale.set(1,1,1);p.material.opacity=.15+.3*Math.max(0,Math.sin(t*.9+ph));});}}
+ {const s=S('selfdestruct'),q=rng(6106);for(let k=0;k<6;k++){const p=gs('#C2502A'),a=r()*6.28,rr=r()*7,x=s.X+Math.cos(a)*rr,z=s.Z+Math.sin(a)*rr,ph=r()*6;add(t=>{p.position.set(x,gy(x,z)+.4,z);p.scale.set(1.3,1.3,1);p.material.opacity=.2+.3*Math.max(0,Math.sin(t*.9+ph));});}
+  // G1 r6 T: devastation (Tegmark: war/collapse, not only nuclear) = sparse smouldering fires across the whole rubble field (own rng; colour <= .76)
+  for(let k=0;k<4;k++){const p=gs('#B85A30'),a=k/4*6.2832+q()*.9,rr=6+q()*5.5,x=s.X+Math.cos(a)*rr,z=s.Z+Math.sin(a)*rr,ph=q()*6;add(t=>{p.position.set(x,gy(x,z)+.5,z);p.scale.set(2.0,1.7,1);p.material.opacity=.28+.14*Math.sin(t*1.7+ph)*Math.sin(t*.6+ph);});}}
  // U5 whole map: drifting cloud shadows
  for(let k=0;k<4;k++){const m=new THREE.Mesh(new THREE.PlaneGeometry(46,30),new THREE.MeshBasicMaterial({map:glowTex(),color:'#000000',transparent:true,opacity:.15,depthWrite:false}));m.rotation.x=-Math.PI/2;m.renderOrder=3;SC.add(m);const z0=-45+k*28,sp=1.1+r()*.6,ph=r()*220;
   add(t=>{m.position.set(((t*sp+ph)%240)-120,16,z0+Math.sin(t*.02+k)*6);});}
@@ -2042,14 +2073,17 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   let NM='c';const cand=[];for(const H of[NOWH,16,13])for(const md of['c','r','l'])cand.push([H,md]);cand.push([24,'c'],[11,'c'],[11,'r']);
   for(const[H,md]of cand){const q=proj(NOW.X,ny+H+.1,NOW.Z);const x0=md==='c'?q[0]-nw0/2:md==='r'?q[0]-4:q[0]-nw0+4;const b=[x0,q[1]-28,x0+nw0,q[1]+2];if(!mk.some(m=>m[0]>b[0]-26&&m[0]<b[2]+26&&m[1]>b[1]-26&&m[1]<b[3]+26)){NH=H;NM=md;break;}}NOWL._m=NM;}
  const NMd=big?'c':(NOWL._m||'c'); // r4 (item 2): text centred on the drop line, or hung like a flag to its right/left when site icons sit above the hub
- const[hx,hy,hok]=proj(NOW.X,ny+NH+.1,NOW.Z);const nvis=hok&&hx>0&&hx<W&&hy>0&&hy<tlT;NOWL.style.display=nvis?'block':'none';
+ const[hx0,hy,hok]=proj(NOW.X,ny+NH+.1,NOW.Z);const LNo=window.RPL?RPL.leanOff():null,hx=hx0+(LNo?LNo.dx*11*LNo.e:0); // G1 r6 U (D7): NOW stays put; only the TOP of its drop line leans toward the road that gained most this replay week (~0.4 s), then settles
+ const nvis=hok&&hx>0&&hx<W&&hy>0&&hy<tlT;NOWL.style.display=nvis?'block':'none';
  const nw=NOWL.offsetWidth||150,nh=NOWL.offsetHeight||24;const nx0=NMd==='c'?hx-nw/2:NMd==='r'?hx-4:hx-nw+4;if(nvis){NOWL.style.transform=`translate(${nx0|0}px,${(hy-nh-2)|0}px)`;} // v4.3 r3 O5: floating 'NOW · week' text on top of the drop line
  // R-tags where each road leaves the hub ring (the only road text on the map)
  // v4.3 r2: R-tags sit ON their own road's centreline just outside the hub ring, on a small void backing; walked outward along the trunk until
  // they overlap neither another tag nor the NOW label (so a tag can never be read as belonging to a neighbouring road)
  og.font=`500 11px ${FM}`;og.textBaseline='middle';og.textAlign='center';const f=focusRoads();
  const placed=[];if(nvis){placed.push([nx0-10,hy-nh-12,nx0+nw+10,hy+8]);
-  const g0=proj(NOW.X,ny,NOW.Z);og.save();og.lineCap='round';og.strokeStyle='rgba(8,12,22,.85)';og.lineWidth=3.5;og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke();og.strokeStyle='rgba(244,239,227,.95)';og.lineWidth=1.4;og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke(); // r3 O5: thin drop line with a dark casing (overlay, reads over any road)
+  const g0=proj(NOW.X,ny,NOW.Z);og.save();og.lineCap='round';
+  if(LNo&&LNo.e>.01){const gx=g0[0]+LNo.dx*7*LNo.e,gy=g0[1]+LNo.dy*7*LNo.e,gr=og.createRadialGradient(gx,gy,0,gx,gy,22);gr.addColorStop(0,'rgba(255,246,226,'+(.5*LNo.e).toFixed(3)+')');gr.addColorStop(1,'rgba(255,246,226,0)');og.fillStyle=gr;og.beginPath();og.arc(gx,gy,22,0,6.2832);og.fill();} // lean glow, offset toward the gaining road
+  og.strokeStyle='rgba(8,12,22,.85)';og.lineWidth=3.5;og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke();og.strokeStyle='rgba(244,239,227,.95)';og.lineWidth=1.4+(LNo?1.1*LNo.e:0);og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke(); // r3 O5: thin drop line with a dark casing (overlay, reads over any road)
   og.fillStyle='#F4EFE3';og.beginPath();og.arc(g0[0],g0[1],3.6,0,6.2832);og.fill();og.strokeStyle='rgba(8,12,22,.9)';og.lineWidth=1.5;og.stroke();og.restore();placed.push([g0[0]-6,g0[1]-6,g0[0]+6,g0[1]+6],[Math.min(hx,g0[0])-5,hy,Math.max(hx,g0[0])+5,g0[1]]);}for(const m of MKB)placed.push([m[0]-17,m[1]-17,m[0]+17,m[1]+17]); // r4 (item 8): R-tags also keep clear of site icons
  const ovl=(a)=>placed.some(b=>a[0]-10<b[2]&&a[2]+10>b[0]&&a[1]-7<b[3]&&a[3]+7>b[1]); // r3: 8/6 px clearance between tags and from the NOW text (r4: 10/7 px)
  const PRJ=big?null:ROADV.map(rv=>rv.tp.filter((_,i)=>i%2===0).map(p=>proj(p[0],hMesh(p[0],p[1])+.2,p[1])));
@@ -2102,6 +2136,7 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   el.classList.remove('cp');
   if(!m){el.style.display='none';continue;}const w=el.offsetWidth,h=el.offsetHeight;const right=m.x>=hubX-40;const LG=26*(o._LK||1);let x=right?m.x+LG:m.x-LG-w;x=clamp(x,8,W-w-8);el.style.transform=`translate(${x|0}px,${(m.y-h/2)|0}px)`;}
  if(HOV&&HOV.o){const m=MK.find(k=>k.o===HOV.o);if(m)siteTip(HOV.o,m.x,m.y,hubX);}
+ if(window.RPL)RPL.draw(og,W,H,tlT); // G1 r6 U (D7): replay pulses, road milestones, pp pills (re-projected every frame)
  const capT=`Futures Atlas v4.4 · lens: ${LENSI[LCUR].n} · ${isoW(day)} · method ${MVER}`;const capE=document.getElementById('cap');if(capE&&capE.textContent!==capT)capE.textContent=capT;
 }
 
@@ -2141,7 +2176,7 @@ const G1={res:{},stats:{},NEAR_D:95,HYS:6,FADE:500,_v:new THREE.Vector3(),U:{uG1
  GK:+(G1Q.get('g1gk')||.7),NGAIN:+(G1Q.get('g1ngain')||1.3),NAMBK:+(G1Q.get('g1nambk')||.65),
  MAMBK:+(G1Q.get('g1mambk')||.5),MGLOW:+(G1Q.get('g1mglow')||.85),MCAP:+(G1Q.get('g1mcap')||1.6),MSAT:+(G1Q.get('g1msat')||1.25),MWIN:+(G1Q.get('g1mwin')||.7),MSH:+(G1Q.get('g1msh')||.9),dome:{},
  MNK:+(G1Q.get('g1mnk')??.76),MALB:+(G1Q.get('g1malb')??.5),NNK:+(G1Q.get('g1nnk')??.12),MWR:+(G1Q.get('g1mwr')??.75),MPOOL:+(G1Q.get('g1mpool')??.55),
- MGNK:+(G1Q.get('g1mgnk')??.6),MGK:+(G1Q.get('g1mgk')??.9),MG:{egalitarian:+(G1Q.get('g1mgeg')||.92),protector:+(G1Q.get('g1mgpt')||1.5)},
+ MGNK:+(G1Q.get('g1mgnk')??.6),MGK:+(G1Q.get('g1mgk')??.9),MG:{egalitarian:+(G1Q.get('g1mgeg')||.92),normaltech:+(G1Q.get('g1mgnt')||.84),protector:+(G1Q.get('g1mgpt')||1.72)},   // r6 N: protector MID 1.5 -> 1.72 (world box L 41, interior read as a dark hole; still the dimmest town)
  MWS:{egalitarian:+(G1Q.get('g1mweg')||2),protector:+(G1Q.get('g1mwpt')||2)},
  // C1 r5: per-site minimum apron blend toward the terrain (egalitarian has no underlay now, its paths/commons/fields keep more of
  // their own tone so the ring plan reads at world zoom), enslaved lobe tone split strength
@@ -2435,7 +2470,7 @@ function select(id){sel=id;selR=null;const o=byId[id],st=curP,c=st.p[id]||0,rg=r
  h+=`<div class="sub"><b>What you see</b><br>${glyphTxt(SCENE_TXT[id])}</div>`;
  if(o.twin)h+=`<div class="sub"><b style="color:#ffe2a8">Inside this site</b><br>Two pits, Bloc A and Bloc B, separated by a ridge of mutual deterrence. Identical architecture on both sides; only the colour of the caged core differs (teal vs magenta). No country is named on the map.<br>Road R1 carries two lanes: <b>broad accountability</b> and <b>narrow masters (technofeudal)</b>, ≈${Math.round(R1Q*100)}% of R1 (illustrative).</div>`;
  const rids=feeds.map(f=>f[0]);h+=evHTML(evForRoads(rids),rids);
- const cd=document.getElementById('card');cd.innerHTML=h;cd.style.display='block';cd.scrollTop=0;fitCard();setNav();}
+ cardShow(h);setNav();}
 function openRoad(rid){const r=RDI[rid],st=curP,w=st.w[rid];sel=null;selR=rid;const fk=FORKS[LCUR][rid];
  let h=`<span class="x" onclick="closeCard()">×</span><span class="tag mono" style="color:${r.c};border-color:${r.c}">ROAD ${rid}</span>
  <h2>${r.n}</h2><div class="small">${glyphTxt(r.d)}</div>
@@ -2443,14 +2478,29 @@ function openRoad(rid){const r=RDI[rid],st=curP,w=st.w[rid];sel=null;selR=rid;co
  <div class="sub"><b>By lens</b> <span class="small">(placeholder lenses; parameters by maintainer)</span>`+LENS.map(l=>`<div class="feed"><i style="background:${l.id===LCUR?'#f3ead8':'rgba(255,255,255,.18)'}"></i><span>${l.n}</span><b class="mono">${l.s[rid].toFixed(0)}%</b></div>`).join('')+`</div>
  <div class="sub"><b>Where this road leads</b> <span class="small">(all destinations; editorial splits sum to 100%, shown as dashed spurs)</span>`+Object.entries(fk).sort((a,b)=>b[1]-a[1]).map(([sid,f])=>{const er=r.f[sid];return `<div class="feed cl nd" onclick="enterO(byId['${sid}'])"><span>${siteName(byId[sid],GPX)} ${Math.round(f*100)}% <span class="small">(${Math.round(er[1]*100)}–${Math.round(er[2]*100)}%)</span></span><b class="mono">${(w*f).toFixed(1)}%</b></div>`;}).join('')+`</div>`;
  h+=evHTML(evForRoads([rid]),[rid]);
- const cd=document.getElementById('card');cd.innerHTML=h;cd.style.display='block';cd.scrollTop=0;fitCard();applyFocus();kick();}
+ const fresh=!CARD.want;CARD.want=true;if(fresh)flyTo(null,700);cardShow(h);applyFocus();kick();} // r6 U: card offset eases in (700 ms), card fades in after ~60 %
 function openNow(){sel=null;selR=null;const st=curP;let h=`<span class="x" onclick="closeCard()">×</span><span class="tag mono">THE CROSSROADS</span><h2>Now · ${isoW(day)}</h2>
  <div class="small">Where we stand this week. Six roads leave the plaza; each road's width is its share of where things are heading. Each road then splits (dashed spurs) toward the sites it can end in. ${3}% is held back as "none of these".</div>
  <div class="sub">`+RD6.map(r=>`<div class="feed cl" onclick="openRoad('${r.id}')"><i style="background:${r.c}"></i><span><b style="color:${r.c}">${r.id}</b> ${r.n}</span><b class="mono">${rstr(rangeOf(st.w[r.id],'road',r.id))}</b></div>`).join('')+`<div class="feed"><i style="background:#5d6b7c"></i><span>None of these (held back)</span><b class="mono">${(100-RD6.reduce((a,r)=>a+st.w[r.id],0)).toFixed(0)}%</b></div><div class="feed tot"><i></i><span><b>Total</b> (central estimates)</span><b class="mono">100%</b></div></div><div class="small" style="margin-top:8px">${lensTag()} · ranges show uncertainty, ≈ is the central estimate</div>`;
- const cd=document.getElementById('card');cd.innerHTML=h;cd.style.display='block';cd.scrollTop=0;fitCard();kick();}
+ const fresh=!CARD.want;CARD.want=true;if(fresh)flyTo(null,850);cardShow(h);kick();} // r6 U (owner: NOW click was abrupt): camera offset eases over 850 ms, card fades/slides in after ~60 %
 window.openRoad=openRoad;window.openNow=openNow;
 function fitCard(){const c=document.getElementById('card');if(!c||c.style.display!=='block'||innerWidth<=900)return;c.style.maxHeight=Math.max(220,tlTopY()-58-8-((window.VIS&&VIS.site&&VIS.H)||0))+'px';} // r6 U18: leave room for the Visions panel docked under the card
-function closeCard(){sel=null;selR=null;document.getElementById('card').style.display='none';if(typeof applyFocus==='function'&&LBL)applyFocus();if(typeof setNav==='function'&&LBL)setNav();}
+// G1 r6 U (owner: card 'pops in', picture shakes): ONE shared card transition for NOW, city, road, region and close-up -> close-up.
+// CARD.want = logical state (drives the eased camera offset in camApply); the DOM card fades/slides in (.34 s) only after the camera fly
+// has passed ~60 %, fades out (.16 s) BEFORE the camera eases back, and on close -> close fades out, swaps its text, then fades back in.
+var CARD={want:false,pend:false,tm:0,sw:0,hid:0,vis(){const c=document.getElementById('card');return c.style.display==='block'&&!c.classList.contains('cv0');}};
+function cardShow(h){const cd=document.getElementById('card');CARD.want=true;clearTimeout(CARD.hid);clearTimeout(CARD.sw);
+ const put=()=>{cd.innerHTML=h;cd.scrollTop=0;fitCard();};const left=typeof flyLeft==='function'?flyLeft():0;
+ if(!RMOT){cd.classList.remove('cv0');cd.style.display='block';put();CARD.pend=false;return;}
+ if(left>60&&!CARD.pend){const at=Math.max(190,left-FLY.dur*.4);
+  if(CARD.vis()){cd.classList.add('cv0');CARD.sw=setTimeout(put,170);}else{cd.classList.add('cv0');cd.style.display='block';put();}
+  CARD.pend=true;clearTimeout(CARD.tm);CARD.tm=setTimeout(()=>{CARD.pend=false;if(CARD.want){cd.classList.remove('cv0');fitCard();kick(500);}},at);return;}
+ put();if(cd.style.display!=='block'){cd.classList.add('cv0');cd.style.display='block';void cd.offsetWidth;}
+ if(!CARD.pend)cd.classList.remove('cv0');}
+function closeCard(){sel=null;selR=null;CARD.want=false;CARD.pend=false;clearTimeout(CARD.tm);clearTimeout(CARD.sw);const cd=document.getElementById('card');
+ if(RMOT&&cd.style.display==='block'&&!cd.classList.contains('cv0')){cd.classList.add('cv0');clearTimeout(CARD.hid);CARD.hid=setTimeout(()=>{if(!CARD.want){cd.style.display='none';cd.classList.remove('cv0');}},180);}
+ else{cd.style.display='none';cd.classList.remove('cv0');}
+ if(typeof applyFocus==='function'&&LBL)applyFocus();if(typeof setNav==='function'&&LBL)setNav();kick(900);}
 window.closeCard=closeCard;
 
 // ======================= HUD: headline, what moved, lens chips =======================
@@ -2495,7 +2545,7 @@ function lensName(){const e=document.getElementById('lensnm');if(e)e.textContent
 {const lens=document.getElementById('lens'),hd=document.querySelector('#legend .hd'),pop=document.createElement('div');pop.id='lenspop';pop.innerHTML='<div class="ph">LENS · WHOSE PRIORS WEIGHT THE ROADS</div>';document.body.appendChild(pop);pop.appendChild(lens);
  const one=d=>{const s=d.replace(/^Placeholder lens, parameters by maintainer: /,'').replace(/^Seed lens \(maintainer, disclosed\): /,'Maintainer seed: ').split(/\.\s/)[0].replace(/\.$/,'');return s.charAt(0).toUpperCase()+s.slice(1);};
  lens.querySelectorAll('button[data-l]').forEach(b=>{const L=LENS.find(l=>l.id===b.dataset.l);if(!L)return;b.innerHTML=`<b>${L.n}</b><span>${one(L.d)}</span>`;b.onmouseenter=b.onmousemove=null;b.onmouseleave=null;b.addEventListener('click',()=>{setTimeout(()=>{pop.classList.remove('on');btn.classList.remove('on');},250);});});
- hd.innerHTML='<span>ROADS</span>';const btn=document.createElement('span');btn.id='lensbtn';btn.title='Lens: whose view weights the roads';btn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="4.3" cy="9.2" r="2.9"/><circle cx="11.7" cy="9.2" r="2.9"/><path d="M7.2 8.7q.8-.9 1.6 0M1.5 8.4 2.6 5.3M14.5 8.4 13.4 5.3"/></svg><span id="lensnm"></span>';hd.appendChild(btn);
+ hd.innerHTML='<span>ROADS</span>';const btn=document.createElement('span');btn.id='lensbtn';btn.title='Lens: whose view weights the roads';btn.innerHTML='<svg viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="8.4" r="3.6"/><circle cx="15" cy="8.4" r="3.6"/><path d="M8.6 7.6Q10 5 11.4 7.6M1.4 7.6 2.8 3.2M18.6 7.6 17.2 3.2"/></svg><span id="lensnm"></span>';hd.appendChild(btn);
  let tH=0;const open=()=>{clearTimeout(tH);const r=btn.getBoundingClientRect(),L=document.getElementById('legend').getBoundingClientRect();pop.style.left=Math.max(8,L.left)+'px';pop.style.width=Math.max(260,L.width)+'px';pop.style.top=(r.bottom+6)+'px';pop.classList.add('on');btn.classList.add('on');hideTip();},
   close=()=>{tH=setTimeout(()=>{pop.classList.remove('on');btn.classList.remove('on');},320);};
  btn.addEventListener('mouseenter',open);btn.addEventListener('mouseleave',close);pop.addEventListener('mouseenter',()=>clearTimeout(tH));pop.addEventListener('mouseleave',close);
@@ -2565,8 +2615,8 @@ function drawTLV42(){const r=tlc.getBoundingClientRect();if(!r.width)return;tlc.
   g.fillStyle='#fff';g.font='700 11px "FA Mono",system-ui,sans-serif';const rs=' '+rstr(rangeOf(v,'road',R.id))+' ≈'+v.toFixed(0);g.fillText(rs,lx+15+tw,y+1);const tw2=g.measureText(rs).width;
   const fk=Object.entries(FORKS[LCUR][R.id]).sort((a,b)=>b[1]-a[1]).slice(0,2);g.font='10.5px "FA Mono",system-ui,sans-serif';g.fillStyle='rgba(235,240,248,.85)';g.fillText(' → '+fk.map(([k,f])=>`${byId[k].n} ${(v*f).toFixed(0)}`).join(' · '),lx+15+tw+tw2,y+1);});
  document.getElementById('week').innerHTML=`<b>${isoW(day)}</b> · week of ${fmt(day-(day%7))}`;tlc._x0=x0;tlc._cw=cw;}
-function apply(){curP=pulls(day,LCUR);LANIM=null;if(!TER_BUILT){TER_BUILT=1;setValleys(pulls(day,'pooled').p);O.forEach(o=>o.gy=hAt(o.X,o.Z));rebuildTerrain();O.forEach(o=>o.gy=hMesh(o.X,o.Z));placeProps();g1Build();}else setRoadWidths(curP);updPlaqueText();updateHUD();drawTL();if(sel)select(sel);else if(selR)openRoad(selR);if(LOD.grp)lodRefresh();kick();}
-function setDay(d){d=Math.max(0,Math.min(NDAYS,Math.round(d)));d=Math.min(NDAYS,d-(d%7)+(d===NDAYS?d%7:0));if(d===day)return;day=d;apply();}
+function apply(){curP=pulls(day,LCUR);LANIM=null;if(!TER_BUILT){TER_BUILT=1;setValleys(pulls(day,'pooled').p);O.forEach(o=>o.gy=hAt(o.X,o.Z));rebuildTerrain();O.forEach(o=>o.gy=hMesh(o.X,o.Z));placeProps();g1Build();}else if(!(window.RPL&&RPL.on))setRoadWidths(curP);updPlaqueText();updateHUD();drawTL();if(sel)select(sel);else if(selR)openRoad(selR);if(LOD.grp)lodRefresh();kick();}
+function setDay(d){d=Math.max(0,Math.min(NDAYS,Math.round(d)));d=Math.min(NDAYS,d-(d%7)+(d===NDAYS?d%7:0));if(d===day)return;const d0=day;day=d;if(window.RPL)RPL.pre(d0,d);apply();if(window.RPL)RPL.step(d0,d);}
 let tdrag=false;
 tlc.addEventListener('pointerdown',e=>{tdrag=true;stop();scrub(e);});addEventListener('pointerup',()=>tdrag=false);
 addEventListener('pointermove',e=>{if(tdrag)scrub(e);else tlHover(e);tlPeekCheck(e);});
@@ -2579,9 +2629,96 @@ function tlHover(e){if(e.target!==tlc){if(e.target===cv&&!HOV)hideTip();return;}
  if(i>=0){const ev=EVT[i],d=dayOf(ev.d),a=weights(Math.max(0,d-7),LCUR)[ev.r],b=weights(Math.min(NDAYS,d+21),LCUR)[ev.r],dv=b-a;showTip(e,`<span class="mono small">${ev.d} · ${ev.e}</span><div class="h">${ev.t}</div><span class="s">Effect on the map: road <b style="color:${RCOL[ev.r]}">${ev.r} ${RDI[ev.r].sh}</b> ${dv>=0?'+':'−'}${Math.abs(dv).toFixed(1)} pp over the following three weeks.</span>`);}else{const bw=(tlc._bf||[]).find(t=>Math.abs(t.x-x)<5); // r10 U36: backfill tick tooltip (bloc labels in the chip text)
   if(bw)showTip(e,`<span class="mono small">${isoW(bw.wk*7)} · ${bw.items.length} backfill item${bw.items.length>1?'s':''} · unreviewed</span>`+bw.items.slice(0,4).map(b=>`<div class="h" style="margin-top:4px">${escH(blocTxt(b.summary)).slice(0,150)}${b.summary.length>150?'…':''}</div><span class="s">${b.published} · ${b.indicator} ${escH(indOf(b.indicator).n)} · confidence ${escH(b.confidence)}</span>`).join(''));else hideTip();}}
 const playBtn=document.getElementById('play');let pt=null;
-function stop(){playing=false;playBtn.textContent='▶';clearInterval(pt);}
+function stop(){playing=false;playBtn.textContent='▶';clearInterval(pt);clearTimeout(pt);}
+// G1 r6 U (D7): weeks with evidence hold ~1.15 s (pulse 1.2 s from NOW + milestone + width morph + pp pill + NOW lean);
+// empty weeks fast-forward at 0.34 s (<= 3 Hz). Reduced motion: the old 0.42 s cadence, static map changes only.
 playBtn.onclick=()=>{if(playing){stop();return;}playing=true;playBtn.textContent='❚❚';kick();if(day>=NDAYS)setDay(0);
- pt=setInterval(()=>{const nd=day+gran;if(nd>NDAYS){setDay(NDAYS);stop();return;}setDay(nd);},420);};
+ const tick=()=>{if(!playing)return;const nd=day+gran;if(nd>NDAYS&&day>=NDAYS){stop();return;}setDay(Math.min(nd,NDAYS));if(day>=NDAYS){stop();return;}
+  pt=setTimeout(tick,!RMOT?420:RPL.has(Math.floor(Math.min(NDAYS,day+gran)/7))?1150:340);};
+ pt=setTimeout(tick,RMOT?600:420);};
+// ======================= G1 r6 U · D7 TIMELINE REPLAY: show NOW stepping toward the endings =======================
+// Each evidence event (a backfill item = timeline tick, mapped to its indicator's road(s); sample-ledger pins too while RELEASE=false):
+//  (1) a calm light pulse (~1.2 s) leaves NOW and runs along the road, down its widest spurs to the destination sites;
+//  (2) on arrival a small milestone is planted ON that road; its distance from NOW grows with the count of events on that road so far
+//      (markers persist up to the current week and fade out when scrubbed back; hover = event title + date + 'Backfill · unreviewed');
+//  (3) road widths morph (0.9 s) with the week's change AMPLIFIED x2.5 vs the strip start while the replay runs (caption says so), and settle
+//      back to the true widths 2.5 s after the replay stops; (4) a ▲/▽ pp pill (true pp, one week) floats at the destination sites;
+//  (5) NOW never moves: its drop line leans / brightens ~0.4 s toward the road that gained most that week, then settles.
+// Drawn on the overlay canvas inside layoutLabels (re-projected every frame / camera change). Reduced motion: no pulses/lean/morph.
+var RPL=(()=>{const R={on:false,amp:2.5,mk:[],byWk:{},pul:[],pill:{},lean:null,mA:null,mB:null,mt0:0,lastT:0,hit:[],base:{},cur:null};
+ const RL={};for(const rv of ROADV){const pts=rv.tp,L=[0];for(let i=1;i<pts.length;i++)L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+  // milestone route = trunk + the spur to the road's primary destination (largest share in RD6.f), so markers walk from NOW toward an ending
+  const ff=rv.r.f||{},prim=Object.keys(ff).sort((a,b)=>ff[b][0]-ff[a][0])[0],ms=rv.spurs.find(S=>S.site===prim)||rv.spurs[0],MP=pts.concat(ms?ms.pts.slice(1):[]),ML=[0];
+  for(let i=1;i<MP.length;i++)ML.push(ML[i-1]+Math.hypot(MP[i][0]-MP[i-1][0],MP[i][1]-MP[i-1][1]));RL[rv.r.id]={rv,pts,L,T:L[L.length-1],MP,ML,MT:ML[ML.length-1],site:ms&&ms.site};}
+ const at=(P,L,s)=>{s=clamp(s,0,L[L.length-1]);let i=1;while(i<L.length-1&&L[i]<s)i++;const u=(s-L[i-1])/Math.max(1e-6,L[i]-L[i-1]);return[P[i-1][0]+(P[i][0]-P[i-1][0])*u,P[i-1][1]+(P[i][1]-P[i-1][1])*u];};
+ const WMAX=Math.floor(NDAYS/7),G={};const add=(r,wk,it)=>{if(!RL[r])return;const k=r+'|'+wk;(G[k]=G[k]||{r,wk,items:[]}).items.push(it);};
+ const rdOf=id=>{const r=(indOf(id).rd||[]).filter(x=>RDI[x]);if(r.length)return r;const m=/^I-(R[1-6])-/.exec(id||'');return m?[m[1]]:/^I-TF-/.test(id||'')?['R1']:[];}; // IND (fa4_data) maps only the R1 indicators: fall back to the road in the id (I-R4-02 -> R4; I-TF = R1's narrow-masters lane, as I-TF-01); I-N (cross-road counts) has no road
+ for(const b of BF){const d=dayOf(b.published),wk=d<0?0:Math.min(WMAX,Math.floor(d/7));for(const r of rdOf(b.indicator))add(r,wk,{t:blocTxt(b.summary||''),d:b.published,ind:b.indicator,tag:'Backfill · unreviewed',pre:d<0});}
+ for(const e of EVT)add(e.r,Math.max(0,Math.min(WMAX,Math.floor(dayOf(e.d)/7))),{t:e.t,d:e.d,tag:'Sample ledger · illustrative'});
+ const per={};for(const g of Object.values(G))(per[g.r]=per[g.r]||[]).push(g);
+ const wt=g=>g.wk===0?Math.min(2,g.items.length):g.items.length; // week 0 also holds the pre-2026 history: it counts as at most 2 steps
+ for(const r in per){const gs=per[r].sort((a,b)=>a.wk-b.wk),T=gs.reduce((a,g)=>a+wt(g),0);let c=0;
+  for(const g of gs){c+=wt(g);const f=.08+.8*(c/T),q=RL[r],p=at(q.MP,q.ML,f*q.MT);const m={r,wk:g.wk,items:g.items,f,X:p[0],Z:p[1],a:0,tp:0,col:RDI[r].cl||RDI[r].c};R.mk.push(m);(R.byWk[g.wk]=R.byWk[g.wk]||[]).push(m);}}
+ const amped=st=>{const lk=LCUR;if(!R.base[lk])R.base[lk]=pulls(0,lk);const B=R.base[lk],o={w:{},src:{}},k={};
+  for(const r of RD6){const w=st.w[r.id],w0=B.w[r.id],wa=Math.max(.35*w,w0+R.amp*(w-w0));o.w[r.id]=wa;k[r.id]=w>0?wa/w:1;}
+  for(const s in st.src){o.src[s]={};for(const r in st.src[s])o.src[s][r]=st.src[s][r]*(k[r]||1);}return o;};
+ const lerpW=(A,B,e)=>{const o={w:{},src:{}};for(const r in B.w)o.w[r]=A.w[r]+(B.w[r]-A.w[r])*e;for(const s in B.src){o.src[s]={};for(const r in B.src[s])o.src[s][r]=((A.src[s]||{})[r]||0)+(B.src[s][r]-((A.src[s]||{})[r]||0))*e;}return o;};
+ const morph=B=>{R.mA=R.cur||{w:{...curP.w},src:JSON.parse(JSON.stringify(curP.src))};R.mB=B;R.mt0=performance.now();};
+ const cap=t=>{const c=LFX.cap;if(!t){if(c.dataset.rpl){c.style.opacity='0';delete c.dataset.rpl;}return;}c.dataset.rpl=1;c.textContent=t;c.style.opacity='1';const tl=document.getElementById('tl'),b=tl&&tl.getBoundingClientRect();c.style.top=((b&&b.height&&!tl.classList.contains('hid')?b.top:innerHeight-60)-44)+'px';clearTimeout(LFX.ct);};
+ R.has=wk=>!!R.byWk[wk];
+ R.pre=(d0,d1)=>{if(!RMOT)return;R.on=true;R.lastT=performance.now();};
+ R.step=(d0,d1)=>{const now=performance.now();if(!RMOT){for(const m of R.mk)m.a=m.wk*7<=day?1:0;kick(400);return;}
+  morph(amped(curP));cap(`Replay · ${isoW(day)} · road-width change since ${isoW(0)} drawn ×${R.amp} · pulses = evidence items (Backfill · unreviewed)`);
+  if(d1<=d0){kick(1200);return;}
+  const w0=Math.floor(d0/7)+1,w1=Math.floor(d1/7),fire=w1-w0>1?[w1]:[];if(w1-w0<=1)for(let w=w0;w<=w1;w++)fire.push(w);
+  for(const m of R.mk)if(m.wk<=w1&&!fire.includes(m.wk))m.tp=Math.min(m.tp||now,now); // jumped-over weeks: plant without a pulse
+  const P0=pulls(Math.max(0,d1-7),LCUR);let bestR=null,bg=.015;for(const r of RD6){const g=curP.w[r.id]-P0.w[r.id];if(g>bg){bg=g;bestR=r.id;}}
+  if(bestR)R.lean={r:bestR,t0:now};
+  let nf=0;for(const w of fire)for(const m of(R.byWk[w]||[])){if(nf>=6){m.tp=now;continue;}const q=RL[m.r];
+   const sp=q.rv.spurs.filter(S=>S.rib.w>.05).sort((a,b)=>b.rib.w-a.rib.w);
+   const sd=[{P:q.MP,L:q.ML,site:q.site}];
+   const s2=sp.find(S=>S.site!==sd[0].site);if(s2){const P=q.pts.concat(s2.pts.slice(1)),L=[0];for(let i=1;i<P.length;i++)L.push(L[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));sd.push({P,L,site:s2.site,dim:1});}
+   R.pul.push({m,q,sd,t0:now+nf*90,n:m.items.length});m.tp=now+nf*90+1200*(1-Math.sqrt(1-m.f));nf++;
+   for(const S of sd){const o=byId[S.site];if(!o)continue;if(!R.base[LCUR])R.base[LCUR]=pulls(0,LCUR);const dv=(curP.p[o.id]||0)-(R.base[LCUR].p[o.id]||0);if(Math.abs(dv)<.05)continue;const ex=R.pill[o.id],tA=now+950+nf*90; // pill = true change of the site since the strip start (one-week steps are ~0.01 pp: unreadable)
+    if(ex){ex.d=dv;ex.hold=Math.max(ex.hold||ex.t0,tA);}else R.pill[o.id]={o,d:dv,t0:tA};}} // an existing pill updates in place and stays up (no flicker)
+  kick(2600);};
+ // settle: 2.5 s after the replay stops, morph back to the true widths
+ ANIM.push(()=>{const now=performance.now();
+  if(R.mB){const k=clamp((now-R.mt0)/900,0,1),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;R.cur=lerpW(R.mA,R.mB,e);setRoadWidths(R.cur);if(k>=1){R.cur=R.mB;R.mB=null;if(!R.on){R.cur=null;setRoadWidths(curP);}}}
+  if(R.on&&!playing&&!tdrag&&now-R.lastT>2500){R.on=false;cap(null);if(RMOT){R.mA=R.cur||curP;R.mB={w:{...curP.w},src:curP.src};R.mt0=now;kick(1100);}else setRoadWidths(curP);}});
+ const ss=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};
+ R.leanOff=()=>{const L=R.lean;if(!L||!RMOT)return null;const t=(performance.now()-L.t0)/1000;if(t>1.4){R.lean=null;return null;}const e=t<.4?ss(t/.4):1-ss((t-.4)/1.0);
+  const q=RL[L.r],p=q.pts[Math.min(q.pts.length-1,10)],ny=hMesh(NOW.X,NOW.Z),g=proj(NOW.X,ny,NOW.Z),a=proj(p[0],hMesh(p[0],p[1]),p[1]);let dx=a[0]-g[0],dy=a[1]-g[1];const dl=Math.hypot(dx,dy)||1;return{dx:dx/dl,dy:dy/dl,e,col:RDI[L.r].cl||RDI[L.r].c};};
+ const hexA=(h,a)=>{const n=parseInt(h.slice(1),16);return`rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
+ R.draw=(g,W,H,tlT)=>{const now=performance.now(),closeup=view!=='world'&&focusO;R.hit=[];let busy=false;
+  // milestones (world + region views; hidden in a single-site close-up)
+  for(const m of R.mk){const want=m.wk*7<=day&&(!m.tp||now>=m.tp)?1:0,dtA=want>m.a?.06:.05;if(Math.abs(want-m.a)>.01){m.a+=Math.sign(want-m.a)*Math.min(Math.abs(want-m.a),dtA);busy=true;}else m.a=want;
+   if(m.a<=.01||closeup)continue;const[x,y,ok]=proj(m.X,hMesh(m.X,m.Z)+.3,m.Z);if(!ok||x<0||y<0||x>W||y>tlT)continue;
+   const age=m.tp&&now>=m.tp?(now-m.tp)/1000:9,pop=RMOT&&age<.45?1+.7*(1-ss(age/.45)):1,s=(2.7+Math.min(1.8,m.items.length*.3))*pop;
+   g.save();g.globalAlpha=m.a;g.beginPath();g.moveTo(x,y-s-1);g.lineTo(x+s+1,y);g.lineTo(x,y+s+1);g.lineTo(x-s-1,y);g.closePath();g.fillStyle='rgba(8,12,22,.9)';g.fill();
+   g.beginPath();g.moveTo(x,y-s);g.lineTo(x+s,y);g.lineTo(x,y+s);g.lineTo(x-s,y);g.closePath();g.fillStyle=m.col;g.fill();g.strokeStyle='rgba(244,239,227,.45)';g.lineWidth=.6;g.stroke();
+   if(RMOT&&age<1.1){busy=true;const u=age/1.1;g.globalAlpha=m.a*(1-u)*.7;g.beginPath();g.arc(x,y,s+3+u*12,0,6.2832);g.strokeStyle=m.col;g.lineWidth=1.2;g.stroke();}g.restore();R.hit.push({x,y,m});}
+  // pulses: comet head + short tail, NOW -> along the trunk -> down the widest spurs
+  R.pul=R.pul.filter(p=>now-p.t0<1500);for(const p of R.pul){const t=(now-p.t0)/1200;if(t<0){busy=true;continue;}busy=true;if(t>1.25)continue;
+   const env=t<.12?t/.12:t>1?Math.max(0,1-(t-1)/.25):1,u=1-Math.pow(1-clamp(t,0,1),2),q=p.q,cl=q.rv.r.cl||q.rv.r.c;
+   for(const S of p.sd){const T2=S.L[S.L.length-1],dm=S.dim?.7:1,s0=u*T2;
+    g.save();g.globalCompositeOperation='lighter';g.lineCap='round';
+    // tail: a tapering streak over the last ~22 % of the path behind the head
+    let prev=null;for(let j=14;j>=0;j--){const s=s0-j*T2*.016;if(s<0){prev=null;continue;}const pt=at(S.P,S.L,s),c=proj(pt[0],hMesh(pt[0],pt[1])+.35,pt[1]);if(!c[2]){prev=null;continue;}
+     if(prev){const k=1-j/15;g.globalAlpha=env*.55*k*dm;g.strokeStyle=hexA(cl,1);g.lineWidth=(1+3.2*k)*dm;g.beginPath();g.moveTo(prev[0],prev[1]);g.lineTo(c[0],c[1]);g.stroke();}prev=c;}
+    if(prev){const x=prev[0],y=prev[1],r=7.5*dm;g.globalAlpha=env*.65*dm;const gr=g.createRadialGradient(x,y,0,x,y,r*2.2);gr.addColorStop(0,'rgba(255,248,232,.95)');gr.addColorStop(.35,hexA(cl,.7));gr.addColorStop(1,hexA(cl,0));g.fillStyle=gr;g.beginPath();g.arc(x,y,r*2.2,0,6.2832);g.fill();}
+    g.restore();}}
+  // ▲▽ pp pills at the destination sites (true one-week change), DOM, positioned at the site's screen marker
+  for(const id in R.pill){const P=R.pill[id],t=(now-P.t0)/1000,end=((P.hold||P.t0)-P.t0)/1000+2.2;let el=P.el||(P.el=Object.assign(document.createElement('div'),{className:'rpp'}));if(!el.parentNode)LBL.appendChild(el);
+   if(t>end||(window.CMP&&CMP.on&&LCUR!=='pooled')){el.remove();delete R.pill[id];continue;}busy=true;const m=MK.find(k=>k.o===P.o);if(t<0||!m||closeup){el.style.opacity='0';continue;}
+   const op=t<.25?t/.25:t>end-.5?Math.max(0,(end-t)/.5):1;el.textContent=`${P.d>0?'▲':'▽'} ${Math.abs(P.d).toFixed(Math.abs(P.d)<.1?2:1)} pp since ${isoW(0).slice(5)}`;el.style.opacity=op.toFixed(2);el.style.transform=`translate(${(m.x-el.offsetWidth/2)|0}px,${(m.y-38-4*ss(t/.4))|0}px)`;}
+  if(busy)kick(300);};
+ R.info=()=>({on:R.on,markers:R.mk.length,shown:R.mk.filter(m=>m.a>.5).length,pulses:R.pul.length,pills:Object.keys(R.pill).length,lean:R.lean?R.lean.r:null,weeks:Object.keys(R.byWk).length,hit0:R.hit.length?[R.hit[(R.hit.length/2)|0].x,R.hit[(R.hit.length/2)|0].y]:null});
+ // hover tooltip on a milestone (wins over the road tooltip underneath it)
+ cv.addEventListener('pointermove',e=>{if(drag&&drag.m)return;if(HOV&&HOV.o)return;let b=null,bd=8;for(const h of R.hit){const d=Math.hypot(e.clientX-h.x,e.clientY-h.y);if(d<bd){bd=d;b=h;}}if(!b)return;const m=b.m,its=m.items;
+  showTip(e,`<span class="mono small">${RDI[m.r].id} ${escH(RDI[m.r].sh)} · ${isoW(m.wk*7)} · ${its.length} item${its.length>1?'s':''}</span>`+its.slice(0,3).map(it=>`<div class="h" style="margin-top:4px">${escH(it.t).slice(0,140)}${it.t.length>140?'…':''}</div><span class="s">${escH(it.d)}${it.pre?' (before the strip start)':''} · ${it.tag}</span>`).join('')+(its.length>3?`<span class="s"> + ${its.length-3} more · Evidence page</span>`:''));});
+ for(const m of R.mk)m.a=m.wk*7<=day?1:0;return R;})();
+{const st=document.createElement('style');st.textContent='.rpp{position:fixed;left:0;top:0;z-index:15;pointer-events:none;white-space:nowrap;font:500 11.5px/1 var(--f2);letter-spacing:.04em;color:#F1ECE0;background:rgba(10,14,19,.84);border:1px solid #3A4250;border-radius:9px;padding:3px 7px;will-change:transform,opacity}';document.head.appendChild(st);}
 // show / hide timeline (+ peek when the mouse reaches the bottom edge)
 const TLE=document.getElementById('tl'),TAB=document.getElementById('tltab');let tlHidden=false,tlPeek=false;
 function tlTopY(){return TLE.classList.contains('hid')?innerHeight-48:innerHeight-TLE.offsetHeight-40-22;} // r5: timeline lifted to bottom 40px so the S axis tab docks on the true screen edge below it
@@ -2712,8 +2849,15 @@ document.getElementById('pageBack').onclick=closePage;
 // ======================= INIT =======================
 addEventListener('resize',()=>{resize();setNav();});apply();resize();setNav();try{camApply();CAM.updateMatrixWorld();calibRoads();}catch(e){console.warn('calib',e);}kick(1500);
 if(location.hash)setTimeout(pageRoute,0);
+// G1 r6 U test hooks (harness record shots; harmless for visitors): ?rpldemo=<week> loops that replay week (pulse, milestone, pill, NOW lean)
+// every 1.3 s so a screenshot lands mid-pulse; ?nowdemo=1 opens the NOW card through the shared transition.
+{const q=new URLSearchParams(location.search),rw=+q.get('rpldemo');if(rw>0)setTimeout(()=>{const w=Math.min(Math.floor(NDAYS/7),rw);setDay(w*7-7);const loop=()=>{setDay(w*7-7);setDay(w*7);};loop();setInterval(loop,1300);},2500);
+ if(q.get('nowdemo'))setTimeout(()=>openNow(),2500);}
 window.__fa={enterO:id=>enterO(byId[id]),world,setDay,toggleTL,enterBasin,setLens,openRoad,openNow,look(tx,tz,d,pit){Object.assign(tg,{tx,tz,d,pit:pit||.9,yaw:0});lodWant();kick();},
- snap(n){Object.assign(cam,tg);DUSK=view==='world'?0:1;if(LANIM){LANIM.t0=-1e9;}for(let i=0;i<(n||1);i++)render();},
+ snap(n){Object.assign(cam,tg);FLY.on=false;CSH=(cardOpen()&&innerWidth>900)?1:0;CTY=null;DUSK=view==='world'?0:1;if(LANIM){LANIM.t0=-1e9;}for(let i=0;i<(n||1);i++)render();},
+ fly(){return {on:FLY.on,k:FLY.k||0,el:FLY.el,dur:FLY.dur,csh:CSH,card:CARD.want,cardVis:CARD.vis(),pend:CARD.pend};},
+ cam(){return {x:CAM.position.x,y:CAM.position.y,z:CAM.position.z};},
+ rpl(){return window.RPL?RPL.info():null;},
  axis(){return AXM.map(a=>{const r=a.el.getBoundingClientRect();return{k:a.k,x:r.left+r.width/2,y:r.top+r.height/2,disp:a.el.style.display};});},
  sites(){return O.map(o=>{const[x,y]=proj(o.X,o.gy+1,o.Z);return {id:o.id,x:x|0,y:y|0};});},
  labels(){return [...document.querySelectorAll('.plq,.rch,.nowl')].filter(e=>e.style.display!=='none').map(e=>{const r=e.getBoundingClientRect();return {t:e.textContent.slice(0,22),x:r.left|0,y:r.top|0,w:r.width|0,h:r.height|0};});},
@@ -2871,6 +3015,7 @@ function visPlace(){const d=VIS.el;VIS.H=0;if(!d||d.style.display==='none')retur
   if(y+h>tl-8)y=Math.max(nb,A.py-h-6); // never on the timeline: flip above the plate
   y=Math.max(nb,Math.min(y,tl-8-h));x=Math.max(8,x);}
  const k=(x|0)+','+(y|0);if(k!==VIS.pos){VIS.pos=k;d.style.transform=`translate(${x|0}px,${y|0}px)`;}
+ d.classList.toggle('vh0',!!((window.CARD&&CARD.pend)||(typeof FLY!=='undefined'&&FLY.on&&FLY.k<.6))); // G1 r6 U: the Visions strip fades in with the card, after the camera fly passes ~60 %
  VIS.rect=[x|0,y|0,(x+w)|0,(y+h)|0];}
 function visSync(){if(!VIS||!window.VIDEOS)return;const s=(view==='basin'&&focusO)?focusO.id:null;
  const ch=s!==VIS.site;if(ch){VIS.play=null;VIS.site=s;VIS.anc=null;} // leaving / switching close-up drops the iframe => playback stops

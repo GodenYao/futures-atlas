@@ -33,7 +33,7 @@ const SP=s=>s.split(' ');
 // B2 r3: fray (irregular footprint strength), fields / farms (outskirts), pz (window patch size bays x storeys), alb (albedo)
 const PRESETS={
  normaltech:{layout:'grid',lit:.62,em:1.8,walls:SP('concrete0 concrete1 brick0 brick1'),roofs:SP('roof0 roof1'),roof:'mix',storeys:[2,4],density:.8,blockMin:3.3,
-  streetW:.62,jitter:.4,green:.25,props:1,cars:36,moving:8,lamps:1,lampStep:2.6,trees:40,out:0,fray:.7,fields:12,farms:5,pz:[4,3],nf:.55,nf0:3.0,special:SP('square regulator substation pylons datacenter nearfuture')},   // r5 C: near-future core (nf) + sky/rail layer, moving 4 -> 8 (autonomous traffic)
+  streetW:.62,jitter:.4,green:.25,props:1,cars:36,moving:8,lamps:1,lampStep:2.6,trees:40,out:0,fray:.7,fields:12,farms:5,pz:[4,3],nf:.55,nf0:3.0,nfc:[-1.3,2.0],special:SP('square regulator substation pylons datacenter nearfuture')},   // r5 C: near-future core (nf) + sky/rail layer, moving 4 -> 8 (autonomous traffic)
  o1984:{layout:'strict',lit:.45,em:1.7,alb:.7,walls:SP('concrete0 concrete1'),roofs:SP('roof0'),roof:'flat',storeys:[9,12],density:1,blockMin:4,
   streetW:.8,jitter:0,green:0,props:.6,cars:5,moving:0,lamps:1,lampStep:4,trees:0,out:0,fray:.8,fields:0,farms:0,pz:[12,2],under:0,special:SP('camPoles checkpoints ministry searchlights')},
  protector:{layout:'organic',lit:.7,em:1.9,walls:SP('timber timberL stone'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,3],density:.92,blockMin:3,
@@ -111,9 +111,10 @@ function domeMat(T,U){const THREE=T.THREE,c=hex('#9AB0CC');   // B2 r5: sky-blue
  // B2 r5 (vision r4: the dome was the loudest element; Tegmark: the protector hides so well many doubt it exists): no bright
  // rim - alpha ~.006 face-on, max ~.11 at grazing, faded out near the ground (no footing line) and toward the apex (no cap glint)
  const m=new THREE.ShaderMaterial({uniforms:{uT:U.uT,uC:{value:new THREE.Vector3(c[0],c[1],c[2])},uK:{value:T.mood==='day'?.5:1}},
-  vertexShader:'varying vec3 vN;varying vec3 vV;varying float vH;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);vH=normal.y;gl_Position=projectionMatrix*mv;}',
-  fragmentShader:'uniform float uT,uK;uniform vec3 uC;varying vec3 vN;varying vec3 vV;varying float vH;void main(){float f=1.-abs(dot(normalize(vN),normalize(vV)));'+
-   'float a=(.01+.15*pow(f,3.)+.03*pow(f,8.))*(.9+.1*sin(uT*.21+vN.y*7.))*uK*smoothstep(.02,.3,abs(vH))*(1.-.5*smoothstep(.7,1.,abs(vH)));a=min(a,.17);gl_FragColor=vec4(uC,a);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}',
+  vertexShader:'varying vec3 vN;varying vec3 vV;varying float vH;varying float vD;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);vD=length(mv.xyz);vH=normal.y;gl_Position=projectionMatrix*mv;}',
+  // G1 r6 N (world view: 'a pale dome sliver'): grazing rim fades with view distance (x.3 beyond ~190 u); close-ups unchanged
+  fragmentShader:'uniform float uT,uK;uniform vec3 uC;varying vec3 vN;varying vec3 vV;varying float vH;varying float vD;void main(){float f=1.-abs(dot(normalize(vN),normalize(vV)));'+
+   'float a=(.01+.15*pow(f,3.)+.03*pow(f,8.))*(.9+.1*sin(uT*.21+vN.y*7.))*uK*smoothstep(.02,.3,abs(vH))*(1.-.5*smoothstep(.7,1.,abs(vH)));a=min(a,.17)*(1.-.7*smoothstep(70.,190.,vD));gl_FragColor=vec4(uC,a);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}',
   transparent:true,depthWrite:false,side:THREE.DoubleSide});m.name='pt_dome';return m;}
 // B2 r3 searchlight beam (vision r2: grey wedges in stills): additive soft cone, smooth radial normals -> bright core, edges
 // fade to 0 (facing^1.6), fades along the beam (tip 0, short ramp at the lamp), fades with view distance (no fog:false
@@ -319,9 +320,15 @@ function gridLines(T,hs){const P=T.P,a=[hs],b=[-hs];let p=hs;
 function cellCentre(bx,bz,x,z){let cx=x,cz=z;for(let i=1;i<bx.length;i++)if(x>=bx[i-1]&&x<bx[i])cx=(bx[i-1]+bx[i])/2;
  for(let i=1;i<bz.length;i++)if(z>=bz[i-1]&&z<bz[i])cz=(bz[i-1]+bz[i])/2;return[cx,cz];}
 function* layGrid(T,L){const R=T.R,P=T.P,sw=P.streetW,hs=2.15,xs=gridLines(T,hs),zs=gridLines(T,hs);
- for(const x of xs){const h=Math.sqrt(Math.max(0,R*R-x*x))-.35;if(h>1.5)addStreet(L,[[x,-h],[x,h]],sw,'road');}
- for(const z of zs){const h=Math.sqrt(Math.max(0,R*R-z*z))-.35;if(h>1.5)addStreet(L,[[-h,z],[h,z]],sw,'road');}
- for(const x of xs)for(const z of zs)if(Math.hypot(x,z)<R-1)L.nodes.push([x,z]);
+ // G1 r6 N (world view: 'dark square slab with hard edges'): every grid street used to run to the same circle, so the town ended
+ // on one crisp round/square edge. Streets off the two central axes now stop near the warped boundary b(a) (x a per-end jitter),
+ // so the edge is ragged and the outskirts (fields, farms, the rail and pylons running out) take over irregularly.
+ const sEnd=(o,sg,vert)=>{let h=Math.sqrt(Math.max(0,R*R-o*o))-.35;if(Math.abs(o)<=hs+.1)return h;const j=.9+.32*hash2(o*1.37+sg*.71,T.seed*.01+(vert?1:2));
+  for(;h>1.2;h-=.25){const x=vert?o:sg*h,z=vert?sg*h:o;if(Math.hypot(x,z)<=T.bAt(x,z)*1.08*j)break;}return h;};
+ const inT=(x,z)=>Math.abs(x)<=hs+.1||Math.abs(z)<=hs+.1||Math.hypot(x,z)<T.bAt(x,z)*1.1;
+ for(const x of xs){const h1=sEnd(x,1,1),h0=sEnd(x,-1,1);if(h1+h0>3)addStreet(L,[[x,-h0],[x,h1]],sw,'road');}
+ for(const z of zs){const h1=sEnd(z,1,0),h0=sEnd(z,-1,0);if(h1+h0>3)addStreet(L,[[-h0,z],[h1,z]],sw,'road');}
+ for(const x of xs)for(const z of zs)if(Math.hypot(x,z)<R-1&&inT(x,z))L.nodes.push([x,z]);
  const sq=2*hs-sw-.2;addSlot(L,'square',{x:0,z:0,r:hs-.2,w:sq,d:sq,ry:0},false);
  addSlot(L,'regulator',{x:0,z:-sq/2+.75,r:1.3,w:2.5,d:1.0,ry:0},false);
  const bx=[-R].concat(xs,[R]),bz=[-R].concat(zs,[R]);
@@ -515,12 +522,16 @@ function ground(B,S,mid){const it=groundGen(B,S,mid);while(!it.next().done);}
 // B2 r2: generator so buildSteps can slice it (r2 kerbs + dashes + zebras made the NEAR ground step ~2x slower)
 function* groundGen(B,S,mid){const T=B.T,L=B.L,g=GCOL[T.P.layout]||GCOL.grid,col=hex(PAL[g[0]],g[1]*T.A),lay=T.P.layout;
  // B2 r3: no round plate - a wide feathered underlay (alpha T.fa: warped boundary, fades to 0 before R) with the same tone
- if(T.P.under!==0)disc(S.ground,T,0,0,T.R*1.02,mid?6:12,mid?32:56,col,-.03);yield 1;   // C1 r5: o1984/egalitarian under:0 = no underlay (D5: it read as a plate)
+ // r6 N (world vision: normaltech MID = 'a dark rectangular gridded slab'): at MID the grey pave underlay + wide asphalt grid made a
+ // plate; normaltech MID now drops the underlay and draws narrower, lighter roads (kerb +.12) so the town sits on the terrain
+ const ntm=mid&&T.id==='normaltech';
+ if(T.P.under!==0&&!ntm)disc(S.ground,T,0,0,T.R*1.02,mid?6:12,mid?32:56,col,-.03);yield 1;   // C1 r5: o1984/egalitarian under:0 = no underlay (D5: it read as a plate)
  // B2 r3 street readability: every street gets an edge strip that contrasts with its surface (roads: pale kerb + dark asphalt
  // + centre dashes; old-quarter lanes: pale kerb + dark setts; garden paths: dark edge + pale gravel). MID keeps the strips.
  const KERB=hex(PAL.kerb,.95*T.A),EDGE=hex('#4A4840',T.A),SETT=hex('#3A3734',T.A),GRAV=hex('#A8A08A',T.A);
  for(const s of L.streets){const rd=s.kind==='road',old=lay==='old',st=mid?2.2:.7;
-  if(rd||old){ribbon(S.ground,T,s.pts,s.w+(mid?.3:.26),KERB,.01,st);ribbon(S.ground,T,s.pts,s.w,rd?hex(T.id==='protector'?'#5C564E':PAL.asphalt,T.A):SETT,.02,st);}   // r4: protector = warm block paving, not asphalt
+  if(ntm&&rd){ribbon(S.ground,T,s.pts,s.w*.7+.12,tone(KERB,.62),.01,st);ribbon(S.ground,T,s.pts,s.w*.7,tone(hex(PAL.asphalt,T.A),1.1),.02,st);}
+  else if(rd||old){ribbon(S.ground,T,s.pts,s.w+(mid?.3:.26),KERB,.01,st);ribbon(S.ground,T,s.pts,s.w,rd?hex(T.id==='protector'?'#5C564E':PAL.asphalt,T.A):SETT,.02,st);}   // r4: protector = warm block paving, not asphalt
   else{ribbon(S.ground,T,s.pts,s.w+.16,EDGE,.01,st);ribbon(S.ground,T,s.pts,s.w,GRAV,.02,st);}
   if(rd&&!mid&&s.w>=.4)dashes(S.ground,T,s.pts,hex(PAL.mark,.7*T.A),.027,.62,.26,s.w>=.5?.028:.02);yield 1;}
  if(!mid&&(lay==='grid'||lay==='strict')){zebras(B,S);yield 1;}
@@ -542,12 +553,43 @@ function* groundGen(B,S,mid){const T=B.T,L=B.L,g=GCOL[T.P.layout]||GCOL.grid,col
 // P.nf = share of the town radius that becomes a mid/high-rise core: lots there get 6-20 storeys, mostly photovoltaic-glass towers
 // (dark blue-grey glazing, one dim cool band under the crown on a few), max 2 mass-timber towers with planted terraces; flat roofs in
 // the ring outside the core get rooftop farms (planted rows + a small greenhouse). Deterministic from l.seed, NEAR and MID alike.
+// G1 r6 N (vision r5: still 'an ordinary 6-12 storey town'): the core became a uniform block of 7-11 storey PV boxes = one dark mass.
+// Now an explicit SKYLINE: nfPick chooses 5 well-spaced core lots (>= 2.6 u apart) and makes them slender towers (footprint <= 1.2 x
+// 1.1 u, 13-20 storeys + crown) with distinct silhouettes: 'step' (two setbacks + mast light), 'twin' (offset taller slab),
+// 'mast' (slimmest; carries the high vertiport deck), 'crown' (hipped glass crown + 2 cool bands), 'tim' (mass timber, planted
+// terraces). Other core lots = 5-9 storey podium blocks, under half of them PV glass (the rest keep concrete/brick) so the core
+// no longer reads as one dark slab.
+function nfPick(B){const L=B.L;if(L._nfp)return;L._nfp=1;const T=B.T,R=T.R,lim=R*T.P.nf;
+ for(const l of L.lots)nfLot(B,l);   // podium / PV assignment first (deterministic per lot)
+ // r6 N v3: skyline cluster centred on P.nfc (town-local) = left-centre of the default close-up frame (camera sits at ~(0.8,25,27)
+ // looking at ~(3.8,0,2.4); the Visions card covers screen x 565-945 / y 140-312, i.e. world x ~1-8 behind the square)
+ const C0=T.P.nfc||[0,0],dC=l=>Math.hypot(l.x-C0[0],l.z-C0[1]);
+ const c=L.lots.filter(l=>l.nf&&!l.lab&&!l.out&&l.w>=.85&&l.d>=.8&&Math.hypot(l.x,l.z)<lim).sort((a,b)=>dC(a)-dC(b)),tw=[];
+ for(const l of c){if(tw.length>=5)break;if(tw.some(o=>Math.hypot(o.x-l.x,o.z-l.z)<2.6))continue;tw.push(l);}
+ const ST=[22,19,17,15,12],SH=['mast','step','crown','twin','tim'],FW=[.85,1.0,.95,1.05,1.1],FD=[.85,.95,.95,.9,1.0];   // v3: mast (tallest + high deck) nearest nfc
+ tw.forEach((l,i)=>{l.tw=SH[i];l.st=ST[i];l.kind='mid';l.nf=SH[i]==='tim'?'tim':'pv';l.nfd=1;l.w=Math.min(l.w,FW[i]);l.d=Math.min(l.d,FD[i]);l.r=Math.hypot(l.w,l.d)/2;});
+ // vertiports: one high deck on the 'mast' tower + up to 2 pads on the tallest wide PV podium roofs (>= 3.2 u apart, clear of towers)
+ const top=l=>seat(T,rectPts(l.x,l.z,l.w,l.d,l.ry)).hi+.05+l.st*STOREY,pads=[];L._pads=pads;
+ const mt=L.lots.find(l=>l.tw==='mast');if(mt){const y=top(mt);pads.push({x:mt.x,z:mt.z,y:y+.4,r:.88,ry:mt.ry,y0:y,hi:1});}
+ const pod=L.lots.filter(l=>l.nf&&!l.tw&&l.st>=5&&l.w>=1.05&&l.d>=.9).sort((a,b)=>(b.nf==='pv')-(a.nf==='pv')||dC(a)-dC(b));
+ for(const l of pod){if(pads.length>=3)break;if(pads.some(p=>Math.hypot(p.x-l.x,p.z-l.z)<3.2)||L.lots.some(o=>o.tw&&Math.hypot(o.x-l.x,o.z-l.z)<1.7))continue;
+  l.pad=1;const y=top(l);pads.push({x:l.x,z:l.z,y:y+.17,r:Math.min(.85,Math.max(l.w,l.d)*.5),ry:l.ry,y0:y});}
+ if(pads.length>2)pads[pads.length-1].park=1;}
 function nfLot(B,l){if(l.nfd)return;l.nfd=1;const T=B.T,L=B.L,R=T.R,n0=+T.P.nf0||0,f=Math.max(0,(Math.hypot(l.x,l.z)-n0)/(R*T.P.nf-n0));if(f>=1||l.w<.8||l.d<.8||l.lab)return;   // nf0 = square/civic radius (nearest lots ~3.2 u)
- const st=Math.round(6+14*Math.pow(1-f,.85)*(.62+.38*hash2(l.seed*.13,2.9)));l.st=Math.max(l.st,st);l.kind='mid';
- if((L._nt|0)<2&&l.st<=13&&l.st>=8&&hash2(l.seed*.71,1.3)<.45){L._nt=(L._nt|0)+1;l.nf='tim';}else l.nf='pv';}
+ const st=Math.round(4+3*Math.pow(1-f,.8)*(.55+.45*hash2(l.seed*.13,2.9)));l.st=Math.max(l.st,st);l.kind='mid';   // r6 N v2: podiums 4-7 so the towers stand clear
+ l.nf=hash2(l.seed*.53,4.7)<.45?'pv':'pod';}
 function nfDeco(B,l,S,mid,y0,y1,wc){const T=B.T,b=S.building,ry=l.ry,hd=l.d/2;
- if(l.nf==='pv'){if(l.st>=9&&l.seed%3!==1)for(const sd of[-1,1]){const o=rotP(0,sd*(hd+.012),ry);box(S.light,l.x+o[0],y1-.2,l.z+o[1],l.w*.86,.045,.012,ry,em(B,PAL.cool,mid?.3:.38));}
-  if(!mid)for(const sd of[-1,1]){const o=rotP(sd*(l.w/2+.012),0,ry);box(b,l.x+o[0],y0+.3,l.z+o[1],.025,y1-y0-.3,l.d*.9,ry,tone(wc,1.25));}   // fin strips (PV-glass frame)
+ if(l.nf==='pod')return;
+ if(l.nf==='pv'){const tw=l.tw,W={lit:T.P.lit*1.1,seed:l.seed+7,bay:.18},x=l.x,z=l.z,cb=em(B,PAL.cool,mid?.26:.32);
+  if((tw||(l.st>=8&&l.seed%3!==1))&&tw!=='crown')for(const sd of[-1,1]){const o=rotP(0,sd*(hd+.012),ry);box(S.light,x+o[0],y1-.2,z+o[1],l.w*.86,.045,.012,ry,cb);}
+  if(!mid)for(const sd of[-1,1]){const o=rotP(sd*(l.w/2+.012),0,ry);box(b,x+o[0],y0+.3,z+o[1],.025,y1-y0-.3,l.d*.9,ry,tone(wc,1.25));}   // fin strips (PV-glass frame)
+  if(tw&&tw!=='tim')for(const c of[[1,1],[-1,-1]]){const o=rotP(c[0]*(l.w/2+.01),c[1]*(hd+.01),ry);box(S.light,x+o[0],y0+.35,z+o[1],mid?.06:.03,y1-y0-.45,mid?.06:.03,ry,em(B,PAL.cool,mid?.2:.24));}   // r6 N v2: dim cool corner lines = tower silhouette at dusk
+  if(tw==='step'){const h1=3*STOREY,h2=2*STOREY;box(b,x,y1,z,l.w*.7,h1,l.d*.7,ry,wc,W,tone(wc,.9));box(b,x,y1+h1,z,l.w*.42,h2,l.d*.42,ry,wc,W,tone(wc,.9));
+   strut(S.metal,[x,y1+h1+h2,z],[x,y1+h1+h2+1.1,z],mid?.05:.03,hex(PAL.steel,T.A));box(S.light,x,y1+h1+h2+1.1,z,mid?.12:.07,mid?.12:.07,mid?.12:.07,0,em(B,PAL.lamp,.7));}
+  else if(tw==='twin'){const o=rotP(l.w*.27,0,ry);box(b,x+o[0],y1,z+o[1],l.w*.46,5*STOREY,l.d*.92,ry,wc,W,tone(wc,.9));
+   const q=rotP(l.w*.27,hd*.92+.012,ry);box(S.light,x+q[0],y1+5*STOREY-.2,z+q[1],l.w*.4,.045,.012,ry,cb);}
+  else if(tw==='crown'){for(const yb of[y1-.2,y0+(y1-y0)*.55])for(const sd of[-1,1]){const o=rotP(0,sd*(hd+.012),ry);box(S.light,x+o[0],yb,z+o[1],l.w*.86,.04,.012,ry,cb);}
+   box(b,x,y1,z,l.w*.86,.12,l.d*.86,ry,tone(wc,.8),null,tone(wc,.85));roof(b,x,y1+.12,z,l.w*.86,l.d*.86,ry,.9,'hip',hex('#4A5866',T.A),.0,wc);}
   return;}
  const gr=hex(PAL.greenRoof,T.A*1.1),sh=hex('#4A6440',T.A),stp=mid?6:3;
  for(let i=stp;i<l.st;i+=stp){const y=y0+i*STOREY-.04;box(b,l.x,y,l.z,l.w+.22,.05,l.d+.22,ry,tone(wc,.75),null,gr);
@@ -556,10 +598,10 @@ function nfFarm(B,l,S,mid,y1){const T=B.T,ry=l.ry,top=y1+(mid?.005:.105),gr=hex(
  if(mid){box(S.building,l.x,top,l.z,l.w*.78,.03,l.d*.7,ry,gr);return;}
  for(let i=-1;i<=1;i++){const o=rotP(-l.w*.12,i*l.d*.2,ry);box(S.foliage,l.x+o[0],top,l.z+o[1],l.w*.5,.05,.08,ry,gr);}
  const o=rotP(l.w*.3,0,ry);box(S.glass,l.x+o[0],top,l.z+o[1],l.w*.26,.2,l.d*.62,ry,hex(PAL.glass,T.A));}
-function emitLot(B,l,S,mid){if(B.T.P.nf)nfLot(B,l);const T=B.T,P=T.P,b=S.building,pts=rectPts(l.x,l.z,l.w,l.d,l.ry),s=seat(T,pts),y0=s.hi+(mid?0:.05),h=l.st*STOREY,y1=y0+h,k=l.kind;
+function emitLot(B,l,S,mid){if(B.T.P.nf){nfPick(B);nfLot(B,l);}const T=B.T,P=T.P,b=S.building,pts=rectPts(l.x,l.z,l.w,l.d,l.ry),s=seat(T,pts),y0=s.hi+(mid?0:.05),h=l.st*STOREY,y1=y0+h,k=l.kind;
  let wc=wallCol(T,l.seed),win={lit:P.lit,seed:l.seed,bay:k==='slab'?.26:BAY};const rc=roofCol(T,l.seed);
  if(T.id==='normaltech'&&k==='mid'&&l.seed%4===0){wc=hex(['#56646E','#4E5A60','#62686C'][l.seed%3],T.A);win.bay=.2;win.lit=P.lit*1.15;}   // B2 r2: glazed office variant
- if(l.nf==='pv'){wc=hex(['#34404E','#3A4652','#303B47'][l.seed%3],T.A);win.bay=.18;win.lit=P.lit*1.1;}else if(l.nf==='tim'){wc=hex(PAL.timberL,T.A);win.bay=.24;}   // r5 C
+ if(l.nf==='pv'){wc=hex(l.tw?['#4E5C6C','#56636F','#4A5766'][l.seed%3]:['#34404E','#3A4652','#303B47'][l.seed%3],T.A);win.bay=.18;win.lit=P.lit*(l.tw?1.25:1.1);}else if(l.nf==='tim'){wc=hex(PAL.timberL,T.A);win.bay=.24;}   // r5 C; r6 N: towers a lighter blue-grey glass + more lit bays so they stand off the podiums
  if(l.lab){win.lit=P.lit*.04;wc=tone(wc,.62);}                    // B2 r4: o1984 research compound - unlit, darker (NEAR + MID)
  const rk=(k==='slab'||k==='mid')?'flat':P.roof==='mix'?(l.seed%3?'pitched':'flat'):P.roof;
  if(!mid||s.hi-s.lo>.03)prism(b,rectPts(l.x,l.z,l.w+.04,l.d+.04,l.ry),s.lo-.15,y0,tone(wc,.6),null,mid?false:null);
@@ -567,7 +609,7 @@ function emitLot(B,l,S,mid){if(B.T.P.nf)nfLot(B,l);const T=B.T,P=T.P,b=S.buildin
  const rh=Math.min(l.w,l.d)*(.34+.1*hash2(l.seed,1.7))*(T.id==='descendants'?1.45:1);   // r4: descendants = steep old roofs (NEAR+MID)
  if(rk==='pitched')roof(b,l.x,y1,l.z,l.w,l.d,l.ry,rh,l.seed%4===0?'hip':'gable',rc,.05,wc);
  else if(rk==='green')box(b,l.x,y1,l.z,l.w+.1,.05,l.d+.1,l.ry,tone(wc,.8),null,hex(PAL.greenRoof,T.A*(mid?1.35:1)));   // C1 r5: MID roofs lighter so each house reads against the ring lane
- if(l.nf)nfDeco(B,l,S,mid,y0,y1,wc);else if(P.nf&&rk==='flat'&&!l.lab&&hash2(l.seed*.29,6.1)<.4)nfFarm(B,l,S,mid,y1);   // r5 C
+ if(l.nf&&l.nf!=='pod')nfDeco(B,l,S,mid,y0,y1,wc);else if(P.nf&&rk==='flat'&&!l.lab&&!l.pad&&hash2(l.seed*.29,6.1)<(l.nf?.55:.4))nfFarm(B,l,S,mid,y1);   // r5 C; r6 N: podium roofs farmed too
  if(mid){   // C1 r5: MID-only sparse warm window points (world zoom: the facade shader's distance glow averages into the wall, so
   // egalitarian/protector showed 0 % warm pixels); one small lit pane per chosen house, alternating faces; P.midWin = share of lots
   if(P.midWin&&hash2(l.seed*.77,5.3)<P.midWin){const sd=l.seed%2?1:-1,o=rotP(0,sd*(l.d/2+.02),l.ry);box(S.light,l.x+o[0],y0+h*(P.midWinY||.36),l.z+o[1],l.w*.5,Math.min(.32,h*.45),.03,l.ry,em(B,PAL.warm,P.midWinK||1));}
@@ -877,41 +919,66 @@ function descCity(B,S,mid){const T=B.T,L=B.L,sl=L.slots.seam;if(!sl)return;const
 // delivery-drone corridor (small quads streaming one way, shrinking to 0 at the corridor ends), and an elevated light-rail line on
 // pillars along the most central street with one 3-car train shuttling slowly. Instanced (1 draw per kind and tier); anim(0) = frozen.
 function nearFuture(B,S,mid){const T=B.T,L=B.L,R=T.R,THREE=T.THREE;
- if(!B._nf){const tw=L.lots.filter(l=>l.nf==='pv').sort((a,b)=>b.st-a.st),pads=[];
-  for(const l of tw){if(pads.length>=3)break;if(pads.some(p=>Math.hypot(p.x-l.x,p.z-l.z)<3.2))continue;const s=seat(T,rectPts(l.x,l.z,l.w,l.d,l.ry));pads.push({x:l.x,z:l.z,y:s.hi+.05+l.st*STOREY+.105,r:Math.min(l.w,l.d)*.4,ry:l.ry});}
+ if(!B._nf){nfPick(B);const pads=L._pads||[];
   let st=null,bd=1e9;for(const s of L.streets){if(s.closed||s.pts.length!==2)continue;const a=s.pts[0],e=s.pts[1],len=Math.hypot(e[0]-a[0],e[1]-a[1]),dm=Math.abs((a[0]+e[0])/2)+Math.abs((a[1]+e[1])/2);
    if(len>R*1.2&&dm+Math.abs(Math.min(Math.abs(a[0]-e[0]),Math.abs(a[1]-e[1])))<bd&&dm>.9){bd=dm;st=s;}}
-  let rail=null;if(st){const a=st.pts[0],e=st.pts[1],ux=(e[0]-a[0]),uz=(e[1]-a[1]),n=Math.hypot(ux,uz),p0=[a[0]-ux/n*1.6,a[1]-uz/n*1.6],p1=[e[0]+ux/n*1.6,e[1]+uz/n*1.6],N=Math.ceil((n+3.2)/1.3),pts=[];
-   let ymax=-1e9;for(let i=0;i<=N;i++){const x=lerp(p0[0],p1[0],i/N),z=lerp(p0[1],p1[1],i/N);ymax=Math.max(ymax,T.yl(x,z));pts.push([x,z]);}rail={pts,y:ymax+1.75,a:Math.atan2(p1[1]-p0[1],p1[0]-p0[0]),p0,p1};}
-  const cy=pads.length?Math.max(...pads.map(p=>p.y))+1.3:T.yl(0,0)+6,ca=(rail?rail.a:0)+PI/2+.35;
-  B._nf={pads,rail,cy,ca,tx:[],dr:[],tr:[]};}
- const NF=B._nf,dk=hex('#2E3238',T.A),st=hex(PAL.steel,.9*T.A),rl=hex('#6A6F76',T.A);
- for(const p of NF.pads){box(S.metal,p.x,p.y,p.z,p.r*2,.04,p.r*2,p.ry,dk);const n=mid?4:8;for(let i=0;i<n;i++){const a=i/n*TAU;box(S.light,p.x+Math.cos(a)*p.r*.9,p.y+.045,p.z+Math.sin(a)*p.r*.9,.04,.02,.04,0,em(B,PAL.lamp,mid?.5:.6));}
-  if(!mid){box(S.light,p.x,p.y+.045,p.z,p.r*.5,.012,.03,p.ry,em(B,PAL.cool,.35));box(S.light,p.x,p.y+.045,p.z,.03,.012,p.r*.5,p.ry,em(B,PAL.cool,.35));}}
- if(NF.rail){const r=NF.rail;for(let i=0;i<r.pts.length;i++){const q=r.pts[i],gy=T.yl(q[0],q[1]);strut(S.metal,[q[0],gy-.1,q[1]],[q[0],r.y-.08,q[1]],mid?.07:.06,rl);
-   if(!mid)box(S.metal,q[0],r.y-.12,q[1],.42,.06,.1,-r.a,rl);if(i)strut(S.metal,[r.pts[i-1][0],r.y,r.pts[i-1][1]],[q[0],r.y,q[1]],.12,st);}}
- // movers: instanced eVTOLs + drones, one train mesh (per tier)
- const pb=buf();box(pb,0,0,0,.36,.12,.18,0,hex('#8C9298',T.A),null,hex('#9AA0A6',T.A));box(pb,.06,.1,0,.14,.05,.14,0,hex('#3A4450',T.A));
- for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]]){strut(pb,[0,.08,0],[c[0]*.26,.12,c[1]*.2],.012,dk);cyl(pb,c[0]*.26,.12,c[1]*.2,.09,.09,.012,8,hex('#4A5058',T.A),true);}
- box(pb,-.18,.02,0,.02,.02,.02,0,hex('#E0A868',T.A));
- const db=buf();box(db,0,0,0,.08,.035,.08,0,hex('#5A6068',T.A));for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]])box(db,c[0]*.06,.03,c[1]*.06,.05,.008,.05,0,hex('#3A3E44',T.A));
- const nT=Math.max(0,NF.pads.length>1?NF.pads.length:0)+2,nD=mid?6:10;
- const tx=new THREE.InstancedMesh(geomOf(T,pb),B.M.metal,nT),dr=new THREE.InstancedMesh(geomOf(T,db),B.M.metal,nD);tx.name='pt_evtol';dr.name='pt_drones';
- tx.frustumCulled=dr.frustumCulled=false;(mid?B.extraMid:B.extra).push(tx,dr);NF.tx.push(tx);NF.dr.push(dr);
- if(NF.rail){const tb=buf(),bc=hex('#9CA2A8',T.A),wb=hex('#3E4852',T.A);for(let k=0;k<3;k++){box(tb,(k-1)*.82,0,0,.78,.24,.26,0,bc,null,tone(bc,1.05));box(tb,(k-1)*.82,.1,0,.7,.07,.27,0,wb);}
-  const tm=new THREE.Mesh(geomOf(T,tb),B.M.metal);tm.name='pt_train';(mid?B.extraMid:B.extra).push(tm);NF.tr.push(tm);}
- if(mid)return;
- const O=new THREE.Object3D(),P=NF.pads,legs=[];for(let i=0;i<P.length&&P.length>1;i++)legs.push([P[i],P[(i+1)%P.length]]);if(P.length===2)legs.length=1;
- const u=[Math.cos(NF.ca),Math.sin(NF.ca)],cor=(s,h,off)=>[u[0]*s-u[1]*off,h,u[1]*s+u[0]*off];
- B.anims.push(t=>{let k=0;const put=(ims,i,x,y,z,yaw,sc)=>{O.position.set(x,y,z);O.rotation.set(0,yaw,0);O.scale.setScalar(sc);O.updateMatrix();for(const m of ims)if(i<m.count)m.setMatrixAt(i,O.matrix);};
-  for(let i=0;i<legs.length;i++){const ph=((t/62+i*.37)%1+1)%1,fw=ph<.5,p=fw?ph*2:(ph-.5)*2,a=fw?legs[i][0]:legs[i][1],e=fw?legs[i][1]:legs[i][0];
-   const m=ss(.15,.85,p),x=lerp(a.x,e.x,m),z=lerp(a.z,e.z,m),y=p<.15?lerp(a.y+.08,NF.cy,ss(0,.15,p)):p>.85?lerp(NF.cy,e.y+.08,ss(.85,1,p)):NF.cy+.15*Math.sin(p*PI*3);
-   put(NF.tx,k++,x,y,z,-Math.atan2(e.z-a.z,e.x-a.x),1);}
-  for(let i=0;i<2;i++){const ph=((t/80+i*.5)%1+1)%1,s=(ph<.5?ss(0,.5,ph):1-ss(.5,1,ph))*2-1;put(NF.tx,k++,...cor(s*R*1.45,NF.cy+.6+i*.35,(i?-1:1)*1.2),-NF.ca+(ph<.5?0:PI),1);}
-  for(let i=0;i<NF.dr[0].count;i++){const q=((t/55+i/NF.dr[0].count)%1+1)%1,sc=ss(0,.06,q)*(1-ss(.94,1,q));put(NF.dr,i,...cor((q*2-1)*R*1.4,NF.cy-.7,.4),-NF.ca,Math.max(sc,.001));}
-  for(const m of NF.tx.concat(NF.dr))m.instanceMatrix.needsUpdate=true;
-  if(NF.rail){const r=NF.rail,ph=((t/70)%1+1)%1,m=ph<.5?ss(.05,.45,ph):1-ss(.55,.95,ph),x=lerp(r.p0[0],r.p1[0],lerp(.06,.94,m)),z=lerp(r.p0[1],r.p1[1],lerp(.06,.94,m));
-   for(const tm of NF.tr){tm.position.set(x,r.y+.12,z);tm.rotation.y=-r.a;}}});}
+  // r6 N: the rail line spans the whole town and runs out past its edge (deck 2.25 over the highest ground under the inner 70 %)
+  let rail=null;if(st){const a=st.pts[0],e=st.pts[1],n=Math.hypot(e[0]-a[0],e[1]-a[1]),dx=(e[0]-a[0])/n,dz=(e[1]-a[1])/n,t0=a[0]*dx+a[1]*dz,ox=a[0]-dx*t0,oz=a[1]-dz*t0,Lr=R*1.08,N=Math.ceil(2*Lr/1.75),pts=[];let ym=-1e9;
+   for(let i=0;i<=N;i++){const s=-Lr+2*Lr*i/N,x=ox+dx*s,z=oz+dz*s;if(Math.abs(s)<R*.7)ym=Math.max(ym,T.yl(x,z));pts.push([x,z,s]);}
+   const y=ym+2.25,q=pts.filter(p=>T.yl(p[0],p[1])<y-.6);if(q.length>3)rail={pts:q,y:y,a:Math.atan2(dz,dx),dx,dz,ox,oz,s0:q[0][2],s1:q[q.length-1][2]};}
+  const hp=pads.length?Math.max(...pads.map(p=>p.y)):T.yl(0,0)+5,lp=pads.filter(p=>!p.hi),lh=lp.length?Math.max(...lp.map(p=>p.y)):T.yl(0,0)+2.6;
+  // r6 N v3 (vision: taxis at 'tower top + 1.1' flew off the top of the close-up frame): corridor lanes cruise low (podium pads +1.3,
+  // between the towers); the lane angle is chosen from 36 candidates for the largest clearance from the 5 towers (3 lanes, 1.3 apart)
+  const TW=L.lots.filter(l=>l.tw),C0=T.P.nfc||[0,0],K=[C0[0]+2.5,C0[1]+.2];let ca=(rail?rail.a:0)+PI/2+.35,bc=-1;
+  for(let k=0;k<36;k++){const a=k/36*PI,ux=Math.cos(a),uz=Math.sin(a);let m=1e9;for(const o of TW)for(let i=-1;i<=1;i++)m=Math.min(m,Math.abs(-uz*(o.x-K[0])+ux*(o.z-K[1])-i*1.3));if(m>bc){bc=m;ca=a;}}
+  const cy=lh+1.3,dy=lh+.9;
+  B._nf={pads,rail,cy,hp,dy,ca,K,tx:[],trl:[],drB:[],drL:[],tr:[]};}
+ const NF=B._nf,dk=hex('#2E3238',T.A),pd=hex('#3A3F46',T.A),cc=hex('#8A8C90',T.A),ls=mid?1.8:1,C4=[[1,1],[-1,1],[1,-1],[-1,-1]];
+ // vertiports: dark deck + a continuous ring of warm pad lights (brighter every 5th) + dim cool cross; the high deck sits on a collar
+ for(const p of NF.pads){if(p.hi)cyl(S.metal,p.x,p.y0-.02,p.z,.28,.4,p.y-p.y0-.03,8,dk,dk);else box(S.metal,p.x,p.y0-.02,p.z,.34,p.y-p.y0-.03,.34,p.ry,dk);
+  cyl(S.metal,p.x,p.y-.05,p.z,p.r,p.r,.05,mid?12:20,pd,pd);const n=mid?10:20;
+  for(let i=0;i<n;i++){const a=(i+.5)/n*TAU,rr=p.r*.9;box(S.light,p.x+Math.cos(a)*rr,p.y,p.z+Math.sin(a)*rr,TAU*rr/n*.66,.03*ls,.07*ls,-a+PI/2,em(B,PAL.lamp,i%5===0?.8:.62));}
+  if(!mid){const ir=p.r*.5;for(let i=0;i<12;i++){const a=(i+.5)/12*TAU;box(S.light,p.x+Math.cos(a)*ir,p.y,p.z+Math.sin(a)*ir,TAU*ir/12*.5,.012,.03,-a+PI/2,em(B,PAL.cool,.3));}}}
+ // elevated light rail: one long concrete deck on T-capped pillars (every ~1.75 u), dim cool edge strips, station by the square
+ if(NF.rail){const r=NF.rail,ry=-r.a,q=r.pts,len=r.s1-r.s0,sm=(r.s0+r.s1)/2,mx=r.ox+r.dx*sm,mz=r.oz+r.dz*sm;
+  box(S.metal,mx,r.y-.14,mz,len,.12,.36,ry,cc,null,tone(cc,1.05));
+  for(const sd of[-1,1]){const o=rotP(0,sd*.186,ry);box(S.light,mx+o[0],r.y-.1,mz+o[1],len,.03*ls,.012,ry,em(B,PAL.cool,mid?.2:.24));}
+  for(const p of q){const gy=T.yl(p[0],p[1]);box(S.metal,p[0],gy-.1,p[1],.13*ls,r.y-.14-gy+.1,.13*ls,ry,cc);if(!mid)box(S.metal,p[0],r.y-.22,p[1],.22,.08,.48,ry,cc);}
+  const sx=r.ox,sz=r.oz;for(const sd of[-1,1]){const o=rotP(0,sd*.38,ry);box(S.metal,sx+o[0],r.y-.18,sz+o[1],2.3,.1,.34,ry,pd,null,tone(cc,.9));}
+  box(S.metal,sx,r.y+.62,sz,2.5,.05,1.16,ry,dk,null,pd);box(S.light,sx,r.y+.6,sz,2.2,.02,.05,ry,em(B,PAL.lamp,.5));
+  if(!mid)for(const c of C4){const o=rotP(c[0]*1.05,c[1]*.54,ry);box(S.metal,sx+o[0],r.y-.18,sz+o[1],.04,.8,.04,ry,dk);}}
+ // movers (instanced, 1 draw per kind and tier): eVTOL body + nav lights share matrices; light trails; drones + blinking lights; train
+ // r6 N v2 (vision: the X-quads read as 'drones', not air taxis): winged passenger eVTOL - fuselage with a lit cabin band, dark
+ // canopy, high wing with 4 rotors + 2 canard rotors, tail boom + fin; ~1.1 u long
+ const pb=buf(),bdy=hex('#B4B8BE',T.A),rt=hex('#5A6068',T.A);box(pb,0,0,0,1.0,.3,.34,0,bdy,null,tone(bdy,1.06));box(pb,.24,.2,0,.4,.12,.3,0,hex('#2E3A48',T.A));
+ box(pb,-.05,.28,0,.3,.04,1.6,0,bdy);box(pb,-.66,.1,0,.42,.08,.09,0,bdy);box(pb,-.84,.18,0,.14,.26,.04,0,tone(bdy,.9));
+ for(const zr of[-.74,-.4,.4,.74])cyl(pb,-.05,.34,zr,.17,.17,.02,10,rt,rt);for(const zr of[-.3,.3]){box(pb,.46,.12,zr*.8,.12,.03,.32,0,bdy);cyl(pb,.46,.17,zr*1.3,.13,.13,.02,10,rt,rt);}
+ const k2=mid?2.4:1.6,lb=buf();box(lb,.02,.11,0,.62,.1,.35,0,em(B,PAL.lamp,.55));for(const sd of[-1,1])box(lb,-.05,.3,sd*.8,.06*k2,.05*k2,.06*k2,0,em(B,sd>0?PAL.cool:PAL.lamp,.8));box(lb,-.9,.32,0,.05*k2,.05*k2,.05*k2,0,em(B,PAL.lamp,.8));
+ const trb=buf();box(trb,0,0,0,.08*k2,.05*k2,.08*k2,0,em(B,PAL.lamp,.42));
+ const db=buf();box(db,0,0,0,.16,.06,.16,0,hex('#5A6068',T.A));for(const c of C4)box(db,c[0]*.12,.05,c[1]*.12,.1,.012,.1,0,hex('#3A3E44',T.A));
+ const dlb=buf();box(dlb,0,-.03,0,.07*k2,.05*k2,.07*k2,0,em(B,PAL.lamp,.7));
+ const PD=NF.pads,mv=PD.filter(p=>!p.park),legs=[];for(let i=0;i<mv.length-1;i++)legs.push([mv[i],mv[i+1]]);if(mv.length>2)legs.push([mv[mv.length-1],mv[0]]);
+ const pk=PD.filter(p=>p.park),nL=legs.length*2,nC=3,nT=nL+nC+pk.length,nTr=(nL+nC)*4,nD=mid?6:12;
+ const IM=(bb,mat,n,nm,list)=>{const m=new THREE.InstancedMesh(geomOf(T,bb),mat,n);m.name=nm;m.frustumCulled=false;(mid?B.extraMid:B.extra).push(m);list.push(m);return m;};
+ IM(pb,B.M.metal,nT,'pt_evtol',NF.tx);IM(lb,B.M.light,nT,'pt_evtol_nav',NF.tx);IM(trb,B.M.light,nTr,'pt_evtol_trail',NF.trl);
+ IM(db,B.M.metal,nD,'pt_drones',NF.drB);IM(dlb,B.M.light,nD,'pt_drone_lights',NF.drL);
+ if(NF.rail){const tb=buf(),tl=buf(),bc=hex('#A4AAB0',T.A);for(let k=0;k<3;k++){box(tb,(k-1)*1.1,0,0,1.04,.3,.32,0,bc,null,tone(bc,1.05));box(tl,(k-1)*1.1,.12,0,.92,.12,.336,0,em(B,PAL.lamp,.62));box(tl,(k-1)*1.1,.3,0,.8,.012,.06,0,em(B,PAL.cool,.22));}
+  for(const sd of[-1,1])box(tl,sd*1.64,.05,0,.03,.07,.22,0,em(B,PAL.lamp,.7));
+  const tm=new THREE.Mesh(geomOf(T,tb),B.M.metal),tlm=new THREE.Mesh(geomOf(T,tl),B.M.light);tm.name='pt_train';tlm.name='pt_train_lit';(mid?B.extraMid:B.extra).push(tm,tlm);NF.tr.push(tm,tlm);}
+ if(NF.an)return;NF.an=1;   // one anim drives both tiers (the lists hold NEAR and MID meshes)
+ const O=new THREE.Object3D(),u=[Math.cos(NF.ca),Math.sin(NF.ca)],cor=(s,h,off)=>[NF.K[0]+u[0]*s-u[1]*off,h,NF.K[1]+u[1]*s+u[0]*off],v=[Math.cos(NF.ca+1.1),Math.sin(NF.ca+1.1)];
+ const pos=(j,t)=>{if(j<nL){const lg=legs[j>>1],o=j&1,ph=((t/64+o*.5)%1+1)%1,fw=ph<.5,p=fw?ph*2:(ph-.5)*2,a=fw?lg[0]:lg[1],e=fw?lg[1]:lg[0],h=Math.max(a.y,e.y)+.7+o*.45,yw=-Math.atan2(e.z-a.z,e.x-a.x);
+   if(p<.12)return[a.x,a.y+.02,a.z,yw,0];if(p>.88)return[e.x,e.y+.02,e.z,yw,0];
+   const q=(p-.12)/.76,m=ss(.2,.8,q),y=q<.2?lerp(a.y+.02,h,ss(0,.2,q)):q>.8?lerp(h,e.y+.02,ss(.8,1,q)):h+.1*Math.sin(q*PI*3);return[lerp(a.x,e.x,m),y,lerp(a.z,e.z,m),yw,q>.04&&q<.96?1:0];}
+  const i=j-nL,ph=((t/(84+14*i)+i*.33)%1+1)%1,s=(ph<.5?ss(0,.5,ph):1-ss(.5,1,ph))*2-1,c=cor(s*R*1.1,NF.cy+.5+i*.4,(i-1)*1.3);return[c[0],c[1],c[2],-NF.ca+(ph<.5?0:PI),1];};
+ B.anims.push(t=>{const put=(ims,i,x,y,z,yaw,sc)=>{O.position.set(x,y,z);O.rotation.set(0,yaw,0);O.scale.setScalar(Math.max(sc,.001));O.updateMatrix();for(const m of ims)if(i<m.count)m.setMatrixAt(i,O.matrix);};
+  for(let j=0;j<nL+nC;j++){const p=pos(j,t);put(NF.tx,j,p[0],p[1],p[2],p[3],1);for(let k=1;k<=4;k++){const q=pos(j,t-k*1.5);put(NF.trl,j*4+k-1,q[0],q[1]+.12,q[2],0,q[4]*p[4]*(1-k*.18));}}
+  for(let i=0;i<pk.length;i++)put(NF.tx,nL+nC+i,pk[i].x,pk[i].y+.02,pk[i].z,-pk[i].ry+.6,1);
+  for(const L2 of[NF.drB,NF.drL])for(const m of L2){const n=m.count;for(let i=0;i<n;i++){const q=((t/55+i/n)%1+1)%1,sc=ss(0,.06,q)*(1-ss(.94,1,q)),d=(q*2-1)*R*1.4,ln=(i%2?.5:-.5),
+   x=NF.K[0]+v[0]*d-v[1]*ln,z=NF.K[1]+v[1]*d+v[0]*ln,bl=L2===NF.drL?(((t*.9+i*.37)%1)<.5?1:0):1;O.position.set(x,NF.dy+.25*(i%3),z);O.rotation.set(0,-NF.ca-1.1,0);O.scale.setScalar(Math.max(sc*bl,.001));O.updateMatrix();m.setMatrixAt(i,O.matrix);}}
+  for(const m of NF.tx.concat(NF.trl,NF.drB,NF.drL))m.instanceMatrix.needsUpdate=true;
+  if(NF.rail){const r=NF.rail,ph=((t/70)%1+1)%1,m=ph<.5?ss(.05,.45,ph):1-ss(.55,.95,ph),s=lerp(r.s0+1.9,r.s1-1.9,m);
+   for(const tm of NF.tr){tm.position.set(r.ox+r.dx*s,r.y-.08,r.oz+r.dz*s);tm.rotation.y=-r.a;}}});}
 const SPECIALS={square:square,regulator:regulator,substation:substation,pylons:pylons,datacenter:datacenter,camPoles:camPoles,checkpoints:checkpoints,ministry:ministry,
  searchlights:searchlights,dome:dome,anomaly:anomaly,commons:commons,amphitheatre:amphitheatre,workshop:workshop,library:library,enclosure:enclosure,gardens:gardens,
  playground:playground,tree:treeOne,plaza:plaza,seam:seam,emptying:emptying,machines:zooMachines,machcity:descCity,nearfuture:nearFuture};
