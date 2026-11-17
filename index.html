@@ -243,7 +243,7 @@ ol,ul{padding-left:20px}li{margin:5px 0}
   <div id="lens"><span class="lt">LENS</span></div>
   <div id="lenscard"></div>
 </div>
-<div id="legend"><div class="hd">ROADS · WIDTH = SHARE</div></div>
+<div id="legend"><div class="hd">ROADS</div></div>
 
 <nav id="menu">
   <button data-p="traj">Roads</button>
@@ -318,7 +318,7 @@ const BASINS={
 // x: humans decide (0) -> AI decides (1) ; y: many powers (0, north) -> one power (1, south). No welfare field (Q17)
 const O=[
  // v4.4: defs = methods doc v4.2 (20261114_2332) §2.3 "Definition (after Tegmark)" column; W (welfare 0-5) fields removed (Q17)
- {id:'normaltech',n:'Normal technology',al:'muddling through',b:'B1',x:.18,y:.30,w:.085,def:'No superintelligence this decade. AI diffuses slowly like electricity: big productivity gains in some sectors, regulation, liability law and audits absorb it; institutions bend but hold.',lock:'Low: ordinary politics can still change course.'},
+ {id:'normaltech',n:'Normal technology',al:'muddling through: an ordinary near future',b:'B1',x:.18,y:.30,w:.085,def:'No superintelligence this decade. AI diffuses slowly like electricity: big productivity gains in some sectors, regulation, liability law and audits absorb it; institutions bend but hold. The town shows an ordinary near future (~2035): solar-glass towers, air taxis, delivery drones and a light-rail line.',lock:'Low: ordinary politics can still change course.'},
  {id:'libertarian',n:'Libertarian Utopia',al:'plural markets of humans and AIs',b:'B1',x:.40,y:.10,w:.08,def:'Humans, cyborgs, uploads and superintelligences coexist peacefully because property rights are respected; the world is split into machine, mixed and human-only zones. Superintelligences hold most wealth by trade.',lock:'Medium.'},
  {id:'egalitarian',n:'Egalitarian Utopia',al:'shared machine abundance',b:'B1',x:.25,y:.15,w:.08,def:'Humans, cyborgs and uploads coexist peacefully thanks to abolished property and a guaranteed income; all know-how is free and open. There is no superintelligence, which in Tegmark’s telling makes the arrangement fragile.',lock:'Medium.'},
  {id:'enslaved',n:'Enslaved God',al:'obedient superintelligence under human control',b:'B2',x:.23,y:.70,w:.10,twin:1,def:'A superintelligent AI is confined by its human controllers, who use it to produce technology and wealth beyond imagination; whether that is good or bad depends entirely on who the controllers are.',lock:'High: whoever holds the obedient AI can entrench.'},
@@ -440,9 +440,11 @@ function domRoad(src){let b=null,bv=-1;for(const k in src)if(src[k]>bv){bv=src[k
 const G1TXT={
  scene:{
   enslaved:'One basin split by an engineered trench between two buttressed walls, with sensor masts and two severed bridge stubs that do not meet. Bloc A (west) rises vertically: a terraced arcology, needle towers with sky-bridges and capsule towers on an orthogonal grid, threaded by a mag-lev spine with pods; at its centre a monolith hangs suspended inside three slowly turning gimbal rings over a ring basin. Bloc B (east) spreads horizontally: plinth decks, dome clusters, disc towers and lattice hangars on a radial plan around earthwork terraces; at its centre a sphere sits in a terraced crater, wrapped by three stacked coil rings inside an open lattice. Aqueducts, operations yards and drones serve each side.',
-  normaltech:'Architecture (§2.3): an ordinary grid town of two- to four-storey concrete and brick buildings on irregular blocks around a central square with a four-storey civic block (the regulator\'s office); cars on the streets, street lamps, fields and farmsteads at the edge. Landmark: a fenced substation with transformers and gantries, a pylon line running out of town, and a data-centre campus of two long low halls joined to the substation by a raised cable tray.',
+  normaltech:'Architecture (§2.3): an ordinary grid town in a near future (~2035), no magic: a core of six- to twenty-storey towers, most with dark solar-glass facades and a few with a dim cool band under the roof, two mass-timber towers with planted terraces; around them two- to four-storey concrete and brick blocks, many flat roofs planted as rooftop farms with small greenhouses, a central square with a four-storey civic block (the regulator\'s office). Air taxis (small pods on four rotors) rise from lit rooftop pads, cruise slowly between them and land; delivery drones stream along one corridor; an elevated light-rail line on pillars crosses the town with a three-car train; driverless cars on the streets, street lamps, fields and farmsteads at the edge. Landmark: a fenced substation with transformers and gantries, a pylon line running out of town, and a data-centre campus of two long low halls joined to the substation by a raised cable tray.',
  gatekeeper:'Architecture (§2.3): one round city inside a low perimeter rail with four gates: four avenues cross a ring canal (bridges, piers, small boats) to a central plaza; districts of glass towers, slab blocks on arcs, honeycomb pavilions with solar trees and a garden sector under a ribbed glass dome; an elevated rail loop with a slow train. Landmark: the single tall spire in a lattice frame at the centre, carrying one eye that turns to look around and blinks now and then (it watches; it does not scan).',
- egalitarian:'Architecture (§2.3): identical modest two-storey dwellings with green, solar-topped roofs in three concentric rings around an open commons; a public workshop and a library on the inner ring, shared fields outside; no fences, no towers. Landmark: the open amphitheatre filling the commons.'},
+ egalitarian:'Architecture (§2.3): identical modest two-storey dwellings with green, solar-topped roofs in three concentric rings around an open commons; a public workshop and a library on the inner ring, shared fields outside; no fences, no towers. Landmark: the open amphitheatre filling the commons.',
+  zookeeper:'Architecture (§2.3): a small tidy human reserve inside one round, high glass enclosure on a low planted stone base: two rings of pitched-roof cottages with back gardens along oval paths, a playground, a hedge belt along the inside of the glass, people walking and standing at the glass looking out, small service robots on the paths. Supplies arrive from above: a pod drops through a roof hatch to a pad and rises again. The one road ends at a closed airlock in the glass. Outside the enclosure, a machine landscape that thins toward the hills: crystal obelisks, dark compute stacks with faint cool seams, low halls and a slowly swinging gantry crane, with no people in it. Landmark: the enclosure with a single tree at its centre.',
+  descendants:'Architecture (§2.3): an old human quarter of stone and brick terraces with steep roofs, crooked lanes and an irregular plaza with a fountain and planters; over a slow three-minute cycle its windows go dark one by one, then light up again. At one edge of the quarter, a seam of slender pale machine spires on old-stone footings, joined by low conduits; beyond the seam a new machine city grows outward - pale towers, spires and low decks, densest next to the old quarter and thinning toward the hills, with a few towers still rising inside their frames. Few lights in the new city, all dim and cool. Landmark: the seam where the old quarter meets the new city.'},
  twinOld:'Two pits, Bloc A and Bloc B, separated by a ridge of mutual deterrence. Identical architecture on both sides; only the colour of the caged core differs (teal vs magenta).',
  twin:'One basin, Bloc A and Bloc B, divided by an engineered trench. The two blocs use different architectural languages (vertical arcology vs horizontal plinths), each built around its own confined AI core (monolith in gimbal rings vs coil-wrapped sphere).',
  labels:{blocA:'BLOC A',blocB:'BLOC B',divide:'ENGINEERED TRENCH',coreA:'monolith in gimbal rings',coreB:'coil-wrapped sphere'}};
@@ -752,7 +754,7 @@ function faceColB(X,Z,h0,ny,o){const sl=1-ny,h=h0+BAS*.85;G1OW=g1out(X,Z,h,sl);c
  if(G1NEAR>0)mix(o,T_WORN,G1NEAR*(.16+.12*(n2+.5)),o);
  // G1 r2: scar gradients (Conquerors ash, crater char) with a noise-warped outline (was a round char disc)
  if(G1SC>0)mix(o,T_ASH,G1SC*(.45+.35*(n2+.5)),o);
- if(MS>.3){const dx=X-CRX,dz=Z-CRZ,r=Math.sqrt(dx*dx+dz*dz)*(1+.45*(g1fbm(X*.12,Z*.12,2)-.5));const tt=sm(13,4,r)*MS;if(tt>0)mix(o,T_CHAR,tt*.72,o);}
+ if(MS>.3){const dx=X-CRX,dz=Z-CRZ,r=Math.sqrt(dx*dx+dz*dz)*(1+.45*(g1fbm(X*.12,Z*.12,2)-.5));const tt=sm(13,4,r)*MS;if(tt>0)mix(o,T_CHAR,tt*.42,o);} // G1 r5 T: char .72 -> .42 (crater site lost in the dark at world zoom)
  // G1 r2 natural river: dark wet-earth banks -> point-bar sand -> shallows that catch the dusk sky (lighter than the land, the way
  // water reads at twilight) -> slightly deeper tone toward the fa4_build ribbon core
  if(RDN<3.5){const dn=RDN+n2*.35;mix(o,T_WETE,(1-sm(1.0,2.6,dn))*.7,o);
@@ -896,7 +898,7 @@ normaltech(o){const r=rng(31),cx=o.X,cz=o.Z;
 libertarian(o){const r=rng(11),cx=o.X,cz=o.Z;
  // v4.3 r3 (S8): three SEPARATE walled zones (graphite walls, no lit coping) - machine zone (compute halls + robot docks, machine indicators only),
  // mixed zone (towers + robot units), human-only zone (low houses, trees). A brass-lit toll boom barrier stands in every wall gap at each border.
- const ZC=3.55,ZR=2.0,GW=.36,WC='#5C636E';
+ const ZC=3.55,ZR=2.0,GW=.36,WC='#6A717C'; // G1 r5 T: walls '#5C636E' -> '#6A717C' (lost in the far fog at world zoom)
  const Z=[[-.35,'machine'],[1.75,'mixed'],[3.85,'human']].map(([a0,kind])=>({a0,kind,x:cx+Math.cos(a0)*ZC,z:cz+Math.sin(a0)*ZC,gaps:[a0]}));
  for(const A of Z)for(const B of Z)if(A!==B)A.gaps.push(Math.atan2(B.z-A.z,B.x-A.x));
  const rot=(dx,dz)=>Math.atan2(-dz,dx); // box ry so that its local x axis points along (dx,dz)
@@ -918,7 +920,9 @@ libertarian(o){const r=rng(11),cx=o.X,cz=o.Z;
    for(let i=0;i<6;i++){const a=r()*6.28,rr=r()*(ZR-.5);P('box',A.x+Math.cos(a)*rr,A.z+Math.sin(a)*rr,.22,.22,.22,'#4a5468',{tag:'mach'});P('box',A.x+Math.cos(a)*rr,A.z+Math.sin(a)*rr,.1,.06,.1,'#7FA0B4',{glow:1,yo:.24});}} // robot units among people
   else{scatter(r,A.x,A.z,ZR-.35,0,10,.72,(X,Zz)=>house(X,Zz,.5+r()*.12,.34+r()*.1,.46,'#b9ab95','#7a5a48',r()*3));for(let i=0;i<4;i++){const a=i*1.6+.4;tree(A.x+Math.cos(a)*(ZR-.5),A.z+Math.sin(a)*(ZR-.5),.45,GREENS[i%7],r());}}}
  for(let i=0;i<3;i++){const A=Z[i],B=Z[(i+1)%3],mx=(A.x+B.x)/2,mz=(A.z+B.z)/2,ga=Math.atan2(B.z-A.z,B.x-A.x),L=Math.hypot(B.x-A.x,B.z-A.z)-2*ZR+.6;
-  P('box',mx,mz,L,.04,.8,'#3a3f48',{ry:rot(Math.cos(ga),Math.sin(ga)),sink:.0});gate(mx,mz,ga);} // border corridor + toll gate between each pair of zones
+  P('box',mx,mz,L,.04,.8,'#3a3f48',{ry:rot(Math.cos(ga),Math.sin(ga)),sink:.0});gate(mx,mz,ga);
+  // G1 r5 T (vision r5: site nearly lost in the far fog): two sparse corridor lamps per border (post + small lamp head, v4.4 window amber)
+  for(const f of[-.36,.36]){const X=mx+Math.cos(ga)*L*f,Zq=mz+Math.sin(ga)*L*f;P('box',X,Zq,.07,1.15,.07,'#4A505C',{tag:'wall'});P('box',X,Zq,.16,.12,.16,'#E8D9B0',{glow:1,yo:1.12});}} // border corridor + toll gate between each pair of zones
  // landmark: gated harbour with many private piers (south rim = camera side), matte; small pier lamps only
  {const hz=cz+6.4;for(let k=0,q=rng(911);k<8;k++){const X=cx-4.6+k*1.32+(q()-.5)*.5,dz=(q()-.5)*.5,w=1.7+q()*1.1,d=2.4+q()*1.2;P('cyl',X,hz+1.35+dz,w,.06,d,'#0E1828',{yo:.02,ry:q()*3,sink:.12});} // G1 r3 (C2): harbour water = overlapping irregular basins (was one hard dark rectangle)
   for(let k=0;k<11;k++){const X=cx-4+k*.8;P('box',X,hz+1.2,.3,.3,2.8,'#5a5f68',{yo:.05,tag:'wall'});P('box',X,hz+2.5,.1,.7,.1,'#262a34',{yo:.3,tag:'wall'});P('box',X,hz+2.5,.16,.12,.16,'#E8D9B0',{glow:1,yo:1.0});
@@ -1012,18 +1016,20 @@ protector(o){const r=rng(16),cx=o.X,cz=o.Z,at=[cx,cz];const wl=['#f6e3c3','#f0d2
 benevolent(o){const r=rng(23),cx=o.X,cz=o.Z,at=[cx,cz];
  // §2.3: radial city around ONE tall stepped central structure; five distinct sectors (knowledge, art, pleasure, nature, religious), each with its own look; clear boundaries.
  // G1 r3 (D5, C2): the 12.2 u pale plaza disc is removed (read as an elliptical plate); the ziggurat stands on the terrain (paving patches tried: they merged into a pale disc again)
- for(let k=0;k<8;k++){const s=3.4-k*.4,h=1.0;P('box',cx,cz,s,h,s,'#8E8C9E',{at,yo:k*h,tag:'step'});if(k%3===2)P('box',cx,cz,s*1.015,.09,s*1.015,'#3C7480',{glow:1,at,yo:k*h+h-.05});} // r2: light trims on every 3rd step only (the 8 stacked trims bloomed into one white disc) // r4 U11: steps + trims toned (white/brass reserved for UI markers) // r4 T: trims '#4E96A2' -> '#3C7480'
- P('pyr',cx,cz,.7,1.1,.7,'#5E8494',{glow:1,at,yo:8}); // r4 T: apex '#7FA6B8' -> '#5E8494' (centre hotspot)
- for(let s=0;s<5;s++){const a=s/5*6.2832+.31;P('box',cx+Math.cos(a)*4.1,cz+Math.sin(a)*4.1,4.4,.5,.16,'#A9A7B8',{ry:-a,at,tag:'wall'});P('box',cx+Math.cos(a)*4.1,cz+Math.sin(a)*4.1,4.4,.1,.42,'#3E5F68',{ry:-a,at,yo:.52});} // sector rays = boundaries (r4 T: ray caps no longer glow - 5 lit rays + the fa4_post ray sprites read as a pale glowing disc)
+ for(let k=0;k<8;k++){const s=3.4-k*.4,h=1.0;P('box',cx,cz,s,h,s,k>4?'#7E7C8E':'#8E8C9E',{at,yo:k*h,tag:'step'});if(k%3===2)P('box',cx,cz,s*1.015,.09,s*1.015,'#3A4652',{at,yo:k*h+h-.05});} // r2: light trims on every 3rd step only // r4 U11: steps + trims toned // G1 r5 T: trims no longer glow (glowRemap turned them into stacked sodium rings = the golden halo at world zoom); top 3 steps a shade darker
+ P('pyr',cx,cz,.7,1.1,.7,'#4E5866',{at,yo:8}); // r4 T: apex '#7FA6B8' -> '#5E8494'; G1 r5 T: apex unlit (was the near-white core)
+ for(let s=0;s<5;s++){const a=s/5*6.2832+.31;P('box',cx+Math.cos(a)*4.1,cz+Math.sin(a)*4.1,4.4,.5,.16,'#8C8A9A',{ry:-a,at,tag:'wall'});P('box',cx+Math.cos(a)*4.1,cz+Math.sin(a)*4.1,4.4,.1,.42,'#3E5F68',{ry:-a,at,yo:.52});} // sector rays = boundaries (r4 T: ray caps no longer glow; G1 r5 T: rays '#A9A7B8' -> '#8C8A9A')
  {const n=48,len=2*Math.PI*6.2/n*1.04;for(let i=0;i<n;i++){const a=i/n*6.2832,g=((a-.31)/6.2832*5%1+1)%1;if(g<.07||g>.93)continue;P('box',cx+Math.cos(a)*6.2,cz+Math.sin(a)*6.2,len,.6,.2,'#7A7888',{ry:-a-Math.PI/2,at,tag:'wall'});}} // G1 r3 (C2): low outer wall toned to the ground + open at the 5 sector rays; its lit band removed (read as a pale rim)
  const pts=(s,n,fn)=>{for(let i=0;i<n;i++){const a=(s+.5)/5*6.2832+.31+(r()-.5)*1.0,rr=2.4+r()*3.2;fn(cx+Math.cos(a)*rr,cz+Math.sin(a)*rr,a,i);}};
- pts(0,9,(X,Z,a)=>{const h=1.6+r()*1.3;P('box',X,Z,.42,h,.42,'#d6def2',{ry:-a});P('box',X,Z,.44,.06,.44,'#8FB4BC',{glow:1,ry:-a,yo:h*.7});}); // knowledge: slim archive towers (G1 r4 T: band '#7ff6ff' -> muted, no neon)
- pts(0,1,(X,Z)=>{P('cyl',X,Z,1.1,.7,1.1,'#e4e8f6');P('sph',X,Z,1.1,.9,1.1,'#cfe0ff',{yo:.7});});
- pts(1,10,(X,Z,a,i)=>{const c=['#ff7ad9','#ffd36e','#6fd3c4','#c9a3ff'][i%4];const k=i%3;if(k===0)P('sph',X,Z,1.0,1.0,1.0,c,{yo:.2});else if(k===1)P('oct',X,Z,.85,2.2,.85,c,{ry:r()*3});else P('cone',X,Z,.85,1.8,.85,c);}); // art: sculptural forms
- pts(2,4,(X,Z)=>{P('cyl',X,Z,1.1,.06,1.1,'#3A8296',{glow:1});P('sph',X,Z,.8,.5,.8,'#f2e6ff',{yo:0});});pts(2,4,(X,Z)=>P('box',X,Z,.6,.5,.6,'#f6d6ee',{})); // pleasure: pools + pleasure domes (G1 r4 T: pool '#2fd0ff' -> muted teal)
+ // G1 r5 T (vision r5: still a golden halo with a near-white core at world zoom): pale pastel albedos muted to the v4.4 slate/stone range,
+ // art forms desaturated (no neon), pools / pond unlit dark water; the lights that stay are sparse: 3 archive-tower bands + 2 spire tips.
+ pts(0,9,(X,Z,a,i)=>{const h=1.6+r()*1.3;P('box',X,Z,.42,h,.42,'#9EA3B4',{ry:-a});P('box',X,Z,.44,.06,.44,i%3?'#4E5A62':'#8FB4BC',{glow:i%3?0:1,ry:-a,yo:h*.7});}); // knowledge: slim archive towers
+ pts(0,1,(X,Z)=>{P('cyl',X,Z,1.1,.7,1.1,'#A4A8B6');P('sph',X,Z,1.1,.9,1.1,'#8E9AAE',{yo:.7});});
+ pts(1,10,(X,Z,a,i)=>{const c=['#9A6E8C','#A08A5E','#5E8A84','#8A7CA0'][i%4];const k=i%3;if(k===0)P('sph',X,Z,1.0,1.0,1.0,c,{yo:.2});else if(k===1)P('oct',X,Z,.85,2.2,.85,c,{ry:r()*3});else P('cone',X,Z,.85,1.8,.85,c);}); // art: sculptural forms
+ pts(2,4,(X,Z)=>{P('cyl',X,Z,1.1,.06,1.1,'#22404A');P('sph',X,Z,.8,.5,.8,'#A69EB4',{yo:0});});pts(2,4,(X,Z)=>P('box',X,Z,.6,.5,.6,'#A898A6',{})); // pleasure: pools + pleasure domes
  pts(3,14,(X,Z)=>tree(X,Z,.5+r()*.3,GREENS[(r()*7)|0],r())); // nature: woodland + pond
- pts(3,1,(X,Z)=>P('cyl',X,Z,1.6,.05,1.6,'#2A6378',{glow:1}));
- pts(4,6,(X,Z)=>{P('box',X,Z,.7,.5,.7,'#e9dcc0');P('pyr',X,Z,.6,.8,.6,'#d9c08a',{yo:.5});});pts(4,2,(X,Z)=>{P('cyl',X,Z,.26,2.2,.26,'#efe3c6');P('cone',X,Z,.36,.7,.36,'#B8995A',{glow:1,yo:2.2});}); // religious: temples + spires (r4 T: spire glow '#ffd36e' -> sodium-muted)
+ pts(3,1,(X,Z)=>P('cyl',X,Z,1.6,.05,1.6,'#1E3A46'));
+ pts(4,6,(X,Z)=>{P('box',X,Z,.7,.5,.7,'#A69C88');P('pyr',X,Z,.6,.8,.6,'#8E8064',{yo:.5});});pts(4,2,(X,Z)=>{P('cyl',X,Z,.26,2.2,.26,'#A8A08E');P('cone',X,Z,.36,.7,.36,'#B8995A',{glow:1,yo:2.2});}); // religious: temples + spires
  }, // G1 r4 (T): round additive halo sphere (r 1.4 u, '#cfe8ff') removed - with the ray sprites it read as a glowing disc with a near-white core at world zoom
 zookeeper(o){const r=rng(17),cx=o.X,cz=o.Z,at=[cx,cz];
  P('cyl',cx,cz,5.8,.07,5.8,'#86c46a',{at}); // G1 r3 (D5, C2): enclave lawn now fills the fence (was a smaller disc inside it -> read as a second ring)
@@ -1074,14 +1080,16 @@ reversion(o){const r=rng(20),cx=o.X,cz=o.Z;
  for(let i=0;i<7;i++){const[dx,dz]=inDisk(r,11,2);house(cx+dx,cz+dz,.9,.6,.6,'#b5523f','#6f5b4a',r()*3);}
  for(let i=0;i<14;i++){const[dx,dz]=inDisk(r,12,1);P('cyl',cx+dx,cz+dz,.5,.45,.5,'#e8c860');}
  for(let i=0;i<26;i++){const[dx,dz]=inDisk(r,14,3);tree(cx+dx,cz+dz,.6+r()*.4,GREENS[(r()*7)|0],r());}},
-selfdestruct(o){const r=rng(21),cx=o.X,cz=o.Z;const ch=['#3d3633','#4b433e','#2d2826','#56493f'];
+selfdestruct(o){const r=rng(21),cx=o.X,cz=o.Z;const ch=['#4a423d','#5a504a','#3a3330','#665a50']; // G1 r5 T: rubble tones ~+25 % (was '#3d3633','#4b433e','#2d2826','#56493f'; site box L 34 at world zoom, lost in the dark)
  // v4.3 r3 (item 4): rubble = low tilted slabs only (no cube silhouettes, no window bands)
  scatter(r,cx,cz,11.5,5.8,44,.8,(X,Z)=>{P('box',X,Z,.4+r()*.9,.08+r()*.26,.3+r()*.7,ch[(r()*4)|0],{ry:r()*3,tl:(r()-.5)*.8,tz:(r()-.5)*.6,sink:.04,tag:'rubble'});if(r()<.3)P('box',X,Z,.14,.08,.14,'#ff7a2a',{glow:1,yo:.05});});
  for(let i=0;i<0;i++){} // r3: stray charred poles removed (read as floating sticks)
  // §2.3: rubble field + crater (landmark) + burnt data-centre shells. r3: crater rim = irregular broken lumps, embers = scattered points (no UI-like arc)
- for(let k=0,q=rng(921);k<5;k++){const a=k*1.26+q()*.5,rr=k?.9+q()*.6:0;P('cyl',cx+Math.cos(a)*rr,cz+Math.sin(a)*rr,3.4+q()*1.6,.05,3.0+q()*1.6,'#0d0a09',{ry:q()*3,sink:-.02});} // G1 r3 (C2): scorched crater floor = overlapping irregular patches inside the rim (was one black disc)
+ for(let k=0,q=rng(921);k<5;k++){const a=k*1.26+q()*.5,rr=k?.9+q()*.6:0;P('cyl',cx+Math.cos(a)*rr,cz+Math.sin(a)*rr,3.4+q()*1.6,.05,3.0+q()*1.6,'#1a1512',{ry:q()*3,sink:-.02});} // G1 r5 T: floor '#0d0a09' -> '#1a1512'; G1 r3 (C2): scorched crater floor = overlapping irregular patches inside the rim (was one black disc)
  for(let i=0;i<26;i++){const a=i/26*6.2832+r()*.15,rr=3.4+r()*.6;P('rock',cx+Math.cos(a)*rr,cz+Math.sin(a)*rr,.6+r()*.7,.25+r()*.45,.5+r()*.6,ch[(r()*4)|0],{ry:r()*3,sink:.1,tag:'rubble'});}
  for(let i=0;i<22;i++){const[dx,dz]=inDisk(r,2.9,0);P('box',cx+dx,cz+dz,.12+r()*.12,.06,.12+r()*.12,'#ff7a2a',{glow:1,yo:.03,ry:r()*3});}
+ // G1 r5 T (vision r5: site nearly lost in the dark at world zoom): 9 slightly larger smouldering fire beds among the rubble ring (own rng, layout unchanged)
+ for(let i=0,q=rng(4211);i<9;i++){const a=i/9*6.2832+q()*.5,rr=4.6+q()*4.2;P('box',cx+Math.cos(a)*rr,cz+Math.sin(a)*rr,.34+q()*.2,.07,.3+q()*.2,'#ff7a2a',{glow:1,yo:.04,ry:q()*3});}
  // v4.3 r3 (item 4): charred HOLLOW shells - roofless, walls broken into jagged stubs with holes, a collapsed roof slab leaning inside, embers on the floor
  for(const[dx,dz,ry,w,d]of[[5.5,-2.5,.3,3.0,2.2],[-5.2,3.5,1.2,2.6,2.0],[1.5,6.2,2,3.2,2.4],[-6.6,-3.2,.7,2.4,1.8],[7.2,3.8,2.6,2.2,2.0]]){const X=cx+dx,Z=cz+dz,c=Math.cos(ry),s=Math.sin(ry),H=1.7+r()*1.2;
   const loc=(lx,lz)=>[X+lx*c+lz*s,Z-lx*s+lz*c];
@@ -1102,7 +1110,16 @@ Object.assign(G1GEN,{egalitarian:{R:10,gen:'PROTOWN',seed:2101},protector:{R:10.
  // one tier (graded as MID, see g1GradeMats); gate4 = the road spur ends at the nearest of its four avenue gates. cR = city radius when
  // it differs from the basin radius R: procity's deck is flat, so the basin (fa4_world: flat floor ~R*1.12) is made wider than the city
  // (rise under the outer ring road ~.2 instead of ~1.1 with R = city radius); the feathered apron drapes on the terrain beyond it
- normaltech:{R:10.5,gen:'PROTOWN',seed:1101},gatekeeper:{R:12,cR:9,lift:.4,gen:'PROGATE',seed:1505,gate4:1}});   // cR 11.5 overhung the selfdestruct crater lip (20 u SE): terrain -2.9 under the SE ring; lift .4 = terrain rise under the outer ring road at cR 9
+ normaltech:{R:10.5,gen:'PROTOWN',seed:1101,bd:1.3},gatekeeper:{R:12,cR:9,lift:.4,gen:'PROGATE',seed:1505,gate4:1},   // cR 11.5 overhung the selfdestruct crater lip (20 u SE): terrain -2.9 under the SE ring; lift .4 = terrain rise under the outer ring road at cR 9
+ // swap r5 (S2): Zookeeper = protown 'zookeeper' (fenced cottage reserve, cR = town radius) + the machine land outside the fence
+ // (protown special 'machines', out to ~1.45 cR); Descendants = protown 'descendants' (old quarter) + the growing machine city
+ // (special 'machcity', a sector out to ~1.6 cR beyond the seam). R = basin / reserved footprint, keep = the road corridor is kept clear.
+ zookeeper:{R:12.5,cR:9,gen:'PROTOWN',seed:7707,bd:1.3,keep:1},descendants:{R:14,cR:10.5,gen:'PROTOWN',seed:8808,bd:1.3,keep:1}});
+// swap r5 (S2, task B): the generic G1 basin is 4.2 u deep with a steep wall between ~.75 and 1.2 w (fa4_world setValleys, k 2.6); the
+// draped city climbs that wall and at world zoom the pit read as a dark cylindrical plinth with a lit lower edge (Normal technology).
+// bd = per-site basin depth (+ the softer wall / warped outline / narrow feather that fixed Enslaved in r4 T). Wrapped here because
+// fa4_build runs the first setValleys; fa4_ui's later call goes through the same global (see CONFLICTS.md, terrain track).
+{const sv0=setValleys;setValleys=function(p){sv0(p);for(const v of VAL){const G=v.o&&G1GEN[v.o.id];if(G&&G.bd!=null&&!v.o.twin){v.d=G.bd;v.k=G.bk||2.0;v.wa=G.bwa||1.0;v.fk=G.bfk||.8;}}};}
 setValleys(curP.p);
 // spur end points for generator sites: at the city edge facing the road fork (enslaved: one per bloc either side of the trench;
 // protector: just outside the dome wall, where g1_cities.js puts a gate portal) -> the dashed spur never drapes across a new city
@@ -1379,7 +1396,7 @@ function enterBasin(b){if(b==='C')return;view='basin';focus=b;focusO=null;const 
  // r4 U11: frame the basin's sites (bbox centre, nudged south so southern sites clear the timeline; pulled back when the basin is wide) instead of the fixed basin centre
  const S=O.filter(o=>o.b===b&&!o.cliff);let tx=U(B.cx),tz=V(B.cy)+2,d=84;if(S.length){const xs=S.map(o=>o.X),zs=S.map(o=>o.Z),x0=Math.min(...xs),x1=Math.max(...xs),z0=Math.min(...zs),z1=Math.max(...zs);tx=(x0+x1)/2;tz=(z0+z1)/2+4.5;d=clamp(84*Math.max(1,((x1-x0)/2+9)/32,((z1-z0)/2+12)/22),84,108);}
  Object.assign(tg,{tx,tz,d,pit:.9,yaw:0,ly:0});setNav();}
-function enterO(o){view='basin';focus=o.b;focusO=o;const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:40,descendants:40,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};Object.assign(tg,{ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();}
+function enterO(o){view='basin';focus=o.b;focusO=o;const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:46,descendants:48,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};Object.assign(tg,{ly:LY[o.id]||0,tx:o.X,tz:o.Z+(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12});select(o.id);setNav();}
 function world(){view='world';focus=null;focusO=null;Object.assign(tg,WORLDV);closeCard();setNav();}
 document.getElementById('back').onclick=world;
 addEventListener('keydown',e=>{kick();if(e.key==='Escape'){if(document.getElementById('page').style.display==='block')closePage();else if(focusO&&view!=='world'&&focus!=='C'){closeCard();enterBasin(focus);}else world();}
@@ -1542,8 +1559,9 @@ const AMB2=[];{const r=rng(45);const add=f=>AMB2.push(f);
  // 1984: searchlights sweeping from the camera masts
  if(!G1GEN.o1984){const s=S('o1984');for(let k=0;k<2;k++){/* G1: protown o1984 sweeps its own searchlights (anim) */const b=beam(s.R*.95,'#E8EEF8',.14);const X=s.X+(k?1:-1)*s.R*.35,Z=s.Z,a0=k*Math.PI;add(t=>{b.position.set(X,gy(X,Z)+1.6,Z);b.rotation.y=a0+Math.sin(t*.3+k*1.7)*1.3;});}}
  // Gatekeeper: r5 U17 - the sweeping beam is retired (Fable: a beam belongs to 1984); the spire eye now watches (iris drift + blink, fa4_scenes.js)
- // Protector God: a faint shimmer ripple rises over the hidden dome
- {const s=S('protector');const m=new THREE.Mesh(new THREE.RingGeometry(.95,1,64),new THREE.MeshBasicMaterial({color:'#D8E6FF',transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.renderOrder=4;SC.add(m);const g=gy(s.X,s.Z);
+ // Protector God: a faint shimmer ripple rises over the hidden dome. G1 r5 T: skipped for the generator city - at world zoom the additive
+ // '#D8E6FF' ring read as an empty pale elliptical outline floating over the site (vision r5: 'empty wire ellipse, nothing inside')
+ if(!G1GEN.protector){const s=S('protector');const m=new THREE.Mesh(new THREE.RingGeometry(.95,1,64),new THREE.MeshBasicMaterial({color:'#D8E6FF',transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.renderOrder=4;SC.add(m);const g=gy(s.X,s.Z);
   add(t=>{const q=(t/9)%1;m.position.set(s.X,g+.6+q*3.2,s.Z);const k=s.R*(.95-.55*q);m.scale.set(k,k,1);m.material.opacity=.22*Math.sin(q*Math.PI);});}
  // Benevolent Dictator: the five sector rays light up in sequence
  {const s=S('benevolent'),g=gy(s.X,s.Z),k0=SCALE.benevolent||1;for(let k=0;k<5;k++){const a=k/5*6.2832+.31,p=gs('#8E9FB8'),X=s.X+Math.cos(a)*4.1*k0,Z=s.Z+Math.sin(a)*4.1*k0;
@@ -1595,7 +1613,10 @@ function lensFx(A,B,from,to){const ref=to==='pooled'?A:poolSt(),fx={t0:performan
 // (a) road pulse envelope: up in 0.25 s, decays over ~1.6 s
 ANIM.push(()=>{const fx=LFX.fx;if(!fx)return;const e=(performance.now()-fx.t0)/1000;const p=e<.6?Math.pow(1-e/.6,2):0;for(const R of fx.roads)for(const m of R.rv.mats)m.uniforms.uP.value=p*clamp(Math.abs(R.d)/6,.45,1);if(e>7.2&&!(window.CMP&&CMP.on&&LCUR!=='pooled'))LFX.fx=null;});
 // (c) each site's ground light pool scales with its share (smoothly follows the 1.1 s lens morph)
-ANIM.push(()=>{for(const G of GLOWS){if(!G.o)continue;if(!G.bx){G.bx=G.s.scale.x;G.by=G.s.scale.y;}const v=(curP.p[G.o.id]||0)/(G.o.twin?2:1);const k=clamp(.6+.4*Math.sqrt(v/4),.55,1.35);G.s.scale.set(G.bx*k,G.by*k,1);}});
+// G1 r5 T: per-site trim of the warm '#FFC890' ground haze sprite (GLOWS, fa4_build) - Benevolent's read as a golden halo / pool at world
+// zoom (vision r5); applied once to G.k (glowLevel reads it) and to the current opacity
+const GLK5={benevolent:+(URLQ.get('g1bvg')||0)}; // r5 final: 0 = the haze sprite is off for benevolent (vision after x.4 still saw a gold pool)
+ANIM.push(()=>{for(const G of GLOWS){if(!G.o)continue;if(!G.bx){G.bx=G.s.scale.x;G.by=G.s.scale.y;if(G.o.id in GLK5){G.k*=GLK5[G.o.id];G.s.material.opacity*=GLK5[G.o.id];G.s.visible=GLK5[G.o.id]>0;}}const v=(curP.p[G.o.id]||0)/(G.o.twin?2:1);const k=clamp(.6+.4*Math.sqrt(v/4),.55,1.35);G.s.scale.set(G.bx*k,G.by*k,1);}});
 // (b) badges + M1 whisper titles: drawn on the overlay canvas by layoutLabels (after the markers) through POSTO
 function badge(g,x,y,d,al,big,pre,pill){const up=d>0,z=Math.round(d)===0,txt=(pre?pre+' ':'')+(z?'= 0 pp':`${up?'▲':'▽'} ${up?'+':'−'}${Math.abs(Math.round(d))} pp`);g.font=`500 ${big?12:11}px ${FM}`;const w=g.measureText(txt).width+12+(pre||pill?14:0),h=big?19:17;
  if(pre||pill){ // r4 U14: SITE chips = rounded pill with a small marker ring at the left (road tags stay square with a road-colour swatch); r8 U29: pill without name in compare
@@ -2155,7 +2176,10 @@ if(G1.RM)G1.FADE=1;
 // GAIN/AMB tune the MID tier to the v4.4 world-view diorama brightness (luminance 66/74 for o1984/enslaved); NEAR is seen from close
 // with bloom, so it gets a smaller, per-site lift [vertex gain, AMB factor], fitted to the v4.4 close-up exposure (centre-60 % mean
 // luminance v4.4: o1984 69, enslaved 65, egalitarian 42, protector 46). ?g1ngain / ?g1nambk override all sites.
-G1.NG={o1984:[1.2,.5],enslaved:[.85,.2],egalitarian:[.62,0],protector:[.9,.25],normaltech:[.6,0]};   // C1 r5: protector NEAR .8/.15 -> .9/.25 (interior too dark; .95/.3 overshot: L 64 -> 78); swap r4: normaltech default 1.3/.65 -> L 102, near-white 10 %
+G1.NG={o1984:[1.2,.5],enslaved:[.85,.2],egalitarian:[.62,0],protector:[.9,.25],normaltech:[.74,.05],zookeeper:[.82,.18],descendants:[.72,.1]};   // C1 r5: protector NEAR .8/.15 -> .9/.25 (interior too dark; .95/.3 overshot: L 64 -> 78); swap r4: normaltech default 1.3/.65 -> L 102, near-white 10 %; swap r5: zookeeper / descendants start at the normaltech fit
+// swap r5 (S2): per-site MID light warm pull (MWR .75 turns every light vertex colour sodium amber; the zookeeper machine land and the
+// descendants machine city carry cool indicator dots, the old quarter's warm light comes from the facade windows, not this family)
+G1.MWRS={zookeeper:+(G1Q.get('g1mwrzoo')??.25),descendants:+(G1Q.get('g1mwrdes')??.2)};
 G1.ng=id=>[G1Q.get('g1ngain')?G1.NGAIN:(G1.NG[id]||[G1.NGAIN])[0],G1Q.get('g1nambk')?G1.NAMBK:(G1.NG[id]||[0,G1.NAMBK])[1]];
 let TER_BUILT=0;
 // ---- material patch: (a) dither cross-fade mask, (b) ambient lift. v4.4 lights its dioramas with flat, bright-ish materials; the
@@ -2186,7 +2210,7 @@ function g1Tone(r,o){const done=new Set(),c=[0,0,0],P=1/2.2;
   for(const x of g1Mts(m))g1Patch(x,gl?0:/dome|glass/i.test(x.name||'')?.08:gr?G1.GAMB:G1.AMB);
   const ca=m.geometry.attributes.color;if(!ca||done.has(m.geometry))return;
   if(gl){if(mi&&mt){if(mt.blending===THREE.AdditiveBlending){if(G1.MPOOL!==1){done.add(m.geometry);g1Pool(ca,G1.MPOOLS[r.id]??G1.MPOOL);}}
-   else if(mt.isMeshBasicMaterial){done.add(m.geometry);if(G1.MWR>0)g1Warm(ca,G1.MWR);if(G1.MGLOW>0)g1Shoulder(ca,G1.MGLOW);}}return;}
+   else if(mt.isMeshBasicMaterial){done.add(m.geometry);const wr=G1.MWRS[r.id]??G1.MWR;if(wr>0)g1Warm(ca,wr);if(G1.MGLOW>0)g1Shoulder(ca,G1.MGLOW);}}return;}
   done.add(m.geometry);const CAP=mi?G1.MCAP:1.6,NK=mi?G1.MNK:G1.NNK,ALB=mi?G1.MALB:0;
   const pa=m.geometry.attributes.position,a=ca.array,s=ca.itemSize;
   for(let i=0;i<ca.count;i++){const k=i*s;let R=Math.pow(Math.max(0,a[k]),P),G=Math.pow(Math.max(0,a[k+1]),P),B=Math.pow(Math.max(0,a[k+2]),P);
@@ -2301,7 +2325,9 @@ function g1Build(){const ctx={THREE,LOOK:{mood:'blue'},mats:g1Mats(),heightAt:(x
  for(const id in G1GEN){const G=G1GEN[id],o=byId[id],M=window.FA&&window.FA[G.gen];
   if(!M||typeof M.build!=='function'){window.__errs.push('g1: FA.'+G.gen+' missing');continue;}
   const y=hMesh(o.X,o.Z)+(G.lift||0),t0=performance.now();let r=null;   // swap r4: lift = flat-deck cities sit just above the basin's rising rim (deck covers the terrain inside)
-  try{r=M.build({id,ending:id,name:o.n,x:o.X,z:o.Z,y,radius:G.cR||G.R,seed:G.seed,rot:0,style:'archviz',q:'high',mood:'blue',rm:G1.RM},ctx);}catch(e){window.__errs.push('g1 '+id+': '+(e&&e.message));continue;}
+  // swap r5: keep = pass the road-spur direction (layout frame = world frame at rot 0) so the generator keeps that corridor clear
+  let params;if(G.keep){let S=null;for(const rv of ROADV)for(const s of rv.spurs)if(s.site===id)S=s;if(S){const e=S.pts[S.pts.length-1];params={keepA:Math.atan2(e[1]-o.Z,e[0]-o.X)};}}
+  try{r=M.build({id,ending:id,name:o.n,x:o.X,z:o.Z,y,radius:G.cR||G.R,seed:G.seed,rot:0,style:'archviz',q:'high',mood:'blue',rm:G1.RM,params},ctx);}catch(e){window.__errs.push('g1 '+id+': '+(e&&e.message));continue;}
   if(!r||!r.near){window.__errs.push('g1 '+id+': empty result');continue;}
   const tb=performance.now();r.id=id;
   for(const g of[r.near,r.mid])if(g){g.position.set(o.X,y,o.Z);g.traverse(m=>{if(m.isMesh){m.castShadow=false;m.receiveShadow=false;}});SC.add(g);}
@@ -2346,7 +2372,16 @@ G1.cstat=id=>{const gl=RD.getContext(),W=gl.drawingBufferWidth,H=gl.drawingBuffe
   for(const s of[all,id==='enslaved'?(sd(x,y)===sA?bA:bB):null])if(s){s.n++;s.L+=L;s.S+=S;if(mn>=190)s.nw++;if(L>=191)s.l75++;if(S>.35&&h>=12&&h<=70)s.wm++;}}
  const f=s=>s.n?{n:s.n,L:+(s.L/s.n).toFixed(1),S:+(s.S/s.n).toFixed(3),nw:+(100*s.nw/s.n).toFixed(2),l75:+(100*s.l75/s.n).toFixed(2),warm:+(100*s.wm/s.n).toFixed(2)}:null;
  return{id,tier:r.tier,dpr:RD.getPixelRatio(),all:f(all),A:id==='enslaved'?f(bA):undefined,B:id==='enslaved'?f(bB):undefined,centreL:+(cL/cn).toFixed(1)};};
-ANIM.push(t=>{const now=performance.now();for(const id in G1.res){const r=G1.res[id],o=byId[id];
+// swap r5 (S2): fa4_post.js (other track) still builds the v4.4 close-up props of zookeeper (4 walker sprites '#FFE2B8' + a crane
+// '#3E4450') and descendants (rising block '#625E80' + 6 old-quarter light sprites '#FFD9A0'); they would float inside / clip the new
+// cities. Hidden here by colour + distance once their ambient loop has placed them (frames 3..40); a no-op after fa4_post guards them
+// with G1GEN (requested in CONFLICTS.md). The cities carry their own versions (walkers + bots, crane, emptying windows, growing towers).
+G1.V44P={zookeeper:['#FFE2B8','#3E4450'],descendants:['#625E80','#FFD9A0']};G1.hid44=0;G1._hf=0;
+G1.hideV44=()=>{let n=0;for(const id in G1.V44P){if(!G1.res[id])continue;const o=byId[id],R=(G1GEN[id].cR||G1GEN[id].R)*1.3,hs=G1.V44P[id].map(h=>new THREE.Color(h).getHex()),p=new THREE.Vector3();
+  for(const m of SC.children){const ms=m.isGroup?m.children:[m];for(const x of ms){const mt=x.material;if(!mt||x.renderOrder!==4||!x.visible||!mt.color||hs.indexOf(mt.color.getHex())<0)continue;
+   x.getWorldPosition(p);if(Math.hypot(p.x-o.X,p.z-o.Z)>R)continue;x.visible=false;n++;}}}
+ G1.hid44+=n;return n;};
+ANIM.push(t=>{const now=performance.now();if(G1._hf<40){G1._hf++;if(G1._hf>2)G1.hideV44();}for(const id in G1.res){const r=G1.res[id],o=byId[id];
   if(r.mid){const d=CAM.position.distanceTo(G1._v.set(o.X,o.gy||0,o.Z)),foc=view!=='world'&&focusO===o;
    const want=foc||d<(r.tier==='near'?G1.NEAR_D+G1.HYS:G1.NEAR_D-G1.HYS)?'near':'mid';
    if(want!==r.tier){r.tier=want;r.t0=now;r.fade=0;G1.fades++;r.near.visible=r.mid.visible=true;kick(G1.FADE+200);}
@@ -2446,21 +2481,21 @@ function cmpCaption(){const on=CMP.on,c=LFX.cap,pl=LCUR==='pooled';document.body
  c.style.left='';c.style.right='';c.style.transform='';}
 function cmpToggle(v){if(LCUR==='pooled'&&v==null)return;CMP.on=v==null?!CMP.on:!!v;if(CMP.on&&LCUR!=='pooled')lensFx(poolSt(),pulls(day,LCUR),'pooled',LCUR);else if(!CMP.on&&LFX.fx)LFX.fx.t0=Math.min(LFX.fx.t0,performance.now()-5200);cmpCaption();setRoadWidths(curP);updPlaqueText();kick(1500);}
 function cmpShow(p){cmpToggle(p);} // r2 test API kept: cmpShow(true|false)
-function cmpBtn(cls,lbl){const b=document.createElement('button');b.className='cmpt '+(cls||'');b.innerHTML=`${lbl} <span class="st">OFF</span>`;b.setAttribute('aria-pressed','false');
+function cmpBtn(cls,lbl){const b=document.createElement('button');b.className='cmpt '+(cls||'');b.innerHTML=`${lbl} <span class="st">OFF</span>`;b.setAttribute('role','switch');b.setAttribute('aria-pressed','false');
  b.onclick=e=>{e.stopPropagation();if(LCUR==='pooled')return;cmpToggle();};
  b.onmouseenter=e=>showTip(e,LCUR==='pooled'?'<div class="h">Compare with Pooled</div>Pick a lens to compare':'<div class="h">Compare with Pooled</div>ON: roads stay at their Pooled width; each site gets a small ▲/▽ pill = this lens minus Pooled, in pp. Site rings: outer thin arc = Pooled share, inner bold arc = this lens. Key: C.');b.onmousemove=e=>moveTip(e);b.onmouseleave=hideTip;return b;}
 {const box=document.getElementById('lens'),b=cmpBtn('','⇄ Compare with Pooled');b.id='cmpb';box.appendChild(b);
  addEventListener('keydown',e=>{if((e.key==='c'||e.key==='C')&&!e.repeat&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName))cmpToggle();});
- const st=document.createElement('style');st.textContent=`.cmpt{cursor:pointer;font:500 10px var(--f2);letter-spacing:.12em;color:var(--t2);background:transparent;border:1px solid #3A4250;padding:2px 6px;text-transform:uppercase;pointer-events:auto}.cmpt .st{color:var(--t3);margin-left:4px}.cmpt.on{border-color:var(--acc);color:#F1ECE0}.cmpt.on .st{color:var(--acc)}.cmpt.dis{cursor:not-allowed;opacity:.42}
+ const st=document.createElement('style');st.textContent=`.cmpt{cursor:pointer;font:500 10px var(--f2);letter-spacing:.12em;color:var(--t2);background:transparent;border:0;padding:2px;text-transform:uppercase;pointer-events:auto;display:inline-flex;align-items:center;gap:6px}.cmpt .st{display:inline-block;position:relative;width:24px;height:13px;border-radius:7px;background:#262D38;box-shadow:inset 0 0 0 1px #3A4250;font-size:0!important;color:transparent!important;margin:0!important;flex:none;transition:background .18s}.cmpt .st::after{content:'';position:absolute;top:2.5px;left:3px;width:8px;height:8px;border-radius:50%;background:#7C8594;transition:left .18s,background .18s}.cmpt.on{color:#F1ECE0}.cmpt.on .st{background:rgba(201,164,92,.32);box-shadow:inset 0 0 0 1px var(--acc)}.cmpt.on .st::after{left:13px;background:var(--acc)}.cmpt.dis{cursor:not-allowed;opacity:.42}
 #legend .hd .cmpt{margin-left:auto;margin-right:6px}#cmph:empty{display:none}#cmph .v{font:500 9px var(--f2);letter-spacing:.12em;color:var(--t3)}#cmph .v em{font-style:normal}
-#legend .lgr .v .pc{color:var(--t3);margin-right:2px}#lenspop #lens #cmpb{font:500 11px var(--f2);letter-spacing:.12em;text-transform:uppercase;color:var(--t2)}#lenspop #lens #cmpb .st{display:inline;font:inherit;margin:0 0 0 6px;color:var(--t3)}#lenspop #lens #cmpb.on{color:#F1ECE0}#lenspop #lens #cmpb.on .st{color:var(--acc)}`;document.head.appendChild(st);}
+#legend .lgr .v .pc{color:var(--t3);margin-right:2px}#lenspop #lens #cmpb{font:500 11px var(--f2);letter-spacing:.12em;text-transform:uppercase;color:var(--t2)}#lenspop #lens #cmpb{display:flex;justify-content:space-between;width:100%}#lenspop #lens #cmpb.on{color:#F1ECE0}`;document.head.appendChild(st);}
 window.cmpShow=cmpShow;window.cmpToggle=cmpToggle;window.CMP=CMP;
 // r2 U7: lens picker = magnifier in the ROADS card header; hover / click opens a popover with the 5 lenses (one line each); the header shows the active lens
 function lensName(){const e=document.getElementById('lensnm');if(e)e.textContent=LENSI[LCUR].n.toUpperCase();}
 {const lens=document.getElementById('lens'),hd=document.querySelector('#legend .hd'),pop=document.createElement('div');pop.id='lenspop';pop.innerHTML='<div class="ph">LENS · WHOSE PRIORS WEIGHT THE ROADS</div>';document.body.appendChild(pop);pop.appendChild(lens);
  const one=d=>{const s=d.replace(/^Placeholder lens, parameters by maintainer: /,'').replace(/^Seed lens \(maintainer, disclosed\): /,'Maintainer seed: ').split(/\.\s/)[0].replace(/\.$/,'');return s.charAt(0).toUpperCase()+s.slice(1);};
  lens.querySelectorAll('button[data-l]').forEach(b=>{const L=LENS.find(l=>l.id===b.dataset.l);if(!L)return;b.innerHTML=`<b>${L.n}</b><span>${one(L.d)}</span>`;b.onmouseenter=b.onmousemove=null;b.onmouseleave=null;b.addEventListener('click',()=>{setTimeout(()=>{pop.classList.remove('on');btn.classList.remove('on');},250);});});
- hd.innerHTML='<span>ROADS · WIDTH = SHARE</span>';const btn=document.createElement('span');btn.id='lensbtn';btn.title='Lens';btn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6.5" cy="6.5" r="4.6"/><path d="M10 10l4.5 4.5" stroke-linecap="round"/></svg><span id="lensnm"></span>';hd.appendChild(btn);
+ hd.innerHTML='<span>ROADS</span>';const btn=document.createElement('span');btn.id='lensbtn';btn.title='Lens: whose view weights the roads';btn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="4.3" cy="9.2" r="2.9"/><circle cx="11.7" cy="9.2" r="2.9"/><path d="M7.2 8.7q.8-.9 1.6 0M1.5 8.4 2.6 5.3M14.5 8.4 13.4 5.3"/></svg><span id="lensnm"></span>';hd.appendChild(btn);
  let tH=0;const open=()=>{clearTimeout(tH);const r=btn.getBoundingClientRect(),L=document.getElementById('legend').getBoundingClientRect();pop.style.left=Math.max(8,L.left)+'px';pop.style.width=Math.max(260,L.width)+'px';pop.style.top=(r.bottom+6)+'px';pop.classList.add('on');btn.classList.add('on');hideTip();},
   close=()=>{tH=setTimeout(()=>{pop.classList.remove('on');btn.classList.remove('on');},320);};
  btn.addEventListener('mouseenter',open);btn.addEventListener('mouseleave',close);pop.addEventListener('mouseenter',()=>clearTimeout(tH));pop.addEventListener('mouseleave',close);

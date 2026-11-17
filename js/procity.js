@@ -137,8 +137,9 @@ function mats(){const blue=P.mood!=='day',E=P.env!=null?P.env:(blue?.85:1),A=P.a
  // street lamps, building crowns (M.crown 2.3 -> 1.8, glass x3.0 -> x2.4), tier 3 = ring / road / canal light lines (M.warm 1.7 -> 1.0,
  // M.cool 1.5 -> .9). Bloom threshold is .80 (world.js), so tier 3 barely blooms and tier 1 blooms most.
  M.warm=blue?hot('#FFB468',.75*P.line):hot('#FFE0B4',1.25*P.line);M.cool=hot(L.ai,(.4+1.1*P.lit)*(blue?.6:1));M.crown=blue?hot('#FFA858',1.25*P.lit):hot('#FFD9A8',.35+2.3*P.lit); // C2b: warm 1.0 -> .75, crown 1.8 -> 1.25
- M.collar=blue?hot('#E2F7FF',5.0):M.cool;M.spireW=blue?hot('#FFC27E',4.2):M.warm;
- M.eyeRim=blue?hot('#CFF6FF',9.0):hot('#CFF6FF',1.4); // C2b: self-luminous iris rim + socket hairline = tier 0 (hottest point)
+ if(FA.G1&&blue)M.crown=hot('#C8925E',.62*P.lit); // G1 r5 T: building roof crowns were the loudest warm element at world zoom (NE towers) -> muted sodium brass, ~1/2 gain
+ M.collar=blue?hot('#E2F7FF',FA.G1?3.0:5.0):M.cool;M.spireW=blue?hot('#FFC27E',FA.G1?3.0:4.2):M.warm;   // G1 r5 T: spire collars / crown 5 / 4.2 -> 3 (the host soft-caps them anyway)
+ M.eyeRim=blue?hot('#CFF6FF',FA.G1?5.0:9.0):hot('#CFF6FF',1.4); // C2b: self-luminous iris rim + socket hairline = tier 0 (hottest point)
  SIL=[.62,.64,.67];DARK=[.05,.055,.07];}
 
 // ======================= (3) geometry helpers: statics (merged per material) + instanced batches =======================
@@ -271,9 +272,9 @@ function buildEye(yb){const E=new THREE.Vector3(cx,yb+1.3,cz);FA.eyePos=E;const 
  const up=new THREE.Mesh(new THREE.SphereGeometry(1.0,40,16,0,TAU,0,Math.PI/2),lidM),lo=new THREE.Mesh(new THREE.SphereGeometry(1.0,40,16,0,TAU,Math.PI/2,Math.PI/2),lidM);
  up.castShadow=lo.castShadow=true;sock.add(up,lo);
  const ball=new THREE.Group();ball.position.copy(E);SC.add(ball);
- ball.add(new THREE.Mesh(new THREE.SphereGeometry(.93,40,28),std({color:'#D2CFC8',roughness:.3,envMapIntensity:.8,emissive:C('#DCEAF0'),emissiveIntensity:P.mood!=='day'?.32:0}))); // C2b: sclera faintly self-lit
+ ball.add(new THREE.Mesh(new THREE.SphereGeometry(.93,40,28),std({color:FA.G1?'#A6A4A0':'#D2CFC8',roughness:.3,envMapIntensity:.8,emissive:C('#DCEAF0'),emissiveIntensity:P.mood!=='day'?(FA.G1?.1:.32):0}))); // C2b: sclera faintly self-lit; G1 r5 T: pale pod read mildly hot at world zoom -> greyer, .32 -> .1 self-light
  const it=irisTex(),ig=new THREE.SphereGeometry(.936,40,10,0,TAU,0,.6);ig.rotateX(Math.PI/2);
- ball.add(new THREE.Mesh(ig,std({map:it,emissiveMap:it,emissive:C('#9FE6F0'),emissiveIntensity:P.mood!=='day'?4.8:.32,roughness:.35}))); // C2: iris .7 -> 1.6; C2b: 1.6 -> 4.8 (tier 0)
+ ball.add(new THREE.Mesh(ig,std({map:it,emissiveMap:it,emissive:C('#9FE6F0'),emissiveIntensity:P.mood!=='day'?(FA.G1?3.0:4.8):.32,roughness:.35}))); // G1 r5 T: 4.8 -> 3; C2: iris .7 -> 1.6; C2b: 1.6 -> 4.8 (tier 0)
  // C2b: luminous limbal rim around the iris (on the ball, follows the gaze) + hairline on the socket ring
  const rim=new THREE.Mesh(new THREE.TorusGeometry(.936*Math.sin(.6),.022,6,48),M.eyeRim);rim.position.z=.936*Math.cos(.6)+.006;ball.add(rim);
  const sr=new THREE.Mesh(new THREE.TorusGeometry(.955,.016,6,64),M.eyeRim);sr.position.z=.25;sock.add(sr);

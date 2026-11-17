@@ -33,7 +33,7 @@ const SP=s=>s.split(' ');
 // B2 r3: fray (irregular footprint strength), fields / farms (outskirts), pz (window patch size bays x storeys), alb (albedo)
 const PRESETS={
  normaltech:{layout:'grid',lit:.62,em:1.8,walls:SP('concrete0 concrete1 brick0 brick1'),roofs:SP('roof0 roof1'),roof:'mix',storeys:[2,4],density:.8,blockMin:3.3,
-  streetW:.62,jitter:.4,green:.25,props:1,cars:36,moving:4,lamps:1,lampStep:2.6,trees:40,out:0,fray:.7,fields:12,farms:5,pz:[4,3],special:SP('square regulator substation pylons datacenter')},
+  streetW:.62,jitter:.4,green:.25,props:1,cars:36,moving:8,lamps:1,lampStep:2.6,trees:40,out:0,fray:.7,fields:12,farms:5,pz:[4,3],nf:.55,nf0:3.0,special:SP('square regulator substation pylons datacenter nearfuture')},   // r5 C: near-future core (nf) + sky/rail layer, moving 4 -> 8 (autonomous traffic)
  o1984:{layout:'strict',lit:.45,em:1.7,alb:.7,walls:SP('concrete0 concrete1'),roofs:SP('roof0'),roof:'flat',storeys:[9,12],density:1,blockMin:4,
   streetW:.8,jitter:0,green:0,props:.6,cars:5,moving:0,lamps:1,lampStep:4,trees:0,out:0,fray:.8,fields:0,farms:0,pz:[12,2],under:0,special:SP('camPoles checkpoints ministry searchlights')},
  protector:{layout:'organic',lit:.7,em:1.9,walls:SP('timber timberL stone'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,3],density:.92,blockMin:3,
@@ -41,9 +41,9 @@ const PRESETS={
  egalitarian:{layout:'ring',lit:.65,em:1.8,walls:SP('timber concrete1'),roofs:SP('greenRoof'),roof:'green',storeys:[2,2],density:1,blockMin:3,
   streetW:.44,jitter:0,green:.6,props:1,cars:0,moving:0,lamps:1,lampStep:3.2,trees:70,out:0,fray:.6,fields:9,farms:0,pz:[3,2],under:0,midWin:.7,midWinK:2,special:SP('commons amphitheatre workshop library')},
  zookeeper:{layout:'cluster',lit:.9,em:2.2,alb:1.06,walls:SP('concrete1 brick1 timberL'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,2],density:1,blockMin:3,
-  streetW:.42,jitter:.2,green:.3,props:1,cars:0,moving:0,lamps:1,lampStep:2.8,trees:0,out:0,fray:0,fields:0,farms:0,pz:[3,2],special:SP('enclosure gardens playground tree')},
+  streetW:.42,jitter:.2,green:.3,props:1,cars:0,moving:0,lamps:1,lampStep:2.8,trees:0,out:0,fray:0,fields:0,farms:0,pz:[3,2],special:SP('enclosure gardens playground tree machines')},   // G1 S2 r5: + machines (the machine world outside the fence)
  descendants:{layout:'old',lit:.3,em:1.6,walls:SP('stone brick0 brick1'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[3,5],density:.84,blockMin:2.4,
-  streetW:.48,jitter:.5,green:.1,props:.7,cars:0,moving:0,lamps:1,lampStep:3.4,trees:14,out:.3,fray:1,fields:6,farms:3,pz:[4,3],special:SP('plaza seam emptying')}
+  streetW:.48,jitter:.5,green:.1,props:.7,cars:0,moving:0,lamps:1,lampStep:3.4,trees:14,out:.3,fray:1,fields:6,farms:3,pz:[4,3],under:0,special:SP('plaza seam emptying machcity')}   // G1 S2 r5: + machcity (new machine city growing out of the seam), no underlay disc
 };
 const ALIAS={'1984':'o1984','normal':'normaltech','normal-tech':'normaltech','protectorgod':'protector','egalitarianutopia':'egalitarian','zoo':'zookeeper'};
 
@@ -538,9 +538,28 @@ function* groundGen(B,S,mid){const T=B.T,L=B.L,g=GCOL[T.P.layout]||GCOL.grid,col
   for(let i=0;i<n;i++)triUp(B.F.ground,c0,y(i*TAU/n),y((i+1)*TAU/n),col);}}
 
 // ======================= (10) buildings (lot -> archetype) =======================
-function emitLot(B,l,S,mid){const T=B.T,P=T.P,b=S.building,pts=rectPts(l.x,l.z,l.w,l.d,l.ry),s=seat(T,pts),y0=s.hi+(mid?0:.05),h=l.st*STOREY,y1=y0+h,k=l.kind;
+// ======================= (10b) G1 S2 r5 task C: Normal technology as a visible near future (~2035, no magic) =======================
+// P.nf = share of the town radius that becomes a mid/high-rise core: lots there get 6-20 storeys, mostly photovoltaic-glass towers
+// (dark blue-grey glazing, one dim cool band under the crown on a few), max 2 mass-timber towers with planted terraces; flat roofs in
+// the ring outside the core get rooftop farms (planted rows + a small greenhouse). Deterministic from l.seed, NEAR and MID alike.
+function nfLot(B,l){if(l.nfd)return;l.nfd=1;const T=B.T,L=B.L,R=T.R,n0=+T.P.nf0||0,f=Math.max(0,(Math.hypot(l.x,l.z)-n0)/(R*T.P.nf-n0));if(f>=1||l.w<.8||l.d<.8||l.lab)return;   // nf0 = square/civic radius (nearest lots ~3.2 u)
+ const st=Math.round(6+14*Math.pow(1-f,.85)*(.62+.38*hash2(l.seed*.13,2.9)));l.st=Math.max(l.st,st);l.kind='mid';
+ if((L._nt|0)<2&&l.st<=13&&l.st>=8&&hash2(l.seed*.71,1.3)<.45){L._nt=(L._nt|0)+1;l.nf='tim';}else l.nf='pv';}
+function nfDeco(B,l,S,mid,y0,y1,wc){const T=B.T,b=S.building,ry=l.ry,hd=l.d/2;
+ if(l.nf==='pv'){if(l.st>=9&&l.seed%3!==1)for(const sd of[-1,1]){const o=rotP(0,sd*(hd+.012),ry);box(S.light,l.x+o[0],y1-.2,l.z+o[1],l.w*.86,.045,.012,ry,em(B,PAL.cool,mid?.3:.38));}
+  if(!mid)for(const sd of[-1,1]){const o=rotP(sd*(l.w/2+.012),0,ry);box(b,l.x+o[0],y0+.3,l.z+o[1],.025,y1-y0-.3,l.d*.9,ry,tone(wc,1.25));}   // fin strips (PV-glass frame)
+  return;}
+ const gr=hex(PAL.greenRoof,T.A*1.1),sh=hex('#4A6440',T.A),stp=mid?6:3;
+ for(let i=stp;i<l.st;i+=stp){const y=y0+i*STOREY-.04;box(b,l.x,y,l.z,l.w+.22,.05,l.d+.22,ry,tone(wc,.75),null,gr);
+  if(!mid)for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]]){const o=rotP(c[0]*(l.w/2+.04),c[1]*(hd+.04),ry);box(S.foliage,l.x+o[0],y+.05,l.z+o[1],.12,.1+.06*hash2(i,c[0]+l.seed),.12,ry,sh);}}}
+function nfFarm(B,l,S,mid,y1){const T=B.T,ry=l.ry,top=y1+(mid?.005:.105),gr=hex(PAL.greenRoof,T.A*(mid?1.3:1.15));
+ if(mid){box(S.building,l.x,top,l.z,l.w*.78,.03,l.d*.7,ry,gr);return;}
+ for(let i=-1;i<=1;i++){const o=rotP(-l.w*.12,i*l.d*.2,ry);box(S.foliage,l.x+o[0],top,l.z+o[1],l.w*.5,.05,.08,ry,gr);}
+ const o=rotP(l.w*.3,0,ry);box(S.glass,l.x+o[0],top,l.z+o[1],l.w*.26,.2,l.d*.62,ry,hex(PAL.glass,T.A));}
+function emitLot(B,l,S,mid){if(B.T.P.nf)nfLot(B,l);const T=B.T,P=T.P,b=S.building,pts=rectPts(l.x,l.z,l.w,l.d,l.ry),s=seat(T,pts),y0=s.hi+(mid?0:.05),h=l.st*STOREY,y1=y0+h,k=l.kind;
  let wc=wallCol(T,l.seed),win={lit:P.lit,seed:l.seed,bay:k==='slab'?.26:BAY};const rc=roofCol(T,l.seed);
  if(T.id==='normaltech'&&k==='mid'&&l.seed%4===0){wc=hex(['#56646E','#4E5A60','#62686C'][l.seed%3],T.A);win.bay=.2;win.lit=P.lit*1.15;}   // B2 r2: glazed office variant
+ if(l.nf==='pv'){wc=hex(['#34404E','#3A4652','#303B47'][l.seed%3],T.A);win.bay=.18;win.lit=P.lit*1.1;}else if(l.nf==='tim'){wc=hex(PAL.timberL,T.A);win.bay=.24;}   // r5 C
  if(l.lab){win.lit=P.lit*.04;wc=tone(wc,.62);}                    // B2 r4: o1984 research compound - unlit, darker (NEAR + MID)
  const rk=(k==='slab'||k==='mid')?'flat':P.roof==='mix'?(l.seed%3?'pitched':'flat'):P.roof;
  if(!mid||s.hi-s.lo>.03)prism(b,rectPts(l.x,l.z,l.w+.04,l.d+.04,l.ry),s.lo-.15,y0,tone(wc,.6),null,mid?false:null);
@@ -548,6 +567,7 @@ function emitLot(B,l,S,mid){const T=B.T,P=T.P,b=S.building,pts=rectPts(l.x,l.z,l
  const rh=Math.min(l.w,l.d)*(.34+.1*hash2(l.seed,1.7))*(T.id==='descendants'?1.45:1);   // r4: descendants = steep old roofs (NEAR+MID)
  if(rk==='pitched')roof(b,l.x,y1,l.z,l.w,l.d,l.ry,rh,l.seed%4===0?'hip':'gable',rc,.05,wc);
  else if(rk==='green')box(b,l.x,y1,l.z,l.w+.1,.05,l.d+.1,l.ry,tone(wc,.8),null,hex(PAL.greenRoof,T.A*(mid?1.35:1)));   // C1 r5: MID roofs lighter so each house reads against the ring lane
+ if(l.nf)nfDeco(B,l,S,mid,y0,y1,wc);else if(P.nf&&rk==='flat'&&!l.lab&&hash2(l.seed*.29,6.1)<.4)nfFarm(B,l,S,mid,y1);   // r5 C
  if(mid){   // C1 r5: MID-only sparse warm window points (world zoom: the facade shader's distance glow averages into the wall, so
   // egalitarian/protector showed 0 % warm pixels); one small lit pane per chosen house, alternating faces; P.midWin = share of lots
   if(P.midWin&&hash2(l.seed*.77,5.3)<P.midWin){const sd=l.seed%2?1:-1,o=rotP(0,sd*(l.d/2+.02),l.ry);box(S.light,l.x+o[0],y0+h*(P.midWinY||.36),l.z+o[1],l.w*.5,Math.min(.32,h*.45),.03,l.ry,em(B,PAL.warm,P.midWinK||1));}
@@ -798,11 +818,105 @@ function seam(B,S,mid,sl){const T=B.T;disc(S.ground,T,sl.x,sl.z,sl.r*.9,mid?1:2,
  if(!mid)cyl(S.building,sl.x,T.yl(sl.x,sl.z)-.08,sl.z,.55,.55,.14,14,hex(PAL.stone,.9*T.A),true);}
 function emptying(B,S,mid){if(mid)return;const U=B.U,o0=clamp(+B.T.P.out||0,0,.9);
  B.anims.push(t=>{const p=((t/180)%1+1)%1;U.uOut.value=lerp(o0,.92,p<.85?p/.85:(1-p)/.15);});}
+// ======================= (16b) G1 S2 r5: the world OUTSIDE the zookeeper fence and the growing machine city of descendants =======
+// Both are placed from their own seeded stream (mulberry32 of the town seed), computed ONCE per build and emitted by the NEAR and the
+// MID pass from the same list, so the MID silhouette matches NEAR. Density thins outward (no ring edge); P.keepA (host: road-spur
+// direction) keeps a clear corridor for the road. Colours: low-chroma slate / pale machine grey, a few dim cool indicator dots only.
+function keepClear(T,x,z,w){const a=T.P.keepA;if(a==null)return false;const ux=Math.cos(a),uz=Math.sin(a),t=x*ux+z*uz;return t>0&&Math.abs(-x*uz+z*ux)<w;}
+function zooMachines(B,S,mid){const T=B.T,L=B.L,sl=L.slots.enclosure;if(!sl)return;
+ if(!B._zm){const r=mulberry32(((T.seed|0)*31+977)>>>0),r0=sl.r+1.05,r1=T.R*(+T.P.machR||1.45),it=[];
+  for(let k=0;k<900&&it.length<(+T.P.machN||78);k++){const a=r()*TAU,u=r(),rr=r0+(r1-r0)*u,x=sl.x+Math.cos(a)*rr,z=sl.z+Math.sin(a)*rr,ty=r(),s=.7+r()*.6,ry=r()*PI,hr=r();
+   if(r()<ss(.3,1,u)*.8)continue;if(keepClear(T,x,z,1.5))continue;const rad=ty<.42?.3*s:ty<.8?.62*s:1.0*s;
+   if(it.some(o=>Math.hypot(o.x-x,o.z-z)<o.rad+rad+.25))continue;
+   const f=1-.55*u;   // heights fall off outward
+   it.push({x,z,ty:ty<.42?'ob':ty<.8?'st':'hall',s,ry,rad,h:(ty<.42?2.6+hr*3.6:ty<.8?1.1+hr*2.2:.45+hr*.35)*f,u,lit:hr>.55});}
+  // one slow gantry crane in the machine land (v4.4 cue: a machine crane swinging outside the fence)
+  const ca=(T.P.keepA!=null?+T.P.keepA:0)+2.3;B._zm={it,crane:[sl.x+Math.cos(ca)*(r0+1.6),sl.z+Math.sin(ca)*(r0+1.6)]};}
+ const ZM=B._zm,dk=hex('#4A4F5B',T.A),dk2=hex('#3B404A',T.A),ob=hex('#8A8AA2',T.A),ob2=hex('#6E6E88',T.A),hall=hex('#565B66',T.A);
+ for(const o of ZM.it){const s=seat(T,rectPts(o.x,o.z,o.rad*2,o.rad*2,o.ry)),y=s.lo-.1;
+  if(o.ty==='ob'){cyl(S.building,o.x,y,o.z,o.rad*1.25,o.rad*1.1,.22,4,dk2,true);cyl(S.building,o.x,y+.2,o.z,o.rad,o.rad*.18,o.h,4,ob,true);   // crystal obelisk on a dark footing
+   if(!mid){cyl(S.building,o.x,y+.2+o.h*.98,o.z,o.rad*.2,.005,o.h*.08,4,ob2,true);if(o.lit)box(S.light,o.x,y+o.h*.55,o.z,.05,.05,.05,0,em(B,PAL.cool,.55));}}
+  else if(o.ty==='st'){const w=o.rad*1.35,d=o.rad*.95;box(S.building,o.x,y,o.z,w,o.h,d,o.ry,dk,null,dk2);   // compute stack: dark block, stepped crown, thin lit seam
+   box(S.building,o.x,y+o.h,o.z,w*.7,.22,d*.7,o.ry,dk2,null,tone(dk2,1.1));
+   if(o.lit){const p=rotP(0,d/2+.012,o.ry);box(S.light,o.x+p[0],y+o.h*.35,o.z+p[1],w*.7,.035,.01,o.ry,em(B,PAL.cool,mid?.45:.5));}
+   if(!mid)for(let k=0;k<3;k++){const p=rotP((k-1)*w*.3,-(d/2+.06),o.ry);box(S.metal,o.x+p[0],y,o.z+p[1],.08,o.h*.8,.1,o.ry,dk2);}}
+  else{box(S.building,o.x,y,o.z,o.rad*2.4,o.h,o.rad*.9,o.ry,hall,null,tone(hall,1.12));if(!mid){for(let k=-2;k<=2;k++){const p=rotP(k*o.rad*.45,0,o.ry);box(S.metal,o.x+p[0],y+o.h,o.z+p[1],.05,.06,o.rad*.9,o.ry,dk2);}}}
+  if(!mid&&B.farSp<=480)farBox(B,'building',o.x,y,o.z,o.rad*1.4,o.h,o.rad*1.4,o.ry,dk);}
+ // crane (separate mesh per tier, slow swing; frozen at t=0 under reduced motion by the host)
+ const THREE=T.THREE,cx=ZM.crane[0],cz=ZM.crane[1],cy=T.yl(cx,cz)-.1,cb=buf(),cc=hex('#5A606C',T.A);
+ box(cb,0,0,0,.5,.18,.5,0,dk2);lattice(cb,0,.18,0,.16,.12,4.6,6,cc,.018);box(cb,-.9,4.78,0,4.2,.14,.14,0,cc);box(cb,-2.7,4.6,0,.35,.3,.3,0,dk2);
+ if(!mid)strut(cb,[1.1,4.86,0],[1.1,3.2,0],.01,cc);
+ const cm=new THREE.Mesh(geomOf(T,cb),B.M.metal);cm.name='pt_crane';cm.position.set(cx,cy,cz);(mid?B.extraMid:B.extra).push(cm);
+ (ZM.cm=ZM.cm||[]).push(cm);if(!mid)B.anims.push(t=>{for(const m of ZM.cm)m.rotation.y=.6+Math.sin(t*.11)*.9;});}
+function descCity(B,S,mid){const T=B.T,L=B.L,sl=L.slots.seam;if(!sl)return;const R=T.R,aS=sl.a==null?Math.atan2(sl.z,sl.x):sl.a;
+ if(!B._dc){const r=mulberry32(((T.seed|0)*17+4421)>>>0),it=[],HW=+T.P.mcHW||.82;
+  for(let k=0;k<1400&&it.length<(+T.P.mcN||86);k++){const da=(r()*2-1)*HW,u=r(),rr=R*(.86+.72*u),a=aS+da*(1+.35*u),x=Math.cos(a)*rr,z=Math.sin(a)*rr,ty=r(),hr=r(),ry=a+(r()<.5?0:PI/2);
+   const edge=Math.abs(da)/HW;if(r()<Math.max(ss(.45,1,u),ss(.55,1,edge))*.85)continue;if(keepClear(T,x,z,1.4))continue;
+   if(inLot(L,x,z,.45)||nearStreet(L,x,z,.25))continue;if(L.spires&&L.spires.some(q=>Math.hypot(q[0]-x,q[1]-z)<1.0))continue;
+   const rad=ty<.45?.24:ty<.85?.45:.7;if(it.some(o=>Math.hypot(o.x-x,o.z-z)<o.rad+rad+.2))continue;
+   const f=(1-.6*u)*(1-.45*edge);it.push({x,z,ty:ty<.45?'sp':ty<.85?'tw':'deck',rad,ry,h:(ty<.45?2.4+hr*3.6:ty<.85?1.4+hr*3.0:.35+hr*.3)*f+.3,lit:hr>.6,u});}
+  // three towers still being assembled (they rise slowly; host freezes them at t=0 under reduced motion)
+  const g=[];for(const o of it)if(o.ty==='tw'&&o.u>.15&&o.u<.6&&g.length<3){o.grow=1;g.push(o);}
+  B._dc={it,g};}
+ const DC=B._dc,pc=hex('#9CA3AB',T.A),pc2=hex('#858C95',T.A),dk=hex('#5B616B',T.A),THREE=T.THREE;   // r5: pale grey -> 1 step darker (world cstat L 73 -> <=72)
+ for(const o of DC.it){const s=seat(T,rectPts(o.x,o.z,o.rad*2,o.rad*2,o.ry)),y=s.lo-.1;if(o.grow)continue;
+  if(o.ty==='sp'){cyl(S.building,o.x,y,o.z,o.rad*1.2,o.rad,.25,6,dk,true);cyl(S.building,o.x,y+.25,o.z,o.rad*.7,o.rad*.16,o.h,6,pc,true);
+   if(!mid){for(let k=0;k<3;k++){const b=o.ry+k*TAU/3,p=[Math.cos(b)*o.rad*.5,Math.sin(b)*o.rad*.5];box(S.building,o.x+p[0],y+.25,o.z+p[1],.02,o.h*.5,.08,-b,pc2);}
+    if(o.lit)box(S.light,o.x,y+.25+o.h*.7,o.z,.04,.04,.04,0,em(B,PAL.cool,.5));}}
+  else if(o.ty==='tw'){const w=o.rad*1.5,d=o.rad*1.1;box(S.building,o.x,y,o.z,w,o.h*.62,d,o.ry,pc2,null,pc);box(S.building,o.x,y+o.h*.62,o.z,w*.72,o.h*.38,d*.72,o.ry,pc,null,tone(pc,1.06));
+   if(o.lit){const p=rotP(0,d*.36+.012,o.ry);box(S.light,o.x+p[0],y+o.h*.8,o.z+p[1],w*.4,.03,.01,o.ry,em(B,PAL.cool,.45));}}
+  else{box(S.building,o.x,y,o.z,o.rad*2.2,o.h,o.rad*1.5,o.ry,dk,null,pc2);}
+  if(!mid&&B.farSp<=480)farBox(B,'building',o.x,y,o.z,o.rad*1.4,o.h,o.rad*1.4,o.ry,pc2);}
+ for(const o of DC.g){const s=seat(T,rectPts(o.x,o.z,o.rad*2,o.rad*2,o.ry)),y=s.lo-.1,b=buf(),w=o.rad*1.5,d=o.rad*1.1,H=o.h*1.25;
+  box(b,0,0,0,w,H,d,o.ry,pc2,null,pc);if(!mid){for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]]){const p=rotP(c[0]*(w/2+.05),c[1]*(d/2+.05),o.ry);box(b,p[0],H-.02,p[1],.04,.5,.04,o.ry,dk);}
+   box(b,0,H+.48,0,w+.14,.04,.04,o.ry,dk);}
+  const m=new THREE.Mesh(geomOf(T,b),B.M.metal);m.name='pt_grow';m.position.set(o.x,y,o.z);(mid?B.extraMid:B.extra).push(m);(o.ms=o.ms||[]).push(m);}
+ if(!mid)B.anims.push(t=>{for(let i=0;i<DC.g.length;i++){const o=DC.g[i],p=((t/240+i*.31)%1+1)%1,k=p<.82?lerp(.3,1,ss(0,.82,p)):lerp(1,.3,ss(.82,1,p));if(o.ms)for(const m of o.ms)m.scale.y=k;}});}
+// r5 C: sky + rail layer of the near-future town. 2-3 rooftop vertiports (dark pad, ring of warm pad lights) on the tallest PV towers,
+// eVTOL air taxis (pod + 4 rotor arms, rotors not spinning) flying slow fixed legs pad->pad (rise, cruise, descend, ~30 s a leg), a
+// delivery-drone corridor (small quads streaming one way, shrinking to 0 at the corridor ends), and an elevated light-rail line on
+// pillars along the most central street with one 3-car train shuttling slowly. Instanced (1 draw per kind and tier); anim(0) = frozen.
+function nearFuture(B,S,mid){const T=B.T,L=B.L,R=T.R,THREE=T.THREE;
+ if(!B._nf){const tw=L.lots.filter(l=>l.nf==='pv').sort((a,b)=>b.st-a.st),pads=[];
+  for(const l of tw){if(pads.length>=3)break;if(pads.some(p=>Math.hypot(p.x-l.x,p.z-l.z)<3.2))continue;const s=seat(T,rectPts(l.x,l.z,l.w,l.d,l.ry));pads.push({x:l.x,z:l.z,y:s.hi+.05+l.st*STOREY+.105,r:Math.min(l.w,l.d)*.4,ry:l.ry});}
+  let st=null,bd=1e9;for(const s of L.streets){if(s.closed||s.pts.length!==2)continue;const a=s.pts[0],e=s.pts[1],len=Math.hypot(e[0]-a[0],e[1]-a[1]),dm=Math.abs((a[0]+e[0])/2)+Math.abs((a[1]+e[1])/2);
+   if(len>R*1.2&&dm+Math.abs(Math.min(Math.abs(a[0]-e[0]),Math.abs(a[1]-e[1])))<bd&&dm>.9){bd=dm;st=s;}}
+  let rail=null;if(st){const a=st.pts[0],e=st.pts[1],ux=(e[0]-a[0]),uz=(e[1]-a[1]),n=Math.hypot(ux,uz),p0=[a[0]-ux/n*1.6,a[1]-uz/n*1.6],p1=[e[0]+ux/n*1.6,e[1]+uz/n*1.6],N=Math.ceil((n+3.2)/1.3),pts=[];
+   let ymax=-1e9;for(let i=0;i<=N;i++){const x=lerp(p0[0],p1[0],i/N),z=lerp(p0[1],p1[1],i/N);ymax=Math.max(ymax,T.yl(x,z));pts.push([x,z]);}rail={pts,y:ymax+1.75,a:Math.atan2(p1[1]-p0[1],p1[0]-p0[0]),p0,p1};}
+  const cy=pads.length?Math.max(...pads.map(p=>p.y))+1.3:T.yl(0,0)+6,ca=(rail?rail.a:0)+PI/2+.35;
+  B._nf={pads,rail,cy,ca,tx:[],dr:[],tr:[]};}
+ const NF=B._nf,dk=hex('#2E3238',T.A),st=hex(PAL.steel,.9*T.A),rl=hex('#6A6F76',T.A);
+ for(const p of NF.pads){box(S.metal,p.x,p.y,p.z,p.r*2,.04,p.r*2,p.ry,dk);const n=mid?4:8;for(let i=0;i<n;i++){const a=i/n*TAU;box(S.light,p.x+Math.cos(a)*p.r*.9,p.y+.045,p.z+Math.sin(a)*p.r*.9,.04,.02,.04,0,em(B,PAL.lamp,mid?.5:.6));}
+  if(!mid){box(S.light,p.x,p.y+.045,p.z,p.r*.5,.012,.03,p.ry,em(B,PAL.cool,.35));box(S.light,p.x,p.y+.045,p.z,.03,.012,p.r*.5,p.ry,em(B,PAL.cool,.35));}}
+ if(NF.rail){const r=NF.rail;for(let i=0;i<r.pts.length;i++){const q=r.pts[i],gy=T.yl(q[0],q[1]);strut(S.metal,[q[0],gy-.1,q[1]],[q[0],r.y-.08,q[1]],mid?.07:.06,rl);
+   if(!mid)box(S.metal,q[0],r.y-.12,q[1],.42,.06,.1,-r.a,rl);if(i)strut(S.metal,[r.pts[i-1][0],r.y,r.pts[i-1][1]],[q[0],r.y,q[1]],.12,st);}}
+ // movers: instanced eVTOLs + drones, one train mesh (per tier)
+ const pb=buf();box(pb,0,0,0,.36,.12,.18,0,hex('#8C9298',T.A),null,hex('#9AA0A6',T.A));box(pb,.06,.1,0,.14,.05,.14,0,hex('#3A4450',T.A));
+ for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]]){strut(pb,[0,.08,0],[c[0]*.26,.12,c[1]*.2],.012,dk);cyl(pb,c[0]*.26,.12,c[1]*.2,.09,.09,.012,8,hex('#4A5058',T.A),true);}
+ box(pb,-.18,.02,0,.02,.02,.02,0,hex('#E0A868',T.A));
+ const db=buf();box(db,0,0,0,.08,.035,.08,0,hex('#5A6068',T.A));for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]])box(db,c[0]*.06,.03,c[1]*.06,.05,.008,.05,0,hex('#3A3E44',T.A));
+ const nT=Math.max(0,NF.pads.length>1?NF.pads.length:0)+2,nD=mid?6:10;
+ const tx=new THREE.InstancedMesh(geomOf(T,pb),B.M.metal,nT),dr=new THREE.InstancedMesh(geomOf(T,db),B.M.metal,nD);tx.name='pt_evtol';dr.name='pt_drones';
+ tx.frustumCulled=dr.frustumCulled=false;(mid?B.extraMid:B.extra).push(tx,dr);NF.tx.push(tx);NF.dr.push(dr);
+ if(NF.rail){const tb=buf(),bc=hex('#9CA2A8',T.A),wb=hex('#3E4852',T.A);for(let k=0;k<3;k++){box(tb,(k-1)*.82,0,0,.78,.24,.26,0,bc,null,tone(bc,1.05));box(tb,(k-1)*.82,.1,0,.7,.07,.27,0,wb);}
+  const tm=new THREE.Mesh(geomOf(T,tb),B.M.metal);tm.name='pt_train';(mid?B.extraMid:B.extra).push(tm);NF.tr.push(tm);}
+ if(mid)return;
+ const O=new THREE.Object3D(),P=NF.pads,legs=[];for(let i=0;i<P.length&&P.length>1;i++)legs.push([P[i],P[(i+1)%P.length]]);if(P.length===2)legs.length=1;
+ const u=[Math.cos(NF.ca),Math.sin(NF.ca)],cor=(s,h,off)=>[u[0]*s-u[1]*off,h,u[1]*s+u[0]*off];
+ B.anims.push(t=>{let k=0;const put=(ims,i,x,y,z,yaw,sc)=>{O.position.set(x,y,z);O.rotation.set(0,yaw,0);O.scale.setScalar(sc);O.updateMatrix();for(const m of ims)if(i<m.count)m.setMatrixAt(i,O.matrix);};
+  for(let i=0;i<legs.length;i++){const ph=((t/62+i*.37)%1+1)%1,fw=ph<.5,p=fw?ph*2:(ph-.5)*2,a=fw?legs[i][0]:legs[i][1],e=fw?legs[i][1]:legs[i][0];
+   const m=ss(.15,.85,p),x=lerp(a.x,e.x,m),z=lerp(a.z,e.z,m),y=p<.15?lerp(a.y+.08,NF.cy,ss(0,.15,p)):p>.85?lerp(NF.cy,e.y+.08,ss(.85,1,p)):NF.cy+.15*Math.sin(p*PI*3);
+   put(NF.tx,k++,x,y,z,-Math.atan2(e.z-a.z,e.x-a.x),1);}
+  for(let i=0;i<2;i++){const ph=((t/80+i*.5)%1+1)%1,s=(ph<.5?ss(0,.5,ph):1-ss(.5,1,ph))*2-1;put(NF.tx,k++,...cor(s*R*1.45,NF.cy+.6+i*.35,(i?-1:1)*1.2),-NF.ca+(ph<.5?0:PI),1);}
+  for(let i=0;i<NF.dr[0].count;i++){const q=((t/55+i/NF.dr[0].count)%1+1)%1,sc=ss(0,.06,q)*(1-ss(.94,1,q));put(NF.dr,i,...cor((q*2-1)*R*1.4,NF.cy-.7,.4),-NF.ca,Math.max(sc,.001));}
+  for(const m of NF.tx.concat(NF.dr))m.instanceMatrix.needsUpdate=true;
+  if(NF.rail){const r=NF.rail,ph=((t/70)%1+1)%1,m=ph<.5?ss(.05,.45,ph):1-ss(.55,.95,ph),x=lerp(r.p0[0],r.p1[0],lerp(.06,.94,m)),z=lerp(r.p0[1],r.p1[1],lerp(.06,.94,m));
+   for(const tm of NF.tr){tm.position.set(x,r.y+.12,z);tm.rotation.y=-r.a;}}});}
 const SPECIALS={square:square,regulator:regulator,substation:substation,pylons:pylons,datacenter:datacenter,camPoles:camPoles,checkpoints:checkpoints,ministry:ministry,
  searchlights:searchlights,dome:dome,anomaly:anomaly,commons:commons,amphitheatre:amphitheatre,workshop:workshop,library:library,enclosure:enclosure,gardens:gardens,
- playground:playground,tree:treeOne,plaza:plaza,seam:seam,emptying:emptying};
-const MIDSP={square:1,regulator:1,datacenter:1,ministry:1,searchlights:1,dome:1,commons:1,amphitheatre:1,workshop:1,library:1,enclosure:1,plaza:1,seam:1};
-const NOSLOT={camPoles:1,gardens:1,emptying:1};
+ playground:playground,tree:treeOne,plaza:plaza,seam:seam,emptying:emptying,machines:zooMachines,machcity:descCity,nearfuture:nearFuture};
+const MIDSP={square:1,regulator:1,datacenter:1,ministry:1,searchlights:1,dome:1,commons:1,amphitheatre:1,workshop:1,library:1,enclosure:1,plaza:1,seam:1,machines:1,machcity:1,nearfuture:1};
+const NOSLOT={camPoles:1,gardens:1,emptying:1,machines:1,machcity:1,nearfuture:1};
 function special(B,name,mid){const fn=SPECIALS[name];if(!fn||(mid&&!MIDSP[name]))return;const sl=B.L.slots[name];if(sl===undefined&&!NOSLOT[name])return;
  safe('special '+name+(mid?' (mid)':''),()=>fn(B,mid?B.D:B.N,mid,sl));}
 
@@ -1018,7 +1132,8 @@ function r4Zoo(B){const T=B.T,L=B.L,S=B.N,THREE=T.THREE,r=B.r4,sl=L.slots.enclos
   const yb=py+.03,yt=top-.4;B.anims.push(t=>{const p=((t%70)+70)%70/70;pm.position.y=p<.25?lerp(yt,yb,ss(0,.25,p)):p<.5?yb:p<.75?lerp(yb,yt,ss(.5,.75,p)):yt;});
   B.movers.push({x:pad[0],y:py+1,z:pad[1],r:sl.h,n:'pod'});}
  // airlock / supply hatch in the enclosure wall (glass vestibule, frame, dark door) - no road leads out
- const aH=hash2(T.seed*.37,5.5)*TAU,hx=sl.x+Math.cos(aH)*sl.r,hz=sl.z+Math.sin(aH)*sl.r,hy=T.yl(hx,hz),ry=ryIn(aH);
+ // G1 S2 r5: host passes keepA = road-spur direction -> the supply road ends at the closed airlock
+ const aH=T.P.keepA!=null?+T.P.keepA:hash2(T.seed*.37,5.5)*TAU,hx=sl.x+Math.cos(aH)*sl.r,hz=sl.z+Math.sin(aH)*sl.r,hy=T.yl(hx,hz),ry=ryIn(aH);
  box(S.building,hx,hy-.05,hz,.9,.95,.6,ry,tone(pale,.92),null,tone(pale,.8));box(S.building,hx,hy+.9,hz,1.0,.07,.7,ry,st);   // solid lock chamber through the wall
  B.solids.push({n:'airlock',x:hx,z:hz,w:1.0,d:.7,ry:ry});if(pad)B.solids.push({n:'podpad',x:pad[0],z:pad[1],r:.34});
  for(const c of[[1,1],[-1,1],[1,-1],[-1,-1]]){const o=rotP(c[0]*.45,c[1]*.3,ry);strut(S.metal,[hx+o[0],hy-.05,hz+o[1]],[hx+o[0],hy+.9,hz+o[1]],.02,st);}

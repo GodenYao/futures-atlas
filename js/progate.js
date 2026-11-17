@@ -47,11 +47,26 @@ function glowPoints(H,grp,TU,ctx,scl){if(!H.length)return null;const n=H.length,
 // ground apron: from just inside the outer ring road out to a noise-warped edge (1.07-1.42 x plan radius), alpha 1 -> 0 outward
 function apron(grp,site,ctx,scl,mat){const NS=144,NR=6,seed=(site.seed|0)||1505,ph=[0,1,2,3].map(i=>hash(seed*.13+i,7.7)*6.283),pos=[],col=[],idx=[];
  const rOut=a=>PR*(1.24+.09*Math.sin(2*a+ph[0])+.06*Math.sin(3*a+ph[1])+.045*Math.sin(5*a+ph[2])+.03*Math.sin(9*a+ph[3]));
- const y0=site.y,hA=ctx.heightAt||(()=>y0);
- for(let j=0;j<=NR;j++)for(let i=0;i<NS;i++){const a=i/NS*Math.PI*2,t=j/NR,r=RO1-.15+(rOut(a)-RO1+.15)*t,x=Math.cos(a)*r,z=Math.sin(a)*r;
-  // inner two rows ease from deck level (y 0) down/up to the terrain: a soft embankment where the ground falls away (crater lip SE), never a drum
-  const wy=hA(site.x+x*scl,site.z+z*scl),ty=Math.max(-3/scl,(wy-y0)/scl),e=Math.min(1,t*1.6),ey=e*e*(3-2*e);pos.push(x,(1-ey)*0+ey*ty+.035,z);const al=t<.12?1:Math.pow(1-(t-.12)/.88,1.4);col.push(.30,.30,.33,al);}
- for(let j=0;j<NR;j++)for(let i=0;i<NS;i++){const a=j*NS+i,b=j*NS+(i+1)%NS,c=a+NS,d=b+NS;idx.push(a,c,b,b,c,d);}
+ const y0=site.y,hA=ctx.heightAt||(()=>y0),R0=RO1-.15,tY=(x,z)=>Math.max(-3/scl,(hA(site.x+x*scl,site.z+z*scl)-y0)/scl);
+ // apron surface height at (a, r): inner rows ease from deck level (y 0) to the terrain (soft embankment where the ground falls away), then the terrain
+ const apY=(a,r)=>{const x=Math.cos(a)*r,z=Math.sin(a)*r,t=Math.max(0,Math.min(1,(r-R0)/(rOut(a)-R0))),e=Math.min(1,t*1.6),ey=e*e*(3-2*e);return ey*tY(x,z);};
+ // r5 T (vision: 'hard-edged disc on a purple void, no transitional ground'): the apron now carries its own worn-ground tone (the host blends
+ // only GW .35 of the terrain colour in at the inner edge, all of it at the outer edge), with a mottled, angle-noised alpha so the transition
+ // band is irregular (tracks / bare patches), plus a slight contact darkening right at the deck edge.
+ const mot=(a,t)=>.78+.22*Math.sin(7*a+ph[1]+t*5)*Math.sin(3*a+ph[2]-t*3)+.08*Math.sin(17*a+ph[3]);
+ const apO=t=>.035+(t<.33?.085*t/.33:t<.75?.085:.085-.145*(t-.75)/.25)/scl;
+ // surface the outskirts stand on (apron where it covers the ground, else terrain)
+ const surf=(x,z)=>{const a=Math.atan2(z,x),r=Math.hypot(x,z),ro=rOut(a);if(r>=ro)return tY(x,z);const t=Math.max(0,(r-R0)/(ro-R0));return Math.max(tY(x,z),apY(a,r)+apO(t));};
+ for(let j=0;j<=NR;j++)for(let i=0;i<NS;i++){const a=i/NS*Math.PI*2,t=j/NR,r=R0+(rOut(a)-R0)*t,x=Math.cos(a)*r,z=Math.sin(a)*r;
+  pos.push(x,apY(a,r)+apO(t),z);const al=Math.min(1,Math.pow(1-t,.8)*mot(a,t)),k=j?1:.9;col.push(.37*k,.36*k,.385*k,j===NR?0:al);}   // r5 T: lifted +.085 world over the terrain mid-band (at +.013 the terrain won the depth test at world zoom), then dives .06 under it at the rim so the shading mismatch at alpha 0 never shows (r5 meas.: dark dip L 33 vs 36 at the rim); colours are sRGB (the host linearises)
+ for(let j=0;j<NR;j++)for(let i=0;i<NS;i++){const a=j*NS+i,b=j*NS+(i+1)%NS,c=a+NS,d=b+NS;idx.push(a,b,c,b,d,c);}   // r5 T: winding flipped - (a,c,b) faced DOWN, so the FrontSide apron was back-face culled and never drew (red-material test: 0 px change)
+ // r5 T: four roads leave the gates along the avenues (draped on the apron, then the terrain), fading out ~1.35 x the apron edge; the v4.4 road
+ // spur meets one of them. Same mesh as the apron (0 extra draws).
+ for(let k=0;k<4;k++){const a0=k*Math.PI/2,re=rOut(a0)*1.38,NSg=26,base=pos.length/3;
+  for(let s=0;s<=NSg;s++){const r=RO1+(re-RO1)*s/NSg,u=s/NSg,w=1.05*(1-.35*u)+.1*Math.sin(r*.7+k);
+   for(const sd of[-1,1]){const a=a0+sd*w*.5/r+.012*Math.sin(r*.45+k*2),x=Math.cos(a)*r,z=Math.sin(a)*r,y=(r<rOut(a)?apY(a,r)+.035:tY(x,z))+.15/scl;
+    pos.push(x,y,z);const al=u<.55?1:Math.max(0,1-(u-.55)/.45);col.push(.34,.34,.37,al*.95);}}
+  for(let s=0;s<NSg;s++){const a=base+s*2,b=a+1,c=a+2,d=a+3;idx.push(a,b,c,b,d,c);}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,4));g.setIndex(idx);g.computeVertexNormals();
  const m=new THREE.Mesh(g,mat);m.name='apron';grp.add(m);
  // outskirts (owner D5: outskirts thinning): low sheds / houses scattered outside the perimeter rail, density falling outward, an irregular
@@ -59,15 +74,23 @@ function apron(grp,site,ctx,scl,mat){const NS=144,NR=6,seed=(site.seed|0)||1505,
  if(ctx.mats&&ctx.mats.building){const R2=rng(seed*7+3),pl=[];let tries=0;while(pl.length<150&&tries++<2400){const a=R2()*Math.PI*2,ro=rOut(a)*.98,u=R2(),r=PR+.4+(ro-PR-.4)*Math.pow(u,1.35);
    if(R2()>Math.pow(1-(r-PR)/(ro-PR),1.3))continue;let ok=1;for(let k=0;k<4;k++){let da=Math.abs(((a-k*Math.PI/2)%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI);if(da*r<1.3)ok=0;}
    for(const q of pl)if(Math.hypot(q[0]-Math.cos(a)*r,q[1]-Math.sin(a)*r)<1.05)ok=0;if(ok)pl.push([Math.cos(a)*r,Math.sin(a)*r,a]);}
+  // r5 T (vision: 'tilted cubes / orange shards hovering in fog'): every shed is seated on the LOWEST terrain point under its footprint
+  // and its height covers the slope (no floating low side), lower + darker (k .24-.32, was .36-.50), and they thin out past the apron edge.
   const bx=new THREE.BoxGeometry(1,1,1).toNonIndexed();bx.translate(0,.5,0);const cc=new Float32Array(bx.attributes.position.count*3).fill(1);bx.setAttribute('color',new THREE.BufferAttribute(cc,3));
   const im=new THREE.InstancedMesh(bx,ctx.mats.building,pl.length),M4=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),p=new THREE.Vector3(),cl=new THREE.Color();
-  pl.forEach((v,i)=>{const w=.55+R2()*.7,d=.5+R2()*.55,h=.35+R2()*.6*(1-(Math.hypot(v[0],v[1])-PR)/8),ty=(hA(site.x+v[0]*scl,site.z+v[1]*scl)-y0)/scl;
-   q.setFromAxisAngle(new THREE.Vector3(0,1,0),-v[2]+(R2()-.5)*.5);M4.compose(p.set(v[0],ty-.08,v[1]),q,s.set(w,Math.max(.25,h),d));im.setMatrixAt(i,M4);
-   const k=.36+R2()*.14;im.setColorAt(i,cl.setRGB(k*1.02,k,k*1.05));});
+  pl.forEach((v,i)=>{const w=.5+R2()*.55,d=.42+R2()*.4,ry=-v[2]+(R2()-.5)*.5,h=.3+R2()*.32*(1-Math.min(1,(Math.hypot(v[0],v[1])-PR)/8)),c=Math.cos(ry),sn=Math.sin(ry);
+   let lo=1e9,hi=-1e9;for(const e of[[-.5,-.5],[.5,-.5],[-.5,.5],[.5,.5],[0,0]]){const lx=e[0]*w,lz=e[1]*d,ty=surf(v[0]+lx*c+lz*sn,v[1]-lx*sn+lz*c);lo=Math.min(lo,ty);hi=Math.max(hi,ty);}
+   q.setFromAxisAngle(new THREE.Vector3(0,1,0),ry);M4.compose(p.set(v[0],lo-.12,v[1]),q,s.set(w,h+(hi-lo)+.12,d));im.setMatrixAt(i,M4);
+   const k=.24+R2()*.08;im.setColorAt(i,cl.setRGB(k*1.02,k,k*1.06));});
   im.name='pc_outskirts';if(im.instanceColor)im.instanceColor.needsUpdate=true;grp.add(im);}
  return m;}
 FA.PROGATE={build(site,ctx){const PC=FA.PROCITY;if(!PC||typeof PC.build!=='function')throw new Error('FA.PROCITY missing');
- const t0=performance.now(),near=new THREE.Group();near.name='gatekeeper_near';const scl=(site.radius||12)/PR;near.scale.setScalar(scl);
+ const t0=performance.now(),near=new THREE.Group();near.name='gatekeeper_near';
+ // r5 T: footprint ~12 % smaller (vision: Gatekeeper covered the most screen of any city at world zoom); ?g1gks= to compare. The road spur
+ // (fa4_build, ends at cR) now lands on the gate road this file lays outside the deck.
+ const GKS=+(new URLSearchParams(location.search).get('g1gks')||.88),RAD=(site.radius||12)*GKS,scl=RAD/PR;near.scale.setScalar(scl);
+ // r5 T: the apron's own worn-ground tone shows at the inner edge (host terrain blend weight .8 -> .35; read by g1_cities after build)
+ try{if(typeof G1!=='undefined'&&G1.GW)G1.GW.gatekeeper=+(new URLSearchParams(location.search).get('g1gkw')||.35);}catch(e){}
  const statics=[],glows=[],anims=[],TU={uT:{value:0},uAn:{value:site.rm?0:1}};
  Object.assign(FA,{G1:1,SC:near,R:ctx.renderer,GK:{x:0,z:0,top:0},LOOK:{ai:ctx.ai||'#8FD8E8',human:ctx.human||'#FFC27E',road:'#7A7468',pc:{}},
   addStatic:(...ms)=>{for(const m of ms)statics.push(m);},glow:(x,y,z,size,hex,k,an)=>{const h={x,y,z,size,c:new THREE.Color(hex).multiplyScalar(k==null?.6:k),material:{opacity:1},an:an||null};glows.push(h);return h;},
@@ -85,6 +108,6 @@ FA.PROGATE={build(site,ctx){const PC=FA.PROCITY;if(!PC||typeof PC.build!=='funct
     if(ctx.renderer){const s=ctx.renderer.getDrawingBufferSize(v);gp.U.uH.value=s.y;}}}};
  let tris=0,draws=0;near.traverse(m=>{if((m.isMesh||m.isPoints)&&m.geometry){draws++;const g=m.geometry,c=g.index?g.index.count/3:g.attributes.position.count/3;tris+=(m.isInstancedMesh?m.count:1)*(m.isPoints?0:c);}});
  r.stats={nearTris:Math.round(tris),nearDraws:draws,midTris:0,midDraws:0,staticDraws:sd,glows:glows.length,statics:statics.length,buildMs:+(tb-t0).toFixed(1),postMs:+(performance.now()-tb).toFixed(1),pc:info};
- r.anchors={eye:{x:E.x*scl,y:E.y*scl,z:E.z*scl},gates:[0,1,2,3].map(k=>({x:Math.cos(k*Math.PI/2)*site.radius,z:Math.sin(k*Math.PI/2)*site.radius}))};
+ r.anchors={eye:{x:E.x*scl,y:E.y*scl,z:E.z*scl},gates:[0,1,2,3].map(k=>({x:Math.cos(k*Math.PI/2)*RAD,z:Math.sin(k*Math.PI/2)*RAD}))};
  return r;}};
 })();

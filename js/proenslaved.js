@@ -387,7 +387,7 @@ function stubEnd(B,S,p,dx,w){const k=B.T.k,dk=hex(PAL.dark,B.T.A);
 function arcology(B,S,K,mid){const T=B.T,k=T.k,a=K.arc,P=K.P,n=a.tiers,th=a.h/n,rc=hex(P.roof,T.A),fc=hex(PAL.foliage,T.A),ic=glow(B,P.light,1.5),st=hex(PAL.steel,.6*T.A);
  let y=plinth(T,S,rectPts(a.x,a.z,a.w+.4*k,a.d+.4*k,0),.1*k,hex(PAL.concrete,.7*T.A));
  for(let i=0;i<n;i++){const f=1-i*.125,w=a.w*f,d=a.d*f,zc=a.z-K.sg*i*.1*k,pts=chamfPts(a.x,zc,w,d,0,.2*k),wc=hex(P.walls[i%4],T.A*(1-.03*i));
-  prism(S.building,pts,y,y+th,wc,rc);bands(B,S,pts,y-.04,2,i*17+3,mid,th*.45,.16*k);
+  prism(S.building,pts,y,y+th,wc,rc);if(!mid||i%2===0)bands(B,S,pts,y-.04,2,i*17+3,mid,th*.45,mid?.11*k:.16*k);   // G1 r5 T: MID lit bands on every 2nd tier only, thinner (stacked bright tier outlines read as a wire cage at world zoom)
   if(!mid){for(const sd of[-1,1]){box(S.foliage,a.x,y+th,zc+sd*(d/2-.09*k),w*.78,.06*k,.1*k,0,fc);box(S.light,a.x,y+th-.03*k,zc+sd*(d/2+.012*k),w*.6,.02*k,.012*k,0,ic,false);}
    for(const sd of[-1,1])for(let j=0;j<3;j++){const fz=zc+(j-1)*d*.28;fin(S.metal,a.x+sd*w/2,fz,a.x+sd*(w/2+.16*k),fz,y,y,th,th*.6,.03*k,st);}}
   y+=th;}
@@ -498,9 +498,9 @@ function* infraGen(B,S,mid){const L=B.L;maglev(B,S,mid);yield 1;
 // ======================= centrepiece A : Suspended Monolith =======================
 function ringPose(r,t,Q){if(r.ax===0){Q[3]=r.ph+r.w*t;Q[5]=0;}else{Q[3]=r.ax===1?.6:.6+PI/2;Q[5]=r.ph+r.w*t;}}
 function ringAxes(r){const Q=[0,0,0,0,1,0];ringPose(r,0,Q);const c=Math.cos(Q[3]),s=Math.sin(Q[3]),cp=Math.cos(Q[5]),sp=Math.sin(Q[5]);return[[c,0,-s],[sp*s,cp,sp*c]];}
-function monoSeams(b,B,K,x,y,z){const k=B.T.k,m=K.mono,g=glow(B,K.P.core,2.0),yb=y+m.hang;
- for(const p of rectPts(x,z,m.w-m.bv*.8,m.d-m.bv*.8,m.ry))strut(b,[p[0],yb+m.bv,p[1]],[p[0],yb+m.h-m.bv,p[1]],.022*k,g);
- for(const f of[.22,.5,.78])prism(b,chamfPts(x,z,m.w+.02*k,m.d+.02*k,m.ry,m.bv),yb+m.h*f,yb+m.h*f+.035*k,g,false);}
+function monoSeams(b,B,K,x,y,z,mid){const k=B.T.k,m=K.mono,g=glow(B,K.P.core,mid?1.25:2.0),yb=y+m.hang;
+ if(!mid)for(const p of rectPts(x,z,m.w-m.bv*.8,m.d-m.bv*.8,m.ry))strut(b,[p[0],yb+m.bv,p[1]],[p[0],yb+m.h-m.bv,p[1]],.022*k,g);
+ for(const f of(mid?[.5]:[.22,.5,.78]))prism(b,chamfPts(x,z,m.w+.02*k,m.d+.02*k,m.ry,m.bv),yb+m.h*f,yb+m.h*f+.035*k,g,false);}
 function mastA(B,S,K,ms,y,cor,mid){const T=B.T,k=T.k,m=K.mono,st=hex(PAL.steel,.62*T.A),dk=hex(PAL.dark,T.A),cab=hex(PAL.cable,1),ym=T.yl(ms.x,ms.z);
  let best=cor[0],bd=1e9;for(const p of cor){const d=Math.hypot(p[0]-ms.x,p[1]-ms.z);if(d<bd){bd=d;best=p;}}
  box(S.building,ms.x,ym-.15,ms.z,1.1*k,.15+.22*k,1.1*k,-ms.a,hex(PAL.concrete,.62*T.A));
@@ -526,8 +526,10 @@ function* coreA(B,S,K,mid){const T=B.T,k=T.k,c=K.core,m=K.mono,cx=c.x,cz=c.z,se=
  if(!mid){const F=K.fins;for(let i=0;i<F.n;i++){const a=i*TAU/F.n,ca=Math.cos(a),sa=Math.sin(a);
    fin(S.metal,cx+ca*F.r0,cz+sa*F.r0,cx+ca*F.r1,cz+sa*F.r1,y+.18*k,y+.58*k,F.h,F.h*.6,.035*k,st);}yield 1;}
  // the monolith (near: seams and rings live in the dynamic meshes; mid: static)
- bevBox(S.building,cx,y+m.hang,cz,m.w,m.h,m.d,m.ry,m.bv,hex(PAL.mono,1),hex(PAL.mono,1.3));
- if(mid){monoSeams(S.light,B,K,cx,y,cz);for(const r of K.rings){const ax=ringAxes(r);torus(S.metal,[cx,y+m.cy,cz],ax[0],ax[1],r.r,r.tube*1.3,16,3,st);}}
+ bevBox(S.building,cx,y+m.hang,cz,m.w,m.h,m.d,m.ry,m.bv,hex(PAL.mono,mid?1.75:1),hex(PAL.mono,mid?2.0:1.3));   // G1 r5 T: MID body lifted from near-black slate (only its lit seams + thin rings read at world zoom = 'wireframe')
+ // G1 r5 T (vision r5: 'bluish wireframe / gyroscope structures look untextured' at world zoom): MID keeps ONE lit seam band (no corner
+ // struts, no 3-band cage) and the gimbal rings are solid shaded bands (tube x1.3 -> x2.3, 3 -> 5 sides, 16 -> 24 segments)
+ if(mid){monoSeams(S.light,B,K,cx,y,cz,1);for(const r of K.rings){const ax=ringAxes(r);torus(S.metal,[cx,y+m.cy,cz],ax[0],ax[1],r.r,r.tube*2.3,24,5,i=>tone(st,i%6?1:.72));}}
  yield 1;
  // four clamp masts + tension cables to the monolith corners
  const cor=rectPts(cx,cz,m.w,m.d,m.ry);for(const ms of K.masts){mastA(B,S,K,ms,y,cor,mid);yield 1;}}
@@ -703,9 +705,9 @@ function farLots(B){const T=B.T,L=B.L,F=B.F,k=T.k,vol=l=>l.w*l.d*lotH(l),sky=l=>
 function farCores(B){const T=B.T,L=B.L,F=B.F,k=T.k,A=L.blocs[0],Q=L.blocs[1],st=hex(PAL.steel,.65*T.A);
  let c=A.core,m=A.mono,y=A.y!=null?A.y:T.yl(c.x,c.z);m.ry=m.ry||0;
  cyl(F.building,c.x,y-.3,c.z,c.pit+1.2*k,c.pit+1.14*k,.3+.58*k,12,hex(PAL.concrete,.62*T.A));
- box(F.building,c.x,y+m.hang,c.z,m.w,m.h,m.d,m.ry,hex(PAL.mono,1),hex(PAL.mono,1.3));
+ box(F.building,c.x,y+m.hang,c.z,m.w,m.h,m.d,m.ry,hex(PAL.mono,1.75),hex(PAL.mono,2.0));   // G1 r5 T: far body lifted (see MID)
  prism(F.light,chamfPts(c.x,c.z,m.w+.04*k,m.d+.04*k,m.ry,m.bv),y+m.hang+m.h*.5,y+m.hang+m.h*.5+.08*k,hex(A.P.core,1.6*B.gl),false);
- const r=A.rings[0],ax=ringAxes(r);torus(F.metal,[c.x,y+m.cy,c.z],ax[0],ax[1],r.r,r.tube*1.8,12,3,st);
+ const r=A.rings[0],ax=ringAxes(r);torus(F.metal,[c.x,y+m.cy,c.z],ax[0],ax[1],r.r,r.tube*2.4,16,4,st);
  for(const ms of A.masts){const ym=T.yl(ms.x,ms.z);loft(F.metal,rectPts(ms.x,ms.z,.5*k,.5*k,0),ym-.1,rectPts(ms.x,ms.z,.14*k,.14*k,0),ym+ms.h,st);}
  c=Q.core;y=Q.y!=null?Q.y:T.yl(c.x,c.z);const te=Q.terr,co=Q.coils[1];
  cyl(F.building,c.x,y-.3,c.z,te.r1,te.r0,.3+te.h,12,hex(PAL.earth,.95*T.A),hex(PAL.dark,T.A));
