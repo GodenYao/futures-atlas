@@ -2677,7 +2677,9 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
   let NM='c';const cand=[];for(const H of[NOWH,16,13])for(const md of['c','r','l'])cand.push([H,md]);cand.push([24,'c'],[11,'c'],[11,'r']);
   for(const[H,md]of cand){const q=proj(NOWD.X,ny+H+.1,NOWD.Z);const x0=md==='c'?q[0]-nw0/2:md==='r'?q[0]-4:q[0]-nw0+4;const b=[x0,q[1]-28,x0+nw0,q[1]+2];if(!mk.some(m=>m[0]>b[0]-26&&m[0]<b[2]+26&&m[1]>b[1]-26&&m[1]<b[3]+26)){NH=H;NM=md;break;}}NOWL._m=NM;}
  const NMd=big?'c':(NOWL._m||'c'); // r4 (item 2): text centred on the drop line, or hung like a flag to its right/left when site icons sit above the hub
- const[hx,hy,hok]=proj(NOWD.X,ny+NH+.1,NOWD.Z); // G1 r7: the r6 'NOW lean' is replaced by real NOW movement (Q20, RPL/NOWM in fa4_ui)
+ let[hx,hy,hok]=proj(NOWD.X,ny+NH+.1,NOWD.Z);
+ {const nh0=(NOWL.offsetHeight||24)+8;if(!big&&!(hok&&hy>nh0)){const g=proj(NOWD.X,ny+1,NOWD.Z);if(g[2]&&g[1]>nh0+4&&g[1]<tlT){let lo=1,hi=NH;for(let i=0;i<12;i++){const m=(lo+hi)/2,q=proj(NOWD.X,ny+m+.1,NOWD.Z);if(q[2]&&q[1]>nh0)lo=m;else hi=m;}[hx,hy,hok]=proj(NOWD.X,ny+lo+.1,NOWD.Z);}}} // owner 11-17: zoomed in, the NOW stem top left the screen and the label vanished -> shorten the stem so the label stays on screen while the hub is visible
+ // G1 r7: the r6 'NOW lean' is replaced by real NOW movement (Q20, RPL/NOWM in fa4_ui)
  const nvis=hok&&hx>0&&hx<W&&hy>0&&hy<tlT;NOWL.style.display=nvis?'block':'none';
  const nw=NOWL.offsetWidth||150,nh=NOWL.offsetHeight||24;const nx0=NMd==='c'?hx-nw/2:NMd==='r'?hx-4:hx-nw+4;if(nvis){NOWL.style.transform=`translate(${nx0|0}px,${(hy-nh-2)|0}px)`;} // v4.3 r3 O5: floating 'NOW · week' text on top of the drop line
  // R-tags where each road leaves the hub ring (the only road text on the map)
