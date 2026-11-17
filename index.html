@@ -120,7 +120,7 @@ body.axanim .axi.wy{transition:left .3s ease-out,top .3s ease-out,transform .3s 
 .dl.n{color:#8D8A80}
 .wl{position:fixed;left:0;top:0;z-index:11;pointer-events:none;white-space:nowrap;font:400 11px var(--f2);letter-spacing:.14em;color:var(--t2);text-shadow:0 0 4px var(--void)}
 .wl.sm{letter-spacing:.06em;color:var(--t3)}
-.nowl{position:fixed;left:0;top:0;z-index:16;cursor:pointer;font:600 18px/21px var(--f1);letter-spacing:.2em;color:#F4EFE3;white-space:nowrap;text-shadow:0 0 4px rgba(8,12,22,.8);will-change:transform;padding:3px 6px;background:rgba(8,11,16,.72);border-radius:3px} /* r3 O5: Now = floating text, the most prominent label; r12 P (owner): dark backplate for readability (world, region, replay) */
+.nowl{position:fixed;left:0;top:0;z-index:16;cursor:pointer;font:600 18px/21px var(--f1);letter-spacing:.2em;color:#F4EFE3;white-space:nowrap;text-shadow:0 0 4px rgba(8,12,22,.8);will-change:transform;padding:3px 6px;background:rgba(8,11,16,.42);border-radius:3px} /* r3 O5: Now = floating text, the most prominent label; r12 P (owner): dark backplate for readability (world, region, replay) */
 .nowl span{color:var(--acc);margin-left:0}
 /* card (right panel, only on selection) */
 #card{position:fixed;right:24px;top:60px;width:400px;max-height:calc(100vh - 240px);overflow-y:auto;overflow-x:hidden;padding:16px 18px 18px;display:none;z-index:21;background:var(--pbg);color:var(--t1);scrollbar-width:thin;scrollbar-color:#2a323c transparent;overscroll-behavior:contain}
@@ -1313,16 +1313,20 @@ const roadMat=(c,k,off)=>{const m=new THREE.MeshLambertMaterial({color:c,polygon
 const NEON_V='varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
 const NEON_F=`uniform vec3 uC,uL;uniform float uT,uOp,uMode,uSp,uF,uRM,uP,uFK;varying vec2 vU;
  float h1(float n){return fract(sin(n*12.9898)*43758.5453);}
- void main(){float x=abs(vU.y-.5)*2.;float lit=max(uF,0.),dim=max(-uF,0.);vec3 c=mix(mix(uC,uL,lit),vec3(.227,.251,.282),dim);c=min(c*(1.+.15*uP),max(c,uL));float od=mix(1.,.4,dim)*(1.+uP*.15); // v4.4 V1a: uP = brief brightness pulse on roads whose share changed with the lens; r3 U9: capped at +15 % value and never above the 'lit' colour (it blew out under bloom)
+ vec4 ck(vec3 c,float a,float k){float m=max(c.r,max(c.g,c.b))*a;return vec4(m>k?c*(k/m):c,a);} // r13 V2: lit output capped below the bloom threshold (th .70)
+ void main(){float x=abs(vU.y-.5)*2.;float lit=max(uF,0.),dim=max(-uF,0.);vec3 c=mix(mix(mix(uC,uL,lit),vec3(1.),.12*lit),vec3(.227,.251,.282),dim);c=min(c*(1.+.15*uP),max(c,uL));float od=mix(1.,.4,dim)*(1.+uP*.15); // v4.4 V1a: uP = brief brightness pulse on roads whose share changed with the lens; r3 U9: capped at +15 % value and never above the 'lit' colour (it blew out under bloom)
+ // r13 V2 (owner: selection overexposed / harsh, both modes): lit = +30 % bed alpha, +12 % toward white, rails slightly paler; dashes no longer
+ // whiten or go opaque when lit; every lit fragment is capped at max channel x alpha <= .62 (bed) / .74 (rails) -> stays under bloom. Rest unchanged.
+ float K=mix(9.,.62,lit);
  float fy=max(fwidth(vU.y),1e-5),fx=max(fwidth(vU.x),1e-5);
- if(uMode>1.5){float d=fract(vU.x/.96);if(d>.34)discard;gl_FragColor=vec4(c,mix(.36,.8,lit)*od*uOp);return;}
- if(uMode>.5){gl_FragColor=vec4(mix(c,vec3(1.,.93,.82),.12),mix(.22,.28,lit)*(1.-x*.82)*od*uOp);return;} // r4 O2: shoulder = soft light falloff around the trunk (gentle glow, not neon)
- float ypx=(vU.y-.5)/fy;float hw=.5/fy;float rail=1.-smoothstep(.0,1.,hw-abs(ypx)-.2);
- float a=min(1.,mix(mix(${LOOK.fillA||.35},.75,lit),1.,dim)*uFK);vec3 col=c; // r11 S: uFK = bed opacity gain (1 trunks, 1.7 branch legs: Sankey legs are narrow, a denser bed keeps them reading as flow, not hairlines) // r2: fill alpha + rail ink per look (dark ink rails on the light dawn map)
- if(rail>.01){gl_FragColor=vec4(mix(c,${LOOK.rail||'vec3(1.)'},${LOOK.railK||.22}*(1.-dim)),max(a,mix(.95,1.,dim)*rail)*od*uOp);return;} // r4 O2: rails gently emissive
+ if(uMode>1.5){float d=fract(vU.x/.96);if(d>.34)discard;gl_FragColor=ck(c,mix(.36,.47,lit)*od*uOp,K);return;}
+ if(uMode>.5){gl_FragColor=ck(mix(c,vec3(1.,.93,.82),.12),mix(.22,.27,lit)*(1.-x*.82)*od*uOp,K);return;} // r4 O2: shoulder = soft light falloff around the trunk (gentle glow, not neon)
+ float ypx=(vU.y-.5)/fy;float hw=.5/fy;float rail=1.-smoothstep(.0,1.,hw-abs(ypx)-.2);float th=uFK>1.2?1.-smoothstep(2.,5.,hw):0.; // r13 V2: thin branch legs (< ~6 px, uFK > 1) = saturated bed, no pale rails (they read as white hairlines)
+ float a=min(1.,max(mix(${LOOK.fillA||.35}*(1.+.3*lit),1.,dim)*uFK,.8*th*(1.-dim)));vec3 col=c; // r11 S: uFK = bed opacity gain (1 trunks, 1.7 branch legs: Sankey legs are narrow, a denser bed keeps them reading as flow, not hairlines) // r2: fill alpha + rail ink per look (dark ink rails on the light dawn map)
+ if(rail>.01){gl_FragColor=ck(mix(c,${LOOK.rail||'vec3(1.)'},(${LOOK.railK||.22}+.05*lit)*(1.-dim)*(1.-th)),max(a,mix(.95,1.,dim)*rail)*od*uOp,mix(9.,.68,lit));return;} // r4 O2: rails gently emissive
  if(uRM>.5){float ln=floor(ypx/6.+.5);float ly=ypx-ln*6.;float s=fract((vU.x-uT*3.8*uSp+h1(ln)*7.)/3.5);
-  if(abs(ly)<.75&&s<.27&&abs(ypx)<hw-2.){col=mix(c,vec3(1.),.4);a=max(a,mix(.3,.9,lit)+.25);}}
- gl_FragColor=vec4(col,a*od*uOp);}`;
+  if(abs(ly)<.75&&s<.27&&abs(ypx)<hw-2.){col=mix(c,vec3(1.),.4-.15*lit);a=max(a,mix(.3,.36,lit)+.25);}}
+ gl_FragColor=ck(col,a*od*uOp,K);}`;
 const RMOT=matchMedia('(prefers-reduced-motion: reduce)').matches?0:1;
 function neonMat(c,mode,sp,cl){return new THREE.ShaderMaterial({uniforms:{uC:{value:new THREE.Color(c).multiplyScalar(LOOK.roadK)},uL:{value:new THREE.Color(cl||c).multiplyScalar(LOOK.roadK)},uT:TU.uT,uOp:{value:1},uMode:{value:mode},uSp:{value:sp||1},uF:{value:0},uRM:{value:RMOT},uP:{value:0},uFK:{value:1}},vertexShader:NEON_V,fragmentShader:NEON_F,transparent:true,depthWrite:false,blending:THREE.NormalBlending,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});}
 const CASE=null; // (v4.1 dark casing replaced by a per-road neon glow halo)
@@ -1335,13 +1339,13 @@ const GHM=()=>new THREE.ShaderMaterial({uniforms:{uOp:{value:.95}},vertexShader:
 const SPROF=u=>(1.35-.35*sm(0,.25,u))*(1-.3*sm(.85,1,u)); // spurs start as wide as the tapered trunk end, then narrow
 const ROADV=[];   // render objects per road: {r,trunk,tcase,lane,ghost,spurs:[{site,half,rib,cas,cliff,pts}]}
 const ROADPTS=[]; // for traffic: {a,b,pts}
-// r12 V (owner D11): ?roads=vasc = vascular network prototype (src/fa4_vasc.js): trunks end at the first split (vascRoot), the old
-// fork legs are not built, vascBuild adds the artery trees + city veins/capillaries and rv.spurs proxies. Default OFF = unchanged.
-const VASCF=new URLSearchParams(location.search).get('roads')==='vasc';
+// r12 V (owner D11) / r13 V2 default: vascular network (src/fa4_vasc.js): trunks end at the first split (vascRoot), the old
+// fork legs are not built, vascBuild adds the artery trees + city veins/capillaries and rv.spurs proxies. ?roads=old = r11 Sankey legs.
+const VASCF=new URLSearchParams(location.search).get('roads')!=='old'; // r13 V2 (owner 11-17): vascular network is the DEFAULT; ?roads=old = r11 Sankey fallback
 for(const r of RD6){const ri=RD6.indexOf(r),A=[NOW.X,NOW.Z],B=VASCF?vascRoot(r):FP[r.id],dx=B[0]-A[0],dz=B[1]-A[1],L=Math.hypot(dx,dz),ux=dx/L,uz=dz/L;
  const A2=[A[0]+ux*1.1,A[1]+uz*1.1];const C=[(A2[0]+B[0])/2-uz*L*.06,(A2[1]+B[1])/2+ux*L*.06]; // r3 O5: trunks converge on the single Now ground dot
  const tp=bez(A2,C,B,.5);const fill=neonMat(r.c,0,1,r.cl),halo_=neonMat(r.c,1,1,r.cl);const LF=.10+ri*.012; // per-road lift: crossing ribbons never z-fight
- const rv={r,tp,tcase:ribbon(tp,halo_,.05),trunk:ribbon(tp,fill,LF,null,4),lane:r.id==='R1'?ribbon(tp,new THREE.MeshBasicMaterial({color:'#080B0F',transparent:true,opacity:.6,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6}),LF+.03,null,5):null,ghost:ribbon(tp,GHM(),LF+.05,null,6),spurs:[],fill,mats:[fill,halo_],endR:1};
+ const rv={r,tp,tcase:ribbon(tp,halo_,VASCF?.08:.05),trunk:ribbon(tp,fill,LF,null,4),lane:r.id==='R1'?ribbon(tp,new THREE.MeshBasicMaterial({color:'#080B0F',transparent:true,opacity:.6,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6}),LF+.03,null,5):null,ghost:ribbon(tp,GHM(),LF+.05,null,6),spurs:[],fill,mats:[fill,halo_],endR:1};
  const tprof=u=>u<.86?1:1-(1-rv.endR)*sm(.86,1,u);rv.trunk.prof=rv.tcase.prof=rv.ghost.prof=tprof;if(rv.lane)rv.lane.prof=tprof;
  ROADPTS.push({a:'NOW',b:r.id,pts:tp});
  const ex=B[0]+ux*6,ez=B[1]+uz*6; // spur control point continues the trunk direction
@@ -1771,76 +1775,111 @@ function placeAxis(tlT,hudR){const W=innerWidth,H=innerHeight,big=view!=='world'
   else{x=W/2-w/2;y=yS-h;rx=W/2-150;ry=y+h-2;rw=300;rh=3;} // v4.4 fix: S tab sits fully ABOVE the footer strip and the timeline (was straddling the footer, read as covered)
   el.style.left=(x|0)+'px';el.style.top=(y|0)+'px';rl.style.left=(rx|0)+'px';rl.style.top=(ry|0)+'px';rl.style.width=rw+'px';rl.style.height=rh+'px';const B=[x,y,w,h];B.ax=1;a.box=B;}}
 
-// ======================= r12 V (owner D11): VASCULAR road network prototype (?roads=vasc, default OFF) =======================
+// ======================= r12 V (owner D11) + r13 V2: VASCULAR road network (?roads=vasc; r13: default if its gates pass) =======================
 // Arteries: each road trunk (R1-R6, width = road share, own colour) leaves NOW as before (rv.tp, rv.trunk: R-tags, NOWW warp, calibRoads
-// and hover all unchanged) but is only ~30 % of the flow-weighted route long; at its end the road's tree splits recursively (binary, cut at
-// the largest angular gap between its destinations, next split at 42 % toward the sub-group's flow centroid). Children sit SIDE BY SIDE
-// inside the parent at the split (offsets = flow-conserving widths) and ease to their own centre lines -> one vessel visibly dividing.
-// Curves are cubic (tangent-continuous at every split) and relaxed away from city / lake discs (SCN). One merged mesh per road.
-// Veins: every branch heading to a city (from any road) ends at that city's confluence point Q (Lv 5-10 u outside the city edge E, on the
-// side facing NOW) at the width of its own flow, side by side in the order it arrives (no crossing at the merge). Q -> E = ONE vein,
-// width = sum of inflows = .145 u x the ending share, with each road's colour kept as a proportional strand (band uniforms, thin seams).
-// Capillaries: at E the vein dissolves into 3-5 thin branches (widths sum to the vein, taper to 0, alpha fades) sinking into the city edge.
-// Data model kept for every consumer: rv.spurs = one proxy per (road, city): S.pts = full vessel path (split -> ... -> Q -> E -> into the
-// city), S.rib.w = that leg's flow width, S.rib.m = the road's artery mesh, S.cas.m = the city's vein mesh (NOWW hooks both materials).
-// Test hooks: VASC.flow(lens) = per-city flow table, VASC.info(), VASC.leaderPaths(id) (inbound vessel polylines for LEADFX motes, see CONFLICTS.md).
+// and hover all unchanged) but is only ~30 % of the flow-weighted route long; at its end the road's tree splits (fan-out at wide angular
+// gaps, else binary at the widest gap; next split at 42 % toward the sub-group's flow centroid). Children sit SIDE BY SIDE inside the
+// parent at the split and ease to their own centre lines -> one vessel visibly dividing. Curves are cubic (tangent-continuous at every
+// split) and relaxed away from city / lake discs (SCN). One merged mesh per road.
+// Veins: every branch heading to a city ends at that city's confluence point Q (Lv outside the city edge, on the side its flow comes
+// from) side by side in arrival order; Q -> city edge = ONE vein, width = sum of inflows = .145 u x the ending share, each road's colour
+// kept as a proportional strand. Capillaries: at the edge the vein splits into 2-5 branches that run ALONG the city rim (r13: were
+// pointing into the city, over the buildings) and fade out.
+// r13 V2 display rules (owner 11-17; the numbers in VASC.flow / hover / cards stay exact):
+//  - leaf floor V.VF (.42 u ~ 2.6 px at world zoom); an internal edge = sum of its children (never narrower than its kids), the trunk
+//    keeps its honest road width for its first ~30 % and widens to the sum of its branches at the first split; a leaf eases from its
+//    floored width to its honest strand in the vein over its last half (vein = honest share, floored at V.VF for the smallest endings).
+//  - flows < V.VT (.3 pp) are not drawn as branches (no hairlines) and do not shape the partition (fewer, bolder branch levels).
+//  - per-road trunk heading offset + first-split length from a crossing minimiser (VASC.opt(), table vascOptT; ?vopt=0 = r12 layout).
+// Data model kept for every consumer: rv.spurs = one proxy per (road, city): S.pts = full vessel path (split -> ... -> Q -> vein -> rim),
+// S.ib = trunk index where a back-branch leaves (null = trunk end), S.rib.w = that leg's honest flow width, S.rib.m = the road's artery
+// mesh, S.cas.m = the city's vein mesh (NOWW hooks both materials).
+// Test hooks: VASC.flow(lens), VASC.info(), VASC.metrics(), VASC.opt(), VASC.leaderPaths(id) (LEADFX motes, see CONFLICTS.md).
 var VASC; // filled by vascRoot() during the fa4_build road loop; never initialise it here (this file is concatenated after fa4_build)
 function vascPush(V,p,ex,pad){for(let it=0;it<3;it++)for(const s of V.obst){if(ex&&Math.hypot(s.X-ex[0],s.Z-ex[1])<1)continue;const dx=p[0]-s.X,dz=p[1]-s.Z,d=Math.hypot(dx,dz)||1e-3,R=s.r+pad;if(d<R){p[0]=s.X+dx/d*R;p[1]=s.Z+dz/d*R;}}return p;}
-function vascLayout(){const q=new URLSearchParams(location.search);
- const V={on:true,cities:{},roads:{},VF:.09,vb:q.has('vb')?+q.get('vb'):1.2,back:(q.has('vbk')?+q.get('vbk'):100)*Math.PI/180,ub:q.has('vub')?+q.get('vub'):.4,ls:q.has('vls')?+q.get('vls'):.55,reaim:q.get('vre')!=='0',fan:(q.has('vfan')?+q.get('vfan'):45)*Math.PI/180,lv:q.has('vlv')?+q.get('vlv'):.32,lvx:q.has('vlvx')?+q.get('vlvx'):14};
+// r13: [trunk heading offset in degrees, first-split length factor] per road, found by VASC.opt() on the b2 T4 build (see PREVIEW_NOTES r13)
+function vascOptT(){return{R1:[-18,.6],R2:[-36,.6],R3:[-18,.6],R4:[18,1.1],R5:[54,.6],R6:[-18,.6]};} // R5 54 (opt 36) by hand: keeps its R-tag off the NOW leader
+function vascLayout(){const q=new URLSearchParams(location.search),n=(k,d)=>q.has(k)?+q.get(k):d;
+ const V={on:true,cities:{},roads:{},VF:n('vfl',.48),VT:n('vvt',.3),lsMin:n('vlsm',18),vb:n('vb',1.2),back:n('vbk',100)*Math.PI/180,ub:n('vub',.4),ls:n('vls',.55),reaim:q.get('vre')!=='0',fan:n('vfan',45)*Math.PI/180,lv:n('vlv',.42),lvx:n('vlvx',18),yb:n('vyb',.2),OPT:q.get('vopt')==='0'?{}:vascOptT()};
+ for(const s of(q.get('vo')||'').split(',').filter(Boolean)){const [r,a,l]=s.split(':');V.OPT[r]=[+a||0,+l||1];} // test override ?vo=R5:54:.6
+ // flow weight (pp) of road r into city id at the page-load state (latest week, pooled); used for layout only, widths follow every state
+ V.wt=(r,id)=>{try{const v=curP.src[id][r.id];if(v!=null)return +v;}catch(e){}return(+((r.f[id]||[])[0])||.1)*15;};
  V.obst=SCN.filter(s=>!(Math.abs(s.X-NOW.X)<1e-6&&Math.abs(s.Z-NOW.Z)<1e-6)); // city footprints + lakes (the NOW plaza is the root)
  const used=new Set();for(const r of RD6)for(const id in (r.f||{}))if(byId[id])used.add(id);
  for(const id of used)vascCity(V,id,NOW.X,NOW.Z);
  return V;}
-// city entry: the vein comes in from target point (ax,az) (first NOW; vascBuild re-aims it at the flow-weighted mean of its feeders' splits)
+// city entry: the vein comes in from target point (ax,az) (first NOW; vascReaim re-aims it at the flow-weighted mean of its feeders' splits)
 function vascCity(V,id,ax,az){const o=byId[id],G=G1GEN[id],RR=G?(G.cR||G.R):o.w*100*.62*(SCALE[id]||1);
   let a0=Math.atan2(az-o.Z,ax-o.X);if(G&&G.gate4)a0=Math.round(a0/(Math.PI/2))*(Math.PI/2); // gatekeeper: enter by an avenue gate
   const ux=Math.cos(a0),uz=Math.sin(a0),k=G?(G.dome?.97*1.035:G.gate4?1.0:.9):1,er=o.twin&&G?G.R*.76:RR*k;
   const E=[o.X+ux*er,o.Z+uz*er],dN=Math.hypot(ax-E[0],az-E[1]);let Lv=clamp(V.lv*dN,4,V.lvx),Q;
   for(;;){Q=[E[0]+ux*Lv,E[1]+uz*Lv];if(Lv<=3||!V.obst.some(s=>Math.hypot(s.X-o.X,s.Z-o.Z)>1&&Math.hypot(Q[0]-s.X,Q[1]-s.Z)<s.r+.8))break;Lv-=.5;}
-  const C=V.cities[id]||(V.cities[id]={id,o,RR,inb:[],own:[o.X,o.Z],W:0});Object.assign(C,{ux,uz,E,Q,Lv});return C;}
-// called from the fa4_build road loop instead of FP[r.id]: the artery root end (= first split)
-function vascRoot(r){if(!VASC)VASC=vascLayout();const V=VASC,ids=Object.keys(r.f||{}).filter(id=>V.cities[id]);
- let cx=0,cz=0,tw=0,dm=0;for(const id of ids){const c=V.cities[id],w=+((r.f[id]||[])[0])||.1;cx+=c.Q[0]*w;cz+=c.Q[1]*w;tw+=w;dm+=Math.hypot(c.Q[0]-NOW.X,c.Q[1]-NOW.Z)*w;}
+  const C=V.cities[id]||(V.cities[id]={id,o,RR,inb:[],own:[o.X,o.Z],W:0});Object.assign(C,{ux,uz,E,Q,Lv,a0,er,rim:o.twin&&G?G.R*.8:RR*1.05});return C;}
+function vascReaim(V){if(!V.reaim)return;for(const id in V.cities){let x=0,z=0,t=0;for(const rid in V.roads){const R=V.roads[rid];if(!(R.r.f||{})[id])continue;const w=V.wt(R.r,id)+.01;x+=R.S1[0]*w;z+=R.S1[1]*w;t+=w;}
+  if(t>0)vascCity(V,id,(x/t)*.7+NOW.X*.3,(z/t)*.7+NOW.Z*.3);}}
+// trunk end (= first split) for heading offset da (deg) and length factor lm
+function vascS1(V,r,ids,da,lm){let cx=0,cz=0,tw=0,dm=0;for(const id of ids){const c=V.cities[id],w=V.wt(r,id)+.01;cx+=c.Q[0]*w;cz+=c.Q[1]*w;tw+=w;dm+=Math.hypot(c.Q[0]-NOW.X,c.Q[1]-NOW.Z)*w;}
  cx/=tw;cz/=tw;dm/=tw;const fp=FP[r.id];let fx=fp[0]-NOW.X,fz=fp[1]-NOW.Z;const fl=Math.hypot(fx,fz)||1;fx/=fl;fz/=fl;
  let gx=cx-NOW.X,gz=cz-NOW.Z;const gl=Math.hypot(gx,gz)||1;gx/=gl;gz/=gl;let dx=fx+V.vb*gx,dz=fz+V.vb*gz;const dl=Math.hypot(dx,dz)||1;dx/=dl;dz/=dl;
- const Ls=clamp(V.ls*dm,9,26),S1=vascPush(V,[NOW.X+dx*Ls,NOW.Z+dz*Ls],null,1);V.roads[r.id]={r,ids,S1,dm,Ls};return S1;}
-function vascCurve(P0,d0,P1,d1,step){const L=Math.hypot(P1[0]-P0[0],P1[1]-P0[1]),cs=(d0[0]*(P1[0]-P0[0])+d0[1]*(P1[1]-P0[1]))/(L||1),a=L*.38*Math.max(.15,.5+.5*cs),b=L*.33,c1=[P0[0]+d0[0]*a,P0[1]+d0[1]*a],c2=[P1[0]-d1[0]*b,P1[1]-d1[1]*b];
+ const a=(da||0)*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),rx=dx*ca-dz*sa,rz=dx*sa+dz*ca;
+ const Ls=clamp(V.ls*(lm||1)*dm,V.lsMin,30);return{S1:vascPush(V,[NOW.X+rx*Ls,NOW.Z+rz*Ls],null,1),dm,Ls};}
+// called from the fa4_build road loop instead of FP[r.id]: the artery root end (= first split)
+function vascRoot(r){if(!VASC)VASC=vascLayout();const V=VASC,ids=Object.keys(r.f||{}).filter(id=>V.cities[id]);const o=V.OPT[r.id]||[0,1];
+ const s=vascS1(V,r,ids,o[0],o[1]);V.roads[r.id]={r,ids,S1:s.S1,dm:s.dm,Ls:s.Ls};return s.S1;}
+// same trunk polyline as the fa4_build road loop (used by the optimiser before any mesh exists)
+function vascTP(B){const A=[NOW.X,NOW.Z],dx=B[0]-A[0],dz=B[1]-A[1],L=Math.hypot(dx,dz),ux=dx/L,uz=dz/L,A2=[A[0]+ux*1.1,A[1]+uz*1.1],C=[(A2[0]+B[0])/2-uz*L*.06,(A2[1]+B[1])/2+ux*L*.06];return bez(A2,C,B,.5);}
+function vascCurve(P0,d0,P1,d1,step,bk){const L=Math.hypot(P1[0]-P0[0],P1[1]-P0[1]),cs=(d0[0]*(P1[0]-P0[0])+d0[1]*(P1[1]-P0[1]))/(L||1),a=L*.38*Math.max(.15,.5+.5*cs),b=L*(bk||.33),c1=[P0[0]+d0[0]*a,P0[1]+d0[1]*a],c2=[P1[0]-d1[0]*b,P1[1]-d1[1]*b];
  const N=Math.max(4,Math.ceil(L*1.15/(step||.8))),p=[];for(let i=0;i<=N;i++){const t=i/N,m=1-t;p.push([m*m*m*P0[0]+3*m*m*t*c1[0]+3*m*t*t*c2[0]+t*t*t*P1[0],m*m*m*P0[1]+3*m*m*t*c1[1]+3*m*t*t*c2[1]+t*t*t*P1[1]]);}return p;}
 // keep vessels off city / lake discs: push interior points out, smooth, repeat (ends + end tangents fixed)
 function vascRelax(V,p,ex){const n=p.length;if(n<7)return p;for(let it=0;it<7;it++){for(let i=2;i<n-2;i++)vascPush(V,p[i],ex,1.6);if(it<6)for(let i=2;i<n-2;i++)p[i]=[(p[i-1][0]+2*p[i][0]+p[i+1][0])/4,(p[i-1][1]+2*p[i][1]+p[i+1][1])/4];}return p;}
-// destinations sorted by signed angle around heading d at S (ascending = ascending ribbon-normal side), cut at the largest angular gap
-function vascPart(V,S,d,ids){const a=ids.map(id=>{const c=V.cities[id],vx=c.Q[0]-S[0],vz=c.Q[1]-S[1];return[id,Math.atan2(d[0]*vz-d[1]*vx,d[0]*vx+d[1]*vz)];}).sort((x,y)=>x[1]-y[1]);
+// destinations sorted by signed angle around heading d at S (ascending = ascending ribbon-normal side). r13: only VISIBLE flows (>= V.VT pp)
+// decide the cuts (fan-out at every gap > V.fan, else binary at the widest gap); tiny flows become zero-width singleton groups at their angle
+function vascPart(V,S,d,ids,R){const a=ids.map(id=>{const c=V.cities[id],vx=c.Q[0]-S[0],vz=c.Q[1]-S[1];return[id,Math.atan2(d[0]*vz-d[1]*vx,d[0]*vx+d[1]*vz)];}).sort((x,y)=>x[1]-y[1]);
  if(a.length<2)return[a.map(e=>e[0])];
- // fan out at every angular gap wider than V.fan (no detour for a destination far off the common heading); else binary at the widest gap
- const cuts=[];for(let i=0;i<a.length-1;i++)if(a[i+1][1]-a[i][1]>V.fan)cuts.push(i);
- if(!cuts.length){let bi=0,bg=-1;for(let i=0;i<a.length-1;i++){const g=a[i+1][1]-a[i][1];if(g>bg){bg=g;bi=i;}}cuts.push(bi);}
- const out=[];let s=0;for(const c of cuts){out.push(a.slice(s,c+1).map(e=>e[0]));s=c+1;}out.push(a.slice(s).map(e=>e[0]));return out.filter(g=>g.length);}
+ let B=a.filter(e=>V.wt(R.r,e[0])>=V.VT);if(!B.length)B=a;const tiny=a.filter(e=>!B.includes(e));
+ const cuts=[];for(let i=0;i<B.length-1;i++)if(B[i+1][1]-B[i][1]>V.fan)cuts.push(i);
+ if(!cuts.length&&B.length>1){let bi=0,bg=-1;for(let i=0;i<B.length-1;i++){const g=B[i+1][1]-B[i][1];if(g>bg){bg=g;bi=i;}}cuts.push(bi);}
+ const out=[];let s=0;for(const c of cuts){out.push(B.slice(s,c+1));s=c+1;}out.push(B.slice(s));for(const t of tiny)out.push([t]);
+ return out.filter(g=>g.length).sort((x,y)=>x[0][1]-y[0][1]).map(g=>g.map(e=>e[0]));}
 function vascNode(V,R,P0,d0,ids,u0,path,dep){const e={R,P0,ids,kids:[],leaf:null,u0,dep,f:0,dw:0,o0:0,o1:0};let S=null,d1=null;
- if(ids.length===1){const c=V.cities[ids[0]];e.leaf=ids[0];e.pts=vascRelax(V,vascCurve(P0,d0,c.Q,[-c.ux,-c.uz]),c.own);}
- else{let gx=0,gz=0,tw=0;for(const id of ids){const c=V.cities[id],w=+((R.r.f[id]||[])[0])||.1;gx+=c.Q[0]*w;gz+=c.Q[1]*w;tw+=w;}gx/=tw;gz/=tw;
+ if(ids.length===1){const c=V.cities[ids[0]];e.leaf=ids[0];e.pts=vascRelax(V,vascCurve(P0,d0,c.Q,[-c.ux,-c.uz],.8,V.yb),c.own);}
+ else{let gx=0,gz=0,tw=0;for(const id of ids){const c=V.cities[id],w=V.wt(R.r,id)+.01;gx+=c.Q[0]*w;gz+=c.Q[1]*w;tw+=w;}gx/=tw;gz/=tw;
   S=vascPush(V,[P0[0]+(gx-P0[0])*.42,P0[1]+(gz-P0[1])*.42],null,1.2);const ax=S[0]-P0[0],az=S[1]-P0[1],al=Math.hypot(ax,az)||1,bx=gx-S[0],bz=gz-S[1],bl=Math.hypot(bx,bz)||1;
   d1=[ax/al+bx/bl,az/al+bz/bl];const dl=Math.hypot(d1[0],d1[1])||1;d1=[d1[0]/dl,d1[1]/dl];e.pts=vascRelax(V,vascCurve(P0,d0,S,d1),null);}
  let L=0;for(let i=1;i<e.pts.length;i++)L+=Math.hypot(e.pts[i][0]-e.pts[i-1][0],e.pts[i][1]-e.pts[i-1][1]);e.len=L;
  const P=path.concat(e.pts.slice(1));R.edges.push(e);
- if(e.leaf){e.path=P;R.leaves.push(e);}else for(const g of vascPart(V,S,d1,ids))e.kids.push(vascNode(V,R,S,d1,g,u0+L,P,dep+1));
+ if(e.leaf){e.path=P;R.leaves.push(e);}else for(const g of vascPart(V,S,d1,ids,R))e.kids.push(vascNode(V,R,S,d1,g,u0+L,P,dep+1));
  return e;}
+// the road's branch tree for trunk polyline tp (pure geometry: used by vascBuild and by the optimiser)
+function vascTree(V,R,tp){R.edges=[];R.leaves=[];const n=tp.length;let T0=0;for(let i=1;i<n;i++)T0+=Math.hypot(tp[i][0]-tp[i-1][0],tp[i][1]-tp[i-1][1]);
+ let d0=[tp[n-1][0]-tp[n-2][0],tp[n-1][1]-tp[n-2][1]];const l=Math.hypot(d0[0],d0[1])||1;d0=[d0[0]/l,d0[1]/l];R.T0=T0;
+ const fwd=[],back=[];for(const id of R.ids){const c=V.cities[id],vx=c.Q[0]-R.S1[0],vz=c.Q[1]-R.S1[1];((d0[0]*vx+d0[1]*vz)/(Math.hypot(vx,vz)||1)<Math.cos(V.back)?back:fwd).push(id);}
+ if(!fwd.length)fwd.push(...back.splice(0));
+ R.kids=vascPart(V,R.S1,d0,fwd,R).map(g=>vascNode(V,R,R.S1,d0,g,T0,[R.S1.slice()],1));
+ // destinations BEHIND the split (> V.back off the heading) leave the trunk early from its side at V.ub of its length (no U-turn loop)
+ R.bk=null;R.ib=null;if(back.length){const ib=clamp(Math.round((n-1)*V.ub),1,n-2),Pb=tp[ib].slice();let bx=tp[ib+1][0]-tp[ib-1][0],bz=tp[ib+1][1]-tp[ib-1][1];const bl=Math.hypot(bx,bz)||1;bx/=bl;bz/=bl;
+  let gx=0,gz=0;for(const id of back){gx+=V.cities[id].Q[0];gz+=V.cities[id].Q[1];}gx=gx/back.length-Pb[0];gz=gz/back.length-Pb[1];R.bs=Math.sign(bx*gz-bz*gx)||1;
+  let T=0;for(let i=1;i<=ib;i++)T+=Math.hypot(tp[i][0]-tp[i-1][0],tp[i][1]-tp[i-1][1]);R.ubT=T/T0;R.ib=ib;const e0=R.edges.length;R.bk=vascNode(V,R,Pb,[bx,bz],back,T,[Pb.slice()],1);
+  for(let i=e0;i<R.edges.length;i++)R.edges[i].bk=1;}}
 // (shader sources are returned by functions: vascBuild runs from fa4_build BEFORE this file's top level, so no top-level const here)
 function vascVS(){return 'attribute vec2 aK;varying vec2 vU;varying vec2 vK;void main(){vU=uv;vK=aK;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';}
 // vein / capillary material: per-road colour strands (band i = [uB[i], uB[i+1]) across the vein), thin darker seams between strands,
 // 1 px pale rails, flow dashes like the trunks; capillaries (aK.y = 1) use the flow-weighted mix colour and fade out (aK.x).
+// r13 (owner: selection was overexposed): lit = +30 % bed alpha, +12 % toward white, rails a little paler; the lit output is capped
+// below the bloom threshold (max channel x alpha <= .62 bed / .74 rails), dashes no longer whiten when lit. Rest state unchanged.
 function vascFS(){return `uniform vec3 uCs[6];uniform float uB[7];uniform float uFs[6];uniform vec3 uMix,uDim;uniform float uFm,uT,uOp,uRM,uFK;varying vec2 vU;varying vec2 vK;
  float h1(float n){return fract(sin(n*12.9898)*43758.5453);}
  void main(){float y=vU.y;vec3 c=uCs[0];float f=uFs[0];for(int i=1;i<6;i++){if(y>=uB[i]){c=uCs[i];f=uFs[i];}}
   float cap=step(.5,vK.y);if(cap>.5){c=uMix;f=uFm;}
-  float lit=max(f,0.),dim=max(-f,0.);c=mix(c*(1.+.2*lit),uDim,dim);
-  float fy=max(fwidth(vU.y),1e-5);float ypx=(vU.y-.5)/fy,hw=.5/fy;float rail=1.-smoothstep(0.,1.,hw-abs(ypx)-.2);
-  float a=min(1.,mix(.35,.75,lit)*uFK)*mix(1.,.4,dim);float sep=0.;
+  float lit=max(f,0.),dim=max(-f,0.);c=mix(mix(c,vec3(1.),.12*lit),uDim,dim);
+  float fy=max(fwidth(vU.y),1e-5);float ypx=(vU.y-.5)/fy,hw=.5/fy;float rail=1.-smoothstep(0.,1.,hw-abs(ypx)-.2);float th=1.-smoothstep(2.,5.,hw); // th = thin ribbon (< ~6 px): no pale rails, denser saturated bed
+  float a=min(1.,max(.35*uFK*(1.+.3*lit),.8*th))*mix(1.,.4,dim);float sep=0.;
   for(int i=1;i<6;i++){if(uB[i]>.001&&uB[i]<.999){float d=abs(y-uB[i])/fy;sep=max(sep,1.-smoothstep(.4,1.2,d));}}
-  vec3 col=mix(c,c*.35,sep*.85*(1.-cap));
-  if(rail>.01){col=mix(c,vec3(1.),.22*(1.-dim));a=max(a,mix(.95,.5,dim)*rail);}
-  else if(uRM>.5){float ln=floor(ypx/6.+.5);float ly=ypx-ln*6.;float s=fract((vU.x-uT*3.8+h1(ln)*7.)/3.5);if(abs(ly)<.75&&s<.27&&abs(ypx)<hw-2.){col=mix(col,vec3(1.),.4);a=max(a,.55);}}
-  gl_FragColor=vec4(col,a*vK.x*uOp);}`;}
+  vec3 col=mix(c,c*.35,sep*.85*(1.-cap));float ck=mix(9.,.62,lit);
+  if(rail>.01){col=mix(c,vec3(1.),(.22+.05*lit)*(1.-dim)*(1.-th));a=max(a,mix(.95,.5,dim)*rail);ck=mix(9.,.68,lit);}
+  else if(uRM>.5){float ln=floor(ypx/6.+.5);float ly=ypx-ln*6.;float s=fract((vU.x-uT*3.8+h1(ln)*7.)/3.5);if(abs(ly)<.75&&s<.27&&abs(ypx)<hw-2.){col=mix(col,vec3(1.),.4-.15*lit);a=max(a,.55);}}
+  a*=vK.x*uOp;float m=max(col.r,max(col.g,col.b))*a;if(m>ck)col*=ck/m;
+  gl_FragColor=vec4(col,a);}`;}
 function vascStrip(B,pts,K,lift,u0,fade,mode){const n=pts.length,cum=[0],nx=[],nz=[];for(let i=1;i<n;i++)cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
  for(let i=0;i<n;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(n-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;nx.push(-dz/l);nz.push(dx/l);}
  const base=B.nv;for(let i=0;i<n;i++)for(let k=0;k<=K;k++){B.uv.push(u0+cum[i],k/K);B.aux.push(fade?fade(cum[i]/(cum[n-1]||1)):1,mode||0);}
@@ -1853,22 +1892,22 @@ function vascFin(B,mat,aux){const g=new THREE.BufferGeometry();B.pos=new Float32
 function vascSet(B,s,w0,w1,o0,o1,kc,t0,t1,kE){if(!s.cf)s.cf=screenComp(s.pts,s.nx,s.nz);const P=B.pos,K=s.K;if(kE==null)kE=kc;
  for(let i=0;i<s.n;i++){const u=s.cum[i]/s.len,w=w0+(w1-w0)*sm(t0,t1,u),of=o0*(1-sm(0,.4,u))+o1*sm(.6,1,u),cf=s.cf[i]*(kc+(kE-kc)*sm(.5,1,u)),x=s.pts[i][0],z=s.pts[i][1];
   for(let k=0;k<=K;k++){const o=((k/K-.5)*w+of)*cf,X=x+s.nx[i]*o,Z=z+s.nz[i]*o,j=(s.base+i*(K+1)+k)*3;P[j]=X;P[j+1]=hMesh(X,Z)+s.lift;P[j+2]=Z;}}}
+// capillaries of a city: from S0 (1 u before the city edge, on the vein) they run ALONG the rim (radius C.rim, outside the buildings),
+// nc = 2-5 by the vein width at page load (each >= ~2 px), plus a short fading centre twig when nc is odd; returns [{pts,wt,ctr}]
+function vascCaps(C,W0){const nc=clamp(Math.round(W0/.45),2,5),pairs=nc>>1,vx=-C.ux,vz=-C.uz,ox=C.o.X,oz=C.o.Z,S0=[C.E[0]+C.ux,C.E[1]+C.uz],out=[];
+ if(nc%2){const L=clamp(.22*C.RR,2.5,5),end=[C.E[0]+vx*L,C.E[1]+vz*L];out.push({pts:vascCurve(S0,[vx,vz],end,[vx,vz],.6),wt:1,ctr:1});}
+ for(let j=0;j<pairs;j++)for(const sg of[-1,1]){const ph=(pairs>1?.38+.42*j/(pairs-1):.55)*sg,a=C.a0+ph,R=C.rim,P=[ox+Math.cos(a)*R,oz+Math.sin(a)*R],td=[-Math.sin(a)*sg,Math.cos(a)*sg];
+  const pts=vascCurve(S0,[vx,vz],P,td,.6);const sp=(.35+.15*j)*sg;for(let i=1;i<=6;i++){const b=a+sp*i/6;pts.push([ox+Math.cos(b)*R,oz+Math.sin(b)*R]);}
+  out.push({pts,wt:1-.25*j,ctr:0,sg,j});}
+ // strand order across the vein (negative normal side first): sg -1 outer..inner, centre, sg +1 inner..outer
+ const nX=-vz,nZ=vx;out.forEach(c=>{const p=c.pts[c.pts.length-1];c.lat=(p[0]-C.E[0])*nX+(p[1]-C.E[1])*nZ;});out.sort((a,b)=>a.lat-b.lat);
+ const t=out.reduce((s,c)=>s+c.wt,0);for(const c of out)c.wt/=t;C.S0=S0;return out;}
 // called once from fa4_build after the six trunks exist (rv.tp ends at the vascRoot split)
 function vascBuild(){const V=VASC;if(!V)return;const mk=()=>({nv:0,pos:null,uv:[],aux:[],idx:[],S:[]});
- // re-aim every city's vein at where its flow comes from (flow-weighted mean of the feeding roads' first splits, pulled 30 % toward NOW)
- if(V.reaim)for(const id in V.cities){let x=0,z=0,t=0;for(const rid in V.roads){const R=V.roads[rid],f=R.r.f[id];if(!f)continue;const w=+(f[0])||.1;x+=R.S1[0]*w;z+=R.S1[1]*w;t+=w;}
-  if(t>0)vascCity(V,id,(x/t)*.7+NOW.X*.3,(z/t)*.7+NOW.Z*.3);}
- for(const rv of ROADV){const R=V.roads[rv.r.id];if(!R)continue;R.rv=rv;R.edges=[];R.leaves=[];const tp=rv.tp,n=tp.length;let T0=0;for(let i=1;i<n;i++)T0+=Math.hypot(tp[i][0]-tp[i-1][0],tp[i][1]-tp[i-1][1]);
-  let d0=[tp[n-1][0]-tp[n-2][0],tp[n-1][1]-tp[n-2][1]];const l=Math.hypot(d0[0],d0[1])||1;d0=[d0[0]/l,d0[1]/l];R.T0=T0;
-  const fwd=[],back=[];for(const id of R.ids){const c=V.cities[id],vx=c.Q[0]-R.S1[0],vz=c.Q[1]-R.S1[1];((d0[0]*vx+d0[1]*vz)/(Math.hypot(vx,vz)||1)<Math.cos(V.back)?back:fwd).push(id);}
-  if(!fwd.length)fwd.push(...back.splice(0));
-  R.kids=vascPart(V,R.S1,d0,fwd).map(g=>vascNode(V,R,R.S1,d0,g,T0,[R.S1.slice()],1));
-  // destinations BEHIND the split (> V.back off the heading) leave the trunk early from its side at V.ub of its length (no U-turn loop);
-  // the trunk then narrows by their flow (rv.trunk.prof), so flow stays conserved
-  R.bk=null;if(back.length){const ib=clamp(Math.round((n-1)*V.ub),1,n-2),Pb=tp[ib].slice();let bx=tp[ib+1][0]-tp[ib-1][0],bz=tp[ib+1][1]-tp[ib-1][1];const bl=Math.hypot(bx,bz)||1;bx/=bl;bz/=bl;
-   let gx=0,gz=0;for(const id of back){gx+=V.cities[id].Q[0];gz+=V.cities[id].Q[1];}gx=gx/back.length-Pb[0];gz=gz/back.length-Pb[1];R.bs=Math.sign(bx*gz-bz*gx)||1;
-   let T=0;for(let i=1;i<=ib;i++)T+=Math.hypot(tp[i][0]-tp[i-1][0],tp[i][1]-tp[i-1][1]);R.ubT=T/T0;R.bk=vascNode(V,R,Pb,[bx,bz],back,T,[Pb.slice()],1);
-   R.k=0;R.kE=1;rv.trunk.prof=u=>(1-R.k*sm(R.ubT-.05,R.ubT+.05,u))*(u<.86?1:1-(1-R.kE)*sm(.86,1,u));}
+ vascReaim(V); // re-aim every city's vein at where its flow comes from (flow-weighted mean of the feeding roads' first splits, 30 % toward NOW)
+ for(const rv of ROADV){const R=V.roads[rv.r.id];if(!R)continue;R.rv=rv;vascTree(V,R,rv.tp);
+  // trunk profile: honest road width for the first 30 %, then widens to the sum of its branches (R.Ra) and narrows by a back branch (R.kb)
+  R.Ra=1;R.kb=0;const pf=u=>1+(R.Ra-1)*sm(.3,1,u)-(R.kb?R.kb*sm(R.ubT-.05,R.ubT+.05,u):0);rv.trunk.prof=pf;
   const ri=RD6.indexOf(rv.r),B=mk();R.B=B;for(const e of R.edges)e.s=vascStrip(B,e.pts,4,.105+ri*.012,e.u0,null,0);
   const mat=neonMat(rv.r.c,0,1,rv.r.cl);mat.uniforms.uFK.value=1.5;rv.mats.push(mat);vascFin(B,mat,false);
   for(const e of R.edges)ROADPTS.push({a:rv.r.id,b:e.leaf||'',pts:e.pts});
@@ -1876,67 +1915,90 @@ function vascBuild(){const V=VASC;if(!V)return;const mk=()=>({nv:0,pos:null,uv:[
  const dim=new THREE.Color(.227,.251,.282);
  for(const id in V.cities){const C=V.cities[id];if(!C.inb.length){delete V.cities[id];continue;}const vx=-C.ux,vz=-C.uz,nX=-vz,nZ=vx; // vein heading into the city + its ribbon normal
   for(const e of C.inb){const p=e.pts[Math.floor(e.pts.length*.65)];e.lat=(p[0]-C.Q[0])*nX+(p[1]-C.Q[1])*nZ;}C.inb.sort((a,b)=>a.lat-b.lat);C.inb=C.inb.slice(0,6);
-  const B=mk();C.B=B;const vp=[],N=Math.max(3,Math.ceil(C.Lv/.7));for(let i=0;i<=N;i++){const t=i/N;vp.push([C.Q[0]+(C.E[0]-C.Q[0])*t,C.Q[1]+(C.E[1]-C.Q[1])*t]);}C.vpts=vp;
+  let W0=0;for(const e of C.inb)W0+=.145*V.wt(e.R.r,id);W0=Math.max(V.VF,W0);
+  const B=mk();C.B=B;C.caps=vascCaps(C,W0);const vp=[],N=Math.max(3,Math.ceil((C.Lv-1)/.7));for(let i=0;i<=N;i++){const t=i/N;vp.push([C.Q[0]+(C.S0[0]-C.Q[0])*t,C.Q[1]+(C.S0[1]-C.Q[1])*t]);}C.vpts=vp;
   const u0=Math.max(...C.inb.map(e=>e.u0+e.len));C.vs=vascStrip(B,vp,6,.13,u0,null,0);
-  const nc=clamp(C.inb.length+1,3,5),sp=C.o.twin?1.05:.72,Lc=clamp(.55*C.RR,4,9);C.caps=[];
-  for(let i=0;i<nc;i++){const th=-sp+2*sp*i/(nc-1),ca=Math.cos(th),sa=Math.sin(th),dx=vx*ca-vz*sa,dz=vx*sa+vz*ca,c2=Math.cos(th*1.3),s2=Math.sin(th*1.3),L=Lc*(1-.2*Math.abs(th)/sp);
-   const end=[C.E[0]+dx*L,C.E[1]+dz*L],pts=vascCurve(C.E,[vx,vz],end,[vx*c2-vz*s2,vx*s2+vz*c2],.6);
-   C.caps.push({th,wt:1-.35*Math.abs(th)/sp,pts,s:vascStrip(B,pts,2,.12,u0+C.Lv,u=>1-sm(.5,1,u),1)});}
-  const wt=C.caps.reduce((s,c)=>s+c.wt,0);for(const c of C.caps)c.wt/=wt;
+  for(const cp of C.caps)cp.s=vascStrip(B,cp.pts,2,.12,u0+C.Lv,cp.ctr?(u=>1-sm(.4,1,u)):(u=>1-sm(.7,1,u)),1);
   const U={uCs:{value:[0,1,2,3,4,5].map(i=>{const e=C.inb[i];return new THREE.Color(e?e.R.r.c:'#888').multiplyScalar(LOOK.roadK);})},uB:{value:[0,1.01,1.01,1.01,1.01,1.01,1.01]},uFs:{value:[0,0,0,0,0,0]},
    uMix:{value:new THREE.Color()},uDim:{value:dim},uFm:{value:0},uT:TU.uT,uOp:{value:1},uRM:{value:RMOT},uFK:{value:1.8}};
   C.mat=new THREE.ShaderMaterial({uniforms:U,vertexShader:vascVS(),fragmentShader:vascFS(),transparent:true,depthWrite:false,blending:THREE.NormalBlending,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
   vascFin(B,C.mat,true);ROADPTS.push({a:'vein',b:id,pts:vp});
-  const mid=C.caps[Math.floor(C.caps.length/2)];
+  const mid=C.caps.find(c=>c.ctr)||C.caps[0];
   for(const e of C.inb){const pts=e.path.concat(vp.slice(1),mid.pts.slice(1,Math.max(2,Math.ceil(mid.pts.length*.5))));
-   e.R.rv.spurs.push({site:id,half:1,cliff:false,vasc:e,pts,rib:{w:0,lift:.1,m:e.R.B.m,set(){}},cas:{w:0,m:B.m,set(){}}});}}
+   e.R.rv.spurs.push({site:id,half:1,cliff:false,vasc:e,ib:e.bk?e.R.ib:null,pts,rib:{w:0,lift:.1,m:e.R.B.m,set(){}},cas:{w:0,m:B.m,set(){}}});}}
  // road focus (hover / selection): strands follow their road's uF; capillaries follow the focused inflow
  ANIM.push(()=>{for(const id in V.cities){const C=V.cities[id],U=C.mat.uniforms;let mx=-1,mn=1;C.inb.forEach((e,i)=>{const f=e.R.rv.mats[0].uniforms.uF.value;U.uFs.value[i]=f;mx=Math.max(mx,f);mn=Math.min(mn,f);});U.uFm.value=mx>0?mx:mn;}});}
 function vascWidths(st){const V=VASC,CM=!!(window.CMP&&CMP.on&&LCUR!=='pooled');if(CM)st=poolSt();V.st=st;
  for(const rv of ROADV){const R=V.roads[rv.r.id];if(!R||!R.B)continue;const w=st.w[rv.r.id],tw=RW(w);
-  for(const e of R.leaves){const v=((st.src[e.leaf]||{})[rv.r.id])||0;e.f=v<.05?0:.145*v;e.dw=e.f>0?Math.max(V.VF,e.f):0;e.o1=0;}
+  for(const e of R.leaves){const v=((st.src[e.leaf]||{})[rv.r.id])||0;e.f=v<V.VT?0:.145*v;e.dw=e.f>0?Math.max(V.VF,e.f):0;e.o1=0;}
   const dw=e=>e.leaf?e.dw:(e.dw=e.kids.reduce((s,k)=>s+dw(k),0)),D=R.kids.reduce((s,k)=>s+dw(k),0),Db=R.bk?dw(R.bk):0;R.D=D+Db;
   const lay=(kids,W)=>{let c=-W/2;for(const k of kids){k.o0=c+k.dw/2;c+=k.dw;if(!k.leaf)lay(k.kids,k.dw);}};lay(R.kids,D);
-  if(R.bk){R.k=clamp(Db/Math.max(tw,1e-6),0,.6);R.kE=clamp(D/Math.max(tw*(1-R.k),1e-6),.3,1);R.bk.o0=R.bs*Math.max(0,tw/2-Db/2);if(!R.bk.leaf)lay(R.bk.kids,R.bk.dw);}
+  R.Ra=clamp((D+Db)/Math.max(tw,1e-6),.3,3);R.kb=R.bk?clamp(Db/Math.max(tw,1e-6),0,2):0;
+  if(R.bk){const Wb=tw*(1+(R.Ra-1)*sm(.3,1,R.ubT));R.bk.o0=R.bs*Math.max(0,Wb/2-Db/2);if(!R.bk.leaf)lay(R.bk.kids,R.bk.dw);}
   rv.endR=clamp(D/Math.max(tw,1e-6),.3,1);rv.tcase.set(RW(rangeOf(w,'road',rv.r.id)[1]));rv.trunk.set(tw);if(rv.lane)rv.lane.set(.06,(R1Q-.5)*tw);
   rv.ghost.set(LCUR!=='pooled'&&!CM?RW(poolSt().w[rv.r.id]):0);for(const S of rv.spurs){S.rib.w=S.cas.w=S.vasc.f;}}
- for(const id in V.cities){const C=V.cities[id],U=C.mat.uniforms;let W=0;for(const e of C.inb)W+=e.f;C.W=W;let c=-W/2,kc=0;const mix=new THREE.Color(0,0,0);
-  C.inb.forEach((e,i)=>{e.o1=c+e.f/2;U.uB.value[i]=W>0?(c+W/2)/W:0;c+=e.f;kc+=(e.R.rv.kc||1)*e.f;if(W>0)mix.add(U.uCs.value[i].clone().multiplyScalar(e.f/W));});U.uB.value[0]=0;
+ for(const id in V.cities){const C=V.cities[id],U=C.mat.uniforms;let W=0;for(const e of C.inb)W+=e.f;C.W=W;const Wv=W>0?Math.max(V.VF,W):0,k=W>0?Wv/W:0;C.Wv=Wv;let c=-Wv/2,kc=0;const mix=new THREE.Color(0,0,0);
+  C.inb.forEach((e,i)=>{e.sw=e.f*k;e.o1=c+e.sw/2;U.uB.value[i]=Wv>0?(c+Wv/2)/Wv:0;c+=e.sw;kc+=(e.R.rv.kc||1)*e.f;if(W>0)mix.add(U.uCs.value[i].clone().multiplyScalar(e.f/W));});U.uB.value[0]=0;
   for(let i=C.inb.length;i<7;i++)U.uB.value[i]=1.01;U.uMix.value.copy(mix);C.kc=W>0?kc/W:1;}
  for(const rv of ROADV){const R=V.roads[rv.r.id];if(!R||!R.B)continue;const kc=rv.kc||1;
-  for(const e of R.edges){if(e.leaf){const C=V.cities[e.leaf];vascSet(R.B,e.s,e.dw,e.f,e.o0,e.o1,kc,.5,1,C.kc*(C.kp||1));}else vascSet(R.B,e.s,e.dw,e.dw,e.o0,0,kc,0,1);}
+  for(const e of R.edges){if(e.leaf){const C=V.cities[e.leaf];vascSet(R.B,e.s,e.dw,C?e.sw:e.f,e.o0,e.o1,kc,.5,1,C?C.kc*(C.kp||1):kc);}else vascSet(R.B,e.s,e.dw,e.dw,e.o0,0,kc,0,1);}
   R.B.g.attributes.position.needsUpdate=true;R.B.m.visible=R.D>.01;}
- for(const id in V.cities){const C=V.cities[id],W=C.W,kv=C.kc*(C.kp||1);vascSet(C.B,C.vs,W,W,0,0,kv,0,1);let c=-W/2;
-  for(const cp of C.caps){const cw=W*cp.wt;vascSet(C.B,cp.s,cw,cw*.3,c+cw/2,0,kv,.4,1);c+=cw;}C.B.g.attributes.position.needsUpdate=true;C.B.m.visible=W>.01;}}
+ for(const id in V.cities){const C=V.cities[id],W=C.Wv,kv=C.kc*(C.kp||1);vascSet(C.B,C.vs,W,W,0,0,kv,0,1);let c=-W/2;
+  for(const cp of C.caps){const cw=W*cp.wt;vascSet(C.B,cp.s,cw,cw*.65,c+cw/2,0,kv,.4,1);c+=cw;}C.B.g.attributes.position.needsUpdate=true;C.B.m.visible=W>.01;}}
 // called from calibRoads (world camera, after the trunk calibration): per-city factor so every vein shows tgt px per world unit
 // (screenComp alone left the veins .77-1.46 x the median px per share point); branch ends ease into it over their last half
 function vascCalib(tgt){const V=VASC;if(!V||!(tgt>0))return;const P=new THREE.Vector3(),Wd=innerWidth,Ht=innerHeight;
- for(const id in V.cities){const C=V.cities[id];if(!(C.W>.01))continue;const s=C.vs,K=s.K,g=C.B.pos,ws=[];
+ for(const id in V.cities){const C=V.cities[id];if(!(C.Wv>.01))continue;const s=C.vs,K=s.K,g=C.B.pos,ws=[];
   for(let i=Math.floor(s.n*.2);i<=Math.ceil(s.n*.8)&&i<s.n;i++){const a=(s.base+i*(K+1))*3,b=(s.base+i*(K+1)+K)*3;P.set(g[a],g[a+1],g[a+2]).project(CAM);const ax=P.x*Wd/2,ay=P.y*Ht/2;P.set(g[b],g[b+1],g[b+2]).project(CAM);ws.push(Math.hypot(ax-P.x*Wd/2,ay-P.y*Ht/2));}
-  ws.sort((x,y)=>x-y);const m=ws[ws.length>>1]/C.W;if(m>0)C.kp=clamp((C.kp||1)*tgt/m,.6,1.7);}}
+  ws.sort((x,y)=>x-y);const m=ws[ws.length>>1]/C.Wv;if(m>0)C.kp=clamp((C.kp||1)*tgt/m,.6,1.7);}}
+// segment-crossing helpers (layout metrics + optimiser): segs = [roadId, a, b, edgeKey]
+function vascX(a,b,c,d){const o=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);return o(a,b,c)*o(a,b,d)<0&&o(c,d,a)*o(c,d,b)<0;}
+function vascSegs(id,R,mode,tp){const s=[],vis=e=>e.leaf?(R.vw?R.vw(e):true):e.kids.some(vis);
+ for(const e of R.edges){if(mode&&!vis(e))continue;for(let i=0;i<e.pts.length-1;i+=2){const j=Math.min(e.pts.length-1,i+2);s.push([id,e.pts[i],e.pts[j],e]);}}
+ if(tp)for(let i=6;i<tp.length-1;i+=2){const j=Math.min(tp.length-1,i+2);s.push([id,tp[i],tp[j],'T'+id]);}return s;}
 // ---- test hooks / API ----
 function vascApi(){const V=VASC;if(!V)return;
  V.leaderPaths=id=>{const o=[];for(const rv of ROADV)for(const S of rv.spurs)if(S.site===id&&S.rib.w>0)o.push({rid:rv.r.id,w:S.rib.w,pts:S.pts});return o.sort((a,b)=>b.w-a.w);}; // S.pts = NOWW-warped copy while the warp is on
  V.flow=lid=>{vascWidths(lid?pulls(day,lid):curP);const st=V.st,P=new THREE.Vector3(),Wd=innerWidth,Ht=innerHeight,rows=[]; // st = the state actually drawn (pooled in Compare)
   for(const id in V.cities){const C=V.cities[id],s=st.p[id]||0,i=C.vs.n>>1,K=C.vs.K,g=C.B.pos,a=(C.vs.base+i*(K+1))*3,b=(C.vs.base+i*(K+1)+K)*3;
    P.set(g[a],g[a+1],g[a+2]).project(CAM);const ax=P.x*Wd/2,ay=P.y*Ht/2;P.set(g[b],g[b+1],g[b+2]).project(CAM);const px=Math.hypot(ax-P.x*Wd/2,ay-P.y*Ht/2);
-   const roads={};for(const e of C.inb)if(e.f>0)roads[e.R.r.id]=+(e.f/.145).toFixed(2);
-   rows.push({id,share:+s.toFixed(2),veinU:+C.W.toFixed(3),ratio:s>0?+(C.W/(.145*s)).toFixed(4):null,px:+px.toFixed(1),pxPP:s>0?px/s:0,roads});}
+   const roads={};let hid=0;for(const e of C.inb){const v=((st.src[id]||{})[e.R.r.id])||0;if(e.f>0)roads[e.R.r.id]=+(e.f/.145).toFixed(2);else if(v>0)hid+=v;}
+   // ratio = honest vein (sum of drawn strands, .145 u/pp) / .145 x share; hidPP = flows under V.VT pp not drawn as branches (exact in hover/cards)
+   rows.push({id,share:+s.toFixed(2),veinU:+C.W.toFixed(3),veinDrawn:+C.Wv.toFixed(3),ratio:s>0?+((C.W+.145*hid)/(.145*s)).toFixed(4):null,hidPP:+hid.toFixed(2),px:+px.toFixed(1),pxPP:s>0?px/s:0,roads});}
   const md=rows.map(r=>r.pxPP).sort((x,y)=>x-y)[rows.length>>1];for(const r of rows){r.rPx=+(r.pxPP/md).toFixed(3);delete r.pxPP;}rows.sort((x,y)=>y.share-x.share);
-  setRoadWidths(curP);const rr=rows.filter(r=>r.ratio!=null).map(r=>r.ratio);return{lens:lid||LCUR,lead:rows[0].id,ratioMin:Math.min(...rr),ratioMax:Math.max(...rr),rows};};
- V.info=()=>{const roads={};for(const id in V.roads){const R=V.roads[id];const tot=R.T0+(R.leaves.length?R.leaves.reduce((s,e)=>s+e.path.length*0,0):0);
-   const pl=R.leaves.map(e=>e.u0+e.len+V.cities[e.leaf].Lv);
-   roads[id]={trunk:+R.T0.toFixed(1),meanRoute:+(pl.reduce((s,v)=>s+v,0)/pl.length).toFixed(1),splitAt:+(R.T0/(pl.reduce((s,v)=>s+v,0)/pl.length)).toFixed(2),edges:R.edges.length,leaves:R.leaves.length,depth:Math.max(...R.edges.map(e=>e.dep))};}
+  setRoadWidths(curP);const rr=rows.filter(r=>r.ratio!=null).map(r=>r.ratio),vw=rows.map(r=>r.veinDrawn);return{lens:lid||LCUR,lead:rows[0].id,leadWidest:rows[0].veinDrawn>=Math.max(...vw),ratioMin:Math.min(...rr),ratioMax:Math.max(...rr),rows};};
+ V.info=()=>{const roads={};for(const id in V.roads){const R=V.roads[id];const pl=R.leaves.map(e=>e.u0+e.len+V.cities[e.leaf].Lv);
+   roads[id]={trunk:+R.T0.toFixed(1),meanRoute:+(pl.reduce((s,v)=>s+v,0)/pl.length).toFixed(1),splitAt:+(R.T0/(pl.reduce((s,v)=>s+v,0)/pl.length)).toFixed(2),edges:R.edges.length,
+    drawn:R.edges.filter(e=>e.dw>0).length,leaves:R.leaves.length,depth:Math.max(...R.edges.map(e=>e.dep)),trunkU:+RW(curP.w[id]).toFixed(2),splitU:+R.D.toFixed(2),
+    leafU:R.leaves.filter(e=>e.dw>0).map(e=>e.leaf+':'+e.dw.toFixed(2)).join(' ')};}
   let tris=0;for(const id in V.roads)tris+=V.roads[id].B?V.roads[id].B.idx.length/3:0;for(const id in V.cities)tris+=V.cities[id].B.idx.length/3;
-  return{on:V.on,meshes:Object.keys(V.roads).length+Object.keys(V.cities).length,tris,roads};};
+  return{on:V.on,VF:V.VF,VT:V.VT,opt:V.OPT,meshes:Object.keys(V.roads).length+Object.keys(V.cities).length,tris,roads};};
  window.VASC=V;
- // layout metrics: route length / straight NOW->Q per leaf, crossings between different roads' artery edges, vessel points inside city/lake discs
- V.metrics=()=>{const segs=[];for(const id in V.roads){const R=V.roads[id];for(const e of R.edges)for(let i=0;i<e.pts.length-1;i+=2){const j=Math.min(e.pts.length-1,i+2);segs.push([id,e.pts[i],e.pts[j]]);}}
-  const X=(a,b,c,d)=>{const o=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);return o(a,b,c)*o(a,b,d)<0&&o(c,d,a)*o(c,d,b)<0;};
-  const cr={};let nc=0;for(let i=0;i<segs.length;i++)for(let j=i+1;j<segs.length;j++){if(segs[i][0]===segs[j][0])continue;if(X(segs[i][1],segs[i][2],segs[j][1],segs[j][2])){nc++;const k=[segs[i][0],segs[j][0]].sort().join('-');cr[k]=(cr[k]||0)+1;}}
-  let inside=0;const ins=[];for(const id in V.roads)for(const e of V.roads[id].edges)for(let i=2;i<e.pts.length-2;i++)for(const s of V.obst){if(e.leaf&&Math.hypot(s.X-V.cities[e.leaf].own[0],s.Z-V.cities[e.leaf].own[1])<1)continue;if(Math.hypot(e.pts[i][0]-s.X,e.pts[i][1]-s.Z)<s.r){inside++;if(ins.length<6)ins.push([id,e.leaf,+s.X.toFixed(0),+s.Z.toFixed(0)]);break;}}
+ // layout metrics. cross = r12 definition (all branch edges incl. undrawn, trunks excluded, segment hits); crossV = drawn branches only;
+ // crossT = drawn branches + trunks; pairs = distinct (edge, edge) pairs of different roads that intersect at least once (drawn + trunks)
+ V.metrics=()=>{const all=[],vis=[];for(const id in V.roads){const R=V.roads[id];R.vw=e=>e.dw>0;all.push(...vascSegs(id,R,0));vis.push(...vascSegs(id,R,1,R.rv&&(R.rv.tp0||R.rv.tp)));}
+  const cnt=S=>{let n=0;const by={};for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){if(S[i][0]===S[j][0])continue;if(vascX(S[i][1],S[i][2],S[j][1],S[j][2])){n++;const k=[S[i][0],S[j][0]].sort().join('-');by[k]=(by[k]||0)+1;}}return[n,by];};
+  const ka=cnt(all),kv=cnt(vis.filter(s=>typeof s[3]!=='string')),kt=cnt(vis);kt[2]=kt[1];
+  const pairs=new Set();for(let i=0;i<vis.length;i++)for(let j=i+1;j<vis.length;j++){if(vis[i][0]===vis[j][0])continue;if(vascX(vis[i][1],vis[i][2],vis[j][1],vis[j][2])){const a=typeof vis[i][3]==='string'?vis[i][3]:vis[i][0]+'>'+(vis[i][3].leaf||'n'+V.roads[vis[i][0]].edges.indexOf(vis[i][3])),b=typeof vis[j][3]==='string'?vis[j][3]:vis[j][0]+'>'+(vis[j][3].leaf||'n'+V.roads[vis[j][0]].edges.indexOf(vis[j][3]));pairs.add([a,b].sort().join('x'));}}
+  let inside=0;for(const id in V.roads)for(const e of V.roads[id].edges)for(let i=2;i<e.pts.length-2;i++)for(const s of V.obst){if(e.leaf&&Math.hypot(s.X-V.cities[e.leaf].own[0],s.Z-V.cities[e.leaf].own[1])<1)continue;if(Math.hypot(e.pts[i][0]-s.X,e.pts[i][1]-s.Z)<s.r){inside++;break;}}
   const wig=[];for(const id in V.roads){const R=V.roads[id];for(const e of R.leaves){const L=e.u0+e.len;const C=V.cities[e.leaf];wig.push([id,e.leaf,+(L/Math.hypot(C.Q[0]-NOW.X,C.Q[1]-NOW.Z)).toFixed(2)]);}}
-  wig.sort((a,b)=>b[2]-a[2]);return{cross:nc,crossBy:cr,inside,ins,wiggleTop:wig.slice(0,6),wiggleMean:+(wig.reduce((s,w)=>s+w[2],0)/wig.length).toFixed(2)};};}
+  wig.sort((a,b)=>b[2]-a[2]);return{cross:ka[0],crossV:kv[0],crossT:kt[0],pairs:pairs.size,crossBy:kt[2],inside,wiggleTop:wig.slice(0,4),wiggleMean:+(wig.reduce((s,w)=>s+w[2],0)/wig.length).toFixed(2)};};
+ // offline crossing minimiser (coordinate descent over per-road heading offset x first-split length; layout only, no meshes are rebuilt:
+ // reload the page afterwards). Score = crossings of the road's drawn branches + trunk with all other roads + 3 x points in city/lake
+ // discs + 12 x route overshoot (route / straight > 1.3). Returns the table to paste into vascOptT().
+ V.opt=(passes,das,lms)=>{const t0=performance.now();passes=passes||2;das=das||[-36,-27,-18,-9,0,9,18,27,36];lms=lms||[.45,.6,.75,.9,1.1];const ids=Object.keys(V.roads),P={};
+  for(const id of ids){const R=V.roads[id];P[id]=(V.OPT[id]||[0,1]).slice();R.vw=e=>V.wt(R.r,e.leaf)>=V.VT;}
+  const lay=id=>{const R=V.roads[id],o=vascS1(V,R.r,R.ids,P[id][0],P[id][1]);R.S1=o.S1;R.tpo=vascTP(o.S1);vascTree(V,R,R.tpo);R.sg=vascSegs(id,R,1,R.tpo);};
+  const pen=id=>{const R=V.roads[id];let p=0;for(const e of R.edges){if(!R.vw(e)&&e.leaf)continue;for(let i=2;i<e.pts.length-2;i++)for(const s of V.obst){if(e.leaf&&Math.hypot(s.X-V.cities[e.leaf].own[0],s.Z-V.cities[e.leaf].own[1])<1)continue;if(Math.hypot(e.pts[i][0]-s.X,e.pts[i][1]-s.Z)<s.r){p+=3;break;}}}
+   for(const e of R.leaves){if(!R.vw(e))continue;const C=V.cities[e.leaf],r=(e.u0+e.len)/Math.hypot(C.Q[0]-NOW.X,C.Q[1]-NOW.Z);if(r>1.3)p+=12*(r-1.3);}return p;};
+  const score=id=>{const A=V.roads[id].sg;let c=0;for(const j of ids){if(j===id)continue;for(const a of A)for(const b of V.roads[j].sg)if(vascX(a[1],a[2],b[1],b[2]))c++;
+    const ta=V.roads[id].tpo,tb=V.roads[j].tpo;for(let k=Math.floor(ta.length*.35);k<ta.length;k+=2)for(let m=Math.floor(tb.length*.35);m<tb.length;m+=2)if(Math.hypot(ta[k][0]-tb[m][0],ta[k][1]-tb[m][1])<3){c+=.5;break;}} // trunks running side by side leave no room for their R-tags
+   return c+pen(id);};
+  const total=()=>{let c=0,p=0;for(const id of ids){p+=pen(id);for(const j of ids){if(j<=id)continue;for(const a of V.roads[id].sg)for(const b of V.roads[j].sg)if(vascX(a[1],a[2],b[1],b[2]))c++;}}return{c,p:+p.toFixed(1)};};
+  for(const id of ids)lay(id);vascReaim(V);for(const id of ids)lay(id);const before=total(),log=[];
+  for(let ps=0;ps<passes;ps++){for(const id of ids){let best=null;for(const da of das)for(const lm of lms){P[id]=[da,lm];lay(id);const s=score(id);if(!best||s<best[0]-1e-9)best=[s,da,lm];}P[id]=[best[1],best[2]];lay(id);}
+   vascReaim(V);for(const id of ids)lay(id);log.push(total());}
+  return{before,after:log[log.length-1],log,table:JSON.stringify(P),ms:Math.round(performance.now()-t0)};};}
 
 // ======================= POST + FX (v4.4) =======================
 // L2 bloom: custom UnrealBloom-style pass (luminance high-pass -> 5-level mip chain of separable gaussian blurs -> weighted additive composite),
@@ -2537,14 +2599,14 @@ const MK=[]; // screen markers of this frame: {o,x,y}
 function drawMarker(g,o,x,y,t,st){const lead=o._lead,hov=HOV&&HOV.o===o,sel_=sel===o.id;const f=focusRoads();const fed=!f.length||f.some(r=>(st.src[o.id]||{})[r]>.3)||hov;
  const br=RMOT?(.85+.15*Math.sin(t*1.0472+o.ph)):.85; // 6 s breathe, 70..100 %
  const col=hov||sel_?TK.acc:lead?TK.lead:TK.mk;const al=(fed?1:.4)*(hov||sel_?1:br);
- g.save();g.translate(x,y);{const LK=leadK(o,t);o._LK=LK;if(LK!==1)g.scale(LK,LK);}g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1.5;g.lineCap='round';g.lineJoin='round'; // r9 U32: leading site 1.25x (disc/ring/gauge/glyph)
+ g.save();g.translate(x,y);{const LK=leadK(o,t);o._LK=LK;if(LK!==1)g.scale(LK,LK);}if(window.LEADFX&&LEADFX.back)LEADFX.back(g,o,al);g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1.5;g.lineCap='round';g.lineJoin='round'; // r9 U32: leading site 1.25x (disc/ring/gauge/glyph)
  // stem + ground dot (close-up only; world zoom draws the M2 drop line in layoutLabels)
  if(o._stem>0){g.globalAlpha=al*.55;gLine(g,[0,16,0,o._stem-2]);gDot(g,0,o._stem,2);}
  // share gauge (r2 U8): track + 10 faint ticks every 10 %; arc = central share of 100 % (min ~4 deg when non-zero); faint outer arc = range low..high
  g.save();g.globalAlpha=al*.55;g.strokeStyle='rgba(6,9,14,1)';g.lineWidth=4.2;gRing(g,0,0,16);g.restore(); // r4 U14: dark casing under the track so the bright arc separates from it over any terrain
  g.globalAlpha=al*.24;g.lineWidth=1;for(let i=0;i<10;i++){const a=-Math.PI/2+i*.62832;gLine(g,[Math.cos(a)*14.2,Math.sin(a)*14.2,Math.cos(a)*17.8,Math.sin(a)*17.8]);}
  // r7 U21: full thin white ring (track) on EVERY marker so every site reads at world zoom; the leading site gets a slightly bolder ring + a soft glow (nothing else)
- g.save();g.strokeStyle='#F4EFE3';g.globalAlpha=al*(lead?1:.92);g.lineWidth=lead?2.2:1.6;if(lead){g.shadowColor='rgba(244,232,205,.65)';g.shadowBlur=9;}gRing(g,0,0,16);g.restore();if(window.LEADFX)LEADFX.ring(g,o,al); // r11 S (D10b, owner of LEADFX = fa4_ui): leader breathing accent ring, cross-fades on leader change
+ g.save();g.strokeStyle='#F4EFE3';g.globalAlpha=al*(lead?1:.92);g.lineWidth=lead?2.2:1.6;if(lead){g.shadowColor='rgba(244,232,205,.65)';g.shadowBlur=9;}gRing(g,0,0,16);g.restore(); /* r13 L (owner of LEADFX = fa4_ui): LEADFX.back (bloom + dust) is drawn right after the marker scale, before the pin body; LEADFX.front (ring + glints) after the glyph; both cross-fade on leader change */
  const CMg=!!(window.CMP&&CMP.on&&LCUR!=='pooled'&&o._d!=null&&LCUR!=='pooled');
  if(!CMg){const rg=o._rg||rangeOf(o._c||0);if(Array.isArray(rg)&&rg.length>1){g.globalAlpha=al*.3;g.lineWidth=1;gRing(g,0,0,18.6,-Math.PI/2+clamp(rg[0]/100,0,1)*6.2832,-Math.PI/2+Math.max(clamp(rg[1]/100,0,1),clamp(rg[0]/100,0,1)+.011)*6.2832);}}
  // r7 U20: compare ON -> two concentric gauges: outer thin bone arc = Pooled share, inner bold brass arc = lens share (same 100 % scale, true values)
@@ -2553,7 +2615,7 @@ function drawMarker(g,o,x,y,t,st){const lead=o._lead,hov=HOV&&HOV.o===o,sel_=sel
  // v4.4 M1: every marker sends a soft ripple ring every 7 s (staggered phase per site; the leading site's ripple is stronger)
  if(RMOT){const q=((t+o.ph*1.115)%7)/2.2;if(q<1){g.save();g.lineWidth=1;g.globalAlpha=(lead?.42:.26)*(1-q)*al;gRing(g,0,0,16*(1+1.3*q));g.restore();}}
  if(sel_){g.globalAlpha=1;g.strokeStyle=TK.accH;g.lineWidth=1;for(const[sx,sy]of[[-1,-1],[1,-1],[-1,1],[1,1]])gLine(g,[sx*24,sy*18,sx*24,sy*24,sx*18,sy*24]);g.strokeStyle=col;}
- g.globalAlpha=al;g.lineWidth=1.5;{const SH=showOf(o,t);o._sh=SH.s;const ga=!RMOT?0:Math.max(SH.s,(hov||sel_)?1:lead&&!(view!=='world'&&focusO)?.7:view!=='world'?.6:.3);drawGlyph(g,o.id,t,ga,SH);}g.restore();} // r5 U16: per-icon animation (subtle at world zoom, full on hover/selection, off for reduced motion); r9 U31/U32: full strength + flourish during its title showcase, leader idles at .7
+ g.globalAlpha=al;g.lineWidth=1.5;{const SH=showOf(o,t);o._sh=SH.s;const ga=!RMOT?0:Math.max(SH.s,(hov||sel_)?1:lead&&!(view!=='world'&&focusO)?.7:view!=='world'?.6:.3);drawGlyph(g,o.id,t,ga,SH);}if(window.LEADFX&&LEADFX.front)LEADFX.front(g,o,al);g.restore();} // r5 U16: per-icon animation (subtle at world zoom, full on hover/selection, off for reduced motion); r9 U31/U32: full strength + flourish during its title showcase, leader idles at .7
 // ---- site tooltip (brass, chamfered, slides out 6 px on the side away from the hub)
 function siteTip(o,x,y,hubX){const st=curP,fd=feeders(o),lz=LCUR!=='pooled';
  TIP.className='stip';TIP.innerHTML=`<div class="h">${siteName(o,GPX)}</div><div class="m"><span class="t1">${rstr(o._rg||rangeOf(o._c||0))}</span> <span class="t2">CENTRAL ≈${(o._c||0).toFixed(0)}%</span>${lz?' '+dlt(o._d):''}${o._lead?' · <span class="t2">LEADING'+(o._con?', CONTESTED':'')+'</span>':''}</div>`+
@@ -2688,7 +2750,7 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
  for(const o of tags){const el=o.el;const m=MK.find(k=>k.o===o);el.style.display='block';el.classList.toggle('lead',!!o._lead);el.classList.toggle('big',big);el.classList.toggle('rg',RG);
   if(RG&&m){const w=el.offsetWidth,h=el.offsetHeight;el.classList.add('cp');const hit=(x,y)=>x<8||x+w>W-8||RGL.some(q=>x<q.x+33&&x+w>q.x-33&&y<q.y+33&&y+h>q.y-33)||PLB.some(b=>x<b[2]+6&&x+w>b[0]-6&&y<b[3]+4&&y+h>b[1]-4); // r4 U11: short name plate always on, beside its disc, never on another disc/plate
    const LO=33*(o._LK||1)+5;let px=m.x+LO,py=m.y-h/2;for(const[cx,cy]of[[m.x+LO,m.y-h/2],[m.x-LO-w,m.y-h/2],[m.x-w/2,m.y+LO-2],[m.x-w/2,m.y-LO+2-h]]){if(!hit(cx,cy)){px=cx;py=cy;break;}}
-   px=clamp(px,8,W-w-8);py=clamp(py,60,tlT-h-8);PLB.push([px,py,px+w,py+h]);el.style.transform=`translate(${px|0}px,${py|0}px)`;continue;}
+   px=clamp(px,8,W-w-8);py=clamp(py,60,tlT-h-8);PLB.push([px,py,px+w,py+h]);{const S_=1.5*(o._LK||1);o._lr=[(px-m.x)/S_,(py-m.y)/S_,(px+w-m.x)/S_,(py+h-m.y)/S_];} /* r13 L: plate rect in the marker frame (region K 1.5 x LK) so LEADFX glints avoid it */el.style.transform=`translate(${px|0}px,${py|0}px)`;continue;}
   if(big){if(m){const w=el.offsetWidth,h=el.offsetHeight;el.classList.add('cp');if(o===focusO)o._pw=w; // r12 P: the plate width for next frame's group layout (el is display:none during marker layout, so offsetWidth was 0 there)
     // r10 C: the plate never runs under the right card (long names at the low close-up cameras reached x 1104 > card 1016): flip it to the disc's left
     const xR=(typeof cardOpen==='function'&&cardOpen()&&W>900)?W-24-400-10:W-8;let pxx=m.x+44;if(pxx+w>xR)pxx=xR-w;
@@ -2697,7 +2759,7 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
     continue;} // U6: name plate beside the enlarged marker
    const nav=rectOf('nav');el.style.transform=`translate(${24}px,${((nav?nav.bottom:110)+10)|0}px)`;continue;}
   el.classList.remove('cp');
-  if(!m){el.style.display='none';continue;}const w=el.offsetWidth,h=el.offsetHeight;const right=m.x>=hubX-40;const LG=26*(o._LK||1);let x=right?m.x+LG:m.x-LG-w;x=clamp(x,8,W-w-8);el.style.transform=`translate(${x|0}px,${(m.y-h/2)|0}px)`;}
+  if(!m){el.style.display='none';continue;}const w=el.offsetWidth,h=el.offsetHeight;const right=m.x>=hubX-40;const LG=26*(o._LK||1);let x=right?m.x+LG:m.x-LG-w;x=clamp(x,8,W-w-8);el.style.transform=`translate(${x|0}px,${(m.y-h/2)|0}px)`;{const S_=o._LK||1;o._lr=[(x-m.x)/S_,-h/2/S_,(x+w-m.x)/S_,h/2/S_];}} /* r13 L: label rect in the marker frame (LK) for LEADFX glints */
  if(HOV&&HOV.o){const m=MK.find(k=>k.o===HOV.o);if(m)siteTip(HOV.o,m.x,m.y,hubX);}
  window.LBLBOX=placed; // owner 11-17: replay milestones never paint over road tags / placed labels
  if(window.RPL)RPL.draw(og,W,H,tlT); // G1 r6 U (D7): replay pulses, road milestones, pp pills (re-projected every frame)
@@ -3259,10 +3321,12 @@ function playGo(){if(!playing)return;if(day>=NDAYS)setDay(0);
 //      back to the true widths 2.5 s after the replay stops; (4) a ▲/▽ pp pill (true pp, one week) floats at the destination sites;
 //  (5) NOW never moves: its drop line leans / brightens ~0.4 s toward the road that gained most that week, then settles.
 // Drawn on the overlay canvas inside layoutLabels (re-projected every frame / camera change). Reduced motion: no pulses/lean/morph.
+(()=>{const q=new URLSearchParams(location.search).get('selroad');if(q)setTimeout(()=>{try{if(RDI[q])openRoad(q);}catch(e){}},1200);})(); // r13 V2 test hook: ?selroad=R4 opens that road's card (= selected road) after boot
 var RPL=(()=>{const R={on:false,amp:2.5,mk:[],byWk:{},pul:[],pill:{},lean:null,mA:null,mB:null,mt0:0,lastT:0,hit:[],base:{},cur:null};
+ const RTE=(pts,S)=>(S&&S.ib!=null?pts.slice(0,S.ib+1):pts).concat(S?(S.pts0||S.pts).slice(1):[]); // r13 V2: a vascular back-branch (S.ib = trunk index it leaves at) starts mid-trunk -> no jump
  const RL={};for(const rv of ROADV){const pts=rv.tp,L=[0];for(let i=1;i<pts.length;i++)L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
   // milestone route = trunk + the spur to the road's primary destination (largest share in RD6.f), so markers walk from NOW toward an ending
-  const ff=rv.r.f||{},prim=Object.keys(ff).sort((a,b)=>ff[b][0]-ff[a][0])[0],ms=rv.spurs.find(S=>S.site===prim)||rv.spurs[0],MP=pts.concat(ms?ms.pts.slice(1):[]),ML=[0];
+  const ff=rv.r.f||{},prim=Object.keys(ff).sort((a,b)=>ff[b][0]-ff[a][0])[0],ms=rv.spurs.find(S=>S.site===prim)||rv.spurs[0],MP=RTE(pts,ms),ML=[0];
   for(let i=1;i<MP.length;i++)ML.push(ML[i-1]+Math.hypot(MP[i][0]-MP[i-1][0],MP[i][1]-MP[i-1][1]));RL[rv.r.id]={rv,pts,L,T:L[L.length-1],MP,ML,MT:ML[ML.length-1],site:ms&&ms.site};}
  const at=(P,L,s)=>{s=clamp(s,0,L[L.length-1]);let i=1;while(i<L.length-1&&L[i]<s)i++;const u=(s-L[i-1])/Math.max(1e-6,L[i]-L[i-1]);return[P[i-1][0]+(P[i][0]-P[i-1][0])*u,P[i-1][1]+(P[i][1]-P[i-1][1])*u];};
  const WMAX=Math.floor(NDAYS/7),G={};const add=(r,wk,it)=>{if(!RL[r])return;const k=r+'|'+wk;(G[k]=G[k]||{r,wk,items:[]}).items.push(it);};
@@ -3292,7 +3356,7 @@ var RPL=(()=>{const R={on:false,amp:2.5,mk:[],byWk:{},pul:[],pill:{},lean:null,m
   let nf=0;for(const w of fire)for(const m of(R.byWk[w]||[])){if(nf>=6){m.tp=now;continue;}const q=RL[m.r];
    const sp=q.rv.spurs.filter(S=>S.rib.w>.05).sort((a,b)=>b.rib.w-a.rib.w);
    const sd=[{P:q.MP,L:q.ML,site:q.site}];
-   const s2=sp.find(S=>S.site!==sd[0].site);if(s2){const P=q.pts.concat((s2.pts0||s2.pts).slice(1)),L=[0];for(let i=1;i<P.length;i++)L.push(L[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));sd.push({P,L,site:s2.site,dim:1});}
+   const s2=sp.find(S=>S.site!==sd[0].site);if(s2){const P=RTE(q.pts,s2),L=[0];for(let i=1;i<P.length;i++)L.push(L[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));sd.push({P,L,site:s2.site,dim:1});}
    R.pul.push({m,q,sd,t0:now+nf*90,n:m.items.length});m.tp=now+nf*90+1200*(1-Math.sqrt(1-m.f));nf++;
    for(const S of sd){const o=byId[S.site];if(!o)continue;if(!R.base[LCUR])R.base[LCUR]=pulls(0,LCUR);const dv=(curP.p[o.id]||0)-(R.base[LCUR].p[o.id]||0);if(Math.abs(dv)<.05)continue;const ex=R.pill[o.id],tA=now+950+nf*90; // pill = true change of the site since the strip start (one-week steps are ~0.01 pp: unreadable)
     if(ex){ex.d=dv;ex.hold=Math.max(ex.hold||ex.t0,tA);}else R.pill[o.id]={o,d:dv,t0:tA};}} // an existing pill updates in place and stays up (no flicker)
@@ -3487,35 +3551,77 @@ var LEADFX=(()=>{const L={a:{},t:performance.now(),n:0};const sm=x=>{x=clamp(x,0
  const hs=s=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return((h>>>0)%997)/997;};
  L.tick=()=>{const now=performance.now(),dt=Math.min(.1,(now-L.t)/1000);L.t=now;const lid=LEAD&&LEAD.o&&LEAD.o.id;
   for(const o of O){const t=o.id===lid?1:0,c=L.a[o.id]||0;if(c!==t)L.a[o.id]=Math.abs(t-c)<=dt/.4?t:c+Math.sign(t-c)*dt/.4;}};
- L.ph=()=>RMOT?.5-.5*Math.cos(performance.now()/1000*6.2832/2.8):.5;
+ const RM=()=>RMOT&&!/[?&]leadrm=1/.test(location.search); // r13 L test hook: ?leadrm=1 = LEADFX reduced-motion path only
+ L.ph=()=>RM()?.5-.5*Math.cos(performance.now()/1000*6.2832/2.8):.5;
  // r12 P (owner override of 'no glow', leader only): soft glow ring in the leader's dominant feeder-road colour (breathing 2.8 s) + a sparse
  // field of 18 additive motes (1.5-3 px, alpha <= .85, feeder colour mixed toward white) orbiting the pin / rising from the city to the pin,
  // each twinkling at its own 0.6-1.5 Hz. Cross-fades with L.a (0.4 s). Reduced motion: static ring + 5 static dots. World + region only for motes.
  const rgbOf=c=>{c=String(c||'');if(c[0]==='#'&&c.length>=7)return[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];return[244,239,227];};
  L.col=id=>{let best=null,bw=-1;for(const rv of ROADV)for(const S of rv.spurs)if(S.site===id&&S.rib&&S.rib.m.visible&&S.rib.w>bw){bw=S.rib.w;best=rv.r.c;}return rgbOf(best);};
- const MP=[...Array(18)].map((_,i)=>{const r=k=>hs('m'+i+k);return{orb:i%5<3,rad:20+24*r('a'),sp:(.15+.2*r('b'))*(r('c')<.5?-1:1),ph:6.2832*r('d'),f:.6+.9*r('e'),tp:6.2832*r('f'),sz:1.5+1.5*r('g'),jx:(r('h')-.5)*36,T:5+3*r('i')};});
- L.ring=(g,o,al)=>{const a=L.a[o.id]||0;if(a<=.01)return;const p=L.ph(),c=L.col(o.id),cs=(k,al_)=>`rgba(${Math.round(c[0]+(255-c[0])*k)},${Math.round(c[1]+(255-c[1])*k)},${Math.round(c[2]+(255-c[2])*k)},${al_})`;
-  g.save();const hr=g.createRadialGradient(0,0,14,0,0,34);hr.addColorStop(0,cs(0,0));hr.addColorStop(.55,cs(0,.16*(.6+.4*p)*a*al));hr.addColorStop(1,cs(0,0));g.fillStyle=hr;g.beginPath();g.arc(0,0,34,0,6.2832);g.fill();
-  g.shadowColor=cs(.15,.75);g.shadowBlur=8+6*p;g.strokeStyle=cs(.2,1);g.globalAlpha=clamp((.5+.35*p)*a*al,0,.9);g.lineWidth=1.8;gRing(g,0,0,22*(1+.08*p));g.restore();
-  if(focusO)return;const now=performance.now()/1000,mw=view==='world'&&o._mw?o._mw:null,dx=mw?mw.gx-mw.x:0,dy=mw?mw.gy-mw.y:0;
-  g.save();g.globalCompositeOperation='lighter';const N=RMOT?MP.length:5;
-  for(let i=0;i<N;i++){const q=MP[i];let x,y,e=1;
-   if(!RMOT){const an=q.ph;x=Math.cos(an)*q.rad;y=Math.sin(an)*q.rad*.55;}
-   else if(q.orb||!mw||dy<30){const an=q.ph+q.sp*now;x=Math.cos(an)*q.rad;y=Math.sin(an)*q.rad*.55+3*Math.sin(now*.5+q.tp);}
-   else{const u=((now/q.T+q.ph/6.2832)%1+1)%1;e=sm(u/.2)*sm((1-u)/.2);x=dx*(1-u)+q.jx*(.4+.6*(1-u));y=dy*(1-u)-30*u;}
-   const tw=RMOT?.45+.55*(.5+.5*Math.sin(6.2832*q.f*now+q.tp)):.7,A=clamp(.85*tw*e*a*al,0,.85);if(A<=.01)continue;
-   g.globalAlpha=A*.28;g.fillStyle=cs(.12,1);g.beginPath();g.arc(x,y,q.sz*2.2,0,6.2832);g.fill();g.globalAlpha=A;g.fillStyle=cs(.42,1);g.beginPath();g.arc(x,y,q.sz*.75,0,6.2832);g.fill();}
+ // r13 L (Claude Fable 5.2 redesign; owner found the r12 motes 'rough': flat two-arc discs, blown white, atom-like orbits, blobs on the ring
+ // and label). Four layers, back to front: (1) BLOOM = cached annular gradient sprite (96 px, peak at r~20, dim centre so the icon keeps its
+ // contrast) and (2) DUST = 14 soft gradient motes born in an annulus r 16-42 that rise 3-6 px/s, meander +-5 px at 0.11 Hz, drift, fade
+ // (life 3.5-6 s, smoothstep in 25 % / out 40 %, twinkle 0.6-1.3 Hz +-30 %) = L.back, drawn BEFORE the pin body; (3) RING = 1.25 px hairline +
+ // 4 px faint under-stroke at r 22 (no shadowBlur) and (4) GLINTS = 6 four-point stars (14-22 px, sin^3 life 1.6-2.8 s, rest 1.5x life, so ~2
+ // visible; 2.2 Hz shimmer +-15 %), never inside r 13 (icon) or the leader's name-plate rect o._lr (marker frame, from layoutLabels) = L.front,
+ // drawn AFTER the glyph. Colour: leader's widest feeder hue H with offsets -22/-10/0/+14 and one dusty-rose complement +165, S 35-55 % (scaled
+ // by the feeder's own chroma), L 76-82 %, sprite core <= L 90 (stars built source-over so arm overlap never sums to white). Bloom + ring
+ // source-over, dust + glints 'lighter' (alpha <= .8). Breathing keeps the owner's 2.8 s (Fable: 4.2 s). Stateless particles (hash of index +
+ // life number), sprites cached per feeder colour (both leaders during the 0.4 s cross-fade). Reduced motion: static bloom + ring, 4 fixed dots,
+ // 1 fixed glint, no inbound motes. Single-site close-up: bloom + ring only.
+ const DPR_=2,hh=(i,k)=>{const s=Math.sin(i*127.1+k*311.7)*43758.5453;return s-Math.floor(s);};
+ const cv=(s,f)=>{const c=document.createElement('canvas');c.width=c.height=s*DPR_;const x=c.getContext('2d');x.scale(DPR_,DPR_);x.translate(s/2,s/2);f(x);return c;};
+ const rgr=(x,r,st)=>{const q=x.createRadialGradient(0,0,0,0,0,r);st.forEach(s=>q.addColorStop(s[0],s[1]));x.fillStyle=q;x.beginPath();x.arc(0,0,r,0,6.2832);x.fill();};
+ const hsk=([r,g,b])=>{const M=Math.max(r,g,b),m=Math.min(r,g,b),d=M-m;if(d<1)return[40,0];let H=M===r?(g-b)/d:M===g?(b-r)/d+2:(r-g)/d+4;return[(H*60+360)%360,Math.min(1,d/60)];};
+ const HC=(h,s,l,a)=>`hsla(${(((h%360)+360)%360).toFixed(1)},${s}%,${Math.min(90,l)}%,${a})`;
+ const SPC=new Map();
+ const sprites=c=>{const key=c.join();let S=SPC.get(key);if(S)return S;const[H,k]=hsk(c),q=s=>Math.round(s*k);
+  const pal=[[H-22,q(50),76],[H-10,q(55),80],[H,q(50),78],[H+14,q(45),82],[H+165,q(35),80]],sb=q(45),bs=q(58);
+  S={H,sb,bloom:cv(96,x=>rgr(x,48,[[0,HC(H,bs,58,.08)],[.42,HC(H,bs,62,.34)],[.7,HC(H,bs,58,.11)],[1,HC(H,bs,58,0)]])),
+   dot:pal.map(([h,s,l])=>cv(32,x=>rgr(x,16,[[0,HC(h,s,l+8,1)],[.18,HC(h,s,l,.5)],[.5,HC(h,s,l-8,.1)],[1,HC(h,s,l-8,0)]]))),
+   star:pal.map(([h,s,l])=>cv(32,x=>{for(const r of[0,1.5708]){x.save();x.rotate(r);x.scale(1,.1);rgr(x,16,[[0,HC(h,s,l+6,.9)],[.3,HC(h,s,l,.3)],[1,HC(h,s,l,0)]]);x.restore();}
+    rgr(x,5,[[0,HC(h,s,l+8,.9)],[1,HC(h,s,l,0)]]);}))};
+  if(SPC.size>5)SPC.clear();SPC.set(key,S);return S;};
+ const put=(g,im,x,y,s,A)=>{if(A>.01){g.globalAlpha=Math.min(A,.8);g.drawImage(im,x-s/2,y-s/2,s,s);}};
+ L.back=(g,o,al)=>{const a=(L.a[o.id]||0)*al;if(a<=.01)return;const S=sprites(L.col(o.id)),t=performance.now()/1000,p=L.ph();
+  g.save();g.globalCompositeOperation='source-over';put(g,S.bloom,0,0,96*(1+.05*p),a*(.7+.3*p));
+  if(!focusO){g.globalCompositeOperation='lighter';
+   for(let i=0;i<14;i++){
+    if(!RM()){if(i<4)put(g,S.dot[i],Math.cos(i*1.9+.5)*30,Math.sin(i*1.9+.5)*22-6,13,.4*a);continue;}
+    const T=3.5+2.5*hh(i,1),c=t/T+hh(i,2),k=Math.floor(c),u=c-k,s=u*T,j=k*16,an=6.2832*hh(i,j+3),r=16+26*Math.sqrt(hh(i,j+4)),
+     x=Math.cos(an)*r+5*Math.sin(.7*s+6.28*hh(i,5))+(hh(i,j+6)-.5)*1.6*s,
+     y=Math.sin(an)*r*.8-(3+3*hh(i,7))*s+3*Math.cos(.9*s+6.28*hh(i,8)),
+     tw=.7+.3*Math.sin(6.2832*(.6+.7*hh(i,9))*t+6.28*hh(i,10));
+    put(g,S.dot[i%5],x,y,10+8*hh(i,11),(.4+.25*hh(i,12))*tw*sm(u/.25)*sm((1-u)/.4)*a);}}
   g.restore();};
- const LEN=S=>{if(S._lp!==S.pts){const P=S.pts,C=[0];for(let i=1;i<P.length;i++)C.push(C[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));S._lp=P;S._lc=C;}return S._lc;};
+ L.front=(g,o,al)=>{const a=(L.a[o.id]||0)*al;if(a<=.01)return;const S=sprites(L.col(o.id)),t=performance.now()/1000,p=L.ph(),R=22*(1+.05*p),lr=o._lr;
+  g.save();g.globalCompositeOperation='source-over';g.shadowBlur=0;g.strokeStyle=HC(S.H,S.sb,80,1);g.lineWidth=4;g.globalAlpha=.18*a;gRing(g,0,0,R);
+  g.lineWidth=1.25;g.globalAlpha=(.68+.22*p)*a;gRing(g,0,0,R);
+  if(!focusO){g.globalCompositeOperation='lighter';
+   if(!RM()){put(g,S.star[2],16,-18,16,.5*a);L.ng=1;}
+   else{L.ng=0;for(let i=0;i<6;i++){const T=1.6+1.2*hh(i,21),c=t/(T*2.5)+hh(i,22),k=Math.floor(c),u=(c-k)*2.5;if(u>1)continue;
+    const j=k*16,an=6.2832*hh(i,j+23),r=17+21*hh(i,j+24),x=Math.cos(an)*r,y=Math.sin(an)*r*.8-4,sz=14+8*hh(i,26),m=4+sz/2;
+    if(Math.hypot(x,y)<13||(lr&&x>lr[0]-m&&x<lr[2]+m&&y>lr[1]-m&&y<lr[3]+m))continue;
+    const e=Math.sin(3.1416*u)**3,sh=.85+.15*Math.sin(13.8*t+6.28*hh(i,25));
+    put(g,S.star[(i+k)%5],x,y,sz*(.55+.45*e),.75*e*sh*a);if(e>.2)L.ng++;}}}
+  {const M=g.getTransform(),d=window.devicePixelRatio||1;L.pos={id:o.id,x:+(M.e/d).toFixed(1),y:+(M.f/d).toFixed(1),sc:+(Math.hypot(M.a,M.b)/d).toFixed(2),lr:lr?lr.map(v=>+v.toFixed(1)):null};}
+  g.restore();};
+ L.ring=L.front; // r12 hook name kept as an alias
+ const LCW=new WeakMap(),LEN=P=>{let C=LCW.get(P);if(!C){C=[0];for(let i=1;i<P.length;i++)C.push(C[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));LCW.set(P,C);}return C;};
  const at=(P,C,s)=>{let i=1;while(i<C.length-1&&C[i]<s)i++;const u=(s-C[i-1])/Math.max(1e-6,C[i]-C[i-1]);return[P[i-1][0]+(P[i][0]-P[i-1][0])*u,P[i-1][1]+(P[i][1]-P[i-1][1])*u];};
- L.draw=(g,W,H,tlT)=>{L.tick();L.n=0;if(!RMOT||(view!=='world'&&focusO))return;const now=performance.now()/1000,T=6.5;
-  for(const id in L.a){const a=L.a[id];if(a<=.01)continue;const legs=[];for(const rv of ROADV)for(const S of rv.spurs)if(S.site===id&&S.rib.m.visible&&S.rib.w>=.2)legs.push(S);legs.sort((x,y)=>y.rib.w-x.rib.w);
-   for(const S of legs){const C=LEN(S),Ln=C[C.length-1],k=S.rib.w>=.9?2:1,h0=hs(S.site+S.pts0.length+(S.rib.m.id||0));
-    for(let j=0;j<k;j++){if(L.n>=8)return;const u=((now/T+h0+j/k)%1+1)%1,e=sm(u/.18)*sm((1-u)/.18);if(e<=.01)continue;
-     const q=at(S.pts,C,u*Ln),c=proj(q[0],hMesh(q[0],q[1])+.35,q[1]);if(!c[2]||c[1]>tlT||c[0]<0||c[0]>W)continue;L.n++;
-     g.save();g.globalAlpha=a*e*.28;g.fillStyle='#F4EFE3';g.beginPath();g.arc(c[0],c[1],3.6,0,6.2832);g.fill();g.globalAlpha=a*e*.8;g.beginPath();g.arc(c[0],c[1],1.7,0,6.2832);g.fill();g.restore();}}}};
+ L.draw=(g,W,H,tlT)=>{L.tick();L.n=0;L.nd=(L.nd||0)+1;if(!RM()||(view!=='world'&&focusO))return;const now=performance.now()/1000,T=6.5;
+  // r13 L: inbound vessel motes ride VASC.leaderPaths(id) (vascular legs, NOWW-warped pts); fallback = ROADV spurs (?roads=old). Restyled with
+  // the same soft dust sprite (S.dot[2], 12 px, alpha a*e*.6, 'lighter') instead of the two hard arcs; <= 2 per leg, total <= 8, 0.15 Hz.
+  for(const id in L.a){const a=L.a[id];if(a<=.01)continue;const SP=sprites(L.col(id));
+   let legs=(window.VASC&&typeof VASC.leaderPaths==='function'?VASC.leaderPaths(id):[]).filter(q=>q&&q.w>=.2&&q.pts&&q.pts.length>1);
+   if(!legs.length)for(const rv of ROADV)for(const S of rv.spurs)if(S.site===id&&S.rib.m.visible&&S.rib.w>=.2)legs.push({rid:rv.r.id,w:S.rib.w,pts:S.pts});
+   legs.sort((x,y)=>y.w-x.w);g.save();g.globalCompositeOperation='lighter';
+   for(const S of legs){const C=LEN(S.pts),Ln=C[C.length-1],k=S.w>=.9?2:1,h0=hs(id+S.rid+S.pts.length);
+    for(let j=0;j<k;j++){if(L.n>=8)break;const u=((now/T+h0+j/k)%1+1)%1,e=sm(u/.18)*sm((1-u)/.18);if(e<=.01)continue;
+     const q=at(S.pts,C,u*Ln),c=proj(q[0],hMesh(q[0],q[1])+.35,q[1]);if(!c[2]||c[1]>tlT||c[0]<0||c[0]>W)continue;L.n++;put(g,SP.dot[2],c[0],c[1],12,a*e*.6);}}
+   g.restore();}};
  {const d0=NOWM.draw;NOWM.draw=(g,W,H,tlT)=>{L.draw(g,W,H,tlT);return d0(g,W,H,tlT);};}
- L.info=()=>({lead:LEAD&&LEAD.o.id,a:Object.fromEntries(Object.entries(L.a).filter(e=>e[1]>0).map(([k,v])=>[k,+v.toFixed(2)])),motes:L.n,ph:+L.ph().toFixed(2)});
+ L.info=()=>({lead:LEAD&&LEAD.o.id,a:Object.fromEntries(Object.entries(L.a).filter(e=>e[1]>0).map(([k,v])=>[k,+v.toFixed(2)])),motes:L.n,glints:L.ng,draws:L.nd,pos:L.pos,ph:+L.ph().toFixed(2)});
  // test hook (r11 S): per city, sum of inbound leg widths vs its share for lens lid (default = current state). u = world-unit width / (.145 x
  // share) (1 = exact Sankey encoding); px = projected on-screen width at mid-leg (median over 30-70 % of the leg) / share, normalised by the
  // median city. Restores the current widths afterwards.
