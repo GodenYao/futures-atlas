@@ -366,7 +366,7 @@ function layStrict(T,L){const R=T.R,P=T.P,sw=P.streetW,p=R/3.5,xs=[-2.5,-1.5,-.5
 // --- organic (protector): S-curve high street, wobbly loop, three lanes; irregular lots with setbacks; many trees
 function* layOrganic(T,L){const R=T.R,P=T.P,sw=P.streetW,ph=T.rnd()*TAU,A=R*.15,main=[];
  for(let i=0;i<=28;i++){const t=i/28*2-1,x=t*(R-.5),z=A*Math.sin(t*2.3+ph)+R*.05*Math.sin(t*5.1+ph*2);if(Math.hypot(x,z)<R-.45)main.push([x,z]);}
- const sM=addStreet(L,main,sw*1.15,'road'),loop=ringPts(T,R*.5,40,R*.05,R*.03),sL=addStreet(L,loop,sw,'road',true),lanes=[];
+ const sM=addStreet(L,main,sw*1.15,'road'),loop=ringPts(T,R*.5,40,R*.12,R*.06).slice(0,29),sL=addStreet(L,loop,sw,'road',false),lanes=[];   // r8 F: open, more wobbly 3/4 arc (a closed round loop read as a crater-like ring at world zoom)
  for(let k=0;k<3;k++){const a0=(k+.5)*TAU/3+T.rr(-.3,.3),dr=T.rr(-.25,.25),pts=[];
   for(let j=0;j<=6;j++){const r=lerp(R*.52,R*.86,j/6),a=a0+dr*j/6;pts.push([Math.cos(a)*r,Math.sin(a)*r]);}lanes.push(addStreet(L,pts,sw*.8,'road'));}
  const c=cum(main),mid=polyAt(main,c,c[c.length-1]*.5),g=addSlot(L,'green',{x:mid[0]-mid[3]*1.9,z:mid[1]+mid[2]*1.9,r:1.35});

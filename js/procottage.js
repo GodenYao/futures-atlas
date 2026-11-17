@@ -168,7 +168,13 @@ function yard(h,i,ds){if(FA.hash(i*3.31,1.93)>.45)return;const z0=DW/2+.34,z1=DW
   for(let k=0;k<=n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n;if(gap&&Math.abs(x-ds)<.2){prev=null;continue;}const y=dyl(h,x,z);
    box('oak',.022,.17+.02*FA.hash(x*9,z*7),.022,x,y+.07,z,PC);if(prev){for(const hy of[.06,.13])beam('oak',prev[0],prev[1]+hy,prev[2],x,y+hy,z,.012,PC);}prev=[x,y,z];}};
  run(x0,z1,x1,z1,true);run(x0,z0,x0,z1,false);run(x1,z0,x1,z1,false);}
-function cottage(h,i){CURH=h;setF(h.x,h.g,h.z,h.ry);DL=h.L;DW=h.W;const e=h.e,th=h.roof===0,pit=th?.87:.74,id=i*16,pv=.88+.16*rnd();
+function cottage(h,i){CURH=h;
+ // r8 F (vision r7 'cottages tilted / hovering on the slope'): seat on the low side of the footprint on a level terraced pad (rubble-stone
+ // retaining edge on the downhill side, the uphill ground meets the pad = cut into the slope) instead of on the centre height
+ {let lo=1e9,hi=-1e9;const c0=Math.cos(h.ry),s0=Math.sin(h.ry);for(const a of[-1,0,1])for(const b of[-1,0,1]){const y=FA.H(h.x+a*(h.L/2+.35)*c0+b*(h.W/2+.35)*s0,h.z-a*(h.L/2+.35)*s0+b*(h.W/2+.35)*c0);lo=Math.min(lo,y);hi=Math.max(hi,y);}
+  h.g=lo+Math.min(.18,.25*(hi-lo));h.pad=h.g-lo+.22;}
+ setF(h.x,h.g,h.z,h.ry);DL=h.L;DW=h.W;const e=h.e,th=h.roof===0,pit=th?.87:.74,id=i*16,pv=.88+.16*rnd();
+ box('stone',DL+.75,h.pad,DW+.95,0,.02-h.pad/2,.08,tn(STO,.62));box('plain',DL+.7,.03,DW+.9,0,.025,.08,tn(DIRTC,.7));   // terrace pad + trodden top
  // C4: per-house limewash tint (white / ochre / pink / buff / straw) and a night factor (plaster read too bright at blue hour)
  const TW=[[1,1,1],[1.05,.96,.82],[1.04,.92,.87],[.95,.94,.90],[1.03,1,.84]],tw=TW[(FA.hash(i*1.73,4.21)*TW.length)|0],NK=(L.pc&&L.pc.mood!=='day')?.76:1,pc=[PLA[0]*pv*tw[0]*NK,PLA[1]*pv*tw[1]*NK,PLA[2]*pv*tw[2]*NK];
  // C4 grounding: deeper stone plinth (digs into the downhill side) + projecting plinth course
@@ -226,7 +232,7 @@ function barrel(x,z,k){setF(x,FA.H(x,z),z,0);k=k||1;add('boards',gBarrel(),0,0,0
 function sack(x,z){setF(x,FA.H(x,z),z,0);add('canvas',gIco(1),0,.06,0,tn(CAN,.6+.2*rnd()),0,rnd()*3,.2,.075,.08,.055);}
 function lumber(x,z,ry){setF(x,FA.H(x,z),z,ry);for(let r=0;r<3;r++)for(let c=0;c<4-r;c++)box('boards',.8,.035,.07,(rnd()-.5)*.06,.03+r*.04,(c-1.5+r*.5)*.085,tn(BRD,.8+.4*rnd()));FA.AOS.push({x,z,r:.5,k:.3});}
 function stone(x,z){setF(x,FA.H(x,z),z,rnd()*3);cyl('stone',.1+.05*rnd(),.04,0,.012,0,tn(STO,.7+.3*rnd()),7,0,0,.85);}
-function tree(x,z){const ry=rnd()*6;setF(x,FA.H(x,z),z,ry);const s=.85+.4*rnd(),lk=.75+.4*rnd();if(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add('orchard',x,null,z,s*.3,s*.37,ry))return; // C5: proflora
+function tree(x,z){const ry=rnd()*6;setF(x,FA.H(x,z),z,ry);const s=.85+.4*rnd(),lk=.75+.4*rnd();if(FA.PROFLORA&&FA.PROFLORA.on&&FA.PROFLORA.add('orchard',x,null,z,s*.42,s*.5,ry))return; // C5: proflora; r8 F x1.4 (vision r7: orchard not readable)
  cyl('oak',.03*s,.36*s,0,.16*s,0,LOG,5,0,0,.7);add('plain',gIco(1),0,.52*s,0,tn(LEAF,lk),0,0,0,.3*s,.26*s,.3*s);FA.AOS.push({x,z,r:.45*s,k:.3});}
 
 // ======================= (7) mill house, flume, undershot wheel, foam =======================
@@ -235,17 +241,19 @@ function mill(m){setF(m.x,m.g,m.z,0);DL=1.6;DW=1.5;const e=.85,pit=.74,rh=DW/2*M
  const f=face('z',1);door(f,-.3,.3,.18,.08);win(900,f,.35,.5,.13,.15);win(901,face('z',-1),0,.5,.13,.15);win(902,face('x',-1),0,.5,.13,.15);
  chimney(-(DL/2+.09),0,m.h+.22);m.chim=wpt(-(DL/2+.09),m.h+.32,0);FA.AOS.push({x:m.x,z:m.z,r:1.4,k:.5,sq:true,ry:0,sx:DL+.3,sz:DW+.3});}
 // stone piers + bearing blocks, timber flume walls on posts, sluice frame with raised gate; wheel group spins about its axle (local x)
-function waterwheel(w){const WL=FA.WL,ay=.62,R=.82;setF(w.x,WL,w.z,0);
+// r8 F (vision r7 'the water wheel reads as a scaffold'): x1.7 wheel (R 1.4 u), 8 through-spokes, solid board shrouds, 16 broad paddles;
+// the tall sluice posts / gate frame removed (they read as scaffolding); piers + flume walls kept
+const WWS=1.7,WWY=.7,WWM=new THREE.Matrix4().makeScale(WWS,WWS,WWS);   // WWY: r8 F2 yaw so the wheel face turns toward the close-up camera (was edge-on)
+function waterwheel(w){const WL=FA.WL,ay=.62,R=.82;setF(w.x,WL,w.z,WWY);F.multiply(WWM);
  for(const s of[-1,1]){box('stone',.2,1.2,.36,s*.44,ay-.67,0,STO);box('oak',.17,.1,.16,s*.44,ay-.02,0,OAK);
-  box('boards',.03,.5,2.9,s*.31,-.1,-.2,BRD);for(let z=-1.6;z<=1.21;z+=.7)box('oak',.05,.8,.05,s*.345,-.05,z,OAK);
-  box('oak',.06,1.0,.06,s*.345,.3,-1.35,OAK);}
- box('oak',.8,.06,.06,0,.8,-1.35,OAK);box('boards',.58,.26,.025,0,.5,-1.35,tn(BRD,.8));
+  box('boards',.03,.42,2.2,s*.31,-.14,-.1,BRD);}
  use('wheel');F.identity();
- for(const s of[-1,1]){add('spin',gTor(),s*.16,0,0,OAKW,0,Math.PI/2,0,R,R,R);for(let k=0;k<5;k++)box('spin',.045,R*1.96,.055,s*.16,0,0,OAK,k*Math.PI/5);}
- for(let k=0;k<20;k++){const a=k*TAU/20;box('spin',.44,.22,.022,0,(R-.06)*Math.cos(a),(R-.06)*Math.sin(a),tn(BRD,.75+.3*FA.hash(k,2.2)),a);}
- cyl('spin',.1,.46,0,0,0,OAK,8,0,Math.PI/2);cyl('spin',.035,1.9,-.4,0,0,tn(OAK,.7),6,0,Math.PI/2);use('main');
- const g=new THREE.Group();g.name='pk_wheelG';g.position.set(w.x,WL+ay,w.z);mesh(SETS.wheel,'spin',M.spin,g);FA.SC.add(g);
- FA.anims.push(T=>{g.rotation.x=-T*.9;});FA.mover&&FA.mover({o:g,r:1.1,n:'wheel'});foam(w.x,WL+.035,w.z);}
+ for(const s of[-1,1]){add('spin',gTor(),s*.16,0,0,OAKW,0,Math.PI/2,0,R,R,R);for(let k=0;k<4;k++)box('spin',.05,R*1.96,.07,s*.16,0,0,OAK,k*Math.PI/4);
+  for(let k=0;k<18;k++){const a=(k+.5)*TAU/18;box('spin',.035,.12,R*TAU/18*1.04,s*.16,(R-.05)*Math.cos(a),(R-.05)*Math.sin(a),tn(BRD,.8),a);}}   // shroud boards
+ for(let k=0;k<16;k++){const a=k*TAU/16;box('spin',.4,.26,.03,0,(R-.1)*Math.cos(a),(R-.1)*Math.sin(a),tn(BRD,.75+.3*FA.hash(k,2.2)),a);}
+ cyl('spin',.11,.46,0,0,0,OAK,8,0,Math.PI/2);cyl('spin',.04,1.9,-.4,0,0,tn(OAK,.7),6,0,Math.PI/2);use('main');
+ const g=new THREE.Group();g.name='pk_wheelG';g.position.set(w.x,WL+ay*WWS,w.z);g.scale.setScalar(WWS);g.rotation.order='YXZ';g.rotation.y=WWY;mesh(SETS.wheel,'spin',M.spin,g);FA.SC.add(g);
+ FA.anims.push(T=>{g.rotation.x=-T*.6;});FA.mover&&FA.mover({o:g,r:1.1*WWS,n:'wheel'});foam(w.x,WL+.035,w.z+.5);}
 // white water downstream of the paddles: one small plane, scrolling noise in the fragment shader (uT)
 function foam(x,y,z){const g=new THREE.PlaneGeometry(.56,1.7);g.rotateX(-Math.PI/2);
  const m=new THREE.ShaderMaterial({uniforms:{uT:FA.TU.uT},transparent:true,depthWrite:false,
@@ -257,7 +265,11 @@ function foam(x,y,z){const g=new THREE.PlaneGeometry(.56,1.7);g.rotateX(-Math.PI
  const me=new THREE.Mesh(g,m);me.position.set(x,y,z+.75);me.renderOrder=2;FA.SC.add(me);DRAWS++;TRIS+=2;}
 
 // ======================= (8) post windmill (sails face local +x) =======================
-function windmill(w){setF(w.x,w.g,w.z,w.ry);cyl('stone',.78,.75,0,.2,0,STO,14);cyl('slate',.92,.36,0,.75,0,SLA,14,0,0,.22);cyl('oak',.1,.8,0,1.15,0,OAK,8);
+// r8 F (vision r7 'windmill sits on a pale round puck'): stone drum + slate skirt removed -> open post-mill trestle: two crossed
+// cross-trees on four small brick piers, four diagonal quarter-bars up to the main post (the ground shows through)
+function windmill(w){{let lo=1e9;for(const a of[[.8,0],[-.8,0],[0,.8],[0,-.8]])lo=Math.min(lo,dyl(w,a[0],a[1]));w.g+=lo+.05;}setF(w.x,w.g,w.z,w.ry);
+ for(const[a,b]of[[1,0],[0,1]]){box('oak',a?1.7:.12,.12,b?1.7:.12,0,.14,0,OAK);for(const s of[-1,1]){box('stone',.2,.5,.2,s*a*.78,-.12,s*b*.78,tn(STO,.8));beam('oak',s*a*.74,.2,s*b*.74,0,.95,0,.07,OAK);}}
+ cyl('oak',.11,1.15,0,.75,0,OAK,8);
  DL=1.6;DW=1.25;const y0=1.2,e=3.15,pit=.75,rh=DW/2*Math.tan(pit);box('boards',DL,e-y0,DW,0,(e+y0)/2,0,BRD);
  for(const pr of[['z',DL],['x',DW]])for(const sg of[-1,1]){const f=face(pr[0],sg);for(const y of[y0+.04,(y0+e)/2,e-.04])f(0,y,pr[1]+.05,.07);for(const s of[-1,1])f(s*pr[1]/2,(y0+e)/2,.07,e-y0);}
  gables(e,rh,'boards',tn(BRD,.85),false);roof(e,pit,'boards',tn(BRD,.7),.05,.1);
@@ -295,7 +307,8 @@ function bonfire(x,z){const y=FA.H(x,z);setF(x,y,z,0);
  for(let k=0;k<6;k++){const a=k*TAU/6+.3;beam('oak',Math.cos(a)*.2,0,Math.sin(a)*.2,Math.cos(a+2.6)*.03,.36,Math.sin(a+2.6)*.03,.035,tn(LOG,.5+.3*rnd()));}
  for(let k=0;k<8;k++){const a=k*TAU/8;cyl('stone',.05,.05,Math.cos(a)*.3,.02,Math.sin(a)*.3,tn(STO,.6),6);}
  for(const a of[.4,2.5,4.4])cyl('oak',.06,.5,Math.cos(a)*.85,.06,Math.sin(a)*.85,LOG,7,Math.PI/2);
- const bf=new THREE.PointLight('#FF9548',1.3,8,2);bf.position.set(x,y+.7,z);FA.SC.add(bf);const bg=FA.glow(x,y+.42,z,1.0,'#FF8438',.34);
+ const bf=new THREE.PointLight('#FF9548',1.3,8,2);bf.position.set(x,y+.7,z);FA.SC.add(bf);const bg=FA.glow(x,y+.42,z,2.4,'#FF7A30',.6);
+ const fl=[];for(let k=0;k<4;k++){const a=k*TAU/4+.4;fl.push(FA.glow(x+Math.cos(a)*.12,y+.25+.08*k,z+Math.sin(a)*.12,.55,k%2?'#FF9A40':'#FF6A24',.5,[.25,.7+.3*k,k*1.7,0]));}   // r8 F: brighter bonfire core + flame points (glow points, no light)
  FA.anims.push(T=>{const f=.8+.2*Math.sin(T*11)*Math.sin(T*4.3);bf.intensity=1.3*f;bg.material.opacity=f;});FA.AOS.push({x,z,r:.6,k:.4});}
 
 // ======================= (10) layout, props, light, build =======================
@@ -323,8 +336,10 @@ function props(D){const vx=D.vx,vz=D.vz,m=D.mill,b=D.barn,sx=Math.sin(b.ry),sz=M
  for(let i=0;i<4;i++)for(let j=0;j<3;j++){const x=vx-1+i*1.5+(rnd()-.5)*.3,z=vz-9.5-j*1.5+(rnd()-.5)*.3;if(x<FA.riverX(z)-2.2)tree(x,z);}}
 // two small door glows (shader breath, no CPU), smoke from 3 cottage chimneys + the mill (7 puffs each, staggered)
 // C4: + warm ground pools (fire light at lit doors / the bonfire) handed to proroad's single additive pool mesh
-function lights(D){let n=0;const PO=[];D.homes.forEach((h,i)=>{if(i%4===1&&n<3){n++;FA.glow(h.door.x,h.door.y+.02,h.door.z,.42,'#FF9040',.26,[.14,3+2*FA.hash(i,1.1),i*1.7,0]);PO.push([h.door.x,h.door.z,.62,.30]);}
-  else if(h.lit>0)PO.push([h.door.x,h.door.z,.42,.10+.05*Math.min(2,h.lit)]);});
+function lights(D){let n=0;const PO=[];D.homes.forEach((h,i)=>{if(i%4===1&&n<3){n++;FA.glow(h.door.x,h.door.y+.02,h.door.z,.5,'#FF9040',.4,[.14,3+2*FA.hash(i,1.1),i*1.7,0]);PO.push([h.door.x,h.door.z,.62,.30]);}
+  else if(h.lit>0)PO.push([h.door.x,h.door.z,.42,.10+.05*Math.min(2,h.lit)]);
+  // r8 F (vision r7 'almost no warm fire light'): one soft warm window glow in front of each cottage with a lit pane
+  if(h.lit>0){const c=Math.cos(h.ry),s=Math.sin(h.ry),lx=h.ds+(h.ds>0?-1:1)*.38,lz=h.W/2+.06;FA.glow(h.x+lx*c+lz*s,h.g+.14+(h.e-.14)*.68,h.z-lx*s+lz*c,.6,'#FF9A48',.55,[.1,2.5+FA.hash(i,4.4)*2,i*.9,0]);}});
  PO.push([D.fire.x,D.fire.z,1.5,.36]);if(FA.PROROAD)FA.PROROAD.pools=PO;
  const ch=D.homes.filter((h,i)=>i%2===0).slice(0,3).map(h=>h.chim);ch.push(D.mill.chim);
  ch.forEach((p,j)=>{for(let k=0;k<7;k++)FA.smoke(p.x,p.y,p.z,5.5+j*.7,k/7+j*.13,'#C9C5D0');});}

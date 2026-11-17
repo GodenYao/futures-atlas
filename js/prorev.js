@@ -91,26 +91,29 @@ FA.PROREV={build(site,ctx){const PK=FA.PROCOTTAGE;if(!PK||typeof PK.build!=='fun
  // ---- fields, hedgerows, haystacks, sheep, lanes, brook (pilot profarm / prostream / proroad stand-ins) ----
  const R2=rng((site.seed|0)||2031),KO=(D.keepOut||[]).slice(),PT=Parts(),mats=ctx.mats||{};const FR=RAD*1.32/scl;   // field reach (local units)
  const ph=[0,1,2,3].map(i=>hash((site.seed||7)*.11+i,3.3)*6.283),rOut=a=>FR*(1+.1*Math.sin(2*a+ph[0])+.07*Math.sin(3*a+ph[1])+.05*Math.sin(5*a+ph[2]));
- const ang=.32,ux=Math.cos(ang),uz=Math.sin(ang),PW=4.6,PD=3.6;const ty=['wheat','green','fallow','pasture','wheat','green','pasture'];
- const CF={wheat:lin('#A88E4E'),green:lin('#5C7434'),fallow:lin('#5E4A34'),pasture:lin('#58703E')},MEAD=lin('#56603F'),DIRT=lin('#6A5C48'),BANK=lin('#44523A'),HEDGE=lin('#2E3E26');
+ const ang=.32,ux=Math.cos(ang),uz=Math.sin(ang),PW=5.4,PD=2.2;const ty=['wheat','green','fallow','stubble','pasture','wheat','fallow','green'];   // r8 F: long strip fields (was 4.6 x 3.6 parcels)
+ const CF={wheat:lin('#C09A48'),green:lin('#4C7A2C'),fallow:lin('#6A4A2E'),pasture:lin('#6C8A46'),stubble:lin('#A08E58')},MEAD=lin('#56603F'),DIRT=lin('#7A6446'),BANK=lin('#44523A'),HEDGE=lin('#26361F'),GRN=lin('#6A8A44');   // r8 F: stronger crop contrast (vision r7: fields invisible)
  const cellOf=(x,z)=>{const a=x*ux+z*uz,b=-x*uz+z*ux,i=Math.floor(a/PW+.5),j=Math.floor(b/PD+.5);return{i,j,a:a-i*PW,b:b-j*PD,cx:i*PW*ux-j*PD*uz,cz:i*PW*uz+j*PD*ux};};
  const inKO=(x,z,m)=>KO.some(k=>Math.hypot(x-k.x,z-k.z)<k.r+(m||0));
  const fieldAt=(x,z)=>{const c=cellOf(x,z),d=Math.hypot(c.cx+.5,c.cz),rr=Math.hypot(x,z);if(d<7||c.cx>riverX(c.cz)-3.4||rr>rOut(Math.atan2(z,x))*.96)return null;
-  if(Math.hypot(c.cx-(D.mill?D.mill.x:-10.5),c.cz-(D.mill?D.mill.z:-8))<3.6)return null;if(inKO(c.cx,c.cz,.4))return null;const h=hash(c.i*1.7+3.1,c.j*2.3+.7);return{c,t:ty[(h*ty.length)|0],h};};
+  if(Math.hypot(c.cx-(D.mill?D.mill.x:-10.5),c.cz-(D.mill?D.mill.z:-8))<3.6)return null;if(inKO(c.cx,c.cz,.4))return null;const h=hash(c.i*1.7+3.1,c.j*2.3+.7);return{c,t:ty[(((c.j*3+c.i*5+(h>.7?1:0))%ty.length)+ty.length)%ty.length],h};};   // r8 F2: neighbouring strips always differ
  // lanes from the hamlet (procottage result) + the entrance track toward the road spur (keepA = spur end angle in the host frame)
  const lanes=(D.lanes||[]).slice(),ka=site.params&&site.params.keepA!=null?site.params.keepA:2.3;lanes.push([D.vx||0,D.vz||0,Math.cos(ka)*FR*1.05,Math.sin(ka)*FR*1.05]);
+ // r8 F: dirt lanes also link neighbouring cottages (ring of door-to-door tracks, sorted by angle around the green)
+ {const hs=(D.homes||[]).map(h=>({x:h.door.x,z:h.door.z,a:Math.atan2(h.door.z-(D.vz||0),h.door.x-(D.vx||0))})).sort((a,b)=>a.a-b.a);for(let i=0;i<hs.length;i++){const p=hs[i],q=hs[(i+1)%hs.length];if(Math.hypot(p.x-q.x,p.z-q.z)<6.5)lanes.push([p.x,p.z,q.x,q.z]);}}
  const laneD=(x,z)=>{let best=9;for(const l of lanes){const ax=l[2]-l[0],az=l[3]-l[1],ll=ax*ax+az*az||1;let t=((x-l[0])*ax+(z-l[1])*az)/ll;t=Math.max(0,Math.min(1,t));best=Math.min(best,Math.hypot(x-l[0]-ax*t,z-l[1]-az*t));}return best;};
  // ground: square grid draped on the terrain; vertex alpha feathers to 0 at a noise-warped edge and where the ground climbs the cliff
- {const N=70,E=FR*1.04,pos=[],col=[],idx=[],c=new THREE.Color();const hc=H(0,0);
+ let fv=0,fvt=0;{const N=92,E=FR*1.04,pos=[],col=[],idx=[],c=new THREE.Color();const hc=H(0,0);
   for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const x=-E+2*E*i/N,z=-E+2*E*j/N,r=Math.hypot(x,z),a=Math.atan2(z,x),ro=rOut(a),h=H(x,z);
-   const f=fieldAt(x,z);if(f){c.copy(CF[f.t]);const s=f.t==='pasture'?1:.9+.12*Math.sin(f.c.b*3.4+f.h*6);c.multiplyScalar(s*(.92+.16*f.h));
-     const e=Math.max(Math.abs(f.c.a)/(PW/2),Math.abs(f.c.b)/(PD/2));if(e>.9)c.lerp(HEDGE,.55*smooth(.9,1,e));}
+   const f=fieldAt(x,z);if(f){c.copy(CF[f.t]);const s=f.t==='pasture'?1:f.t==='fallow'||f.t==='green'?.9+.14*Math.sin(f.c.b*13+f.h*6):.94+.08*Math.sin(f.c.a*2.2+f.h*6);c.multiplyScalar(s*(.9+.2*f.h));
+     const e=Math.max(Math.abs(f.c.a)/(PW/2),Math.abs(f.c.b)/(PD/2));if(e>.86)c.lerp(HEDGE,.45*smooth(.86,1,e));}
    else c.copy(MEAD).multiplyScalar(.94+.12*vn(x*.6,z*.6));
-   const ld=laneD(x,z);if(ld<.6)c.lerp(DIRT,.8*smooth(.6,.25,ld));
+   const ld=laneD(x,z);if(ld<.75)c.lerp(DIRT,.85*smooth(.75,.3,ld));
    const bd=Math.abs(x-riverX(z));if(bd<1.6)c.lerp(BANK,.6*smooth(1.6,.6,bd));
-   if(r<3.4)c.lerp(DIRT,.45*smooth(3.4,1.4,r*(1+.3*(vn(x*1.7,z*1.7)-.5))));
+   {const rq=r*(1+.3*(vn(x*1.7,z*1.7)-.5));if(rq<3.8)c.lerp(GRN,.7*smooth(3.8,2.6,rq));if(rq<1.4)c.lerp(DIRT,.6*smooth(1.4,.6,rq));}   // r8 F: village green (grass) with a worn centre
    for(const o of AOS){const d=Math.hypot(x-o.x,z-o.z);if(d<o.r*1.25)c.multiplyScalar(1-.35*(o.k||.4)*smooth(o.r*1.25,o.r*.4,d));}
    let al=1-smooth(.78,1,r/ro);al*=1-smooth(1.4,3.0,h-hc);   // feather: warped outer edge + no field on the cliff face
+   if(f){fvt++;if(al>.5)fv++;}
    pos.push(x,h+.04,z);col.push(c.r,c.g,c.b,al);}
   // quads with all four corners at alpha 0 are dropped (the host turns alpha into the terrain colour; no square outline past the feather)
   const A=k=>col[k*4+3]>.01;for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+1,d=a+N+1,e=d+1;if(A(a)||A(b)||A(d)||A(e))idx.push(a,d,b,b,d,e);}
@@ -118,15 +121,19 @@ FA.PROREV={build(site,ctx){const PK=FA.PROCOTTAGE;if(!PK||typeof PK.build!=='fun
   const gm=mats.ground||new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95});
   const m=new THREE.Mesh(g,gm);m.name='rv_ground_fields';m.renderOrder=1;near.add(m);}
  // hedgerows + hedge trees on parcel borders (not every border), haystacks on fallow, sheep on pasture
- {const seen=new Set(),foli=mats.foliage||mats.building,wood=mats.wood||mats.building;
-  for(let i=-6;i<=6;i++)for(let j=-6;j<=6;j++){const cx=i*PW*ux-j*PD*uz,cz=i*PW*uz+j*PD*ux,f=fieldAt(cx,cz);if(!f)continue;const k=i+','+j;if(seen.has(k))continue;seen.add(k);
+ // r8 F: continuous hedgerows (low box runs, not balls) on every furlong border (3 strips) and on the strip ends, hedge trees on some
+ {const seen=new Set(),foli=mats.foliage||mats.building,wood=mats.wood||mats.building,HC=[HEDGE.r*1.1,HEDGE.g*1.1,HEDGE.b*1.1];
+  const hc0=H(0,0),onG=(x,z)=>H(x,z)-hc0<1.3&&Math.hypot(x,z)<rOut(Math.atan2(z,x))*.88;   // r8 F2: nothing on the cliff face / past the feather (stray cone on the lowland)
+  const hedge=(x,z,len,along)=>{if(inKO(x,z,.2)||Math.abs(x-riverX(z))<1.4||!onG(x,z))return;const y=H(x,z),hh=.26+.1*hash(x,z),k=.85+.3*hash(z,x);
+   PT.add(foli,PT.G.ico(1),x,y+hh*.3,z,along?len*.58:.19,hh,along?.19:len*.58,0,-ang,0,[HC[0]*k,HC[1]*k,HC[2]*k]);};   // lumpy continuous hedge (r8 F2: boxes read as battlements)
+  for(let i=-7;i<=7;i++)for(let j=-14;j<=14;j++){const cx=i*PW*ux-j*PD*uz,cz=i*PW*uz+j*PD*ux,f=fieldAt(cx,cz);if(!f)continue;const k=i+','+j;if(seen.has(k))continue;seen.add(k);
    const hv=hash(i*3.1+.2,j*1.9+.5);
-   if(hv<.55){const sg=hv<.27?1:-1;for(let s=-2;s<=2;s++){const a=s*.9,x=cx+ux*a-uz*sg*PD/2,z=cz+uz*a+ux*sg*PD/2;if(inKO(x,z,.2)||Math.abs(x-riverX(z))<1.4)continue;
-     const hh=.32+.14*hash(x,z),y=H(x,z);PT.add(foli,PT.G.ico(1),x,y+hh*.55,z,.52,hh,.34,0,-ang,0,[HEDGE.r*1.05,HEDGE.g*1.05,HEDGE.b*1.05]);
-     if(hash(x*.7,z*.3)<.18){const ts=.55+.3*hash(z,x);PT.add(wood,PT.G.cyl(5,.7),x,y,z,.06,ts*.9,.06,0,0,0,[.12,.09,.06]);PT.add(foli,PT.G.ico(1),x,y+ts*1.05,z,.42*ts+.1,.5*ts,.42*ts+.1,0,0,0,[.07,.10,.05]);}}}
-   if(f.t==='fallow'||f.t==='wheat'&&hv>.8){for(const a of[-1.1,.4,1.3]){if(hash(a*5+i,j)<.35)continue;const x=cx+ux*a+uz*.4,z=cz+uz*a-ux*.4,y=H(x,z);
+   if(((j%3)+3)%3===0)for(let s=-1;s<=1;s++){const a=s*PW/3,x=cx+ux*a+uz*PD/2,z=cz+uz*a-ux*PD/2;hedge(x,z,PW/3*.98,true);
+     if(onG(x,z)&&hash(x*.7,z*.3)<.16){const y=H(x,z),ts=.6+.3*hash(z,x);PT.add(wood,PT.G.cyl(5,.7),x,y,z,.06,ts*.9,.06,0,0,0,[.12,.09,.06]);PT.add(foli,PT.G.ico(1),x,y+ts*1.05,z,.42*ts+.1,.45*ts,.42*ts+.1,0,0,0,[.07,.10,.05]);}}
+   {const x=cx-ux*PW/2,z=cz-uz*PW/2;hedge(x,z,PD*.98,false);}
+   if(f.t==='fallow'||f.t==='stubble'||f.t==='wheat'&&hv>.8){for(const a of[-1.6,0,1.6]){if(hash(a*5+i,j)<.4)continue;const x=cx+ux*a,z=cz+uz*a,y=H(x,z);if(!onG(x,z))continue;
      PT.add(wood,PT.G.cyl(9,.92),x,y-.02,z,.34,.4,.34,0,0,0,[.44,.30,.08]);PT.add(wood,PT.G.cone(9),x,y+.36,z,.36,.36,.36,0,0,0,[.44,.30,.08]);}}
-   if(f.t==='pasture'){const n=2+((hv*7)|0)%3;for(let s=0;s<n;s++){const x=cx+ux*(hash(s,i)*3.2-1.6)-uz*(hash(j,s)*2.4-1.2),z=cz+uz*(hash(s,i)*3.2-1.6)+ux*(hash(j,s)*2.4-1.2),y=H(x,z),ry=hash(x,s)*6.3;
+   if(f.t==='pasture'){const n=2+((hv*7)|0)%3;for(let s=0;s<n;s++){const x=cx+ux*(hash(s,i)*4-2)-uz*(hash(j,s)*.9-.45),z=cz+uz*(hash(s,i)*4-2)+ux*(hash(j,s)*.9-.45),y=H(x,z),ry=hash(x,s)*6.3;if(!onG(x,z))continue;
      PT.add(foli,PT.G.box(),x,y+.1,z,.26,.17,.15,0,ry,0,[.30,.29,.26]);PT.add(foli,PT.G.box(),x+Math.cos(ry)*.16,y+.16,z-Math.sin(ry)*.16,.09,.09,.08,0,ry,0,[.12,.11,.10]);}}}}
  // brook: dark water ribbon along riverX (pilot prostream stand-in), alpha fades at both ends; banks of reeds
  {const pos=[],col=[],idx=[],W=.46,N=60,z0=-FR*.98,z1=FR*.98,wc=lin('#16203A');
@@ -144,7 +151,7 @@ FA.PROREV={build(site,ctx){const PK=FA.PROCOTTAGE;if(!PK||typeof PK.build!=='fun
  let tl=null;const r={near,mid:T.mid,TU,
   anim(t){const dt=tl==null?0:Math.max(0,Math.min(.2,t-tl));tl=t;TU.uT.value=t;for(const f of anims)f(t,dt);T.mirror();if(gp)gp.sync();if(sp)sp.sync();}};
  let tris=0,draws=0;near.traverse(m=>{if((m.isMesh||m.isPoints)&&m.geometry){draws++;const g=m.geometry,c=g.index?g.index.count/3:g.attributes.position.count/3;tris+=m.isPoints?0:c;}});
- r.stats={nearTris:Math.round(tris),nearDraws:draws,midTris:Math.round(tris),midDraws:draws,glows:glows.length,smokes:smokes.length,parts:pst,buildMs:+(tb-t0).toFixed(1),postMs:+(performance.now()-tb).toFixed(1),pk:PK.info,lightsRemoved:lights.length};
+ r.stats={nearTris:Math.round(tris),nearDraws:draws,midTris:Math.round(tris),midDraws:draws,glows:glows.length,smokes:smokes.length,parts:pst,buildMs:+(tb-t0).toFixed(1),postMs:+(performance.now()-tb).toFixed(1),pk:PK.info,lightsRemoved:lights.length,fieldV:fv,fieldVT:fvt};
  const S=v=>({x:v.x*scl,y:H(v.x,v.z)*scl,z:v.z*scl});
  r.anchors={wheel:D.wheel&&S(D.wheel),windmill:D.mill&&S(D.mill),bridge:D.bridge&&S(D.bridge),green:{x:0,y:H(0,0)*scl,z:0}};
  return r;}};
