@@ -2145,7 +2145,7 @@ ANIM.push(()=>{const fx=LFX.fx;if(!fx)return;const e=(performance.now()-fx.t0)/1
 const GLK5={benevolent:+(URLQ.get('g1bvg')||0)}; // r5 final: 0 = the haze sprite is off for benevolent (vision after x.4 still saw a gold pool)
 ANIM.push(()=>{for(const G of GLOWS){if(!G.o)continue;if(!G.bx){G.bx=G.s.scale.x;G.by=G.s.scale.y;if(G.o.id in GLK5){G.k*=GLK5[G.o.id];G.s.material.opacity*=GLK5[G.o.id];G.s.visible=GLK5[G.o.id]>0;}}const v=(curP.p[G.o.id]||0)/(G.o.twin?2:1);const k=clamp(.6+.4*Math.sqrt(v/4),.55,1.35);G.s.scale.set(G.bx*k,G.by*k,1);}});
 // (b) badges + M1 whisper titles: drawn on the overlay canvas by layoutLabels (after the markers) through POSTO
-function badge(g,x,y,d,al,big,pre,pill){const up=d>0,z=Math.round(d)===0,txt=(pre?pre+' ':'')+(z?'= 0 pp':`${up?'▲':'▽'} ${up?'+':'−'}${Math.abs(Math.round(d))} pp`);g.font=`500 ${big?12:11}px ${FM}`;const w=g.measureText(txt).width+12+(pre||pill?14:0),h=big?19:17;
+function badge(g,x,y,d,al,big,pre,pill){const up=d>0,z=Math.round(d)===0,txt=(pre?pre+' ':'')+(z?'= 0 pp':`${up?'+':'−'}${Math.abs(Math.round(d))} pp`);g.font=`500 ${big?12:11}px ${FM}`;const w=g.measureText(txt).width+12+(pre||pill?14:0),h=big?19:17;
  if(pre||pill){ // r4 U14: SITE chips = rounded pill with a small marker ring at the left (road tags stay square with a road-colour swatch); r8 U29: pill without name in compare
   const r=h/2,x0=x-w/2,y0=y-h/2;g.globalAlpha=al*.9;g.fillStyle='rgba(5,7,10,.88)';g.beginPath();g.moveTo(x0+r,y0);g.lineTo(x0+w-r,y0);g.arc(x0+w-r,y,r,-Math.PI/2,Math.PI/2);g.lineTo(x0+r,y0+h);g.arc(x0+r,y,r,Math.PI/2,Math.PI*1.5);g.closePath();g.fill();
   g.globalAlpha=al;g.strokeStyle=z?'#ADA99F':up?'#C9A45C':'#7D6638';g.lineWidth=1;g.stroke();g.beginPath();g.arc(x0+r+1,y,4,0,6.2832);g.lineWidth=1.4;g.stroke();
@@ -2166,7 +2166,7 @@ function cpInit(){if(CPL.box)return;const b=document.createElement('div');b.id='
 @media (prefers-reduced-motion:reduce){#cpills .cpi{animation:none}#cpills .cpo{transition:none}}`;document.head.appendChild(st);}
 function cpPill(S,x,y,d){cpInit();const id=S.o.id;let e=CPL.el[id];
  if(!e){e=document.createElement('div');e.className='cpo';e.innerHTML='<div class="cpi"><i></i><span></span></div>';e.firstChild.style.animationDelay=(-Math.random()*3.6).toFixed(2)+'s';CPL.box.appendChild(e);CPL.el[id]=e;}
- const up=d>0,z=Math.round(d)===0,txt=z?'= 0 pp':`${up?'▲':'▽'} ${up?'+':'−'}${Math.abs(Math.round(d))} pp`;
+ const up=d>0,z=Math.round(d)===0,txt=z?'= 0 pp':`${up?'+':'−'}${Math.abs(Math.round(d))} pp`;
  if(e._t!==txt){e._t=txt;const c=z?'#ADA99F':up?'#C9A45C':'#7D6638',n=e.firstChild;n.querySelector('span').textContent=txt;n.style.borderColor=c;n.style.color=z?'#C4BFB3':up?'#F1ECE0':'#8D8A80';n.querySelector('i').style.borderColor=c;e._w=n.offsetWidth||60;}
  const W=e._w;e.style.transform=`translate3d(${(x-W/2).toFixed(2)}px,${(y-8.5).toFixed(2)}px,0)`;e.classList.add('on');CPL.used.add(id);return[x-W/2,y-8.5,x+W/2,y+8.5];}
 function cpSweep(){if(!CPL.box)return;CPL.box.classList.toggle('rm',!RMOT);for(const k in CPL.el)if(!CPL.used.has(k))CPL.el[k].classList.remove('on');CPL.used=new Set();}
@@ -2445,7 +2445,7 @@ let LEAD=null;const R0lead=o=>LEAD&&LEAD.o===o;
 function siteState(st){const rows=O.map(o=>{const c=st.p[o.id]||0;return {o,c,rg:rangeOf(c),dom:domRoad(st.src[o.id])};}).sort((a,b)=>b.c-a.c);
  const top=rows[0],sec=rows[1];top.lead=true;top.contested=sec&&sec.rg[1]>top.rg[0];return rows;}
 // v4.3 lens deltas are typographic, not chromatic: solid up triangle / hollow down triangle, +-0 hidden
-function dlt(v){const r=Math.round(v);if(!r)return '';return `<i class="dl ${r>0?'u':'n'}">${r>0?'▲ ':'▽ '}${Math.abs(r)} pp</i>`;}
+function dlt(v){const r=Math.round(v);if(!r)return '';return `<i class="dl ${r>0?'u':'n'}">${r>0?'+':'−'}${Math.abs(r)} pp</i>`;}
 // ---- left-rail road legend (6 rows: swatch, R-tag, name, share); hovering a row = hovering the road
 const LEG=document.getElementById('legend');const LEGR={};
 if(LEG)for(const r of RD6){const row=document.createElement('div');row.className='lgr';row.innerHTML=`<i style="background:${r.c}"></i><b>${r.id}</b><span class="nm">${r.sh}</span><span class="v"></span>`;
@@ -3180,10 +3180,10 @@ function updateHUD(){document.getElementById('hudWeek').textContent=isoW(day);
  const lc=document.getElementById('lenscard');lc.style.display='none';
  const P0=pulls(Math.max(0,day-7),LCUR).w,P1=S.w;let br=null,bd=0;for(const r of RD6){const d=P1[r.id]-P0[r.id];if(Math.abs(d)>Math.abs(bd)){bd=d;br=r;}}
  const ev=br&&!BFR?EVT.filter(e=>e.r===br.id&&dayOf(e.d)<=day).slice(-1)[0]:null,nIt=BFR?(BFR.items[bfIdx(day)]||[]).length:0; // G1 r7: with the engine export the driver line = this week's entering backfill items
- document.getElementById('moved').innerHTML=(Math.abs(bd)<.15?'This week: no road moved more than ~0.1 pp.':`This week: <b style="color:${br.c}">${bd>0?'▲':'▼'} ~${Math.abs(bd).toFixed(1)} pp ${br.sh}</b>${ev?` · last driver: ${ev.lb} (${ev.e})`:''}`)+(BFR?` · ${nIt} evidence item${nIt===1?'':'s'} entered · ${BFR.label}`:'');
+ document.getElementById('moved').innerHTML=(Math.abs(bd)<.15?'This week: no road moved more than ~0.1 pp.':`This week: <b style="color:${br.c}">${bd>0?'+':'−'}${Math.abs(bd).toFixed(1)} pp ${br.sh}</b>${ev?` · last driver: ${ev.lb} (${ev.e})`:''}`)+(BFR?` · ${nIt} evidence item${nIt===1?'':'s'} entered · ${BFR.label}`:'');
  document.querySelectorAll('#lens button').forEach(b=>b.classList.toggle('on',b.dataset.l===LCUR));}
 {const box=document.getElementById('lens');for(const l of LENS){const b=document.createElement('button');b.textContent=l.n;b.dataset.l=l.id;b.onclick=()=>setLens(l.id);
- b.onmouseenter=e=>showTip(e,`<div class="h">${l.n} lens</div>${l.d}<br><i>${l.id==='pooled'?'Switching lens animates road widths.':'Same evidence, different interpretation. ▲/▽ = change vs Pooled (not weekly change). Dashed bone outline on each road = its Pooled width.'}</i>`);b.onmousemove=e=>moveTip(e);b.onmouseleave=hideTip;box.appendChild(b);}}
+ b.onmouseenter=e=>showTip(e,`<div class="h">${l.n} lens</div>${l.d}<br><i>${l.id==='pooled'?'Switching lens animates road widths.':'Same evidence, different interpretation. +/− = change vs Pooled (not weekly change). Dashed bone outline on each road = its Pooled width.'}</i>`);b.onmousemove=e=>moveTip(e);b.onmouseleave=hideTip;box.appendChild(b);}}
 let LANIM_END=()=>pulls(day,LCUR);
 // r2 V1(g) COMPARE replaced in r3 by the U10 toggle below
 const CMP={on:false};
@@ -3202,7 +3202,7 @@ function cmpToggle(v){if(LCUR==='pooled'&&v==null)return;CMP.on=v==null?!CMP.on:
 function cmpShow(p){cmpToggle(p);} // r2 test API kept: cmpShow(true|false)
 function cmpBtn(cls,lbl){const b=document.createElement('button');b.className='cmpt '+(cls||'');b.innerHTML=`${lbl} <span class="st">OFF</span>`;b.setAttribute('role','switch');b.setAttribute('aria-pressed','false');
  b.onclick=e=>{e.stopPropagation();if(LCUR==='pooled')return;cmpToggle();};
- b.onmouseenter=e=>showTip(e,LCUR==='pooled'?'<div class="h">Compare with Pooled</div>Pick a lens to compare':'<div class="h">Compare with Pooled</div>ON: roads stay at their Pooled width; each site gets a small ▲/▽ pill = this lens minus Pooled, in pp. Site rings: outer thin arc = Pooled share, inner bold arc = this lens. Key: C.');b.onmousemove=e=>moveTip(e);b.onmouseleave=hideTip;return b;}
+ b.onmouseenter=e=>showTip(e,LCUR==='pooled'?'<div class="h">Compare with Pooled</div>Pick a lens to compare':'<div class="h">Compare with Pooled</div>ON: roads stay at their Pooled width; each site gets a small +/− pill = this lens minus Pooled, in pp. Site rings: outer thin arc = Pooled share, inner bold arc = this lens. Key: C.');b.onmousemove=e=>moveTip(e);b.onmouseleave=hideTip;return b;}
 {const box=document.getElementById('lens'),b=cmpBtn('','⇄ Compare with Pooled');b.id='cmpb';box.appendChild(b);
  addEventListener('keydown',e=>{if((e.key==='c'||e.key==='C')&&!e.repeat&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName))cmpToggle();});
  const st=document.createElement('style');st.textContent=`.cmpt{cursor:pointer;font:500 10px var(--f2);letter-spacing:.12em;color:var(--t2);background:transparent;border:0;padding:2px;text-transform:uppercase;pointer-events:auto;display:inline-flex;align-items:center;gap:6px}.cmpt .st{display:inline-block;position:relative;width:24px;height:13px;border-radius:7px;background:#262D38;box-shadow:inset 0 0 0 1px #3A4250;font-size:0!important;color:transparent!important;margin:0!important;flex:none;transition:background .18s}.cmpt .st::after{content:'';position:absolute;top:2.5px;left:3px;width:8px;height:8px;border-radius:50%;background:#7C8594;transition:left .18s,background .18s}.cmpt.on{color:#F1ECE0}.cmpt.on .st{background:rgba(201,164,92,.32);box-shadow:inset 0 0 0 1px var(--acc)}.cmpt.on .st::after{left:13px;background:var(--acc)}.cmpt.dis{cursor:not-allowed;opacity:.42}
@@ -3393,7 +3393,7 @@ var RPL=(()=>{const R={on:false,amp:2.5,mk:[],byWk:{},pul:[],pill:{},lean:null,m
   // ▲▽ pp pills at the destination sites (true one-week change), DOM, positioned at the site's screen marker
   for(const id in R.pill){const P=R.pill[id],t=(now-P.t0)/1000,end=((P.hold||P.t0)-P.t0)/1000+2.2;let el=P.el||(P.el=Object.assign(document.createElement('div'),{className:'rpp'}));if(!el.parentNode)LBL.appendChild(el);
    if(t>end||(window.CMP&&CMP.on&&LCUR!=='pooled')){el.remove();delete R.pill[id];continue;}busy=true;const m=MK.find(k=>k.o===P.o);if(t<0||!m||closeup){el.style.opacity='0';continue;}
-   const op=t<.25?t/.25:t>end-.5?Math.max(0,(end-t)/.5):1;el.textContent=`${P.d>0?'▲':'▽'} ${Math.abs(P.d).toFixed(Math.abs(P.d)<.1?2:1)} pp since ${isoW(0).slice(5)}`;el.style.opacity=op.toFixed(2);el.style.transform=`translate(${(m.x-el.offsetWidth/2)|0}px,${(m.y-38-4*ss(t/.4))|0}px)`;}
+   const op=t<.25?t/.25:t>end-.5?Math.max(0,(end-t)/.5):1;el.textContent=`${P.d>0?'+':'−'}${Math.abs(P.d).toFixed(Math.abs(P.d)<.1?2:1)} pp since ${isoW(0).slice(5)}`;el.style.opacity=op.toFixed(2);el.style.transform=`translate(${(m.x-el.offsetWidth/2)|0}px,${(m.y-38-4*ss(t/.4))|0}px)`;}
   if(busy)kick(300);};
  R.info=()=>({on:R.on,markers:R.mk.length,shown:R.mk.filter(m=>m.a>.5).length,pulses:R.pul.length,pills:Object.keys(R.pill).length,lean:R.lean?R.lean.r:null,weeks:Object.keys(R.byWk).length,hit0:R.hit.length?[R.hit[(R.hit.length/2)|0].x,R.hit[(R.hit.length/2)|0].y]:null});
  // hover tooltip on a milestone (wins over the road tooltip underneath it)
