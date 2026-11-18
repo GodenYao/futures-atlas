@@ -245,7 +245,13 @@ ol,ul{padding-left:20px}li{margin:5px 0}
  body.m3 #hud .t1{font-size:12px;letter-spacing:.14em;white-space:nowrap}
  body.m3 #hud .sample,body.m3 #hud .k,body.m3 #hud .ex,body.m3 #hud .mv,body.m3 #hud #lens,body.m3 #hud #lenscard{display:none!important}
  body.m3 #hud .hl{flex:1 1 auto;min-width:0;margin:0;padding-left:10px;border-left:1px solid rgba(130,140,160,.3);font-size:11px;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
- body.m3 #hud .hl b{font-size:13px;margin-right:6px}body.m3 #hud .hl .lb0,body.m3 #hud .hl .rg,body.m3 #hud .hl em{display:none}
+ body.m3 #hud .hl b{font-size:13px;margin-right:6px}body.m3 #hud .hl .rg,body.m3 #hud .hl em{display:none}
+/* M3c (owner: header 'Enslaved God ≈14%' had no context): compact 'LEADING' prefix; the name ellipsises, the % never does */
+body.m3 #hud .hl{display:flex;align-items:baseline}body.m3 #hud .hl>*{flex:none}body.m3 #hud .hl b{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+body.m3 #hud .hl .lb0{display:inline!important;font-size:0;margin-right:6px}body.m3 #hud .hl .lb0::before{content:'LEADING';font-size:9px;letter-spacing:.1em;color:#A8A498}
+@media (max-width:400px){body.m3 #hud .t1{font-size:10.5px;letter-spacing:.08em}}
+/* M3c (owner: low label contrast on phones): world name tag on a dark glass plate */
+body.m3 .plq:not(.big):not(.rg){background:rgba(10,14,19,.84);padding:1px 6px;border-radius:3px;color:#F1ECE0;text-shadow:none}
  @media (max-width:440px){body.m3.m3nav #hud .ttl{display:none}body.m3.m3nav #hud .hl{border-left:none;padding-left:0}}
  body.m3 #mbtn{display:flex;flex-direction:column;justify-content:center;gap:5px;position:fixed;right:8px;top:calc(env(safe-area-inset-top) + 4px);width:44px;height:44px;z-index:31;background:rgba(10,14,19,.82);border:1px solid var(--pline);padding:0 12px;cursor:pointer}
  body.m3 #mbtn i{display:block;height:1.5px;background:var(--t1)}
@@ -911,15 +917,19 @@ TERM.onBeforeCompile=sh=>{Object.assign(sh.uniforms,TU,TLU,G1U);
    diffuseColor.rgb=col;}}`)
   .replace('void main() {',`void main() {
   float cf=vWP.y/1.5;float ccl=abs(fract(cf-.5)-.5)/max(fwidth(cf),1e-4);float con=1.-min(ccl,1.);
+  float g1Occ=0.;
   {vec3 d=uTgt-uCam;float L=length(d);vec3 dir=d/L;float al=dot(vWP-uCam,dir);float above=vWP.y-(uTgt.y+3.5);
    float fade=smoothstep(0.,5.,above)*smoothstep(L*.82,L*.58,al)*step(0.,al)*uOcc;
-   float hsh=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453);if(fade>0.&&hsh<fade*1.15)discard;}`) // G1: occlusion dither kept; contour lines are gone, so no contour exception
+   ${/[?&]occ=old/.test(location.search)?'float hsh=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453);if(fade>0.&&hsh<fade*1.15)discard;':'if(fade>.62)discard;g1Occ=smoothstep(0.,.62,fade);'}}`) // M3c (owner 11-18): the white-noise screen-door dither read as a static grain band (phone foreground, desktop low orbits); now the occluder core is cut out cleanly and its soft edge fades toward the fog colour (no per-pixel noise). ?occ=old = old dither
   .replace('#include <dithering_fragment>',`{
    float ad=max(abs(vWP.x)*.8,abs(vWP.z)*1.12);float rim=smoothstep(150.,92.,ad);
    gl_FragColor.rgb=mix(uRimC,gl_FragColor.rgb,rim); // v4.4 L1: rim colour per look
    gl_FragColor.rgb+=uRidge*smoothstep(1.,14.,vWP.y)*rim; // v4.4 L1: warm light on ridge tops (dusk), valleys stay blue -> local contrast
    // G1 terrain B (pilot TERB): no contour lines / grid / crosses; small-scale albedo grain (2 octaves, +-7 %) so smooth slopes do not read as plastic
    {vec2 p=vWP.xz*1.6;float g=g1N(p*.55)*.6+g1N(p*1.9+5.)*.4;gl_FragColor.rgb*=.93+.14*g;}
+   #ifdef USE_FOG
+   gl_FragColor.rgb=mix(gl_FragColor.rgb,fogColor,g1Occ*.94); // M3c: soft occluder edge -> fog colour
+   #endif
   } // r8 U26: look-3 holo-table alpha/glow branch removed (look 1 only)
   #include <dithering_fragment>`);};
 const TER=new THREE.Mesh(TG,TERM);TER.receiveShadow=false;TER.castShadow=false;SC.add(TER);
@@ -1680,7 +1690,8 @@ function camApply(){let mv=0;const now=performance.now(),dtm=CAMT?clamp(now-CAMT
  CAM.position.set(tx+cam.d*Math.sin(yaw)*cp,ty+cam.d*Math.sin(cam.pit),tz+cam.d*Math.cos(yaw)*cp);CAM.lookAt(tx,ty,tz);
  TU.uCam.value.copy(CAM.position);TU.uTgt.value.set(tx,ty,tz);TU.uNow.value.set(NOW.X,0,NOW.Z); // terrain occlusion fade + scan origin
  const ext=clamp(cam.d*.62,26,95);if(Math.abs(SCm.right-ext)>.5){SCm.left=-ext;SCm.right=ext;SCm.top=ext;SCm.bottom=-ext;SCm.updateProjectionMatrix();}
- sun.target.position.set(tx,0,tz);sun.position.set(tx-70,110,tz+45);if(window.M3&&M3.on&&M3.voApply())mv=1;return mv;}
+ sun.target.position.set(tx,0,tz);sun.position.set(tx-70,110,tz+45);TU.uOcc.value=(window.M3&&M3.on&&view==='world'&&!/[?&]m3occ=1/.test(location.search))?0:1; /* M3c: the terrain occlusion screen-door (white-noise hash discard) made a static grain band over the near foreground in the phone world view; the steep phone pose has no occluders, so it is off there (desktop + close-ups unchanged) */
+ if(window.M3&&M3.on&&M3.voApply())mv=1;return mv;}
 const cardOpen=()=>window.CARD?CARD.want:document.getElementById('card').style.display==='block'; // r6 U: logical 'card wanted' state (the DOM card fades in/out on its own clock)
 function setNav(){const nv=document.getElementById('nav'),cr=document.getElementById('crumb');const hb=(document.getElementById('hud').getBoundingClientRect().bottom+10)+'px';nv.style.top=hb;
  lodWant();kick();if(typeof visSync==='function')visSync(); // r6 U18 Visions panel follows the close-up
@@ -2387,8 +2398,9 @@ function POSTO(g,t,placed,big,tlT){const fx=LFX.fx;g.save();
   // r8 U27: a whisper title stores its OFFSET from its marker and is re-anchored to the marker's CURRENT screen position every frame
   // (was an absolute screen x/y frozen at spawn time, so wheel zoom / drag / fly left the titles behind)
   for(const w of WSP.list){const m=MK.find(k=>k.o===w.o);if(!m)continue;const x=m.x+w.dx,y=m.y+w.dy;w.x=x;w.y=y;w.b=[x-4,y-4,x+w.w+4,y+22];
+   if(window.M3&&M3.on){const b=w.b,hit=a=>b[0]<a[2]&&b[2]>a[0]&&b[1]<a[3]&&b[3]>a[1];if(b[0]<2||b[2]>innerWidth-2||placed.some(hit)||MK.some(k=>k.o!==w.o&&hit([k.x-15,k.y-15,k.x+15,k.y+15]))){w.t0=-1e9;continue;}} /* M3c: a phone whisper that now collides (resize, NOW slot change) is dropped, never drawn over a label */
    const e=now-w.t0,a=e<w.fi?e/w.fi:e>w.fi+w.h?Math.max(0,1-(e-w.fi-w.h)/w.fo):1;g.globalAlpha=a;g.font=`600 14px ${FS}`;g.textAlign='left';g.textBaseline='top';
-   g.lineWidth=3;g.strokeStyle='rgba(5,7,10,.85)';g.strokeText(w.o.n,x,y);g.fillStyle=TK.t1;g.fillText(w.o.n,x,y);placed.push(w.b);}}
+   g.lineWidth=3;g.strokeStyle='rgba(5,7,10,.85)';if(window.M3&&M3.on){g.fillStyle='rgba(10,14,19,.82)';g.fillRect(x-5,y-3,w.w+10,21);}else g.strokeText(w.o.n,x,y);g.fillStyle=TK.t1;g.fillText(w.o.n,x,y);placed.push(w.b);}} /* M3c: phones put whisper titles on a dark glass plate (bare text was grey-on-purple) */
  cpSweep(); // r10 U37: hide DOM pills not placed this frame (Compare off, close-up, lens fx ended)
  g.restore();}
 window.POSTO=POSTO;
@@ -2961,7 +2973,14 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
  // v4.3 r4 (item 2): choose the NOW text height so no site icon (16 px radius) sits within ~18 px of the text box (tries 20, 16, 24, 13, 28, 11 u)
  if(!big){MWK=mkWorld(tlT);const nw0=NOWL.offsetWidth||180,mk=MWK.map(m=>[m.x,m.y]);MKB=mk; // v4.4 M2: markers on one common altitude plane
   let NM='c';const cand=[];for(const H of[NOWH,16,13])for(const md of['c','r','l'])cand.push([H,md]);cand.push([24,'c'],[11,'c'],[11,'r']);
-  for(const[H,md]of cand){const q=proj(NOWD.X,ny+H+.1,NOWD.Z);const x0=md==='c'?q[0]-nw0/2:md==='r'?q[0]-4:q[0]-nw0+4;const b=[x0,q[1]-28,x0+nw0,q[1]+2];if(!mk.some(m=>m[0]>b[0]-26&&m[0]<b[2]+26&&m[1]>b[1]-26&&m[1]<b[3]+26)){NH=H;NM=md;break;}}NOWL._m=NM;}
+  if(window.M3&&M3.on)for(const H of[24,28,32,9,40,48])for(const md of['r','l','c'])cand.push([H,md]); /* M3c: more NOW slots on phones (dense cluster) */
+  const AXQ=[];if(window.M3&&M3.on)document.querySelectorAll('.axi').forEach(e=>{if(e.offsetWidth){const r=e.getBoundingClientRect();AXQ.push([r.left-6,r.top-6,r.right+6,r.bottom+6]);}});
+  let bestN=1e9,bestC=null;
+  for(const[H,md]of cand){const q=proj(NOWD.X,ny+H+.1,NOWD.Z);const x0=md==='c'?q[0]-nw0/2:md==='r'?q[0]-4:q[0]-nw0+4;const b=[x0,q[1]-28,x0+nw0,q[1]+2];if(AXQ.some(r=>b[0]<r[2]&&b[2]>r[0]&&b[1]<r[3]&&b[3]>r[1]))continue;
+   const nh=mk.filter(m=>m[0]>b[0]-26&&m[0]<b[2]+26&&m[1]>b[1]-26&&m[1]<b[3]+26).length;if(!nh){NH=H;NM=md;bestC=null;break;}
+   if(AXQ.length){const nh2=mk.filter(m=>m[0]>b[0]-16&&m[0]<b[2]+16&&m[1]>b[1]-16&&m[1]<b[3]+16).length*10+nh;if(nh2<bestN){bestN=nh2;bestC=[H,md];}}}
+  if(bestC){NH=bestC[0];NM=bestC[1];} /* M3c: phones fall back to the slot with the fewest touching badges (was: first slot) */
+  NOWL._m=NM;}
  const NMd=big?'c':(NOWL._m||'c'); // r4 (item 2): text centred on the drop line, or hung like a flag to its right/left when site icons sit above the hub
  let[hx,hy,hok]=proj(NOWD.X,ny+NH+.1,NOWD.Z);
  {const nh0=(NOWL.offsetHeight||24)+8;if(!big&&!(hok&&hy>nh0)){const g=proj(NOWD.X,ny+1,NOWD.Z);if(g[2]&&g[1]>nh0+4&&g[1]<tlT){let lo=1,hi=NH;for(let i=0;i<12;i++){const m=(lo+hi)/2,q=proj(NOWD.X,ny+m+.1,NOWD.Z);if(q[2]&&q[1]>nh0)lo=m;else hi=m;}[hx,hy,hok]=proj(NOWD.X,ny+lo+.1,NOWD.Z);}}} // owner 11-17: zoomed in, the NOW stem top left the screen and the label vanished -> shorten the stem so the label stays on screen while the hub is visible
@@ -2973,7 +2992,8 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
  // they overlap neither another tag nor the NOW label (so a tag can never be read as belonging to a neighbouring road)
  og.font=`500 11px ${FM}`;og.textBaseline='middle';og.textAlign='center';const f=focusRoads();
  if(window.NOWM&&!big)NOWM.draw(og,W,H,tlT); // G1 r7 (Q20): dotted trail of past NOW positions + brass ground arrow (replay only), under the NOW dot
- const placed=[];if(window.NOWM&&NOWM.aA>.3&&NOWM.px){const q=NOWM.px;placed.push([Math.min(q[0],q[2])-4,Math.min(q[1],q[3])-4,Math.max(q[0],q[2])+4,Math.max(q[1],q[3])+4]);} // G1 r7: R-tags keep clear of the NOW ground arrow
+ const placed=[];const M3on=!!(window.M3&&M3.on);if(window.NOWM&&NOWM.aA>.3&&NOWM.px){const q=NOWM.px;placed.push([Math.min(q[0],q[2])-4,Math.min(q[1],q[3])-4,Math.max(q[0],q[2])+4,Math.max(q[1],q[3])+4]);} // G1 r7: R-tags keep clear of the NOW ground arrow
+ const AXR=[];if(M3on&&!big)document.querySelectorAll('.axi').forEach(e=>{if(e.offsetWidth&&getComputedStyle(e).opacity>.05){const r=e.getBoundingClientRect();AXR.push([r.left-4,r.top-4,r.right+4,r.bottom+4]);}});for(const r of AXR)placed.push(r); /* M3c: phone labels never sit on the edge axis tabs */
  if(nvis){placed.push([nx0-10,hy-nh-12,nx0+nw+10,hy+8]);
   const g0=proj(NOWD.X,ny,NOWD.Z);og.save();og.lineCap='round';
   og.strokeStyle='rgba(8,12,22,.85)';og.lineWidth=3.5;og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke();og.strokeStyle='rgba(244,239,227,.95)';og.lineWidth=1.4;og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke(); // r3 O5: thin drop line with a dark casing (overlay, reads over any road)
@@ -2981,12 +3001,14 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
  const ovl=(a)=>placed.some(b=>a[0]-10<b[2]&&a[2]+10>b[0]&&a[1]-7<b[3]&&a[3]+7>b[1]); // r3: 8/6 px clearance between tags and from the NOW text (r4: 10/7 px)
  const PRJ=big?null:ROADV.map(rv=>rv.tp.filter((_,i)=>i%2===0).map(p=>proj(p[0],hMesh(p[0],p[1])+.2,p[1])));
  // r9 U33: the r7 U20 compare-tag branch (pp tags at fork ends + leader lines) is deleted; R-tags are always the plain road id
+ const RTB=window.RTB=[]; /* M3c: drawn R-tag boxes (test probe + label declutter) */
  if(!big)ROADV.forEach((rv,ri)=>{const tp=rv.tp;let k=Math.min(tp.length-1,7),x=0,y=0,box=null,bestS=-1,bestB=null;
   og.font=`500 11px ${FM}`;const tt=rv.r.id,hw=13,TH2=8;
   for(;k<tp.length*.7;k+=2){const p=tp[k];const s=proj(p[0],hMesh(p[0],p[1])+.2,p[1]);x=s[0];y=s[1];const b=[x-hw,y-TH2,x+hw,y+TH2];if(ovl(b))continue;
    let md=1e9;PRJ.forEach((pp,rj)=>{if(rj===ri)return;for(const q of pp){const d=Math.hypot(q[0]-x,q[1]-y);if(d<md)md=d;}});
    if(md>36){box=b;break;}if(md>bestS){bestS=md;bestB=b;}}
-  if(!box)box=bestB||[x-hw,y-TH2,x+hw,y+TH2];x=box[0]+hw;y=box[1]+TH2;placed.push(box);
+  if(!box&&!bestB&&M3on)return; /* M3c: phones hide an R-tag that has no free slot (never stacked on a neighbour / badge); bestB already passed the overlap test */
+  if(!box)box=bestB||[x-hw,y-TH2,x+hw,y+TH2];x=box[0]+hw;y=box[1]+TH2;placed.push(box);RTB.push([box[0],box[1]+2,box[2],box[1]+14,rv.r.id]);
   const on=f.includes(rv.r.id),dm=f.length&&!on;og.globalAlpha=dm?.45:1;
   if(dm){og.globalAlpha=.6;og.fillStyle='rgba(5,7,10,.28)';og.fillRect(box[0],box[1]+2,2*hw,12);og.fillStyle=rv.r.c;og.fillText(tt,x,y+.5); // owner 11-17: dimmed tags = quiet road-coloured text on a faint plate (no black blocks)
   }else{og.fillStyle='rgba(5,7,10,.86)';og.fillRect(box[0],box[1]+2,2*hw,12);og.strokeStyle=rv.r.c;og.lineWidth=1;og.strokeRect(box[0]+.5,box[1]+2.5,2*hw-1,11);
@@ -3049,7 +3071,13 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
     continue;} // U6: name plate beside the enlarged marker
    const nav=rectOf('nav');el.style.transform=`translate(${24}px,${((nav?nav.bottom:110)+10)|0}px)`;continue;}
   el.classList.remove('cp');
-  if(!m){el.style.display='none';continue;}const w=el.offsetWidth,h=el.offsetHeight;const right=m.x>=hubX-40;const LG=26*(o._LK||1);let x=right?m.x+LG:m.x-LG-w;x=clamp(x,8,W-w-8);el.style.transform=`translate(${x|0}px,${(m.y-h/2)|0}px)`;{const S_=o._LK||1;o._lr=[(x-m.x)/S_,-h/2/S_,(x+w-m.x)/S_,h/2/S_];}} /* r13 L: label rect in the marker frame (LK) for LEADFX glints */
+  if(!m){el.style.display='none';continue;}const w=el.offsetWidth,h=el.offsetHeight;const right=m.x>=hubX-40;const LG=26*(o._LK||1);let x=right?m.x+LG:m.x-LG-w;let yT=m.y-h/2;
+  if(M3on){ /* M3c: phone world tag = first free slot (right, left, above, below, diagonals) clear of NOW, R-tags, whispers, axis tabs, other markers, header and sheet */
+   const ft=M3.ftop()+4,fb=Math.min(M3.sheetTop(),tlT)-4,hitR=(a,b)=>a[0]<b[2]+3&&a[2]+3>b[0]&&a[1]<b[3]+2&&a[3]+2>b[1];
+   const S=[[m.x+LG,yT],[m.x-LG-w,yT],[m.x-w/2,m.y-LG-h],[m.x-w/2,m.y+LG],[m.x+LG-6,m.y-LG-h+6],[m.x-LG-w+6,m.y-LG-h+6],[m.x+LG-6,m.y+LG-6],[m.x-LG-w+6,m.y+LG-6]];if(!right)S.unshift(S.splice(1,1)[0]);
+   let pick=null;for(const[cx,cy]of S){const r=[cx,cy,cx+w,cy+h];if(r[0]<6||r[2]>W-6||r[1]<ft||r[3]>fb)continue;if(placed.some(q=>hitR(r,q))||MK.some(k=>k.o!==o&&hitR(r,[k.x-15,k.y-15,k.x+15,k.y+15])))continue;pick=[cx,cy];break;}
+   if(pick){x=pick[0];yT=pick[1];}placed.push([x,yT,x+w,yT+h]);}
+  x=clamp(x,8,W-w-8);el.style.transform=`translate(${x|0}px,${yT|0}px)`;{const S_=o._LK||1;o._lr=[(x-m.x)/S_,(yT-m.y)/S_,(x+w-m.x)/S_,(yT+h-m.y)/S_];}} /* r13 L: label rect in the marker frame (LK) for LEADFX glints */
  if(HOV&&HOV.o){const m=MK.find(k=>k.o===HOV.o);if(m)siteTip(HOV.o,m.x,m.y,hubX);}
  window.LBLBOX=placed; // owner 11-17: replay milestones never paint over road tags / placed labels
  if(window.RPL)RPL.draw(og,W,H,tlT); // G1 r6 U (D7): replay pulses, road milestones, pp pills (re-projected every frame)
@@ -4201,27 +4229,46 @@ M3.build=function(){if(M3.built)return;M3.built=true;
  M3.voApply=(snap)=>{const g=M3.voGoal(),gx=M3.vx;let mv=false;if(snap){M3.vo=g;M3.vxc=gx;}else{if(Math.abs(g-M3.vo)>.4||Math.abs(gx-M3.vxc)>.4){M3.vo+=(g-M3.vo)*.14;M3.vxc+=(gx-M3.vxc)*.14;mv=true;}else{M3.vo=g;M3.vxc=gx;}}
   const W=innerWidth,Hh=innerHeight,k=W+'|'+Hh+'|'+M3.vo.toFixed(1)+'|'+M3.vxc.toFixed(1);if(k!==M3.vk){M3.vk=k;if(Math.abs(M3.vo)>.3||Math.abs(M3.vxc)>.3)CAM.setViewOffset(W,Hh,M3.vxc,M3.vo,W,Hh);else CAM.clearViewOffset();}
   // M3b: fog follows the camera distance beyond the world pose, so the zoomed-out whole-map view is not washed out
-  if(SC.fog&&M3.fog0){const s=Math.max(M3.fsh||0,(cam.d||0)-WV0.d);if(Math.abs(s-(M3.fs||0))>.5){M3.fs=s;SC.fog.near=M3.fog0[0]+s;SC.fog.far=M3.fog0[1]+s;}}
+  if(SC.fog&&M3.fog0){const s=Math.max(M3.fsh||0,(cam.d||0)-WV0.d+(M3.fx||0));if(Math.abs(s-(M3.fs||0))>.5){M3.fs=s;SC.fog.near=M3.fog0[0]+s;SC.fog.far=M3.fog0[1]+s*(M3.fx?1.5:1);}}
   return mv;};
  // world pose: vertical FOV opened up in portrait (keeps a usable horizontal field), then the smallest distance (over a few pitches) at which
  // every site's ground dot and marker fit inside the free area. Close-up distances scale by kd (same horizontal field as on desktop).
  M3.fit=()=>{orient();const a=innerWidth/innerHeight,F=M3.por?clamp(2*Math.atan(.26/a)*180/Math.PI,28,56):28;CAM.fov=F;CAM.aspect=a;CAM.updateProjectionMatrix();
   M3.kd=clamp(.399/(Math.tan(F*Math.PI/360)*a),1,2.2);M3.voApply(true);
-  const xs=O.map(o=>o.X),zs=O.map(o=>o.Z),cx=(Math.min(...xs)+Math.max(...xs))/2,cz=(Math.min(...zs)+Math.max(...zs))/2,ft=M3.ftop()+18,fb=Math.max(M3.sheetTop(),innerHeight*(M3.por?.5:.55))-14,W=innerWidth;
-  const ok=(tx,tz,d,p)=>{const cp=Math.cos(p);CAM.position.set(tx,-2+d*Math.sin(p),tz+d*cp);CAM.lookAt(tx,-2,tz);CAM.updateMatrixWorld();
-   for(const o of O)for(const y of[o.gy||0,(o.gy||0)+15]){const[x,yy,v]=proj(o.X,y,o.Z);if(!v||x<16||x>W-16||yy<ft||yy>fb)return false;}return true;};
-  let best=null;for(const p of(M3.por?[.8,.9,1.0,1.1]:[.62,.7,.78]))for(const dz of[-10,0,10])for(let d=140;d<=760;d+=8){if(ok(cx,cz+dz,d,p)){if(!best||d<best.d-12||(Math.abs(d-best.d)<=12&&Math.abs(p-.9)<Math.abs(best.pit-.9)))best={tx:cx,tz:cz+dz,d,pit:p};break;}}
-  if(!best)best={tx:WV0.tx,tz:WV0.tz,d:WV0.d*M3.kd,pit:WV0.pit};
-  Object.assign(WORLDV,best,{yaw:0,ly:0});
+  const xs=O.map(o=>o.X),zs=O.map(o=>o.Z),cx=(Math.min(...xs)+Math.max(...xs))/2,cz=(Math.min(...zs)+Math.max(...zs))/2,W=innerWidth;
+  // M3c (owner: portrait squeezed all 13 sites into a ~30 % band, right sites + labels clipped): portrait also tries the map ROTATED 90 deg
+  // (long X axis runs up the screen; the axis tabs follow the yaw) and steeper pitches. For every yaw / pitch / target offset the smallest
+  // distance at which every ground dot AND its marker (common marker plane Y, mkWorld) fit the free area with label-safe margins is found
+  // by bisection; the pose that fills the most of the free area wins (ties: pitch nearer 1.1). Landscape keeps yaw 0.
+  let Ym=-1e9;for(const o of O){const h=(o.gy||0)+(AH[o.id]||5);if(h>Ym)Ym=h;}Ym+=6;
+  const ft=M3.ftop()+(M3.por?22:18),fb=Math.max(M3.sheetTop(),innerHeight*(M3.por?.5:.55))-(M3.por?8:14),mx=M3.por?24:16,FW=W-2*mx,FH=fb-ft;
+  const pose=(tx,tz,d,p,yw)=>{const cp=Math.cos(p);CAM.position.set(tx+d*Math.sin(yw)*cp,-2+d*Math.sin(p),tz+d*Math.cos(yw)*cp);CAM.lookAt(tx,-2,tz);CAM.updateMatrixWorld();};
+  const bx=(tx,tz,d,p,yw)=>{pose(tx,tz,d,p,yw);let a=1e9,b=1e9,c=-1e9,e=-1e9;for(const o of O)for(const y of[o.gy||0,Ym]){const[x,yy,v]=proj(o.X,y,o.Z);if(!v)return null;if(x<a)a=x;if(x>c)c=x;if(yy<b)b=yy;if(yy>e)e=yy;}return[a,b,c,e];};
+  const fits=r=>r&&r[0]>=mx&&r[2]<=W-mx&&r[1]>=ft&&r[3]<=fb;
+  let best=null;const YW=M3.por&&!/[?&]m3yaw=0/.test(location.search)?[Math.PI/2,-Math.PI/2,0]:[0],PS=M3.por?[1.2,1.32]:[.62,.7,.78];
+  const FS=M3.por&&!/[?&]m3yaw=0/.test(location.search)?[38,46]:[F]; // M3c: a longer lens (less perspective) lets the width-bound rotated map zoom in further (38 wins at 360-443 px)
+  for(const fv of FS){CAM.fov=fv;CAM.updateProjectionMatrix();
+  for(const yw of YW)for(const p of PS)for(const ou of(M3.por?[-20,-12,-4,4,12,20]:[-10,0,10]))for(const ol of[0]){
+   const ux=-Math.sin(yw),uz=-Math.cos(yw),tx=cx+ux*ou+uz*ol,tz=cz+uz*ou-ux*ol; // ou: along screen-up, ol: along screen-right (ground plane)
+   let lo=120,hi=1200;if(!fits(bx(tx,tz,hi,p,yw)))continue;for(let i=0;i<10;i++){const m=(lo+hi)/2;if(fits(bx(tx,tz,m,p,yw)))hi=m;else lo=m;}
+   const r=bx(tx,tz,hi,p,yw),sc=((r[2]-r[0])/FW)*((r[3]-r[1])/FH)-Math.abs(p-1.1)*.02-(yw?0:.001)-(fv<F?.004:0)-Math.abs((r[1]+r[3])/2-(ft+fb)/2)/FH*.15; // centred in the free area
+   if(!best||sc>best.sc)best={tx,tz,d:Math.round(hi),pit:p,yaw:yw,sc,r,fv};}}
+  if(best&&best.fv){CAM.fov=best.fv;CAM.updateProjectionMatrix();M3.kd=clamp(.399/(Math.tan(best.fv*Math.PI/360)*a),1,2.6);}else{CAM.fov=F;CAM.updateProjectionMatrix();}
+  if(!best)best={tx:WV0.tx,tz:WV0.tz,d:WV0.d*M3.kd,pit:WV0.pit,yaw:0};
+  const bi=best;best={tx:bi.tx,tz:bi.tz,d:bi.d,pit:bi.pit};M3.fitR=bi.r?bi.r.map(v=>Math.round(v)):null;M3.fitSc=bi.sc;
+  Object.assign(WORLDV,best,{yaw:bi.yaw||0,ly:0});
   // M3b (owner: 'cannot zoom out far enough to see the whole map'): the zoom-out limit is the distance at which the WHOLE terrain incl. the
   // rim edges (|X| <= AXX+10, |Z| <= AXZ+10) fits the free area (top bar .. collapsed sheet) with a margin, x1.08, at the world pose.
   {const ft2=M3.ftop()+10,fb2=innerHeight-(M3.por?62:54)-10,ex=(typeof AXX!=='undefined'?AXX:70)+10,ez=(typeof AXZ!=='undefined'?AXZ:50)+10;
-   const okR=d=>{const cp=Math.cos(best.pit);CAM.position.set(best.tx,-2+d*Math.sin(best.pit),best.tz+d*cp);CAM.lookAt(best.tx,-2,best.tz);CAM.updateMatrixWorld();
+   const yw0=WORLDV.yaw||0,okR=d=>{pose(best.tx,best.tz,d,best.pit,yw0);
     for(const x of[-ex,0,ex])for(const z of[-ez,ez])for(const y of[0,8]){const[X,Y,v]=proj(x,y,z);if(!v||X<10||X>W-10||Y<ft2||Y>fb2)return false;}return true;};
    let dout=0;for(let d=best.d;d<=1250;d+=10)if(okR(d)){dout=d;break;}M3.dout=dout||1250;}
-  M3.dmax=Math.max(240,best.d*1.2,M3.dout*1.08);M3.fsh=Math.max(0,best.d-WV0.d);
-  const sh=Math.max(0,best.d-WV0.d);if(SC.fog){SC.fog.near=LOOK.fog[1]+sh;SC.fog.far=LOOK.fog[2]+sh;}
-  if(view==='world'){Object.assign(tg,WORLDV);Object.assign(cam,WORLDV);}M3.info={fov:+F.toFixed(1),kd:+M3.kd.toFixed(2),...best};};
+  M3.dmax=Math.max(240,best.d*1.2,M3.dout*1.08);
+  // M3c (owner: fog too heavy on phones): portrait pushes the fog start / end out by a share of the fitted distance (the steep top-down pose
+  // sees the cluster at ~d, the desktop look fogs from ~0.8 d), so the cluster reads clearly; zoom-out keeps the same extra shift. ?m3fog=0 = M3b fog.
+  M3.fx=M3.por&&!/[?&]m3fog=0/.test(location.search)?best.d*.28:0;M3.fsh=Math.max(0,best.d-WV0.d)+M3.fx;
+  const sh=M3.fsh;if(SC.fog){SC.fog.near=LOOK.fog[1]+sh;SC.fog.far=LOOK.fog[2]+sh*1.5;}
+  if(view==='world'){Object.assign(tg,WORLDV);Object.assign(cam,WORLDV);}M3.info={fov:+CAM.fov.toFixed(1),kd:+M3.kd.toFixed(2),...best};};
  M3.onResize=()=>{const p=M3.por;orient();M3.setSnap(M3.snap);if(C.style.display==='block')M3.setCSnap(M3.csnap);if(p!==M3.por||view==='world'){M3.fit();if(view==='world')kick(800);}};
  // nav (close-up / region): the header row gets '‹ World' at its left; the HUD text shifts right of it (body.m3nav)
  {const nv=$('nav'),bk=$('back');new MutationObserver(()=>{const o=M3.on&&nv.style.display==='flex';B.classList.toggle('m3nav',o);if(o)B.style.setProperty('--m3nl',(bk.offsetWidth+18)+'px');}).observe(nv,{attributes:true,attributeFilter:['style']});}
