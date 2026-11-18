@@ -234,6 +234,67 @@ ol,ul{padding-left:20px}li{margin:5px 0}
  #legend{left:8px;top:132px;width:min(324px,calc(100vw - 16px));max-height:calc(100vh - 320px);overflow:auto;-webkit-overflow-scrolling:touch}
  #legend .hd{cursor:pointer;margin-bottom:0;padding:4px 2px;user-select:none;-webkit-user-select:none}#legend .hd::after{content:' ▸';color:var(--t2)}
  #legend.open .hd{margin-bottom:6px}#legend.open .hd::after{content:' ▾'}#legend:not(.open)>*:not(.hd){display:none}#legend:not(.open){width:auto;padding:4px 10px 4px 8px}}
+ html,body{overscroll-behavior:none} /* M3: no pull-to-refresh / scroll chaining (layout unchanged) */
+ /* ===== M3 phone layout (body.m3 is set by fa4_app.js only on phones: FAT.mob and short side <= 600 px; ?m3=0/1). Desktop never matches. ===== */
+ #mbtn,#msheet{display:none}
+ body.m3{-webkit-text-size-adjust:100%;touch-action:manipulation}
+ body.m3 #hud{left:10px;top:max(8px,env(safe-area-inset-top));width:auto;max-width:calc(100vw - 70px)}
+ body.m3 #hud .ttl{gap:6px;flex-wrap:wrap;row-gap:4px}
+ body.m3 #hud .t1{font-size:13px;letter-spacing:.16em;white-space:nowrap}
+ body.m3 #hud .k{font-size:10px;letter-spacing:.08em;white-space:nowrap}
+ body.m3 #hud .sample{font-size:9px;padding:2px 5px;white-space:nowrap}
+ body.m3 #hud .hl{margin-top:5px;font-size:11px;line-height:1.35;white-space:normal}
+ body.m3 #hud .hl b{font-size:13px}body.m3 #hud .hl .lb0{margin-right:5px}
+ body.m3 #mbtn{display:flex;flex-direction:column;justify-content:center;gap:5px;position:fixed;right:8px;top:max(6px,env(safe-area-inset-top));width:44px;height:44px;z-index:31;background:rgba(10,14,19,.82);border:1px solid var(--pline);padding:0 12px;cursor:pointer}
+ body.m3 #mbtn i{display:block;height:1.5px;background:var(--t1)}
+ body.m3.mopen #mbtn{border-color:var(--acc)}
+ body.m3 #menu{display:none;position:fixed;right:8px;top:calc(max(6px,env(safe-area-inset-top)) + 50px);width:min(260px,calc(100vw - 16px));max-width:none;max-height:calc(100vh - 70px);overflow-y:auto;flex-direction:column;flex-wrap:nowrap;gap:0;background:rgba(10,14,19,.97);border:1px solid var(--pline);padding:4px 0;z-index:31}
+ body.m3.mopen #menu{display:flex}
+ body.m3 #menu button{text-align:left;padding:12px 16px;font-size:12px;text-shadow:none}
+ body.m3 #menu .mfoot{border-top:1px solid var(--pline);margin-top:4px;padding:8px 16px 6px;font:400 10px/1.6 var(--f2);color:var(--t3);letter-spacing:.04em}
+ body.m3 #menu .mfoot a{color:var(--t2);pointer-events:auto}
+ body.m3 #foot,body.m3 #tltab,body.m3 #axf{display:none!important}
+ body.m3 #nav{left:10px;max-width:calc(100vw - 20px);flex-wrap:wrap;gap:4px 8px}
+ body.m3 #back{padding:8px 10px}body.m3 #crumb{font-size:10px;letter-spacing:.08em;padding:2px 0;white-space:normal}
+ body.m3 #fps{top:auto;bottom:4px;font-size:9px}
+ body.m3 #msheet{display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;height:62px;z-index:24;background:rgba(10,14,19,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-top:1px solid var(--pline);transition:height .28s cubic-bezier(.2,.7,.2,1);padding-bottom:env(safe-area-inset-bottom);overscroll-behavior:contain}
+ body.m3.m3card #msheet{display:none}
+ body.m3 #msheet.drag,body.m3 #card.drag{transition:none!important}
+ body.m3 #msheet .grab,body.m3 #card .cgrab{height:20px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab}
+ body.m3 #msheet .grab i,body.m3 #card .cgrab i{display:block;width:40px;height:4px;border-radius:2px;background:#56606c}
+ body.m3 #msheet .tabs{display:flex;flex:none;border-bottom:1px solid var(--pline);touch-action:none}
+ body.m3 #msheet .tabs button{flex:1;min-height:40px;background:none;border:none;border-bottom:2px solid transparent;font:500 11px var(--f2);letter-spacing:.14em;text-transform:uppercase;color:var(--t2);cursor:pointer;padding:0 4px}
+ body.m3 #msheet .tabs button.on{color:var(--acc);border-bottom-color:var(--acc)}
+ body.m3 #msheet .pane{display:none;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:8px 10px 12px}
+ body.m3 #msheet .pane.on{display:block}
+ body.m3 #legend{position:static;left:auto;top:auto!important;width:auto;max-height:none;overflow:visible;background:none;border:none;padding:0;display:block!important}
+ body.m3 #legend .hd{cursor:default}body.m3 #legend .hd::after{content:none}
+ body.m3 .lgr{height:34px}
+ body.m3 #tl{position:static;left:auto;right:auto;bottom:auto;transform:none!important;opacity:1!important;pointer-events:auto!important;background:none!important;border-top:none!important;padding:0}
+ body.m3 #tlh{gap:6px 10px;margin-bottom:4px;flex-wrap:wrap}body.m3 #tlh .lg,body.m3 #tlh .sp{display:none}
+body.m3 #week{flex:1 1 0;min-width:0;white-space:normal;text-align:left;line-height:1.4}
+ body.m3 #play{width:40px;height:40px;font-size:12px}
+ body.m3 #tlwrap{height:130px}body.m3 #tlc{touch-action:none}
+ body.m3 .mevh{font:500 11px var(--f2);letter-spacing:.14em;color:var(--t2);text-transform:uppercase;margin:2px 0 8px}
+ body.m3 .mevr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}body.m3 .mevr .btn{min-height:34px;min-width:44px}
+ body.m3 .mevi{border-top:1px solid var(--pline);padding:7px 0;display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:18px;color:var(--t2)}
+ body.m3 .mevi .d{font:400 10px var(--f2);letter-spacing:.06em;color:var(--t3)}
+ body.m3 .mevo{display:block;width:100%;margin-top:8px;min-height:40px}
+ body.m3 #card{left:0;right:0;top:auto;bottom:0;width:auto;max-height:none!important;height:44vh;padding:0 14px calc(14px + env(safe-area-inset-bottom));z-index:26;border-left:none;border-right:none;border-bottom:none;overscroll-behavior:contain;transition:opacity .34s ease,transform .36s cubic-bezier(.2,.7,.2,1),height .28s cubic-bezier(.2,.7,.2,1)}
+ body.m3 #card.cv0{transform:translateY(24px)}
+ body.m3 #card .cgrab{position:sticky;top:0;margin:0 -14px;background:rgba(10,14,19,.97);z-index:3}
+ body.m3 #card .x{top:20px;right:4px;width:40px;height:38px;display:flex;align-items:center;justify-content:center;z-index:4}
+ body.m3 #card h2{font-size:19px}
+ body.m3 #card .mpn{display:flex;gap:6px;margin:0 44px 8px 0}
+ body.m3 #hud .hl span{white-space:nowrap}
+ body.m3 #card #vis div,body.m3 #card #vis span{white-space:normal}
+ body.m3 #card .mpn button{flex:1 1 0;min-width:0;min-height:38px;background:transparent;border:1px solid var(--pline);color:var(--t2);font:500 10px var(--f2);letter-spacing:.04em;text-transform:uppercase;white-space:normal;line-height:1.25;padding:3px 8px;text-align:left;cursor:pointer}
+ body.m3 #card .mpn button[data-k=n]{text-align:right}
+ body.m3 #card #vis{position:static!important;transform:none!important;width:auto!important;max-width:none!important;left:auto!important;top:auto!important;margin:8px 0 10px}
+ body.m3 #axc{left:8px;max-width:calc(100vw - 16px)}
+ body.m3l #msheet{right:auto;width:min(440px,54vw)}
+ body.m3l #card{left:auto;width:min(430px,52vw)}
+ @media (prefers-reduced-motion:reduce){body.m3 #msheet,body.m3 #card{transition:none}}
 </style>
 <script>/* M1 PC phone preview: ?m=1&frame=1 (or m=2) turns this top page into a host for a centred 390x844 iframe of the same URL minus
    frame=1: the page hides its own UI and fa4_world.js throws '__faframe' at its first line (swallowed below), so no WebGL boots here.
@@ -256,7 +317,8 @@ ol,ul{padding-left:20px}li{margin:5px 0}
   [['mobile-high',qs('1')],['mobile-low',qs('2')],['exit preview',ux]].forEach(function(l){var a=document.createElement('a');a.textContent=l[0];a.href=l[1];bar.appendChild(a);});
   var w=document.createElement('div');w.id='fw';var ph=document.createElement('div');ph.id='fph';var fr=document.createElement('iframe');fr.id='fr';fr.src=u;fr.setAttribute('allow','fullscreen');
   ph.appendChild(fr);w.appendChild(ph);b.appendChild(bar);b.appendChild(w);
-  var f=function(){w.style.setProperty('--k',Math.min(1,(innerHeight-24)/864,(innerWidth-24)/410));};addEventListener('resize',f);f();};
+  var f=function(){var side=Math.floor((innerWidth-410)/2)-24,bh=0;if(side<240){bar.style.maxWidth=(innerWidth-24)+'px';bh=bar.offsetHeight+14;}else bar.style.maxWidth=side+'px'; // M3: the help text wraps beside the bezel, or sits above it on narrow windows (it overlapped the bezel)
+   w.style.setProperty('--k',Math.min(1,(innerHeight-24-bh)/864,(innerWidth-24)/410));w.style.top='calc(50% + '+(bh/2)+'px)';};addEventListener('resize',f);f();};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();})();</script>
 </head>
 <body>
@@ -1294,7 +1356,15 @@ Object.assign(G1GEN,{egalitarian:{R:10,gen:'PROTOWN',seed:2101},protector:{R:10.
 // draped city climbs that wall and at world zoom the pit read as a dark cylindrical plinth with a lit lower edge (Normal technology).
 // bd = per-site basin depth (+ the softer wall / warped outline / narrow feather that fixed Enslaved in r4 T). Wrapped here because
 // fa4_build runs the first setValleys; fa4_ui's later call goes through the same global (see CONFLICTS.md, terrain track).
-{const sv0=setValleys;setValleys=function(p){sv0(p);for(const v of VAL){const G=v.o&&G1GEN[v.o.id];if(G&&G.bd!=null&&!v.o.twin){v.d=G.bd;v.k=G.bk||2.0;v.wa=G.bwa||1.0;v.fk=G.bfk||.8;}}};}
+{const sv0=setValleys;setValleys=function(p){sv0(p);for(const v of VAL){const G=v.o&&G1GEN[v.o.id];if(G&&G.bd!=null&&!v.o.twin){v.d=G.bd;v.k=G.bk||2.0;v.wa=G.bwa||1.0;v.fk=G.bfk||.8;}}
+ // r6c (Enslaved trench read as a RAISED pale band for 4 rounds): bisect showed the band = the trench's own lip tops + backfill berms,
+ // which proenslaved had to build UPWARDS (.7k walls) because the terrain under it was flat. Carve a real groove into the terrain
+ // along the divide (row of narrow flat-bottomed valleys, no edge warp), so floor + inner walls sit BELOW the bloc grounds and the
+ // lips come out level with them (proenslaved yt() clamps the wall top to the outer ground). ?g1encut=0 = old flat terrain; depth ?g1encd=
+ const Qc=new URLSearchParams(location.search),o=byId.enslaved,G=G1GEN.enslaved;if(o&&G&&Qc.get('g1encut')!=='0'){const D=+(Qc.get('g1encd')||1.15),hw=G.R*+(Qc.get('g1enhw')||.13),
+  r=hw*.8,sp=r*.42,z1=G.R*.95,n=Math.ceil(2*z1/sp);G1GEN.enslaved.cut=D;
+  for(let i=0;i<=n;i++){const z=-z1+i*2*z1/n,e=Math.min(1,(z1-Math.abs(z))/(G.R*.18)),dd=D*sp/(r*1.78)*(.15+.85*e*e*(3-2*e));
+   VAL.push({X:o.X,Z:o.Z+z,w2:r*r,d:dd,k:4,b:o.b,o,wa:1e-4,fk:6,cut:1});}}};}
 setValleys(curP.p);
 // spur end points for generator sites: at the city edge facing the road fork (enslaved: one per bloc either side of the trench;
 // protector: just outside the dome wall, where g1_cities.js puts a gate portal) -> the dashed spur never drapes across a new city
@@ -1582,7 +1652,7 @@ let DUSK=0;
 //      over to the time-based follow. Card reveal/hide timing lives in fa4_ui.js (cardShow / closeCard) and reads FLY.
 const FLY={on:false,el:0,dur:0,from:null,to:null,tyF:0,shF:0,duF:0};let CSH=0,CTY=null,CAMT=0;
 const easeIO=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
-const tyGoal=()=>view==='world'?-2:hAt(tg.tx,tg.tz)+1+(tg.ly||0),shGoal=()=>(cardOpen()&&innerWidth>900)?1:0;
+const tyGoal=()=>view==='world'?-2:hAt(tg.tx,tg.tz)+1+(tg.ly||0),shGoal=()=>(cardOpen()&&innerWidth>900&&!(window.M3&&M3.on))?1:0;
 function flyTo(o,dur,delay){if(o)Object.assign(tg,o);if(!RMOT){Object.assign(cam,tg);FLY.on=false;CSH=shGoal();CTY=tyGoal();DUSK=view==='world'?0:1;kick(600);return;}
  const dd=Math.hypot(tg.tx-cam.tx,tg.tz-cam.tz)+Math.abs(tg.d-cam.d)*.6+Math.abs(tg.yaw-cam.yaw)*30+Math.abs(tg.pit-cam.pit)*30;
  FLY.dur=dur||clamp(820+dd*6,900,1500);FLY.el=-(delay||0);FLY.from={...cam};FLY.to={...tg};FLY.tyF=CTY==null?tyGoal():CTY;FLY.shF=CSH;FLY.duF=DUSK;FLY.on=true;FLY.k=0;kick(FLY.dur+(delay||0)+600);}
@@ -1604,7 +1674,7 @@ function camApply(){let mv=0;const now=performance.now(),dtm=CAMT?clamp(now-CAMT
  CAM.position.set(tx+cam.d*Math.sin(yaw)*cp,ty+cam.d*Math.sin(cam.pit),tz+cam.d*Math.cos(yaw)*cp);CAM.lookAt(tx,ty,tz);
  TU.uCam.value.copy(CAM.position);TU.uTgt.value.set(tx,ty,tz);TU.uNow.value.set(NOW.X,0,NOW.Z); // terrain occlusion fade + scan origin
  const ext=clamp(cam.d*.62,26,95);if(Math.abs(SCm.right-ext)>.5){SCm.left=-ext;SCm.right=ext;SCm.top=ext;SCm.bottom=-ext;SCm.updateProjectionMatrix();}
- sun.target.position.set(tx,0,tz);sun.position.set(tx-70,110,tz+45);return mv;}
+ sun.target.position.set(tx,0,tz);sun.position.set(tx-70,110,tz+45);if(window.M3&&M3.on&&M3.voApply())mv=1;return mv;}
 const cardOpen=()=>window.CARD?CARD.want:document.getElementById('card').style.display==='block'; // r6 U: logical 'card wanted' state (the DOM card fades in/out on its own clock)
 function setNav(){const nv=document.getElementById('nav'),cr=document.getElementById('crumb');const hb=(document.getElementById('hud').getBoundingClientRect().bottom+10)+'px';nv.style.top=hb;
  lodWant();kick();if(typeof visSync==='function')visSync(); // r6 U18 Visions panel follows the close-up
@@ -1744,7 +1814,7 @@ setTimeout(()=>{const ids=O.map(o=>o.id),ric=window.requestIdleCallback||(f=>set
  if(FLY.on){ids.unshift(id);setTimeout(()=>ric(nx,{timeout:4000}),300);return;}const t=performance.now();try{const S=CAMP.pts(id);if(S)S.ms=+(performance.now()-t).toFixed(1);}catch(e){}ric(nx,{timeout:4000});};ric(nx,{timeout:4000});},3500);
 function enterO(o){if(typeof G1L!=='undefined')G1L.pre(o.id); // lod r8 (L): prefetch the city's NEAR tier at fly start
 if(typeof playing!=='undefined'&&playing&&typeof stop==='function')stop(); // r10 C (owner): no replay inside a close-up - a city click pauses it
-const CC=CLOSECAM[o.id]||closeCamOld(o);view='basin';focus=o.b;focusO=o;CARD.want=true;flyTo({ly:CC.ly,tx:o.X+CC.dx,tz:o.Z+CC.dz,d:CC.d,pit:o.id==='normaltech'?CC.pit:Math.min(CC.pit,.45),yaw:CC.yaw});select(o.id);setNav();} // r6 U: CARD.want set before the fly so the card offset rides the same ease; select() -> cardShow reveals the card at ~60 % of the fly
+const CC=CLOSECAM[o.id]||closeCamOld(o);view='basin';focus=o.b;focusO=o;CARD.want=true;flyTo({ly:CC.ly,tx:o.X+CC.dx,tz:o.Z+CC.dz,d:CC.d*(window.M3&&M3.on?M3.kd:1),pit:o.id==='normaltech'?CC.pit:Math.min(CC.pit,.45),yaw:CC.yaw});select(o.id);setNav();} // r6 U: CARD.want set before the fly so the card offset rides the same ease; select() -> cardShow reveals the card at ~60 % of the fly
 // pre-r10 generic close-up camera (fallback for a site without a CLOSECAM row; also the 'before' baseline of the r10 probe)
 function closeCamOld(o){const CD={gatekeeper:44,benevolent:42,libertarian:40,zookeeper:46,descendants:48,o1984:38};const LY={gatekeeper:2.5,benevolent:2,libertarian:1.5};const TZ={libertarian:1.6,normaltech:3.0,conquerors:2.6,descendants:2.2};
  return {ly:LY[o.id]||0,dx:0,dz:(TZ[o.id]||(o.twin?-1.5:1.5)),d:o.twin?60:o.id==='selfdestruct'?46:o.cliff?62:(CD[o.id]||34),pit:o.twin?1.0:o.id==='selfdestruct'?1.02:o.id==='libertarian'?.74:(o.id==='gatekeeper'||o.id==='benevolent')?.95:.78,yaw:o.twin?0:o.cliff?.0:-.12};}
@@ -1756,7 +1826,7 @@ const RC=new THREE.Raycaster();
 cv.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return; /* M2: touch has its own controller (TCH below) */drag={x:e.clientX,y:e.clientY,yaw:tg.yaw,pit:tg.pit,tx:tg.tx,tz:tg.tz,m:false};cv.classList.add('dragging');kick();});
 addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4){drag.m=true;}if(drag.m&&FAT.mob&&e.shiftKey){tPanFrom(drag.tx,drag.tz,dx,dy);kick();return;} /* M2 PC preview (?m=1): shift+drag = two-finger pan */if(drag.m){tg.yaw=clamp(drag.yaw-dx/320,Math.min(-.95,drag.yaw),Math.max(.95,drag.yaw));tg.pit=clamp(drag.pit+dy/400,Math.min(.62,drag.pit),1.32);kick();}}}); // v4.2: polar angle clamped (no grazing views); terrain occlusion fade does the rest. r10 C: the clamp range always includes the drag's start pose, so a low per-site close-up camera (pit < .62, |yaw| > .95) never jumps on the first drag
 addEventListener('pointerup',e=>{if(e.pointerType==='touch')return;cv.classList.remove('dragging');if(drag&&!drag.m&&e.target===cv)clickWorld(e);drag=null;});
-cv.addEventListener('wheel',e=>{e.preventDefault();tg.d=clamp(tg.d*(e.deltaY>0?1.1:.9),26,240);kick();},{passive:false});
+cv.addEventListener('wheel',e=>{e.preventDefault();tg.d=clamp(tg.d*(e.deltaY>0?1.1:.9),26,tDmax());kick();},{passive:false});
 // ======================= M2: touch controller (mobile plan A) =======================
 // canvas touch-action:none (CSS). One finger = orbit (same yaw/pitch clamps as the mouse drag); two fingers = pinch zoom toward the
 // fingers' midpoint + pan with the midpoint; pinch ending at d < 70 near a site enters its close-up (same eased enterO fly as a click),
@@ -1779,24 +1849,45 @@ cv.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;e.preven
 cv.addEventListener('pointermove',e=>{if(e.pointerType!=='touch')return;const p=TCH.p.get(e.pointerId);if(!p)return;e.preventDefault();p.x=e.clientX;p.y=e.clientY;const G=TCH.g;if(!G)return;
  if(G.k==='one'){const dx=p.x-p.x0,dy=p.y-p.y0;if(!G.m&&Math.abs(dx)+Math.abs(dy)>9){G.m=true;clearTimeout(TCH.lp);}
   if(G.m&&!G.lp){tg.yaw=clamp(G.yaw-dx/260,Math.min(-.95,G.yaw),Math.max(.95,G.yaw));tg.pit=clamp(G.pit+dy/330,Math.min(.62,G.pit),1.32);kick();}}
- else if(G.k==='two'&&TCH.p.size>=2){const[a,b]=[...TCH.p.values()],mx=(a.x+b.x)/2,my=(a.y+b.y)/2,dist=Math.max(20,Math.hypot(a.x-b.x,a.y-b.y));
-  const nd=clamp(G.d0*G.dist0/dist,26,240),P=tGround(mx,my);if(P&&nd<G.dPrev){const f=(1-nd/G.dPrev)*.85;tg.tx+=(P.x-tg.tx)*f;tg.tz+=(P.z-tg.tz)*f;} // zoom toward the fingers
-  tg.d=nd;G.dPrev=nd;tPanFrom(tg.tx,tg.tz,mx-G.mx,my-G.my);G.mx=mx;G.my=my;kick();}},{passive:false});
+ else if(G.k==='two'&&TCH.p.size>=2){const[a,b]=[...TCH.p.values()];tTwo(G,a,b);}},{passive:false});
+const tDmax=()=>window.M3&&M3.on?M3.dmax:240;
+function tTwo(G,a,b){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,dist=Math.max(20,Math.hypot(a.x-b.x,a.y-b.y));
+  const nd=clamp(G.d0*G.dist0/dist,26,tDmax()),P=tGround(mx,my);if(P&&nd<G.dPrev){const f=(1-nd/G.dPrev)*.85;tg.tx+=(P.x-tg.tx)*f;tg.tz+=(P.z-tg.tz)*f;} // zoom toward the fingers
+  tg.d=nd;G.dPrev=nd;G.dMax=Math.max(G.dMax||0,nd);tPanFrom(tg.tx,tg.tz,mx-G.mx,my-G.my);G.mx=mx;G.my=my;kick();}
+// M3 fix (pinch-out from a close-up did not return): a pinch whose fingers land on the card / Visions strip / name plates never reached the
+// canvas pointer handlers. Two-finger gestures that do not start on the canvas are now driven from document-level touch events (any target
+// except the text pages), with the same zoom / pan math and the same end rules.
+const TOV={g:null};
+function tOvPts(e){const t=e.touches;return[{x:t[0].clientX,y:t[0].clientY},{x:t[1].clientX,y:t[1].clientY}];}
+document.addEventListener('touchstart',e=>{if(e.touches.length!==2||TOV.g)return;if(document.getElementById('page').style.display==='block')return;
+ if([...e.touches].every(t=>t.target===cv))return; // both fingers on the map: the canvas pointer path handles it
+ const[a,b]=tOvPts(e);if(TCH.g&&TCH.g.k==='two')return;TCH.g={k:'rest'};clearTimeout(TCH.lp);tHovClear();
+ TOV.g={k:'two',d0:tg.d,dist0:Math.max(20,Math.hypot(a.x-b.x,a.y-b.y)),mx:(a.x+b.x)/2,my:(a.y+b.y)/2,dPrev:tg.d,m:true,ov:1};TCH.log.push('pinch-ov start');kick(1500);},{passive:false,capture:true});
+document.addEventListener('touchmove',e=>{if(!TOV.g||e.touches.length<2)return;e.preventDefault();const[a,b]=tOvPts(e);tTwo(TOV.g,a,b);},{passive:false,capture:true});
+const tOvEnd=e=>{if(!TOV.g||e.touches.length>=2)return;const G=TOV.g;TOV.g=null;if(!TCH.p.size)TCH.g=null;tPinchEnd(G);kick(1200);};
+document.addEventListener('touchend',tOvEnd,{capture:true});document.addEventListener('touchcancel',tOvEnd,{capture:true});
 function tUp(e){if(e.pointerType!=='touch')return;const p=TCH.p.get(e.pointerId);if(!p)return;TCH.p.delete(e.pointerId);clearTimeout(TCH.lp);const G=TCH.g;kick(1200);
  if(G&&G.k==='two'){TCH.g=TCH.p.size?{k:'rest'}:null;tPinchEnd(G);return;} // pinch ends at the first lifted finger
  if(G&&G.k==='rest'){if(!TCH.p.size)TCH.g=null;return;}
  TCH.g=null;if(!G||G.m||G.lp||e.type==='pointercancel')return;
  const now=performance.now(),x=p.x,y=p.y;
- if(TCH.tap&&now-TCH.tap.t<300&&Math.hypot(x-TCH.tap.x,y-TCH.tap.y)<36){clearTimeout(TCH.tm);const ic=TCH.tap.icon;TCH.tap=null;if(!ic)tDouble(x,y);return;} // double tap on an icon = its (already started) fly-in
- const h=pickAt(x,y,1.4);if(h){HOV=h;TCH.tap={x,y,t:now,icon:1};TCH.log.push('tap '+(h.o?h.o.id:h.r));clickWorld(tEv(x,y));HOV=null;return;} // tap on an icon / road = click
+ if(TCH.tap&&now-TCH.tap.t<300&&Math.hypot(x-TCH.tap.x,y-TCH.tap.y)<36){clearTimeout(TCH.tm);const ic=TCH.tap.icon,io=TCH.tap.o;TCH.tap=null;if(ic===2&&io){tHovClear();TCH.pv=null;TCH.log.push('double '+io.id);enterO(io);return;}if(!ic)tDouble(x,y);return;} // double tap on an icon = its (already started) fly-in
+ const h=pickAt(x,y,1.4);
+ // M3 label declutter: on a phone's world view a first tap on a site without an always-on title shows its name + share (same as a long
+ // press); a second tap on it (or a double tap) opens the close-up
+ if(h&&h.o&&window.M3&&M3.on&&view==='world'&&!(TCH.pv===h.o.id&&now-TCH.pvT<5000)){TCH.pv=h.o.id;TCH.pvT=now;HOV=h;TCH.lpOn=true;applyFocus();TCH.tap={x,y,t:now,icon:2,o:h.o};TCH.log.push('preview '+h.o.id);kick(800);return;}
+ if(h){HOV=h;TCH.tap={x,y,t:now,icon:1};TCH.pv=null;TCH.log.push('tap '+(h.o?h.o.id:h.r));clickWorld(tEv(x,y));HOV=null;return;} // tap on an icon / road = click
  TCH.tap={x,y,t:now};clearTimeout(TCH.tm);TCH.tm=setTimeout(()=>{TCH.tap=null;HOV=null;TCH.log.push('tap terrain');clickWorld(tEv(x,y));},290);}
 cv.addEventListener('pointerup',tUp);cv.addEventListener('pointercancel',tUp);
 cv.addEventListener('contextmenu',e=>{if(FAT.mob||TCH.p.size)e.preventDefault();});
 function tDouble(x,y){const h=pickAt(x,y,1.6);let o=h&&h.o;if(!o){const P=tGround(x,y);if(P)o=tNearSite(P.x,P.z,1.7);}
  TCH.log.push('double '+(o?o.id:'zoom'));if(o){enterO(o);return;}const P=tGround(x,y);if(P){tg.tx+=(P.x-tg.tx)*.4;tg.tz+=(P.z-tg.tz)*.4;}tg.d=clamp(tg.d*.6,26,240);kick(1200);}
-function tPinchEnd(G){const CCd=focusO&&CLOSECAM[focusO.id]?CLOSECAM[focusO.id].d:50;
- if(view!=='world'&&focusO&&tg.d>Math.max(CCd*1.6,90)){TCH.log.push('pinch-out world');world();return;}
- if(view==='world'&&tg.d<70){const o=tNearSite(tg.tx,tg.tz,1.6);if(o){TCH.log.push('pinch-in '+o.id);enterO(o);}}}
+function tPinchEnd(G){const kd=window.M3&&M3.on?M3.kd:1,CCd=(focusO&&CLOSECAM[focusO.id]?CLOSECAM[focusO.id].d:50)*kd;
+ // M3: pinch-out back to the world view from a close-up OR a region view: past 1.35x the view's own distance (was 1.6x and >= 90, which
+ // a one-hand pinch from d 44 could not reach) or a pinch that opened the fingers' distance by >= 1.8x
+ const vd=focusO?CCd:(G.d0||tg.d),out=tg.d>Math.max(vd*1.35,G.d0*1.3)||(G.d0&&(G.dMax||tg.d)>G.d0*1.8);
+ if(view!=='world'&&out){TCH.log.push('pinch-out world');world();return;}
+ if(view==='world'&&tg.d<70*kd){const o=tNearSite(tg.tx,tg.tz,1.6);if(o){TCH.log.push('pinch-in '+o.id);enterO(o);}}}
 function clickWorld(e){if(HOV){if(HOV.o){enterO(HOV.o);return;}if(HOV.r){openRoad(HOV.r);return;}} // v4.3: markers / roads picked in screen space
  const nd=new THREE.Vector2(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);RC.setFromCamera(nd,CAM);const hit=RC.intersectObject(TER,false)[0];if(!hit)return;
  const X=hit.point.x,Z=hit.point.z;if(Math.hypot(X-NOW.X,Z-NOW.Z)<NOW.R*1.3||Math.hypot(X-NOWD.X,Z-NOWD.Z)<NOW.R*.9){openNow();return;}let best=null,bd=1e9;for(const o of O){const w=o.twin?18:o.cliff?14:o.w*100;const d=Math.hypot(X-o.X,Z-o.Z)/w;if(d<bd){bd=d;best=o;}}
@@ -1840,14 +1931,14 @@ function placeAxis(tlT,hudR){const W=innerWidth,H=innerHeight,big=view!=='world'
  const key=W+'|'+H+'|'+(tlT|0)+'|'+(hudR?hudR.bottom|0:0)+'|'+AXS.mode+'|'+yq+'|'+(nvR?nvR.bottom|0:0)+'|'+hid+'|'+lgB+'|'+big;if(key===AXKEY)return;AXKEY=key;
  const mapB=tlT+16; // bottom edge of the map viewport = just above the timeline (or the footer when hidden)
  const fr=document.getElementById('axf');fr.style.height=(H-12)+'px';fr.style.display=big?'none':'block'; // r5: frame = whole screen; all four tabs dock on the screen edge
- const top=6,mid=(Math.max(hudR?hudR.bottom:60,60)+mapB)/2,exp=AXS.mode==='exp';
+ const top=window.M3&&M3.on?Math.round(M3.ftop())+4:6,mid=(Math.max(hudR?hudR.bottom:60,60)+mapB)/2,exp=AXS.mode==='exp';
  // camera-relative screen direction of each world axis (camera orbits by yaw; screen right = (cos,-sin), screen up = forward = (-sin,-cos))
  const yw=(big||wy)?cam.yaw:0,cy=Math.cos(yw),sy=Math.sin(yw),DIR={W:[-cy,-sy],E:[cy,sy],N:[sy,-cy],S:[-sy,cy]};
  let C=null;if(exp){const t0=Math.round((nvR?nvR.bottom:110)+10);AXC.style.top=t0+'px';C=[24+198,t0+92];
   // 'this region' ring: the focused basin's quadrant (W/E from x, N/S from y), rotated with the camera like the icons
   const Bf=BASINS[focus]||{cx:.5,cy:.5},qx=Math.sign(Bf.cx-.5),qz=Math.sign(Bf.cy-.5),qd=[qx*DIR.E[0]+qz*DIR.S[0],qx*DIR.E[1]+qz*DIR.S[1]];
   const q=AXC.querySelector('.q'),ql=AXC.querySelector('.ql');q.style.left=ql.style.left=(198+qd[0]*34)+'px';q.style.top=ql.style.top=(92+qd[1]*28)+'px';ql.style.transform=qd[0]>=0?'translate(9px,-50%)':'translate(calc(-100% - 9px),-50%)';}AXC.classList.toggle('on',exp);
- const mn=rectOf('menu'),L0=hudR?hudR.right:0,R0=mn?mn.left:W,yS=hid?H-30:tlT-6;
+ const mn=rectOf('menu'),m3=window.M3&&M3.on,L0=hudR&&!m3?hudR.right:0,R0=mn&&!m3?mn.left:W,yS=hid?H-30:tlT-6;
  for(const a of AXM){const el=a.el,rl=a.rl;el.style.display='flex';rl.style.display=(big||wy)?'none':'flex';el.classList.toggle('exp',exp);el.classList.toggle('sm',big&&!exp);el.classList.toggle('wy',wfast);
   const w=el.offsetWidth,h=el.offsetHeight,d=DIR[a.k];let x,y,rx=0,ry=0,rw=0,rh=0;el.classList.toggle('lft',exp&&d[0]<-.5);
   if(exp){x=C[0]+d[0]*70-w/2;y=C[1]+d[1]*50-h/2;}
@@ -2282,7 +2373,8 @@ function POSTO(g,t,placed,big,tlT){const fx=LFX.fx;g.save();
    for(const[ox,oy]of[[0,-30],[0,30],[w/2+22,0],[-w/2-22,0],[0,-52]]){const x=m.x+ox,y=m.y+oy;if(hitP([x-w/2,y-9,x+w/2,y+9])||y>tlT-12||(pre&&[rectOf('menu'),rectOf('hud'),rectOf('legend')].some(R=>R&&x+w/2>R.left-6&&x-w/2<R.right+6&&y+10>R.top-4&&y-10<R.bottom+4))||y<40)continue;placed.push(badge(g,x,y,S.d,al,false,pre));break;}}}} // r4: site chips never slide under the nav/HUD/legend (was a fixed 1440-wide rule; clipped at 1280x720)
  // M1 whisper: every few seconds 1 random site title fades in beside its marker for ~3 s (max 2 at once, never over NOW, tags, badges, the lead title)
  if(!big&&RMOT&&!fx){const now=t;WSP.list=WSP.list.filter(w=>now-w.t0<w.fi+w.h+w.fo); // r2 U4: 3-4 at once, random fade-in / hold 2.5-5 s / fade-out, staggered
-  if(now>WSP.next&&WSP.list.length<4&&MK.length){WSP.next=now+(WSP.list.length<3?.5+Math.random()*1.2:1.5+Math.random()*2);const cand=MK.filter(m=>!m.o._lead&&!(HOV&&HOV.o===m.o)&&!WSP.list.some(w=>w.o===m.o)&&m.y<tlT-20);
+  if(now>WSP.next&&WSP.list.length<(window.M3&&M3.on?2:4)&&MK.length){WSP.next=now+(WSP.list.length<3?.5+Math.random()*1.2:1.5+Math.random()*2);const m3=window.M3&&M3.on;if(m3)M3.topUpd(); // M3: phones whisper only the top-4 shares + selected site (others: tap)
+   const cand=MK.filter(m=>!m.o._lead&&!(HOV&&HOV.o===m.o)&&!WSP.list.some(w=>w.o===m.o)&&m.y<tlT-20&&(!m3||M3.top.has(m.o.id)));
    if(cand.length){const m=cand[Math.floor(Math.random()*cand.length)];g.font=`600 14px ${FS}`;const w=g.measureText(m.o.n).width;const lr=LEAD&&LEAD.o.el&&LEAD.o.el.style.display!=='none'?LEAD.o.el.getBoundingClientRect():null;
     const tries=[[m.x+24,m.y-9],[m.x-24-w,m.y-9],[m.x-w/2,m.y-42]];for(const[x,y]of tries){const b=[x-4,y-4,x+w+4,y+22];const hit=a=>b[0]<a[2]&&b[2]>a[0]&&b[1]<a[3]&&b[3]>a[1];
      if(placed.some(hit)||WSP.list.some(q=>hit(q.b))||(lr&&hit([lr.left,lr.top,lr.right,lr.bottom]))||MK.some(k=>k.o!==m.o&&hit([k.x-18,k.y-18,k.x+18,k.y+18]))||x<8||x+w>innerWidth-8)continue;WSP.list.push({o:m.o,t0:now,dx:x-m.x,dy:y-m.y,w,b,fi:.5+Math.random()*.9,h:2.5+Math.random()*2.5,fo:.7+Math.random()*.6});break;}}}
@@ -2480,21 +2572,84 @@ const G1L=(()=>{const Q=new URLSearchParams(location.search),n=(k,d)=>Q.get(k)!=
   if(!G.boundingSphere)G.computeBoundingSphere();D.boundingSphere=G.boundingSphere.clone();if(G.boundingBox)D.boundingBox=G.boundingBox.clone();D.name=(G.name||'')+'|far';out.g=D;}
  function interleave(m){const n=m.count,h=Math.ceil(n/2);for(const at of [m.instanceMatrix,m.instanceColor]){if(!at)continue;const sz=at.itemSize,src=at.array.slice(0,n*sz),dst=at.array;
    let j=0;for(const par of [0,1])for(let i=par;i<n;i+=2){for(let q=0;q<sz;q++)dst[j*sz+q]=src[i*sz+q];j++;}at.needsUpdate=true;}return h;}
- function* farJob(s){const S=s.S,r=s.r;const F={swap:[],hide:[],inst:[],tris0:0,tris1:0,calls0:0,calls1:0};
+ function* farJob(s){if(L.MERGE&&!s.merged)yield* mergeJob(s);const S=s.S,r=s.r;const F={swap:[],hide:[],inst:[],mz:[],mp:[],mh:[],lv:[],tris0:0,tris1:0,calls0:0,calls1:0};
+  S.traverse(m=>{if(m.isPoints&&visIn(m,S))F.mp.push(m);});
   if(typeof r.anim==='function'&&!G1.RM){try{r.anim((typeof tnow==='function'?tnow():0)+37.3);}catch(e){}}   // probe: anything an anim call writes is live
   S.updateMatrixWorld(true);const u=upp(L.FAR_IN),amin=L.FAR_PX*u*u,rmin=L.FAR_RPX*u;const list=[];S.traverse(m=>{if(m.isMesh)list.push(m);});let tw=performance.now();
   for(const m of list){const G=m.geometry;if(!G||!G.attributes.position)continue;const n=triN(G),k=m.isInstancedMesh?m.count:1;F.tris0+=n*k;if(m.visible)F.calls0++;
    const mt=m.material,live=!m.visible||s.ver.get(m)!==vsum(m)||m.userData.g1Live||m.userData.g1Far===false||Array.isArray(mt)||!mt||(G.morphAttributes&&Object.keys(G.morphAttributes).length>0)||G.groups.length>1;
-   if(live){F.tris1+=n*k;if(m.visible)F.calls1++;continue;}
+   if(live){F.lv.push(m);F.tris1+=n*k;if(m.visible)F.calls1++;continue;}
    const em=mt&&mt.emissive&&(mt.emissive.r+mt.emissive.g+mt.emissive.b)*(mt.emissiveIntensity==null?1:mt.emissiveIntensity)>.02;   // lit parts (lamps, beacons) are never reduced
    const gl=g1Glow(mt)||em,gr=g1Ground(m,mt);if(!G.boundingSphere)G.computeBoundingSphere();m.getWorldScale(ws);const sc=Math.max(ws.x,ws.y,ws.z)||1,rad=G.boundingSphere.radius*sc;
-   if(m.isInstancedMesh){if(L.FAR_INST&&!gl&&m.count>=24&&rad<.9){const h=interleave(m);F.inst.push([m,m.count,h]);F.tris1+=n*h;s.ver.set(m,vsum(m));}else F.tris1+=n*k;F.calls1++;}
+   if(m.isInstancedMesh){m.userData.g1N0=m.count;if(!gl&&rad<1.2)F.mz.push(m);if(L.FAR_INST&&!gl&&m.count>=24&&rad<.9){const h=interleave(m);F.inst.push([m,m.count,h]);F.tris1+=n*h;s.ver.set(m,vsum(m));}else F.tris1+=n*k;F.calls1++;}
    else if(!gl&&!gr&&rad<rmin)F.hide.push(m);
    else if(L.FAR_DEC&&!gl&&!gr&&n>200){const o={};yield* decim(G,amin/(sc*sc),o,L.FAR_LPX*u/sc);if(o.g){F.swap.push([m,G,o.g]);F.tris1+=triN(o.g);}else F.tris1+=n;F.calls1++;}
    else{F.tris1+=n;F.calls1++;}
    if(performance.now()-tw>L.slice()){yield 'far';tw=performance.now();}}
+  // r6c M4 mobile cap: at world zoom on mobile tiers a city keeps <= L.MCAP draws (?g1mcap=, gatekeeper x2): smallest static non-ground
+  // parts (radius < .35 city R) are hidden first, so the big families / structures that carry the silhouette always stay
+  {const Rc=(G1GEN[s.id]&&G1GEN[s.id].R)||9,cap=L.MCAP*(s.id==='gatekeeper'?2:1),lv=new Set(F.lv),hd=new Set(F.hide),mz=new Set(F.mz);
+   const vis=list.filter(m=>visIn(m,S)&&!hd.has(m)&&!mz.has(m)),cand=vis.filter(m=>!lv.has(m)&&m.geometry.boundingSphere&&!g1Ground(m,m.material)&&m.geometry.boundingSphere.radius*(m.getWorldScale(ws),Math.max(ws.x,ws.y,ws.z))<.35*Rc)
+    .sort((a,b)=>a.geometry.boundingSphere.radius-b.geometry.boundingSphere.radius);let c=vis.length;while(c>cap&&cand.length){F.mh.push(cand.shift());c--;}F.mcalls=c;}
   s.far=F;}
- function setFar(s,on){const F=s.far;if(!F)return;for(const [m,G,D] of F.swap)m.geometry=on?D:G;for(const m of F.hide)m.visible=!on;for(const [m,n0,h] of F.inst)m.count=on?h:n0;s.farOn=on;}
+ // r6c M4 (mobile world <= 120 calls): merge the STATIC meshes of each city's world tier (MID, or NEAR for single-tier gatekeeper)
+ // into one mesh per (material, renderOrder, shadow flags, layers, ground flag, attribute layout). Positions/normals are baked into the
+ // group's local space, so modelMatrix*position (world-space shaders, dither fade, ground feather) gives the same values = same pixels.
+ // Static = same matrixWorld, visibility and attribute versions at 3 anim probe times; transparent, instanced, multi-material,
+ // morph, g1Live/g1Far===false meshes stay separate. Safety net L.mcheck(): if a merged-away mesh is moved/hidden later, its group is
+ // restored. ?g1merge=0 = off (A/B check); L.mstat() = per city {n0 meshes, n1 after, groups}.
+ L.MERGE=Q.get('g1merge')!=='0';L.MBAKE=Q.get('g1mbake')!=='0';L.MCAP=+(Q.get('g1mcap')||4);L.mlog={};
+ const mobT=()=>typeof G1!=='undefined'&&G1.TIER&&G1.TIER!=='desktop'&&Q.get('g1mlite')!=='0';   // mobile tiers: loose bake keys (roughness/metalness of the first member) + FAR hides small instanced props and particle Points
+ const _M4=new THREE.Matrix4(),_N3=new THREE.Matrix3(),_V=new THREE.Vector3();
+ const visIn=(m,S)=>{for(let p=m;p&&p!==S;p=p.parent)if(!p.visible)return false;return true;};
+ function* mergeJob(s){const S=s.S,r=s.r,list=[];S.traverse(m=>{if(m.isMesh&&!m.isInstancedMesh&&!m.userData.g1Merged)list.push(m);});
+  const snap=()=>{S.updateMatrixWorld(true);return list.map(m=>{const t=Array.isArray(m.material)?null:m.material;return m.matrixWorld.elements.join(',')+'|'+visIn(m,S)+'|'+vsum(m)+(t?'|'+(t.color?t.color.getHexString():'')+(t.emissive?t.emissive.getHexString():'')+t.opacity+t.visible:'');});};
+  const P0=snap(),bad=new Set();
+  if(typeof r.anim==='function'&&!G1.RM){const t0=typeof tnow==='function'?tnow():0;for(const dt of[7.31,19.7]){try{r.anim(t0+dt);}catch(e){}const P=snap();P.forEach((v,i)=>{if(v!==P0[i])bad.add(list[i]);});}try{r.anim(t0);}catch(e){}S.updateMatrixWorld(true);}
+  yield 'mrg';const inv=new THREE.Matrix4().copy(S.matrixWorld).invert(),K={},why={};let n0=0;const W_=w=>{why[w]=(why[w]||0)+1;};
+  for(const m of list){if(!visIn(m,S))continue;n0++;const G=m.geometry,mt=m.material;
+   if(bad.has(m)){W_('live');continue;}if(mt&&mt.transparent){W_('transp');continue;}if(Array.isArray(mt)||G.groups.length>1){W_('multi');continue;}
+   if(!G||!G.attributes.position||!mt||m.isSkinnedMesh||m.userData.g1Live||m.userData.g1Far===false||
+    (G.morphAttributes&&Object.keys(G.morphAttributes).length)||G.attributes.tangent||s.ver.get(m)!==vsum(m)){W_('other');continue;}
+   const sig=Object.keys(G.attributes).sort().map(k=>k+G.attributes[k].itemSize).join(','),gr=g1Ground(m,mt)?1:0;
+   // colour-bake path: plain Standard/Basic materials (no maps, no vertex colours, no generator shader patch) that differ only in
+   // .color are merged into ONE clone with vertexColors (color attr = the member's linear material colour -> same diffuse product)
+   const pl=L.MBAKE&&(mt.isMeshStandardMaterial||mt.isMeshBasicMaterial)&&!mt.map&&!mt.userData.g1Prev&&!mt.userData.g1W&&!mt.userData.pcU&&
+    !(mt.lightMap||mt.aoMap||mt.emissiveMap||mt.normalMap||mt.roughnessMap||mt.metalnessMap||mt.alphaMap||mt.bumpMap||mt.envMap||mt.displacementMap);
+   const bk=pl&&!mt.vertexColors&&!G.attributes.color,ev=pl&&mt.vertexColors&&!!G.attributes.color;   // ev: equivalent vertex-colour materials -> first one is used
+   const eq=bk||ev?[bk?'B':'E',mt.type,mt.side,mt.fog,mt.depthWrite,mt.depthTest,mt.polygonOffset,mt.polygonOffsetFactor,mt.polygonOffsetUnits,mt.toneMapped,mt.opacity,mt.alphaTest,mt.flatShading,mt.wireframe,
+    mt.roughness*(mobT()&&bk?0:1),mt.metalness*(mobT()&&bk?0:1),mt.emissive?mt.emissive.getHexString():'',mt.emissiveIntensity,mt.blending,mt.colorWrite,mt.userData.g1A?mt.userData.g1A.value:'',mt.userData.g1?1:0,mt.customProgramCacheKey?mt.customProgramCacheKey():'',ev?mt.color.getHexString():''].join(','):mt.uuid;
+   const k=eq+'|'+m.renderOrder+'|'+(+m.castShadow)+(+m.receiveShadow)+'|'+m.layers.mask+'|'+gr+'|'+(+m.frustumCulled)+'|'+sig;(K[k]=K[k]||[]).push(m);}
+  const out=[];let n1=n0;
+  for(const k in K){const A=K[k];if(A.length<2)continue;const f=A[0],G0=f.geometry,bake=k[0]==='B'&&k[1]===',',names=Object.keys(G0.attributes);let nv=0,ni=0;if(bake)names.push('color');
+   for(const m of A){const G=m.geometry;nv+=G.attributes.position.count;ni+=G.index?G.index.count:G.attributes.position.count;}
+   const D=new THREE.BufferGeometry(),arr={};for(const nm of names)arr[nm]=new Float32Array(nv*(nm==='color'&&bake?3:G0.attributes[nm].itemSize));
+   const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);let vo=0,io=0;
+   for(const m of A){const G=m.geometry,cnt=G.attributes.position.count;_M4.multiplyMatrices(inv,m.matrixWorld);_N3.getNormalMatrix(_M4);const flip=_M4.determinant()<0;
+    for(const nm of names){if(bake&&nm==='color'){const c=m.material.color,o=arr.color;for(let i=0;i<cnt;i++){const j=(vo+i)*3;o[j]=c.r;o[j+1]=c.g;o[j+2]=c.b;}continue;}
+     const at=G.attributes[nm],sz=at.itemSize,o=arr[nm];
+     for(let i=0;i<cnt;i++){const j=(vo+i)*sz;
+      if(nm==='position'){_V.fromBufferAttribute(at,i).applyMatrix4(_M4);o[j]=_V.x;o[j+1]=_V.y;o[j+2]=_V.z;}
+      else if(nm==='normal'){_V.fromBufferAttribute(at,i).applyMatrix3(_N3).normalize();o[j]=_V.x;o[j+1]=_V.y;o[j+2]=_V.z;}
+      else{o[j]=at.getX(i);if(sz>1)o[j+1]=at.getY(i);if(sz>2)o[j+2]=at.getZ(i);if(sz>3)o[j+3]=at.getW(i);}}}
+    const idx=G.index,n=idx?idx.count:cnt;for(let t=0;t<n;t+=3){const a=idx?idx.getX(t):t,b=idx?idx.getX(t+1):t+1,c=idx?idx.getX(t+2):t+2;I[io++]=vo+a;I[io++]=vo+(flip?c:b);I[io++]=vo+(flip?b:c);}
+    vo+=cnt;}
+   for(const nm of names)D.setAttribute(nm,new THREE.BufferAttribute(arr[nm],nm==='color'&&bake?3:G0.attributes[nm].itemSize));D.setIndex(new THREE.BufferAttribute(I,1));
+   D.computeBoundingSphere();D.computeBoundingBox();D.name='g1merge';
+   let MT=f.material;if(bake){const b=f.material;MT=b.clone();MT.color.setRGB(1,1,1);MT.vertexColors=true;MT.userData=b.userData;MT.onBeforeCompile=b.onBeforeCompile;
+    if(Object.prototype.hasOwnProperty.call(b,'customProgramCacheKey'))MT.customProgramCacheKey=b.customProgramCacheKey;MT.name=(b.name||'')+'|bake';}
+   const M=new THREE.Mesh(D,MT);M.userData.bake=bake;M.name=(f.name||'')+'|merged';M.renderOrder=f.renderOrder;M.castShadow=f.castShadow;M.receiveShadow=f.receiveShadow;M.layers.mask=f.layers.mask;
+   M.frustumCulled=f.frustumCulled;M.onBeforeRender=f.onBeforeRender;M.userData.g1Merged=true;M.userData.src=A.map(m=>[m,m.parent,m.position.clone(),m.quaternion.clone(),m.scale.clone()]);
+   for(const m of A)m.parent.remove(m);S.add(M);s.ver.set(M,vsum(M));out.push(M);n1-=A.length-1;yield 'mrg';}
+  s.merged=out;L.mlog[s.id]={n0,n1,groups:out.length,keys:Object.keys(K).length,why,ex:Object.keys(K).filter(k=>K[k].length<2).slice(0,3).map(k=>k.slice(0,60))};}
+ function unmergeOne(s,M){if(s.far){setFar(s,false);s.far=null;}if(M.parent)M.parent.remove(M);for(const[m,p]of M.userData.src)p.add(m);M.geometry.dispose();if(M.userData.bake)M.material.dispose();s.merged=s.merged.filter(x=>x!==M);
+  L.log.push({id:s.id,k:'unmerge'});}
+ L.mcheck=()=>{let n=0;for(const id in L.st){const s=L.st[id];if(!s.merged)continue;let k=0;for(const M of s.merged.slice()){if(M.userData.src.some(([m,p,P,Qn,Sc])=>!m.visible||!m.position.equals(P)||!m.quaternion.equals(Qn)||!m.scale.equals(Sc))){unmergeOne(s,M);k++;}}
+  if(k&&!s.far&&L.FAR_ON)queue('far',s,farJob(s));n+=k;}return n;};
+ L.unmerge=id=>{for(const k in L.st)if(!id||k===id){const s=L.st[k];for(const M of (s.merged||[]).slice())unmergeOne(s,M);}};
+ L.mstat=()=>L.mlog;
+ function setFar(s,on){const F=s.far;if(!F)return;for(const [m,G,D] of F.swap)m.geometry=on?D:G;for(const m of F.hide)m.visible=!on;for(const [m,n0,h] of F.inst)m.count=on?h:n0;
+  if(mobT()){for(const m of F.mz)m.count=on?0:m.userData.g1N0;for(const m of F.mp)m.visible=!on;for(const m of F.mh)m.visible=!on;}s.farOn=on;}
  function queue(k,s,it){if(L.jobs.some(j=>j.k===k&&j.s===s))return;L.jobs.push({k,s,it,t0:performance.now(),work:0,mx:0,n:0});schedule();}
  function schedule(){if(L.pumpOn)return;L.pumpOn=true;requestAnimationFrame(()=>setTimeout(pump,0));}
  function pump(){L.pumpOn=false;const f0=performance.now(),B=L.slice(),fly=typeof FLY!=='undefined'&&FLY.on;
@@ -2516,6 +2671,8 @@ const G1L=(()=>{const Q=new URLSearchParams(location.search),n=(k,d)=>Q.get(k)!=
     if(s.up)nUp++;}
    if(s.far&&L.FAR_ON){const fi=low?0:L.FAR_IN,want=!foc&&(!r.mid||(r.tier!=='near'&&r.fade>=1))&&d>(s.farOn?fi-L.FAR_HYS:fi);if(want!==s.farOn)setFar(s,want);}}
   if(nUp>L.CAP){const c=Object.values(L.st).filter(s=>s.up&&!s.att&&now-s.used>L.KEEP).sort((a,b)=>a.used-b.used);for(let i=0;i<nUp-L.CAP&&i<c.length;i++)gpuFree(c[i]);}
+  if(L.MERGE&&L.frames>90&&L.frames%300===0)L.mcheck();   // r6c: restore any merge group whose source mesh was moved/hidden later
+  if(L.frames===60&&!L.FAR_ON&&L.MERGE)Object.values(L.st).forEach(s=>queue('mrg',s,mergeJob(s)));
   if(L.frames===60&&L.FAR_ON)Object.values(L.st).sort((a,b)=>b.S.children.length-a.S.children.length).forEach(s=>queue('far',s,farJob(s)));};
  L.info=()=>({on:L.on,ready:L.ready,initMs:L.initMs,frames:L.frames,cap:L.CAP,farIn:L.FAR_IN,g1tier:(typeof G1!=='undefined'?G1.TIER:null),jobs:L.jobs.map(j=>j.k+':'+j.s.id),log:L.log.slice(-40),
   st:Object.fromEntries(Object.entries(L.st).map(([id,s])=>[id,{d:Math.round(s.d),att:s.att,up:s.up,lazy:s.lazy,tier:s.r.tier,farOn:s.farOn,
@@ -2762,16 +2919,37 @@ function mkWorld(tlT){let top=-1e9;for(const o of O){const h=(o.gy||0)+(AH[o.id]
  return r;}
 let lastBig=null;
 const rectOf=id=>{const e=document.getElementById(id);if(!e||e.style.display==='none'||getComputedStyle(e).display==='none')return null;const r=e.getBoundingClientRect();return r.width?r:null;};
+// M3 (owner: the Enslaved close-up labels BLOC A/B, trench and cores sat on top of the buildings): in-scene labels are placed in FREE screen
+// space next to the city with a hairline leader line + dot on their anchor. Occupancy = the projected city volume (polar grid over the
+// site footprint at 3 heights). Candidate slots on rings around the anchor are scored by covered city points, leader length and leader
+// crossings; hard limits = fully on screen and clear of the HUD / nav / card / Visions / sheet / timeline / plate and of each other.
+// Hysteresis keeps a label in its slot unless another is clearly better (no hopping while the camera moves). No free slot = hidden, never clipped.
+const SPL={pts:[],key:'',slot:new Map()};
+function placeSpec(hudR){const W=innerWidth,H=innerHeight,o=byId.enslaved||O.find(q=>q.twin);if(!o){for(const s of SPEC)s.el.style.display='none';return;}
+ const G=(typeof G1GEN!=='undefined'&&G1GEN[o.id])||{},Rr=Math.max(G.R||0,TWIN+9),e=CAM.matrixWorld.elements,key=W+'|'+H+'|'+e[12].toFixed(2)+e[13].toFixed(2)+e[14].toFixed(2)+e[8].toFixed(3)+e[10].toFixed(3)+'|'+(CAM.view&&CAM.view.offsetY||0).toFixed(1);
+ if(key!==SPL.key){SPL.key=key;SPL.pts=[];for(const hy of[.5,4,8,13])for(const f of[0,.17,.33,.5,.67,.83,1])for(let k=0;k<(f?28:1);k++){const a=k/28*6.2832,X=o.X+Math.cos(a)*Rr*f,Z=o.Z+Math.sin(a)*Rr*f*.85,q=proj(X,hMesh(X,Z)+hy,Z);if(q[2])SPL.pts.push(q);}}
+ const P=SPL.pts,ob=[];const add=r=>{if(r&&r.width)ob.push([r.left-6,r.top-4,r.right+6,r.bottom+4]);};
+ const rc=id=>{const el=document.getElementById(id);if(!el||el.style.display==='none'||getComputedStyle(el).display==='none'||getComputedStyle(el).opacity==='0')return null;return el.getBoundingClientRect();};
+ add(hudR);add(rc('nav'));add(rc('card'));add(rc('msheet'));add(rc('axc'));if(window.VIS&&VIS.el&&VIS.el.style.display!=='none')add(VIS.el.getBoundingClientRect());if(o.el&&o.el.style.display!=='none')add(o.el.getBoundingClientRect());
+ const yT=Math.max(8,hudR?hudR.bottom+6:8),yB=Math.min(H-8,typeof tlTopY==='function'?tlTopY():H-72);
+ const placed=[],lines=[],cross=(a,b,c,d)=>{const o1=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]),o2=(b[0]-a[0])*(d[1]-a[1])-(b[1]-a[1])*(d[0]-a[0]),o3=(d[0]-c[0])*(a[1]-c[1])-(d[1]-c[1])*(a[0]-c[0]),o4=(d[0]-c[0])*(b[1]-c[1])-(d[1]-c[1])*(b[0]-c[0]);return o1*o2<0&&o3*o4<0;};
+ const near=(r,x,y)=>[clamp(x,r[0],r[2]),clamp(y,r[1],r[3])];
+ for(const s of SPEC){const[ax,ay,ok]=proj(s.X,hMesh(s.X,s.Z)+s.y,s.Z);const w=s.el.offsetWidth||s._w||90,h=s.el.offsetHeight||s._h||20;if(s.el.offsetWidth){s._w=w;s._h=h;}
+  if(!ok||ax<4||ax>W-4||ay<yT||ay>yB||ob.some(r=>ax>r[0]&&ax<r[2]&&ay>r[1]&&ay<r[3])){s.el.style.display='none';continue;}
+  const ev=(cx,cy,ri)=>{const r=[cx-w/2,cy-h/2,cx+w/2,cy+h/2];if(r[0]<8||r[2]>W-8||r[1]<yT||r[3]>yB)return null;
+   if(ob.some(q=>r[0]<q[2]&&r[2]>q[0]&&r[1]<q[3]&&r[3]>q[1])||placed.some(q=>r[0]<q[2]+5&&r[2]+5>q[0]&&r[1]<q[3]+4&&r[3]+4>q[1]))return null;
+   let c=0;for(const p of P)if(p[0]>r[0]-3&&p[0]<r[2]+3&&p[1]>r[1]-3&&p[1]<r[3]+3)c++;const e2=near(r,ax,ay);let x=0;for(const L of lines)if(cross([ax,ay],e2,L[0],L[1]))x++;
+   for(const q of placed)if(ax>q[0]&&ax<q[2]&&ay>q[1]&&ay<q[3])c+=4;return{r,e2,cost:c*10+Math.hypot(e2[0]-ax,e2[1]-ay)*.05+x*12+ri*.3};};
+  let best=null,bi=-1;const prev=SPL.slot.get(s);let pv=null;
+  for(let ri=0;ri<7;ri++){const rr=[30,56,86,122,165,215,270][ri];for(let k=0;k<16;k++){const a=k/16*6.2832,cand=ev(ax+Math.cos(a)*(rr*1.35+w/2),ay+Math.sin(a)*(rr*.8+h/2),ri);if(!cand)continue;const id=ri*16+k;if(id===prev)pv=cand;if(!best||cand.cost<best.cost){best=cand;bi=id;}}}
+  if(pv&&pv.cost<=best.cost*1.25+3){best=pv;bi=prev;}
+  if(!best){s.el.style.display='none';SPL.slot.delete(s);continue;}SPL.slot.set(s,bi);s.el.style.display='block';placed.push(best.r);lines.push([[ax,ay],best.e2]);
+  s.el.style.transform=`translate(${best.r[0]|0}px,${best.r[1]|0}px)`;
+  og.strokeStyle='rgba(222,228,234,.78)';og.lineWidth=1;og.beginPath();og.moveTo(ax,ay);og.lineTo(best.e2[0],best.e2[1]);og.stroke();
+  og.fillStyle='rgba(10,14,19,.9)';og.beginPath();og.arc(ax,ay,3.2,0,6.2832);og.fill();og.fillStyle='#E6EAEE';og.beginPath();og.arc(ax,ay,1.7,0,6.2832);og.fill();}}
 function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,0,PIXR,0,0);og.clearRect(0,0,W,H);const big=view!=='world';if(big!==lastBig){lastBig=big;updPlaqueText();}
  const t=tnow(),st=curP;const tlT=tlTopY(),hudR=rectOf('hud');placeAxis(tlT,hudR);if(LEG&&hudR){const ty=Math.round(hudR.bottom+18)+'px';if(LEG.style.top!==ty)LEG.style.top=ty;LEG.style.display=big?'none':'';const nv=document.getElementById('nav');const ny_=Math.round(hudR.bottom+12)+'px';if(nv&&nv.style.top!==ny_)nv.style.top=ny_;}
- const showS=big&&focus==='B2'&&(!focusO||focusO.twin);const spl=[];for(const s of SPEC){if(!showS){s.el.style.display='none';continue;}const[x,y,ok]=proj(s.X,hMesh(s.X,s.Z)+s.y,s.Z);s.el.style.display=ok?'block':'none';if(!ok)continue;
-  // C1 r5 (owner: enslaved labels clipped / occluded): keep every label fully on screen (clear of the top HUD / bottom timeline
-  // bands and the right card) and nudge overlapping labels apart vertically
-  const w=s.el.offsetWidth,h=s.el.offsetHeight||18,cd=document.getElementById('card'),cr=cd&&cd.offsetWidth&&getComputedStyle(cd).display!=='none'?cd.getBoundingClientRect():null,xr=cr&&cr.left>innerWidth*.5?cr.left-12:innerWidth-12;
-  const yT=hudR?Math.max(64,hudR.bottom+8):64,yB=Math.max(yT+40,(tlT||innerHeight-72)-h-8);   // between the HUD and the timeline top
-  let lx=Math.max(12,Math.min(xr-w,x-w/2)),ly=Math.max(yT,Math.min(yB,y));
-  for(let it=0;it<4;it++){let hit=null;for(const q of spl)if(lx<q[0]+q[2]+6&&lx+w+6>q[0]&&ly<q[1]+q[3]+4&&ly+h+4>q[1]){hit=q;break;}if(!hit)break;ly=ly<hit[1]?hit[1]-h-5:hit[1]+hit[3]+5;ly=Math.max(yT,Math.min(yB,ly));}
-  spl.push([lx,ly,w,h]);s.el.style.transform=`translate(${lx|0}px,${ly|0}px)`;}
+ const showS=big&&focus==='B2'&&(!focusO||focusO.twin);if(showS)placeSpec(hudR);else for(const s of SPEC)s.el.style.display='none';
  // Now hub: label touches the core (no leader line)
  const ny=hMesh(NOWD.X,NOWD.Z);let NH=NOWH,MKB=[],MWK=null; // G1 r7 (Q20): the NOW marker sits at the displayed (replayed) position NOWD
  // v4.3 r4 (item 2): choose the NOW text height so no site icon (16 px radius) sits within ~18 px of the text box (tries 20, 16, 24, 13, 28, 11 u)
@@ -2835,11 +3013,11 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
    // r12 P (owner D8 addendum): disc + plate + Visions strip are ONE group [x-37 .. x+44+max(plate,strip)]. The disc stays above the city (gx)
    // unless the group would run under the right card (slide the whole group left) or onto the breadcrumb / HUD (slide right; if both, drop the
    // group below the breadcrumb). The r11 patch had swallowed MK.push into its comment, so the plate lost its disc and fell back to the top-left.
-   const vsw=(window.VIS&&VIS.site===o.id&&VIS.el&&VIS.el.style.display!=='none')?(VIS.el.offsetWidth||0):0,gw=44+Math.max(pw,vsw);
-   let y=window.VTOP!==false?104:Math.max(104,Math.min(gy-lift,tY-48));const hi=xRc-gw;let lo=44;
+   const vsw=(!(window.M3&&M3.on)&&window.VIS&&VIS.site===o.id&&VIS.el&&VIS.el.style.display!=='none')?(VIS.el.offsetWidth||0):0,gw=44+Math.max(pw,vsw); // M3: the strip lives in the card sheet
+   const LO=window.M3&&M3.on?50:44;let y=window.VTOP!==false?104:Math.max(104,Math.min(gy-lift,tY-48));const hi=xRc-gw;let lo=LO;
    const AV=['nav','hud'].map(id=>{const e=document.getElementById(id);return e&&e.offsetWidth?e.getBoundingClientRect():null;}).filter(Boolean);
    for(const r of AV)if(r.bottom>y-40)lo=Math.max(lo,r.right+44);
-   if(lo>hi&&AV.length){y=Math.max(y,Math.max(...AV.map(r=>r.bottom))+44);lo=44;}
+   if(lo>hi&&AV.length){y=Math.max(y,Math.max(...AV.map(r=>r.bottom))+44);lo=LO;}
    const x=Math.max(lo,Math.min(gx,hi));o._dk=[x,y];MK.push({o,x,y}); // U6: enlarged marker on a dark disc backplate + brass ring; drop line kept
    og.save();og.globalAlpha=.55;og.strokeStyle=TK.acc;og.lineWidth=1.2;gLine(og,[x,y+32,gx,gy-2]);gDot(og,gx,gy,2.4);og.globalAlpha=.92;og.fillStyle='rgba(8,11,16,.9)';og.beginPath();og.arc(x,y,33,0,6.2832);og.fill();og.globalAlpha=1;og.lineWidth=1.5;og.stroke();og.globalAlpha=.4;og.lineWidth=1;gRing(og,x,y,37);og.restore();
    o._stem=0;og.save();og.translate(x,y);og.scale(K,K);drawMarker(og,o,0,0,t,st);og.restore();continue;}
@@ -2915,7 +3093,7 @@ const G1={res:{},stats:{},NEAR_D:95,HYS:6,FADE:500,_v:new THREE.Vector3(),U:{uG1
  GK:+(G1Q.get('g1gk')||.7),NGAIN:+(G1Q.get('g1ngain')||1.3),NAMBK:+(G1Q.get('g1nambk')||.65),
  MAMBK:+(G1Q.get('g1mambk')||.5),MGLOW:+(G1Q.get('g1mglow')||.85),MCAP:+(G1Q.get('g1mcap')||1.6),MSAT:+(G1Q.get('g1msat')||1.25),MWIN:+(G1Q.get('g1mwin')||.7),MSH:+(G1Q.get('g1msh')||.9),dome:{},
  MNK:+(G1Q.get('g1mnk')??.76),MALB:+(G1Q.get('g1malb')??.5),NNK:+(G1Q.get('g1nnk')??.12),MWR:+(G1Q.get('g1mwr')??.75),MPOOL:+(G1Q.get('g1mpool')??.55),
- MGNK:+(G1Q.get('g1mgnk')??.6),MGK:+(G1Q.get('g1mgk')??.9),MG:{o1984:+(G1Q.get('g1mgo8')||.92),enslaved:+(G1Q.get('g1mgen')||.92),egalitarian:+(G1Q.get('g1mgeg')||.85),normaltech:+(G1Q.get('g1mgnt')||.78),protector:+(G1Q.get('g1mgpt')||1.05)},   // r6 N: protector MID 1.5 -> 1.72 (world box L 41, interior read as a dark hole; still the dimmest town); r5x: cstat world L had drifted to 94 (gate 48-72) -> 1.05 (+ MWS 2 -> 1.4)
+ MGNK:+(G1Q.get('g1mgnk')??.6),MGK:+(G1Q.get('g1mgk')??.9),MG:{o1984:+(G1Q.get('g1mgo8')||.85),enslaved:+(G1Q.get('g1mgen')||.92),egalitarian:+(G1Q.get('g1mgeg')||.78),normaltech:+(G1Q.get('g1mgnt')||.72),protector:+(G1Q.get('g1mgpt')||.9)},   // r6c gate (grade L 48-72 + cstat): o8 .92->.85, eg .85->.78, nt .78->.72, pt 1.05->.9 (grade 76.9, cstat 77.1); r6 N: protector MID 1.5 -> 1.72 (world box L 41, interior read as a dark hole; still the dimmest town); r5x: cstat world L had drifted to 94 (gate 48-72) -> 1.05 (+ MWS 2 -> 1.4)
  MWS:{egalitarian:+(G1Q.get('g1mweg')||3.4),protector:+(G1Q.get('g1mwpt')||1.4)},   // r5x: eg 2 -> 3.4 (world warm .44 % -> ~1.4 % = v4.4 hamlet level; path verified: MWS 8 -> 4.2 %)
  // C1 r5: per-site minimum apron blend toward the terrain (egalitarian has no underlay now, its paths/commons/fields keep more of
  // their own tone so the ring plan reads at world zoom), enslaved lobe tone split strength
@@ -2970,7 +3148,7 @@ G1.GFE=+(G1Q.get('g1gfe')??1);G1.GFN=+(G1Q.get('g1gfn')??.55);
 const G1GV='varying vec3 vG1W;\n',G1GF='varying vec3 vG1W;float g1gH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float g1gN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(g1gH(i),g1gH(i+vec2(1,0)),f.x),mix(g1gH(i+vec2(0,1)),g1gH(i+vec2(1,1)),f.x),f.y);}\n';
 function g1GroundFe(s){s.vertexShader=G1GV+s.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n vG1W=(modelMatrix*vec4(transformed,1.)).xyz;');
  s.fragmentShader=G1GF+s.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n {float g1n=g1gN(vG1W.xz*.23+vec2(3.1,-1.7))*.64+g1gN(vG1W.xz*.62-vec2(5.3,2.9))*.36,g1t='+G1.GFN.toFixed(3)+'*g1n;diffuseColor.a=smoothstep(g1t+.02,g1t+.4,diffuseColor.a);}');}
-function g1Patch(mt,amb,gr){if(!mt||!mt.isMaterial||mt.userData.g1)return;mt.userData.g1=1;const prev=mt.onBeforeCompile,pk=mt.customProgramCacheKey,ua={value:amb},us={value:0};mt.userData.g1A=ua;mt.userData.g1S=us;
+function g1Patch(mt,amb,gr){if(!mt||!mt.isMaterial||mt.userData.g1)return;mt.userData.g1=1;if(Object.prototype.hasOwnProperty.call(mt,'onBeforeCompile'))mt.userData.g1Prev=1;const prev=mt.onBeforeCompile,/* r6c: g1Prev = a generator shader patch underneath (fa4_lod merge never colour-bakes those) */pk=mt.customProgramCacheKey,ua={value:amb},us={value:0};mt.userData.g1A=ua;mt.userData.g1S=us;
  const fe=!!(gr&&G1.GFE&&!mt.isShaderMaterial);if(fe){mt.userData.g1Op=!mt.transparent;mt.transparent=true;mt.depthWrite=false;}
  if(mt.isMeshStandardMaterial&&mt.metalness>.25)mt.metalness=.12; // no env map in v4.4 -> high metalness renders near-black
  mt.onBeforeCompile=function(s,r){if(prev)prev.call(this,s,r);if(fe)g1GroundFe(s);if(s.uniforms.uGain&&!mt.userData.g1W)mt.userData.g1W=s.uniforms.uGain;s.uniforms.uG1Fd=G1.U.uG1Fd;s.uniforms.uG1M=G1.U.uG1M;s.uniforms.uG1A=ua;s.uniforms.uG1S=us;
@@ -3011,7 +3189,7 @@ function g1Tone(r,o){const done=new Set(),c=[0,0,0],P=1/2.2;
     // (Bloc A x<0 cool slate, Bloc B x>0 warm grey, luminance +6 % / -6 %), ramped across the trench, faded by the feather alpha
     if(r.id==='enslaved'&&G1.LOBE>0){const u=Math.max(0,Math.min(1,(pa.getX(i)+2.4)/4.8)),sb=u*u*(3-2*u),q=(g===r.mid?1:.5)*G1.LOBE*al,
       L0=(.2126*R+.7152*G+.0722*B)*(1.06-.12*sb);R+=(L0*(.92+.08*sb)-R)*q;G+=(L0-G)*q;B+=(L0*(1.16-.16*sb)-B)*q;}}   // B side neutral grey (vision r5: brown smudge)
-   else if(!gr){R*=GN;G*=GN;B*=GN;if(mi&&G1.MSAT!==1){const l=.2126*R+.7152*G+.0722*B;R=Math.max(0,l+(R-l)*G1.MSAT);G=Math.max(0,l+(G-l)*G1.MSAT);B=Math.max(0,l+(B-l)*G1.MSAT);}
+   else if(!gr){R*=GN;G*=GN;B*=GN;if(mi&&(G1.MSAT*((G1.MSATS||{})[r.id]??1))!==1){const ms=G1.MSAT*((G1.MSATS||{})[r.id]??1),l=.2126*R+.7152*G+.0722*B;R=Math.max(0,l+(R-l)*ms);G=Math.max(0,l+(G-l)*ms);B=Math.max(0,l+(B-l)*ms);}
     // C1 r5: Bloc A read ~17 L darker than Bloc B in the close-up (owner: Bloc A too dark; also brightness must not read as welfare):
     // albedo-level lift on the Bloc A lobe only (x < 0), ramped across the trench; the CAP / shoulder below still bound it
     if(r.id==='enslaved'&&pa&&G1.BLA>1){const u=Math.max(0,Math.min(1,(pa.getX(i)+2.4)/4.8)),f=1+(G1.BLA-1)*(1-u*u*(3-2*u));R*=f;G*=f;B*=f;}
@@ -3056,11 +3234,13 @@ G1.GW.reversion=G1.GW.reversion??+(G1Q.get('g1gwrv')??.3);G1.GW.selfdestruct=G1.
 // vertex grid -> a striped moire plateau at world zoom; close-ups use NEAR (GW above, fields kept)
 G1.GWM={reversion:+(G1Q.get('g1gwmrv')??.68)};
 G1.NG.reversion=G1.NG.reversion||[+(G1Q.get('g1ngrv')||.8),.15];G1.NG.selfdestruct=G1.NG.selfdestruct||[+(G1Q.get('g1ngsd')||.75),.1];
-G1.MG.reversion=G1.MG.reversion||+(G1Q.get('g1mgrv')||1);G1.MG.selfdestruct=G1.MG.selfdestruct||+(G1Q.get('g1mgsd')||.52);   // world box L 70.2 at 1, 57.6 at .72, 56.1 at .6 (ground-dominated; ash darkened too) -> target 48-55
+G1.MG.reversion=G1.MG.reversion||+(G1Q.get('g1mgrv')||1.6);G1.MG.selfdestruct=G1.MG.selfdestruct||+(G1Q.get('g1mgsd')||.52);   // r6c: rv 1 -> 1.6 (grade L 46.2 < 48; 1.15 only gave 47.0); world box L 70.2 at 1, 57.6 at .72, 56.1 at .6 (ground-dominated; ash darkened too) -> target 48-55
+// r6c: per-city MID chroma (multiplies MSAT; ?g1ms<id>=) so world-grade S sits within +-15 % of the pool mean (.42): rv .624, cq .589 high, bv .337 low
+G1.MSATS=G1.MSATS||{reversion:+(G1Q.get('g1msrv')||.62),conquerors:+(G1Q.get('g1mscq')||.68),benevolent:+(G1Q.get('g1msbv')||1.3)};
 // swap r8 W: libertarian / benevolent / conquerors (FA.G1Z cities). Start grades (?g1ng<id> / g1mg<id> / g1gw<id> override); MID light warm
 // pull: conquerors 0 (machine indicators stay cool, Q17a), benevolent .3 (muted warm-neutral, no gold), libertarian .45 (warm human side,
 // cool machine seams keep some of their hue)
-for(const[id,q,ng,mg,gw,wr]of[['libertarian','lib',.8,.85,.6,.45],['benevolent','bv',.8,.5,.42,.3],['conquerors','cq',.78,.3,.8,0]]){ // main r9 merge: cq MID .4 -> .3 (world L 76.1 > 72); r10 B: ground GW lib .4 -> .6, cq .45 -> .8 (own paving read as a plate)
+for(const[id,q,ng,mg,gw,wr]of[['libertarian','lib',.8,.85,.6,.45],['benevolent','bv',.8,.5,.42,.3],['conquerors','cq',.78,.36,.8,0]]){ // r6c: cq MID .3 -> .36 (grade L 51, S .575: dark = bluer night tint = high S); main r9 merge: cq MID .4 -> .3 (world L 76.1 > 72); r10 B: ground GW lib .4 -> .6, cq .45 -> .8 (own paving read as a plate)
  G1.NG[id]=G1.NG[id]||[+(G1Q.get('g1ng'+q)||ng),.12];G1.MG[id]=G1.MG[id]||+(G1Q.get('g1mg'+q)||mg);G1.GW[id]=G1.GW[id]??+(G1Q.get('g1gw'+q)??gw);G1.MWRS[id]=G1.MWRS[id]??+(G1Q.get('g1mwr'+q)??wr);}
 function g1Night(c,K){let R=c.r,G=c.g,B=c.b;const l=(R+G+B)/3,f=.8+.75*l;R=(R+(G1NC.r-R)*K.nk)*f;G=(G+(G1NC.g-G)*K.nk)*f;B=(B+(G1NC.b-B)*K.nk)*f;
  const am=Math.max(R,G,B);if(am>K.alb){const q=K.alb/am;R*=q;G*=q;B*=q;}R*=K.gain;G*=K.gain;B*=K.gain;
@@ -3272,7 +3452,7 @@ function openNow(){sel=null;selR=null;const st=curP;let h=`<span class="x" oncli
  <div class="sub">`+RD6.map(r=>`<div class="feed cl" onclick="openRoad('${r.id}')"><i style="background:${r.c}"></i><span><b style="color:${r.c}">${r.id}</b> ${r.n}</span><b class="mono">${rstr(rangeOf(st.w[r.id],'road',r.id))}</b></div>`).join('')+`<div class="feed"><i style="background:#5d6b7c"></i><span>None of these (held back)</span><b class="mono">${(100-RD6.reduce((a,r)=>a+st.w[r.id],0)).toFixed(0)}%</b></div><div class="feed tot"><i></i><span><b>Total</b> (central estimates)</span><b class="mono">100%</b></div></div><div class="small" style="margin-top:8px">${lensTag()} · ranges show uncertainty, ≈ is the central estimate</div>`;
  const fresh=!CARD.want;CARD.want=true;if(fresh)flyTo(null,850);cardShow(h);kick();} // r6 U (owner: NOW click was abrupt): camera offset eases over 850 ms, card fades/slides in after ~60 %
 window.openRoad=openRoad;window.openNow=openNow;
-function fitCard(){const c=document.getElementById('card');if(!c||c.style.display!=='block'||innerWidth<=900)return;c.style.maxHeight=Math.max(220,tlTopY()-58-8-((window.VIS&&VIS.site&&VIS.H)||0))+'px';} // r6 U18: leave room for the Visions panel docked under the card
+function fitCard(){const c=document.getElementById('card');if(!c||c.style.display!=='block'||innerWidth<=900||(window.M3&&M3.on))return;c.style.maxHeight=Math.max(220,tlTopY()-58-8-((window.VIS&&VIS.site&&VIS.H)||0))+'px';} // r6 U18: leave room for the Visions panel docked under the card
 // G1 r6 U (owner: card 'pops in', picture shakes): ONE shared card transition for NOW, city, road, region and close-up -> close-up.
 // CARD.want = logical state (drives the eased camera offset in camApply); the DOM card fades/slides in (.34 s) only after the camera fly
 // has passed ~60 %, fades out (.16 s) BEFORE the camera eases back, and on close -> close fades out, swaps its text, then fades back in.
@@ -3776,7 +3956,7 @@ var NOWHUB=(()=>{const NR=7,NA=32,RH=3.4,P=new Float32Array((NR*NA+1)*3),UV=new 
  return{M,info:()=>({on:M.visible,op:+m.opacity.toFixed(2),at:[+NOWD.X.toFixed(2),+NOWD.Z.toFixed(2)]})};})();
 // show / hide timeline (+ peek when the mouse reaches the bottom edge)
 const TLE=document.getElementById('tl'),TAB=document.getElementById('tltab');let tlHidden=false,tlPeek=false;
-function tlTopY(){return TLE.classList.contains('hid')?innerHeight-48:innerHeight-TLE.offsetHeight-40-22;} // r5: timeline lifted to bottom 40px so the S axis tab docks on the true screen edge below it
+function tlTopY(){if(window.M3&&M3.on)return M3.sheetTop()-8;return TLE.classList.contains('hid')?innerHeight-48:innerHeight-TLE.offsetHeight-40-22;} // r5: timeline lifted to bottom 40px so the S axis tab docks on the true screen edge below it
 function placeTab(){const hid=TLE.classList.contains('hid');TAB.classList.toggle('hid',hid);TAB.style.bottom=hid?'24px':(TLE.offsetHeight+40)+'px';TAB.textContent=hid?'▴ SHOW TIMELINE':'▾ HIDE TIMELINE';}
 function setTL(hid){TLE.classList.toggle('hid',hid);placeTab();if(typeof visPlace==='function')visPlace();fitCard();kick(700);if(!hid)setTimeout(drawTL,30);}
 function toggleTL(){tlHidden=!tlHidden;tlPeek=false;setTL(tlHidden);}
@@ -3905,11 +4085,101 @@ document.getElementById('pageBack').onclick=closePage;
 if(typeof g1Build==='function'&&typeof G1L!=='undefined'){const gb0=g1Build;g1Build=function(){const r=gb0.apply(this,arguments);
  try{G1L.init();}catch(e){if(window.__errs&&window.__errs.length<30)window.__errs.push('g1l init: '+e.message);}return r;};}
 
+// ======================= M3 mobile layout (plan A) =======================
+// Phones only (FAT.mob and short screen side <= 600 CSS px; ?m3=1 forces, ?m3=0 disables): body.m3 (+ m3p portrait / m3l landscape).
+// Compact top bar (title + leading site) + menu button; ONE bottom sheet with 3 snap heights holding the Roads legend (+ lens popover),
+// the Timeline and an Evidence tab; the site / road / NOW card becomes a second bottom sheet (same snaps) with prev / next ending and the
+// Visions strip inside it. The camera adapts (UI fixed): a projection view offset centres the scene in the free area between the top bar
+// and the sheet, and the portrait world pose is solved so all 13 sites fit. Desktop never gets body.m3, so nothing changes there.
+var M3={on:false,por:false,kd:1,dmax:240,top:new Set(),snap:0,csnap:1,vo:0,vk:'',
+ ftop(){const h=document.getElementById('hud'),r=h&&h.getBoundingClientRect();return r&&r.height?r.bottom+4:52;},
+ sheetTop(){const c=document.getElementById('card');if(c&&c.style.display==='block'&&!c.classList.contains('cv0')){const r=c.getBoundingClientRect();if(r.height)return r.top;}
+  const s=document.getElementById('msheet');if(s&&s.offsetHeight&&getComputedStyle(s).display!=='none')return s.getBoundingClientRect().top;return innerHeight-60;}};
+(function(){const q=URLQ.get('m3');M3.on=q==='1'||(q!=='0'&&typeof FAT!=='undefined'&&FAT.mob&&Math.min(innerWidth,innerHeight)<=600);if(!M3.on)return;
+ const B=document.body,$=id=>document.getElementById(id);B.classList.add('m3');
+ const orient=()=>{M3.por=innerHeight>=innerWidth;B.classList.toggle('m3p',M3.por);B.classList.toggle('m3l',!M3.por);};orient();
+ // browser gestures: no page pinch-zoom / pull-to-refresh / long-press menu over the app (pages and inputs keep text selection)
+ const pg=()=>$('page').style.display==='block';
+ document.addEventListener('gesturestart',e=>{if(!pg())e.preventDefault();},{passive:false}); // iOS Safari page zoom
+ document.addEventListener('touchmove',e=>{if(e.touches.length>1&&!pg())e.preventDefault();},{passive:false});
+ document.addEventListener('contextmenu',e=>{if(!pg()&&!e.target.closest('a,input,textarea'))e.preventDefault();});
+ // a tooltip opened by a tap (axis tab / long press) closes on the next touch anywhere (touch has no mouseleave)
+ document.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;const t=$('tip');if(t&&t.style.display!=='none')t.style.display='none';},true);
+ // top bar: menu button; nav + footer text move into the dropdown
+ const mb=document.createElement('button');mb.id='mbtn';mb.setAttribute('aria-label','Menu');mb.setAttribute('aria-expanded','false');mb.innerHTML='<i></i><i></i><i></i>';B.appendChild(mb);
+ const menu=$('menu'),setM=o=>{B.classList.toggle('mopen',o);mb.setAttribute('aria-expanded',o?'true':'false');};
+ mb.onclick=e=>{e.stopPropagation();setM(!B.classList.contains('mopen'));};
+ menu.addEventListener('click',()=>setM(false));document.addEventListener('pointerdown',e=>{if(B.classList.contains('mopen')&&!e.target.closest('#menu,#mbtn'))setM(false);},true);
+ {const f=$('foot'),d=document.createElement('div');d.className='mfoot';d.innerHTML=[...f.children].map(c=>'<div>'+c.innerHTML+'</div>').join('');menu.appendChild(d);}
+ // the bottom sheet
+ const S=document.createElement('section');S.id='msheet';S.setAttribute('aria-label','Map panels');
+ S.innerHTML='<div class="grab" aria-hidden="true"><i></i></div><div class="tabs" role="tablist"><button role="tab" data-t="roads">Roads</button><button role="tab" data-t="tl">Timeline</button><button role="tab" data-t="ev">Evidence</button></div>'+
+  '<div class="pane" data-t="roads"></div><div class="pane" data-t="tl"></div><div class="pane" data-t="ev"></div>';B.appendChild(S);
+ const pane=t=>S.querySelector('.pane[data-t="'+t+'"]'),L=$('legend'),T=$('tl');pane('roads').appendChild(L);pane('tl').appendChild(T);
+ L.classList.add('open');new MutationObserver(()=>{if(!L.classList.contains('open'))L.classList.add('open');}).observe(L,{attributes:true,attributeFilter:['class']});
+ T.classList.remove('hid');
+ const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const evHTML=()=>{const A=(typeof BF!=='undefined'?BF:[]).slice().sort((a,b)=>(b.published||'').localeCompare(a.published||'')),n=A.length;
+  return `<div class="mevh">Evidence ledger · ${n} items</div><div class="mevr">${RD6.map(r=>`<button class="btn mono" data-r="${r.id}" style="color:${r.c}">${r.id}</button>`).join('')}<button class="btn mono" data-r="">All ▸</button></div>`+
+   A.slice(0,8).map(b=>`<div class="mevi"><span class="d">${esc(b.published)} · ${esc(b.indicator)} · ${typeof bfRev==='function'&&bfRev(b)?'reviewed':'unreviewed'}</span><span class="s">${esc(b.summary)}</span></div>`).join('')+
+   `<button class="btn mono mevo" data-r="">Open the full evidence ledger ▸</button>`;};
+ pane('ev').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(b)openPage('evidence',b.dataset.r||undefined);});
+ let tab='roads';
+ const H=()=>innerHeight,snaps=()=>M3.por?[62,Math.round(H()*.42),H()-Math.round(M3.ftop())-6]:[54,Math.round(H()*.62),H()-Math.round(M3.ftop())-6];
+ const csnaps=()=>M3.por?[118,Math.round(H()*.44),H()-Math.round(M3.ftop())-6]:[96,Math.round(H()*.7),H()-58];
+ M3.setSnap=(k,anim)=>{M3.snap=Math.max(0,Math.min(2,k));S.style.height=snaps()[M3.snap]+'px';S.dataset.s=M3.snap;afterMove();};
+ M3.setCSnap=k=>{M3.csnap=Math.max(0,Math.min(2,k));const c=$('card');c.style.height=csnaps()[M3.csnap]+'px';c.dataset.s=M3.csnap;afterMove();};
+ const afterMove=()=>{AXKEY='';if(typeof visPlace==='function'&&window.VIS&&VIS.el)visPlace();kick(700);};
+ M3.tab=t=>{tab=t;S.querySelectorAll('.tabs button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);});
+  S.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.dataset.t===t));if(t==='ev')pane('ev').innerHTML=evHTML();if(t==='tl')setTimeout(()=>{try{drawTL();}catch(e){}},40);};
+ S.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.t===tab&&M3.snap>0)M3.setSnap(0);else{M3.tab(b.dataset.t);if(M3.snap===0)M3.setSnap(1);}});
+ // drag the grab bar (sheet) / the card's grab bar: live height, then snap to the nearest of the 3 heights (a flick moves one step)
+ const dragSheet=(el,getS,setK,hdl)=>{let D=null;hdl.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;D={y:e.clientY,h:el.offsetHeight,t:performance.now(),m:false,id:e.pointerId};try{hdl.setPointerCapture(e.pointerId);}catch(_){}el.classList.add('drag');});
+  hdl.addEventListener('pointermove',e=>{if(!D||e.pointerId!==D.id)return;const dy=D.y-e.clientY;if(Math.abs(dy)>6)D.m=true;if(D.m){const s=getS();el.style.height=Math.max(s[0],Math.min(s[2],D.h+dy))+'px';afterMove();}});
+  const up=e=>{if(!D||e.pointerId!==D.id)return;el.classList.remove('drag');const s=getS(),h=el.offsetHeight,v=(D.y-e.clientY)/Math.max(1,performance.now()-D.t);
+   let k;const c=getS===snaps?M3.snap:M3.csnap;if(!D.m)k=c+1>2?0:c+1;else{const hp=h+clamp(v,-2.5,2.5)*140;k=0;let bd=1e9;s.forEach((x,i)=>{if(Math.abs(x-hp)<bd){bd=Math.abs(x-hp);k=i;}});if(k===c&&Math.abs(v)>.6)k=c+(v>0?1:-1);}D=null;setK(k);};
+  hdl.addEventListener('pointerup',up);hdl.addEventListener('pointercancel',up);};
+ dragSheet(S,snaps,M3.setSnap,S.querySelector('.grab'));
+ // card sheet: grab bar, prev / next ending (close-up) and the Visions strip are (re)inserted after every card render
+ const C=$('card'),ORD=O.slice(),nm=o=>o.n;
+ const cg=document.createElement('div');cg.className='cgrab';cg.innerHTML='<i></i>';dragSheet(C,csnaps,M3.setCSnap,cg);
+ const pn=document.createElement('div');pn.className='mpn';pn.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!focusO)return;const i=ORD.indexOf(focusO),o=ORD[(i+(b.dataset.k==='n'?1:ORD.length-1))%ORD.length];enterO(o);});
+ const fix=()=>{if(C.firstChild!==cg)C.insertBefore(cg,C.firstChild);const close=view==='basin'&&focusO;
+  if(close){const i=ORD.indexOf(focusO),p=ORD[(i+ORD.length-1)%ORD.length],n=ORD[(i+1)%ORD.length];const k=p.id+n.id;if(pn._k!==k){pn._k=k;pn.innerHTML=`<button data-k="p" aria-label="Previous ending">‹ ${esc(nm(p))}</button><button data-k="n" aria-label="Next ending">${esc(nm(n))} ›</button>`;}if(cg.nextSibling!==pn)C.insertBefore(pn,cg.nextSibling);}
+  else if(pn.parentNode)pn.remove();
+  const V=window.VIS&&VIS.el;if(V){if(close){const h2=C.querySelector('h2');const at=h2?h2.nextSibling:null;if(V.parentNode!==C||(h2&&V.previousSibling!==h2))C.insertBefore(V,at);}else if(V.parentNode===C)B.appendChild(V);}};
+ M3.fix=fix;new MutationObserver(fix).observe(C,{childList:true});
+ let cOpen=false;new MutationObserver(()=>{const o=C.style.display==='block';B.classList.toggle('m3card',o);if(o&&!cOpen)M3.setCSnap(1);cOpen=o;afterMove();}).observe(C,{attributes:true,attributeFilter:['style','class']});
+ // top-N labels (whisper titles on the world view): the 4 largest shares + the selected site; the others show their name on tap
+ M3.topUpd=()=>{try{const st=curP;const r=O.map(o=>[o.id,st.p[o.id]||0]).sort((a,b)=>b[1]-a[1]);M3.top=new Set(r.slice(0,4).map(x=>x[0]));if(sel)M3.top.add(sel);}catch(e){}};
+ // camera: free area = top bar .. sheet top (a pulled-up sheet stops pushing the scene at mid screen)
+ M3.voGoal=()=>{const ft=M3.ftop();if(!M3.por){ // landscape: the sheets are side panels (main = left, card = right) -> shift sideways, keep the scene under the top bar
+   const c=$('card'),co=c.style.display==='block'&&!c.classList.contains('cv0'),r=co?c.getBoundingClientRect():(M3.snap>0?S.getBoundingClientRect():null);
+   M3.vx=r&&r.width?clamp(co?r.width/2:-r.right/2,-innerWidth*.3,innerWidth*.3):0;return clamp(-ft/2,-innerHeight*.3,0);}
+  M3.vx=0;const fb=Math.max(M3.sheetTop(),innerHeight*.5);return clamp(innerHeight/2-(ft+fb)/2,-innerHeight*.3,innerHeight*.3);};
+ M3.vx=0;M3.vxc=0;
+ M3.voApply=(snap)=>{const g=M3.voGoal(),gx=M3.vx;let mv=false;if(snap){M3.vo=g;M3.vxc=gx;}else{if(Math.abs(g-M3.vo)>.4||Math.abs(gx-M3.vxc)>.4){M3.vo+=(g-M3.vo)*.14;M3.vxc+=(gx-M3.vxc)*.14;mv=true;}else{M3.vo=g;M3.vxc=gx;}}
+  const W=innerWidth,Hh=innerHeight,k=W+'|'+Hh+'|'+M3.vo.toFixed(1)+'|'+M3.vxc.toFixed(1);if(k!==M3.vk){M3.vk=k;if(Math.abs(M3.vo)>.3||Math.abs(M3.vxc)>.3)CAM.setViewOffset(W,Hh,M3.vxc,M3.vo,W,Hh);else CAM.clearViewOffset();}return mv;};
+ // world pose: vertical FOV opened up in portrait (keeps a usable horizontal field), then the smallest distance (over a few pitches) at which
+ // every site's ground dot and marker fit inside the free area. Close-up distances scale by kd (same horizontal field as on desktop).
+ M3.fit=()=>{orient();const a=innerWidth/innerHeight,F=M3.por?clamp(2*Math.atan(.26/a)*180/Math.PI,28,56):28;CAM.fov=F;CAM.aspect=a;CAM.updateProjectionMatrix();
+  M3.kd=clamp(.399/(Math.tan(F*Math.PI/360)*a),1,2.2);M3.voApply(true);
+  const xs=O.map(o=>o.X),zs=O.map(o=>o.Z),cx=(Math.min(...xs)+Math.max(...xs))/2,cz=(Math.min(...zs)+Math.max(...zs))/2,ft=M3.ftop()+18,fb=Math.max(M3.sheetTop(),innerHeight*(M3.por?.5:.55))-14,W=innerWidth;
+  const ok=(tx,tz,d,p)=>{const cp=Math.cos(p);CAM.position.set(tx,-2+d*Math.sin(p),tz+d*cp);CAM.lookAt(tx,-2,tz);CAM.updateMatrixWorld();
+   for(const o of O)for(const y of[o.gy||0,(o.gy||0)+15]){const[x,yy,v]=proj(o.X,y,o.Z);if(!v||x<16||x>W-16||yy<ft||yy>fb)return false;}return true;};
+  let best=null;for(const p of(M3.por?[.8,.9,1.0,1.1]:[.62,.7,.78]))for(const dz of[-10,0,10])for(let d=140;d<=760;d+=8){if(ok(cx,cz+dz,d,p)){if(!best||d<best.d-12||(Math.abs(d-best.d)<=12&&Math.abs(p-.9)<Math.abs(best.pit-.9)))best={tx:cx,tz:cz+dz,d,pit:p};break;}}
+  if(!best)best={tx:WV0.tx,tz:WV0.tz,d:WV0.d*M3.kd,pit:WV0.pit};
+  Object.assign(WORLDV,best,{yaw:0,ly:0});M3.dmax=Math.max(240,best.d*1.2);
+  const sh=Math.max(0,best.d-WV0.d);if(SC.fog){SC.fog.near=LOOK.fog[1]+sh;SC.fog.far=LOOK.fog[2]+sh;}
+  if(view==='world'){Object.assign(tg,WORLDV);Object.assign(cam,WORLDV);}M3.info={fov:+F.toFixed(1),kd:+M3.kd.toFixed(2),...best};};
+ addEventListener('resize',()=>{const p=M3.por;orient();M3.setSnap(M3.snap);if(C.style.display==='block')M3.setCSnap(M3.csnap);if(p!==M3.por||view==='world'){M3.fit();if(view==='world')kick(800);}});
+ M3.tab('roads');M3.setSnap(0);})();
+
 // ======================= INIT =======================
 // M1: hand the device tier to the generator-city tier manager (mobile: NEAR only for the focused close-up; low: FAR everywhere).
 // An explicit ?g1tier= (cities' own test override) wins.
 try{if(typeof G1!=='undefined'&&typeof G1.setTier==='function'&&FAT.tier!=='desktop'&&!URLQ.get('g1tier'))G1.setTier(FAT.tier);}catch(e){if(window.__errs)window.__errs.push('fat tier: '+e.message);}
-addEventListener('resize',()=>{resize();setNav();});apply();resize();setNav();try{camApply();CAM.updateMatrixWorld();calibRoads();}catch(e){console.warn('calib',e);}kick(1500);
+addEventListener('resize',()=>{resize();setNav();});apply();if(M3.on)try{M3.fit();M3.topUpd();}catch(e){if(window.__errs)window.__errs.push('m3 fit: '+e.message);}resize();setNav();try{camApply();CAM.updateMatrixWorld();calibRoads();}catch(e){console.warn('calib',e);}kick(1500);
 if(location.hash)setTimeout(pageRoute,0);
 // G1 r6 U test hooks (harness record shots; harmless for visitors): ?rpldemo=<week> loops that replay week (pulse, milestone, pill, NOW move)
 // every 1.3 s so a screenshot lands mid-pulse; ?nowdemo=1 opens the NOW card through the shared transition.
@@ -4070,6 +4340,8 @@ function visClick(e){const t=e.target.closest('[data-a]');if(!t||!VIS.site)retur
 // anchor = {px,py,pw,ph (name plate rect), gx,gy (diorama ground point)}; set every frame by layoutLabels while a close-up is open
 function visFollow(px,py,pw,ph,gx,gy){VIS.anc={px,py,pw,ph,gx,gy};visPlace();}
 function visPlace(){const d=VIS.el;VIS.H=0;if(!d||d.style.display==='none')return;const W=innerWidth,A=VIS.anc;
+ if(window.M3&&M3.on){if(d.parentNode&&d.parentNode.id!=='card'&&M3.fix)M3.fix();if(d.style.transform)d.style.transform='';VIS.pos='';const r=d.getBoundingClientRect();VIS.rect=[r.left|0,r.top|0,r.right|0,r.bottom|0];
+  d.classList.toggle('vh0',!!((window.CARD&&CARD.pend)||(typeof FLY!=='undefined'&&FLY.on&&FLY.k<.6)));return;} // M3: the strip lives inside the card bottom sheet (under the title)
  const w=VIS.w||d.offsetWidth,h=VIS.h||d.offsetHeight,tl=typeof tlTopY==='function'?tlTopY():innerHeight-200;
  const nv=document.getElementById('nav'),nb=((nv&&nv.getBoundingClientRect().bottom)||90)+8;
  let x,y;

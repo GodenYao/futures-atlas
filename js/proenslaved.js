@@ -572,7 +572,7 @@ function* coreB(B,S,K,mid){const T=B.T,k=T.k,c=K.core,cx=c.x,cz=c.z,se=seatC(T,c
 
 // ======================= the divide: trench walls, buttresses, sensor masts, hex block fields =======================
 function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL,.8*T.A),cd=hex(PAL.concrete,.62*T.A),er=hex(PAL.earth,.9*T.A),st=hex(PAL.steel,.65*T.A),dk=hex(PAL.dark,T.A);
- const segL=(mid?3:1.5)*k,yt=(s,z)=>T.yl(s*t.top,z)+t.wallH,DTR=hex('#22252E',T.A);   // r5x: '#2A2E38' -> '#22252E' (probe: trench centre L ~40 = Bloc A ground, no split)
+ const segL=(mid?3:1.5)*k,yt=(s,z)=>Math.max(T.yl(s*t.top,z)+.1*k,T.yl(s*t.out,z)+.04*k),DTR=hex('#22252E',T.A);   // r5x: '#2A2E38' -> '#22252E'; r6c: the terrain is carved under the divide (fa4_build ?g1encut) -> wall top = outer ground level (+.04k), never a raised berm
  // C1 r5: solid dark trench floor (building family, so the apron blend cannot wash it out) = the dark divide line at world zoom
  for(let z=t.z0;z<t.z1-.01;z+=segL){const e=Math.min(t.z1,z+segL),P=(x,zz)=>[x,T.yl(x,zz)+.03,zz];
   quadUp(S.building,P(-t.fl,z),P(0,z),P(0,e),P(-t.fl,e),tone(DTR,.8));quadUp(S.building,P(0,z),P(t.fl,z),P(t.fl,e),P(0,e),tone(DTR,.8));}
@@ -585,9 +585,9 @@ function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL
    const sh=s>0?.75:1;   // r5x probe: the light comes from -x, so B's inner face and A's backfill slope face it (lit 100-150 vs floor 35 = berm read) -> dim both
    quadO(S.building,[s*t.fl,fa0,z],[s*t.fl,fe0,e],[mx,me,e],[mx,ma,z],tone(DTR,sg*sh),[s*t.out*3,ya,zc]);
    quadO(S.building,[mx,ma,z],[mx,me,e],[s*t.top,ye,e],[s*t.top,ya,z],tone(DTR,1.05*sg*sh),[s*t.out*3,ya,zc]);
-   quadUp(S.building,[s*t.top,ya,z],[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.top,ye,e],tone(gG,1.08));
-   if(mid||(Math.round(z/segL)&1)===0)box(S.light,s*(t.top+.03*k),ya-.005,zc,(mid?.13:.035)*k,.03*k,(e-z)*(mid?.96:.7),0,glow(B,PAL.cool,mid?.5:.5));   // G1 r6 T: MID lip gain .8 -> .5 (pale line at world zoom); lit lip: dashed edge light (MID: continuous line = the divide at world zoom; r4 T: .07 -> .13 k wide, .9 -> .8)
-   quadO(S.building,[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.out,T.yl(s*t.out,e)-.03,e],[s*t.out,T.yl(s*t.out,z)-.03,z],tone(gG,s<0?.55:1.0),[0,ya-9,zc]);}   // r4 T: MID backfill = pale lip (was orange earth); r5x: bloc ground tone (both tiers)
+   quadUp(S.building,[s*t.top,ya,z],[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.top,ye,e],tone(gG,.32));   // r6c probe: building family renders ~2.2x the ground family (lift .34 vs .06) -> lip tops were the pale band (131 vs ground 60) -> x1.08 -> .32
+   if(mid||(Math.round(z/segL)&1)===0)box(S.light,s*(t.top+.03*k),ya-.005,zc,(mid?.13:.035)*k,.03*k,(e-z)*(mid?.96:.7),0,glow(B,PAL.cool,mid?.35:.5));   // r6c: MID lip gain .5 -> .35; G1 r6 T: MID lip gain .8 -> .5 (pale line at world zoom); lit lip: dashed edge light (MID: continuous line = the divide at world zoom; r4 T: .07 -> .13 k wide, .9 -> .8)
+   quadO(S.building,[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.out,T.yl(s*t.out,e)-.03,e],[s*t.out,T.yl(s*t.out,z)-.03,z],tone(gG,s<0?.3:.48),[0,ya-9,zc]);}   // r6c: backfill .55/1.0 -> .3/.48 (same building-vs-ground gain); r4 T: MID backfill = pale lip (was orange earth); r5x: bloc ground tone (both tiers)
   yield 1;
   for(let z=t.z0+t.butt*.5;z<t.z1;z+=t.butt*(mid?2:1)){const yf=T.yl(s*t.fl,z)-.05;fin(S.building,s*t.fl*.62,z,s*t.top,z,yf,yf,.06*k,(yt(s,z)-yf)*.55,.24*k,tone(DTR,1.25));}
   yield 1;}
@@ -724,7 +724,7 @@ function farCores(B){const T=B.T,L=B.L,F=B.F,k=T.k,A=L.blocs[0],Q=L.blocs[1],st=
 function mergeFar(B){const T=B.T,L=B.L,F=B.F,t=L.trench,cc=hex(PAL.concL,.8*T.A);
  safe('far lots',()=>farLots(B));safe('far cores',()=>farCores(B));
  for(const s of[-1,1])for(let i=0;i<6;i++){const z=lerp(t.z0,t.z1,i/6),e=lerp(t.z0,t.z1,(i+1)/6),xm=s*(t.top+t.lip)/2;
-  box(F.building,xm,T.yl(xm,(z+e)/2)-.2,(z+e)/2,t.lip-t.top+.1*T.k,.2+t.wallH,e-z,0,cc);}
+  box(F.building,xm,T.yl(xm,(z+e)/2)-.2,(z+e)/2,t.lip-t.top+.1*T.k,.26+.04*T.k,e-z,0,hex(s<0?BLOC.A.ground:BLOC.B.ground,T.A*.8));}   // r6c: lips level with the ground, bloc tone (were .7k pale concrete walls)
  const out=[];let tris=0;for(const k of['building','light','metal']){const b=F[k];if(!nT(b))continue;tris+=nT(b);out.push({geom:geomRange(T,b,0,nT(b),true),family:k});}
  B.far=out;B.farTris=tris;}
 function trisOf(o){let n=0,d=0;if(o)o.traverse(m=>{if(m.isMesh){const g=m.geometry,c=g.index?g.index.count:g.attributes.position.count;n+=c/3*(m.isInstancedMesh?m.count:1);d++;}});return[Math.round(n),d];}
