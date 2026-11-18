@@ -4083,6 +4083,17 @@ var B4=(()=>{const Q=URLQ,B={on:Q.get('b4')==='1'&&!!BFR};if(!B.on)return B;wind
   let s1=K*SS*Math.sqrt(l1),s2=K*SS*Math.sqrt(l2);s1=clamp(s1,2.2,15);s2=clamp(Math.max(s2,.5*s1),1.8,15);return{s1,s2,th};};
  const LIMX=AXX-8,LIMZ=AXZ-8;
  B.st=[];B.lens=null;B.sim=[];
+ // ---------- round c (owner 11-18, final): NOW position from the 13 ENDING shares, no exaggeration, no clamp to a zone ----------
+ //   NOW(t) = plaza + kp * sum_e (p_e(t) - 1/13) * (city_e - plaza)
+ //   p_e(t) = engine snapshot share of ending e in week t (active lens, Pooled by default; fractions, sum = 1 - 'None of these', which
+ //   pulls nowhere), baseline = EQUAL shares 1/13 (a neutral start that does not move when older weeks are added), city_e = site X/Z
+ //   (twins: their centre), kp = 1 (&b4pk= overrides). So NOW = plaza + (share-weighted centroid of ending offsets) - (plain mean offset G0):
+ //   one ending at 100 % puts NOW at city_e - G0, i.e. on the city up to the small constant G0 (B4.art().G0 reports it).
+ //   The cloud is unchanged: still the road-share covariance, scaled by &b4k (default 2 / phone 3).
+ const PK=Math.max(.05,+(Q.get('b4pk')||1));
+ const epos=lid=>{const L=bfL(lid),n=L.s.length,ne=O.length,b=1/ne,R=[];for(let i=0;i<n;i++){const S=L.s[i];let x=0,z=0;const p={};
+   BFR.sites.forEach((id,j)=>{const o=byId[id];if(!o)return;const v=+S[j]||0;p[id]=v;const q=v-b;x+=q*(o.X-NOW.X);z+=q*(o.Z-NOW.Z);});
+   for(const o of O)if(!(o.id in p)){x-=b*(o.X-NOW.X);z-=b*(o.Z-NOW.Z);} R.push({X:NOW.X+PK*x,Z:NOW.Z+PK*z,p});}return R;};
  // TEST ONLY (&b4sim=<year>): simulated weekly history from <year>-W48 up to the week before the first real week. It re-uses the real weekly
  // steps (reversed, rotated a little per year) so the density on screen matches what real 2022-2025 snapshots would give. Never data.
  const mkSim=()=>{B.sim=[];if(!(SIMY>=2000)||!NOWM.path.length)return;const P=NOWM.path,n=P.length,[y0,w0]=WK[0];const L=[];let y=y0,w=w0;
@@ -4091,11 +4102,24 @@ var B4=(()=>{const Q=URLQ,B={on:Q.get('b4')==='1'&&!!BFR};if(!B.on)return B;wind
    X=clamp(X-(c*dx-s*dz)-.05*Math.cos(k*.21),-LIMX,LIMX);Z=clamp(Z-(s*dx+c*dz)-.05*Math.sin(k*.17),-LIMZ,LIMZ);B.sim.push({X,Z,y,w,wk:y+'-W'+String(w).padStart(2,'0')});});B.sim.reverse();};
  // NOWM.build override: same contract (path / k / span / range) so marker, road warp, arrow, caption and safe zones keep working unchanged
  const build0=NOWM.build;
- NOWM.build=lid=>{const L=bfL(lid),A=anc(lid),n=L.w.length,S=[];for(let i=0;i<n;i++)S.push(wkStat(L,A,i));const c0=S[n-1].c;
-  NOWM.path=S.map(s=>({X:clamp(NOW.X+K*(s.c[0]-c0[0]),-LIMX,LIMX),Z:clamp(NOW.Z+K*(s.c[1]-c0[1]),-LIMZ,LIMZ)}));NOWM.k=K;NOWM.lens=lid;
+ NOWM.build=lid=>{const L=bfL(lid),A=anc(lid),n=L.w.length,S=[];for(let i=0;i<n;i++)S.push(wkStat(L,A,i));const E=epos(lid);
+  NOWM.path=E.map(e=>({X:clamp(e.X,-LIMX,LIMX),Z:clamp(e.Z,-LIMZ,LIMZ)}));NOWM.k=PK;NOWM.lens=lid;
   let a=1e9,b=-1e9,c=1e9,e=-1e9;for(const p of NOWM.path){a=Math.min(a,p.X);b=Math.max(b,p.X);c=Math.min(c,p.Z);e=Math.max(e,p.Z);}
-  NOWM.span=Math.max(b-a,e-c)/K;NOWM.range={x0:a,x1:b,z0:c,z1:e,wPct:(b-a)/(2*AXX)*100,hPct:(e-c)/(2*AXX)*100};
-  if(lid===LCUR||B.lens==null){B.lens=lid;B.A=A;B.st=S.map(s=>Object.assign(s,ell(s.cov)));B.dirty=true;mkSim();}};
+  NOWM.span=Math.max(b-a,e-c)/PK;NOWM.range={x0:a,x1:b,z0:c,z1:e,wPct:(b-a)/(2*AXX)*100,hPct:(e-c)/(2*AXX)*100};
+  if(lid===LCUR||B.lens==null){B.lens=lid;B.A=A;B.E=E;B.st=S.map(s=>Object.assign(s,ell(s.cov)));B.dirty=true;mkSim();}};
+ // averaging-artifact report: per real week, distance from the plaza, nearest city footprint (SCN reserve radius; twins = both halves)
+ // and whether that city is one of the endings actually pulling NOW (top-2 contributors along the displacement, share above 1/13)
+ const FP=[];O.forEach((o,i)=>{const s=SCN[i]||{};if(o.twin){const r=Math.max(6,(o.w||.06)*100*.85);FP.push([o.X-TWIN,o.Z,r,o.id],[o.X+TWIN,o.Z,r,o.id]);}else if(s.r>0)FP.push([o.X,o.Z,s.r,o.id]);});
+ B.art=(near)=>{near=near||6;const E=B.E||[],b=1/O.length,P=NOWM.path;let G=[0,0];for(const o of O){G[0]+=b*(o.X-NOW.X);G[1]+=b*(o.Z-NOW.Z);}
+  const nc=FP.map(f=>({id:f[3],c:+Math.hypot(f[0]-NOW.X,f[1]-NOW.Z).toFixed(1),e:+(Math.hypot(f[0]-NOW.X,f[1]-NOW.Z)-f[2]).toFixed(1)})).sort((x,y)=>x.e-y.e);
+  let md=0,mw='',mc=1e9,mcw='';const fl=[];
+  E.forEach((q,i)=>{const p=P[i],dx=p.X-NOW.X,dz=p.Z-NOW.Z,d=Math.hypot(dx,dz);if(d>md){md=d;mw=BFR.weeks[i];}
+   let best=null;for(const f of FP){const cl=Math.hypot(p.X-f[0],p.Z-f[1])-f[2];if(!best||cl<best.cl)best={id:f[3],cl};}if(best.cl<mc){mc=best.cl;mcw=BFR.weeks[i];}
+   const ct=O.map(o=>{const v=((q.p[o.id]||0)-b);return{id:o.id,v,a:d>1e-6?(v*((o.X-NOW.X)*dx+(o.Z-NOW.Z)*dz))/d:0};}).sort((x,y)=>y.a-x.a),top=ct.slice(0,2).filter(c=>c.v>0).map(c=>c.id);
+   if(best.cl<near)fl.push({wk:BFR.weeks[i],city:best.id,clear:+best.cl.toFixed(2),pulling:top.includes(best.id),top});});
+  return{formula:'plaza + '+PK+' * sum_e (p_e - 1/13)(city_e - plaza)',G0:+Math.hypot(G[0],G[1]).toFixed(2),maxDist:+md.toFixed(2),maxDistWeek:mw,
+   minClear:+mc.toFixed(2),minClearWeek:mcw,nearestCities:nc.slice(0,4),near:fl,artifacts:fl.filter(f=>!f.pulling).map(f=>f.wk),
+   last:P.length?[+(P[P.length-1].X-NOW.X).toFixed(2),+(P[P.length-1].Z-NOW.Z).toFixed(2)]:null,range:NOWM.range&&{w:+(NOWM.range.x1-NOWM.range.x0).toFixed(2),h:+(NOWM.range.z1-NOWM.range.z0).toFixed(2)}};};
  B.build0=build0;
  NOWM.build(LCUR);{const i=bfIdx(day),t=NOWM.path[i];NOWD.X=t.X;NOWD.Z=t.Z;NOWM.from=NOWM.to=t;NOWM.idx=i;}
  // ---------- CLOUD: one draped grid patch (1 draw call), additive, fog-faded, depth-tested (ridges / buildings occlude it) ----------
@@ -4215,7 +4239,7 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
   if(!its.length)return `<div class="h" style="margin-top:4px">No new evidence ${I.length>1?'in these weeks':'this week'}</div><span class="s">The move comes from older evidence fading: an event's weight halves every 90–365 days (by type), so the mix drifts even in quiet weeks.</span>`;
   return `<div class="s" style="margin-top:4px">${its.length} new evidence item${its.length>1?'s':''}${I.length>1?' in these weeks':' this week'}</div>`+its.slice(0,2).map(it=>`<div class="h" style="margin-top:3px">${escH(blocTxt(it.b?it.b.summary||it.id:it.id)).slice(0,120)}</div><span class="s">${escH(it.pub||'')} · ${escH(it.ind||'')} · ${escH(it.rd.join('/'))}</span>`).join('')+(its.length>2?`<span class="s" style="display:block"> + ${its.length-2} more</span>`:'');};
  B.tipW=(I,stack)=>{I=I.slice().sort((a,b)=>a-b);const i0=I[0],i1=I[I.length-1],pi=Math.max(0,i0-1),s=B.st[i1],p=B.st[pi],P=NOWM.path,ci=Math.max(0,NOWM.idx);
-  const e1=i1===ci?{X:NOWD.X,Z:NOWD.Z}:P[i1],mv=i1>0?Math.hypot(e1.X-P[pi].X,e1.Z-P[pi].Z)/K:0;
+  const e1=i1===ci?{X:NOWD.X,Z:NOWD.Z}:P[i1],mv=i1>0?Math.hypot(e1.X-P[pi].X,e1.Z-P[pi].Z)/PK:0;
   const dv=RD6.map((r,k)=>({r,d:(s.w[k]-p.w[k])*100})).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)),top=dv[0];
   let h=`<span class="mono small">${wkHdr(BFR.weeks[i0],BFR.weeks[i1])}${i1===ci?' · NOW':''}</span>`;
   if(i1===0)h+=`<div class="h" style="margin-top:3px">First week of the record</div>`;
