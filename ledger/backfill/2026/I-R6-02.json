@@ -42,7 +42,7 @@
       "indicator": "I-R6-02",
       "kind": "data-series",
       "published": "2026-10-29",
-      "summary": "Q3 2026: the four largest spenders reported ~$202B (purchases of P&E) / ~$209B (company capex definitions), roughly double a year earlier; adding a fifth (an enterprise-cloud provider, $28.5B) gives ~$230B. Combined 2026 guidance $720-740B for the four; none cut its range except one trimming to ~$170B on delayed third-party capacity.",
+      "summary": "Q3 2026: the four largest spenders reported ~$207B of capex, up about 85% year on year; none cut its 2026 capex range (combined guidance $720-740B).",
       "detail": "Amazon 77.3 (cash capex 75.9), Alphabet 51.4, Microsoft 39.4 (45.2 incl. finance leases), Meta 33.9-34.9, Oracle 28.5 (FY27Q1). Earnings 2026-10-21 (Meta), 10-28 (Alphabet, Microsoft), 10-29 (Amazon).",
       "value": "~$202-209B (Q3 2026, 4 firms), +84-108% y/y",
       "direction": "toward NO",

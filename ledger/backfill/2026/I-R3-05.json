@@ -70,7 +70,7 @@
       "indicator": "I-R3-05",
       "kind": "event",
       "published": "2026-11-12",
-      "summary": "Investigative report: the leading Bloc A chipmaker privately told a legislator it could implement chip location tracking, contrary to its industry association's public position; the sponsor plans a stricter bill requiring licences to operate advanced GPUs. A think-tank found ping-based verification the most cost-effective option.",
+      "summary": "Investigative report: the leading Bloc A chipmaker privately told a legislator it could implement chip location tracking, contrary to its industry association's public position; the legislator, a co-sponsor of the chip security bill, plans a stricter bill requiring licences to operate advanced GPUs. A think-tank found ping-based verification the most cost-effective option.",
       "detail": "MIT Technology Review 2026-11-12 (Nvidia; Rep. Bill Foster); CSET analysis Sept 2026.",
       "value": null,
       "direction": "toward YES",

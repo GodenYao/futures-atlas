@@ -7,7 +7,7 @@
   ],
   "statement": "No top-3 compute jurisdiction bans or licenses open-weight release at the frontier tier (official gazettes; by 2028-06-30)",
   "generated": "2026-11-16",
-  "status_at_phase_end": "At risk. Bloc B's commerce and science ministries published a draft (2026-10-16) treating open-sourcing of frontier-tier models (>=1e26 FLOP, >=2T parameters, or global top-10) as a technology export needing an (automatic) licence; an interim pre-export registration duty took effect immediately. If finalised it likely resolves the statement NO, unless 'automatic licence' is ruled not a licence. Bloc A's 2026 order disclaims mandatory licensing and excludes open-weight models, but a model-specific export-licence directive to a closed developer showed the legal path exists. The third jurisdiction (a Bloc C bloc) regulates but does not license open-weight releases.",
+  "status_at_phase_end": "At risk. Bloc B's commerce and science ministries published a draft (2026-10-16) treating open-sourcing of frontier-tier models (>=1e26 FLOP, >=2T parameters, or global top-10) as a technology export needing an (automatic) licence; an interim pre-export registration duty took effect immediately. If finalised it likely resolves the statement NO, unless 'automatic licence' is ruled not a licence. Bloc A's 2026 order disclaims mandatory licensing and excludes open-weight models, but a model-specific export-licence directive to a closed developer showed the legal path exists. The third jurisdiction (Bloc C) regulates but does not license open-weight releases.",
   "items": [
     {
       "id": "BF-2026-I-R5-05-001",
@@ -56,7 +56,7 @@
       "indicator": "I-R5-05",
       "kind": "treaty-law",
       "published": "2026-08-02",
-      "summary": "A Bloc C bloc's AI-law enforcement powers over general-purpose models took effect: open-source models above the systemic-risk compute threshold get no exemption and must notify, evaluate and mitigate risks (fines up to 3% of turnover; power to restrict or withdraw), but release is not subject to prior licence.",
+      "summary": "Bloc C's AI-law enforcement powers over general-purpose models took effect: open-source models above the systemic-risk compute threshold get no exemption and must notify, evaluate and mitigate risks (fines up to 3% of turnover; power to restrict or withdraw), but release is not subject to prior licence.",
       "detail": "Bloc C AI Act Art. 53(2), 55; Commission enforcement from 2026-08-02 (AI Act Service Desk FAQ). Bloc C is #3 by AI compute (Epoch, ~5%).",
       "value": null,
       "direction": "neutral",

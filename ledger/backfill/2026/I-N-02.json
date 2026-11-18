@@ -14,7 +14,7 @@
       "indicator": "I-N-02",
       "kind": "data-series",
       "published": "2026-01-02",
-      "summary": "Epoch AI: every model at the capability frontier since 2023 came from Bloc A; Bloc B models trailed by ~7 months on average. No other jurisdiction near the frontier.",
+      "summary": "Epoch AI: Bloc B frontier models trailed Bloc A's by about 7 months on average (range 4-14 months).",
       "detail": "Epoch data insight 'Bloc B AI models have lagged the Bloc A frontier by 7 months on average since 2023'.",
       "value": "7 months mean lag",
       "direction": "toward NO",

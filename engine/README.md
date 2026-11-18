@@ -16,7 +16,8 @@ node engine/recompute --export-ui  # after a full run: engine/out/g1_replay_data
 
 Inputs: `ledger/backfill/2026/I-*.json` (evidence items) and
 `ledger/backfill/review/approved_2026.json` (which phase is reviewed, indicators on hold, and
-item-level corrections that change a counted field). Only reviewed phases count.
+item-level corrections that change a counted field) and `ledger/backfill/review/rulings.json`
+(maintainer rulings: indicators ruled MET / NOT MET, merged indicators). Only reviewed phases count.
 
 ## What the engine does
 
@@ -39,10 +40,8 @@ under review. A full run prints the sensitivity of each default (halved / double
 ## Known gaps
 
 - The 2025 phase is in the ledger but not reviewed, so it does not count.
-- Indicator rulings (for example "counted under I-N-01") are applied in code (`lib.js`),
-  not yet read from a ledger file.
-- Item wording corrections that do not change a counted field are applied only in the site
-  build, not in this file.
+- The road-row wiring of a merged indicator (`rowFrom` in the `IND` table of `lib.js`) is
+  still model code; the rulings themselves are read from `ledger/backfill/review/rulings.json`.
 
 Verified 2026-11-18: run on the public ledger, all 46 weekly snapshots and the UI export
-match the published map exactly.
+match the published map exactly (also after moving the rulings into `rulings.json`).

@@ -13,6 +13,7 @@ ledger/
 ├── reviewed/<year>/<indicator>.json   accepted items after the weekly build files them
 ├── backfill/<phase>/<indicator>.json  maintainer history backfill (replay material)
 ├── review/approved_<phase>.json       per-phase review record: pass/hold, wording overrides
+├── review/rulings.json                maintainer rulings the engine reads (MET dates, merges)
 └── adjudications.md                rulings on indicator status (MET / NOT YET MET / ...)
 ```
 

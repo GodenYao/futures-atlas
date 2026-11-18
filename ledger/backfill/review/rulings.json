@@ -1,0 +1,9 @@
+{
+  "_doc": "Maintainer rulings on single indicators, read by engine/lib.js (loadLedger). 'resolutions': an indicator ruled resolved (value 1 = MET, 0 = NOT MET) from 'date'; from then on the engine uses the ruling instead of decaying evidence. 'merges': the evidence of the first indicator is not counted on its own because it is the same question as 'into' (count once; 'into' is canonical); 'why' is the text shown in the replay's excluded list. A change here changes the numbers, so it bumps the method version and gets a CHANGELOG entry.",
+  "resolutions": {
+    "I-R4-01": { "value": 1, "date": "2026-08-26", "note": "MET (persisted >=24 h arm), adjudication 2026-11-17" }
+  },
+  "merges": {
+    "I-R5-01": { "into": "I-N-01", "date": "2026-11-17", "why": "merged into I-N-01 (adjudication: count once, I-N-01 canonical)" }
+  }
+}

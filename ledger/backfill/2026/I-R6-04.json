@@ -56,7 +56,7 @@
       "indicator": "I-R6-04",
       "kind": "data-series",
       "published": "2026-05-20",
-      "summary": "Regional central-bank analysis: original-wording AI use in production ~10% in late 2025 (double mid-2024); broader wording ~20% in early 2026. Implies 2025 original-wording average ~8-9% and a 1.5x threshold of ~13%, already exceeded by any new-wording reading.",
+      "summary": "Regional central-bank analysis: original-wording AI use in production ~10% in late 2025 (double mid-2024); broader wording ~20% in early 2026.",
       "detail": "Federal Reserve Bank of Minneapolis, 'AI adoption in business grows steadily but unevenly' (2026; day not verified). Same cluster as BF-2026-I-R2-02-005.",
       "value": "~10% (late 2025, original wording)",
       "direction": "toward NO",

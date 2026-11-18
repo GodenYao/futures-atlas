@@ -8,3 +8,9 @@
 - One event = one item; further sources are added as corroboration, never extra weight.
 - Neutrality lists in `tools/neutrality/` (country terms, loaded terms, paywall domains); edits to them are rule changes and are logged here.
 - Correction issue form; Visions voting via GitHub Discussions (votes never change the map).
+
+## 2026-11-18 — public engine, rulings file
+- `engine/` recomputes all weekly snapshots from `ledger/backfill/` (no number changes).
+- Maintainer rulings moved from code to `ledger/backfill/review/rulings.json`; date overrides in `approved_2026.json`.
+- 9 backfill summaries corrected to match their sources; one informal bloc name → "Bloc C".
+- Reviewer: country names are replaced by bloc labels in the merge commit; review comments never show bloc labels.

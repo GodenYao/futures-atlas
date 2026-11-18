@@ -14,7 +14,7 @@
       "indicator": "I-R4-05",
       "kind": "data-series",
       "published": "2026-06-04",
-      "summary": "A top-5 Bloc A developer reported that >80% of code merged into its production codebase in May 2026 was authored by its own model (up from low single digits in early 2025); engineers merged 8x as much code per day in Q2 2026 as in 2024; the developer called for a verifiable option to pause frontier development.",
+      "summary": "A top-5 Bloc A developer reported that its engineers' average code output per quarter is about 8x the 2021-2025 level, attributing the rise to its own models, and called for a verifiable option to pause frontier development.",
       "detail": "Anthropic Institute, 'When AI builds itself' (Favaro & Clark, 2026-06-04; updated 2026-09-18). Leadership separately estimated >=90% incl. scripts/experimental code. Figure is company-wide, not a single training project.",
       "value": ">80% of merged code (May 2026)",
       "direction": "toward YES",

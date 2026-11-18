@@ -287,20 +287,23 @@ function loadLedger(siteDir) {
   const appr = JSON.parse(fs.readFileSync(path.join(bf, 'review', 'approved_2026.json'), 'utf8'));
   const ov = appr.wording_overrides || {};
   const hold = new Set((appr.counting && appr.counting.hold) || []);
+  // maintainer rulings on single indicators (MET/NOT MET resolutions, merges): review/rulings.json
+  const rulF = path.join(bf, 'review', 'rulings.json');
+  const rul = fs.existsSync(rulF) ? JSON.parse(fs.readFileSync(rulF, 'utf8')) : {};
+  const merges = rul.merges || {};
   const byInd = {}; const excluded = [];
   for (const f of fs.readdirSync(path.join(bf, '2026')).filter(f => f.endsWith('.json')).sort()) {
     const j = JSON.parse(fs.readFileSync(path.join(bf, '2026', f), 'utf8'));
     const id = j.indicator;
     for (const it0 of j.items) {
       const it = Object.assign({}, it0, ov[it0.id] || {});
-      if (id === 'I-R5-01') { excluded.push({ id: it.id, why: 'merged into I-N-01 (adjudication: count once, I-N-01 canonical)' }); continue; }
+      if (merges[id]) { excluded.push({ id: it.id, why: merges[id].why || ('merged into ' + merges[id].into) }); continue; }
       if (hold.has(id)) { excluded.push({ id: it.id, why: 'indicator on hold' }); continue; }
       if (it.kind === 'data-gap') { excluded.push({ id: it.id, why: 'data-gap: displayed, not counted (§3.2)' }); continue; }
       (byInd[id] = byInd[id] || []).push(it);
     }
   }
-  // maintainer rulings on single indicators
-  const resolutions = { 'I-R4-01': { value: 1, date: '2026-08-26', note: 'MET (persisted >=24 h arm), adjudication 2026-11-17' } };
+  const resolutions = rul.resolutions || {};
   return { byInd, excluded, resolutions, approved: appr.approved };
 }
 
