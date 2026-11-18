@@ -1,0 +1,87 @@
+name: Report a correction
+description: Wrong data, a broken source link, a wrong date, or wording that overstates the source or is not neutral.
+title: "[Correction] "
+labels: ["correction", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Point to the exact item or text and, where you can, the source that shows the right version.
+        Corrections that change a counted item are logged publicly and the affected weeks are recomputed.
+        Use this form for items that are already merged (there is no comment window after a merge). For an item still in an open pull request, comment in that PR instead.
+        **New evidence is not submitted here**: open a pull request instead ([CONTRIBUTING.md](https://github.com/GodenYao/futures-atlas/blob/main/CONTRIBUTING.md), or let an agent follow [AGENTS.md](https://github.com/GodenYao/futures-atlas/blob/main/AGENTS.md)).
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where is it?
+      options:
+        - "Evidence ledger item"
+        - "Indicator statement or status"
+        - "Road or site card on the map"
+        - "Ending text ('In the book' / definition)"
+        - "Visions video"
+        - "About / Methods / other page"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: ref
+    attributes:
+      label: Item id or page link
+      description: e.g. EV-20261002-framework-v2-1-revision, BF-2026-I-R1-03-001, I-R4-02, or the page URL (copy the address bar, including the part after #).
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is wrong?
+      options:
+        - "Factual error (number, name, event)"
+        - "Wrong date"
+        - "Summary overstates the source"
+        - "Summary blends in other sources"
+        - "Source link broken or unreachable"
+        - "Duplicate of another item"
+        - "Wording not neutral (judges instead of describes)"
+        - "Country name shown on a map label or headline"
+        - "Typo / grammar"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current text or value
+      description: Copy what the site or ledger shows now.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed correction
+      description: The text or value you think is right. Keep it descriptive.
+    validations:
+      required: true
+
+  - type: input
+    id: evidence_url
+    attributes:
+      label: Supporting source (if any)
+      placeholder: https://...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmations
+      options:
+        - label: My report contains no personal data about private individuals.
+          required: true
+        - label: I release the proposed text under CC BY 4.0.
+          required: true

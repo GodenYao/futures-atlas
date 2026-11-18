@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R3-03",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "A top-3 compute jurisdiction has licensing or pre-approval of frontier training above a compute threshold in force (official gazette; by 2028-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not met; movement in 2025 was away from it in Bloc A. Its federal government revoked the prior executive order (which had required reporting of runs >1e26 FLOP) and in December moved to pre-empt 'onerous' state AI laws. Two Bloc A states enacted frontier-model laws (thresholds >1e26 FLOP), but these require only transparency and incident reporting, not licensing. Bloc B's regime requires filing and security assessment before public deployment of generative services, not training. A supranational rulebook's general-purpose model duties (from Aug 2025) require notification above 1e25 FLOP, not pre-approval.",
+  "items": [
+    {
+      "id": "BF-2025-I-R3-03-001",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2025-01-20",
+      "summary": "Bloc A's new administration revoked the previous executive order on AI, removing the only federal requirement for developers to report training runs above 1e26 FLOP (with safety-test results) to the government; a follow-on order (Jan 23) directed removal of barriers to AI development.",
+      "detail": "EO 14148 (2025-01-20) rescinded EO 14110 (Oct 2023; Defense Production Act reporting for >1e26 FLOP); EO 14179 'Removing Barriers to Bloc A Leadership in AI' (2025-01-23).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.federalregister.gov/documents/2025/01/28/2025-01953/initial-rescissions-of-harmful-executive-orders-and-actions",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-03-002",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2025-08-02",
+      "summary": "A supranational AI rulebook's obligations for general-purpose models took effect: providers must notify the regulator within two weeks once a model meets (or is known to be going to meet) the 1e25 FLOP systemic-risk presumption, and must then assess and mitigate risk. This is notification, not training pre-approval, and the bloc is not clearly a top-3 compute jurisdiction.",
+      "detail": "Bloc C AI Act Arts 51-55 (GPAI; Art. 52 notification), applicable from 2025-08-02; GPAI Code of Practice published 2025-07-10.",
+      "value": "1e25 FLOP notification threshold",
+      "direction": "neutral",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-03-003",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2025-09-29",
+      "summary": "The largest sub-national AI hub in Bloc A enacted a frontier-AI transparency law for developers of models trained above 1e26 FLOP: published safety frameworks, critical-incident reporting to the state, whistleblower protection. No licence or pre-approval for training.",
+      "detail": "California SB 53, Transparency in Frontier Artificial Intelligence Act, signed 2025-09-29 (governor press release verified via search snippet); effective 2026-01-01.",
+      "value": ">1e26 FLOP coverage threshold",
+      "direction": "neutral",
+      "source_url": "https://www.gov.ca.gov/2025/09/29/governor-newsom-signs-sb-53",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-03-004",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2025-12-11",
+      "summary": "Bloc A's executive ordered a litigation task force to challenge state AI laws inconsistent with a 'minimally burdensome' national framework, tied federal funding to state AI regimes, and requested pre-emptive federal legislation. This makes compute-threshold licensing in Bloc A less likely.",
+      "detail": "EO 14365 'Ensuring a National Policy Framework for Artificial Intelligence', 2025-12-11; 90 FR 58499 (2025-12-16).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://federalregister.gov/documents/2025/12/16/2025-23092/ensuring-a-national-policy-framework-for-artificial-intelligence",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-03-005",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2025-12-19",
+      "summary": "A second Bloc A state signed a frontier-model safety law requiring large developers to publish safety protocols and report safety incidents within 72 hours. It is transparency-based, with no training licence.",
+      "detail": "New York RAISE Act (S6953B/A6453B) with agreed chapter amendments, signed 2025-12-19 (governor press release).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.governor.ny.gov/news/governor-hochul-signs-nation-leading-legislation-require-ai-frameworks-ai-frontier-models",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-03-006",
+      "indicator": "I-R3-03",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "Bloc B continued its pre-deployment filing and security-assessment regime for public-facing generative AI services, which gates release rather than training. No compute-threshold training licence was found in Bloc B in 2025, but Bloc B gazettes were not systematically searched.",
+      "detail": "Bloc B CAC Interim Measures for Generative AI Services (in force 2023-08-15) with algorithm filing; AI content labelling measures in force 2025-09-01. No compute-threshold training permit identified.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "source_tier": 1,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

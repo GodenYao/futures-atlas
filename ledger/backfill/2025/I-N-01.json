@@ -1,0 +1,111 @@
+{
+  "indicator": "I-N-01",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": ">= 15 distinct organisations have a training run >= 1e26 FLOP (Epoch AI, snapshot 2027-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "First runs above 1e26 FLOP appeared in 2025: Grok 3 (Feb, ~3.5e26), GPT-4.5 (Feb, 3.8e26), Grok 4 (Jul, ~5e26). Known count at end-2025 = 2 distinct organisations (both Bloc A). Late-2025 flagships from other Bloc A developers had no compute estimate (lower bound). Leading Bloc B open-weight models were estimated at ~3-5e24, ~20-30x below threshold. Epoch's May-2025 projection (~30 notable models >1e26 by start-2027) concerns models, not organisations.",
+  "items": [
+    {
+      "id": "BF-2025-I-N-01-001",
+      "indicator": "I-N-01",
+      "kind": "forecast",
+      "published": "2025-01-15",
+      "summary": "Compute tracker projected from historical trends that the largest open-weight model would pass 1e26 FLOP by about November 2025 and grow ~5x per year thereafter; at publication the largest open model was ~3.8e25.",
+      "detail": "Epoch AI Data Insight 'Frontier open models may surpass 1e26 FLOP of training compute before 2026' (Emberson), 2025-01-15. Framed around the Bloc A AI diffusion framework threshold. Largest open model then: Llama 3.1-405B (Meta, Bloc A) 3.8e25.",
+      "value": "3.8e25 FLOP (largest open model, Jan 2025)",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/data-insights/open-models-threshold",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-01-002",
+      "indicator": "I-N-01",
+      "kind": "event",
+      "published": "2025-02-17",
+      "summary": "A Bloc A developer released the first model in the tracker's database estimated above 1e26 FLOP (~3.5e26): organisation count 1.",
+      "detail": "xAI Grok 3, released 2025-02-17, Colossus cluster (Memphis, Bloc A). Epoch 'How many AI models will exceed compute thresholds?' (2025-05-30) names Grok-3 as the first model in its dataset above 1e26.",
+      "value": "1 organisation",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/publications/model-counts-compute-thresholds",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-01-003",
+      "indicator": "I-N-01",
+      "kind": "event",
+      "published": "2025-02-27",
+      "summary": "A second Bloc A developer released a model estimated at 3.8e26 FLOP (125-day training): organisation count 2.",
+      "detail": "OpenAI GPT-4.5, released 2025-02-27; Epoch model page: training compute 3.8e26 FLOP, training time 125 days (verified).",
+      "value": "2 organisations",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/models/gpt-4-5",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-01-004",
+      "indicator": "I-N-01",
+      "kind": "forecast",
+      "published": "2025-05-30",
+      "summary": "Compute tracker projected (median) ~10 notable models above 1e26 FLOP by 2026 and ~30 by start-2027 (conservative ~10, aggressive ~80 by 2027). The projection counts models, not distinct organisations; many would come from the same few developers.",
+      "detail": "Epoch AI, Cottier & Owen, 'How many AI models will exceed compute thresholds?', 2025-05-30 (verified).",
+      "value": "~30 models >1e26 by 2027 (median)",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/publications/model-counts-compute-thresholds",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-01-005",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2025-07-09",
+      "summary": "The first-mover Bloc A developer released a new record run (~5e26 FLOP); it added a model but not a new organisation, so the count stayed at 2.",
+      "detail": "xAI Grok 4, released 2025-07-09; Epoch Data Insight 'What did it take to train Grok 4?' (2025-09-12): ~5e26 FLOP.",
+      "value": "5e26 FLOP; 2 organisations",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/grok-4-training-resources",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-01-006",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2025-11-06",
+      "summary": "Leading Bloc B open-weight releases of 2025 were estimated at roughly 3-5e24 FLOP, ~20-30x below the threshold; no Bloc B organisation was near 1e26 on public estimates. The largest Bloc A open-weight release of 2025 was ~4.9e24.",
+      "detail": "Epoch estimates: DeepSeek-R1 3.5e24 (Jan), Qwen3-235B-A22B 4.8e24 (Apr/Jul), Kimi K2 3.0e24 (Jul), Kimi K2 Thinking 4.2e24 (Nov 6), DeepSeek-V3.2 4.2e24 (Dec 1); gpt-oss-120b (OpenAI) 4.9e24 (Aug). Values read from Epoch's current database (table in 'Open models lag state-of-the-art closed models'); entry dates of the estimates not verified, so as-of status uncertain.",
+      "value": "~3-5e24 FLOP (Bloc B flagships)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/open-closed-eci-gap",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-01-007",
+      "indicator": "I-N-01",
+      "kind": "data-gap",
+      "published": "2025-11-24",
+      "summary": "Late-2025 flagships from three other Bloc A developers were released without disclosed or estimated training compute (tracker notes only 'almost certainly >1e25'), so the count of 2 organisations is a floor.",
+      "detail": "Epoch entries: Gemini 3 Pro (Google DeepMind, 2025-11-18, compute Unknown, TPU v7 Ironwood); Claude Opus 4.5 (Anthropic, 2025-11-24, 'very likely >1e25'); Grok 4.1 / GPT-5.1 variants unspecified. Meta's Llama 4 Behemoth was not released.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/models/gemini-3-pro",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

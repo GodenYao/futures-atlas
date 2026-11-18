@@ -1,0 +1,97 @@
+{
+  "indicator": "I-N-02",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Organisations with a training run >= 1e26 FLOP are headquartered in >= 4 jurisdictions (Epoch AI, snapshot 2027-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "At end-2025 the known >=1e26 FLOP organisations (2) were both headquartered in Bloc A: 1 jurisdiction vs threshold 4. ~90% of GPU-cluster performance sat in Bloc A + Bloc B (May 2025). Outside the two blocs, 2025 brought announcements of clusters large enough in principle for 1e26-scale runs (a 1 GW Gulf campus partnered with a Bloc A developer; an 18,000-GPU Bloc C cluster), but none had trained such a run by year-end.",
+  "items": [
+    {
+      "id": "BF-2025-I-N-02-001",
+      "indicator": "I-N-02",
+      "kind": "data-series",
+      "published": "2025-02-27",
+      "summary": "By end-February 2025 the two organisations known to have runs above 1e26 FLOP were both headquartered in Bloc A: jurisdiction count 1. It stayed at 1 for the rest of 2025.",
+      "detail": "xAI Grok 3 (2025-02-17, ~3.5e26) and OpenAI GPT-4.5 (2025-02-27, 3.8e26), both Bloc A; Grok 4 (2025-07-09, ~5e26) also xAI. Epoch model page for GPT-4.5 verified.",
+      "value": "1 jurisdiction",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/models/gpt-4-5",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-02-002",
+      "indicator": "I-N-02",
+      "kind": "data-series",
+      "published": "2025-05-22",
+      "summary": "A Gulf state and a Bloc A frontier developer announced a 1 GW national AI cluster (200 MW expected live in 2026), built by a local firm but operated by Bloc A companies under a bilateral framework with Bloc A; any frontier run there would likely belong to a Bloc A organisation, not add a jurisdiction.",
+      "detail": "OpenAI 'Introducing Stargate Bloc K' (first 'OpenAI for Countries' partnership; G42 builds, OpenAI and Oracle operate; part of 5 GW Bloc K-Bloc A AI Campus), May 2025. Date from G42 release (2025-05-22; day approximate).",
+      "value": "1 GW planned (200 MW in 2026)",
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/introducing-stargate-uae/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-02-003",
+      "indicator": "I-N-02",
+      "kind": "data-series",
+      "published": "2025-06-05",
+      "summary": "Compute tracker: as of May 2025 Bloc A hosted ~75% of global GPU-cluster performance and Bloc B ~15%; all other jurisdictions together ~10%, which limits how many could host a 1e26-scale run soon.",
+      "detail": "Epoch AI Data Insight 'The Bloc A hosts the majority of GPU cluster performance, followed by Bloc B', 2025-06-05 (verified in prior run for I-R1-01).",
+      "value": "~10% outside the two blocs",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/ai-supercomputers-performance-share-by-country",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-02-004",
+      "indicator": "I-N-02",
+      "kind": "event",
+      "published": "2025-06-11",
+      "summary": "A Bloc C frontier developer announced its own AI cloud with 18,000 latest-generation accelerators in a first phase (expansion in 2026). At typical utilisation, that is roughly enough for a ~1e26 FLOP run over about three months: a potential path to a third jurisdiction, not yet realised.",
+      "detail": "Mistral AI 'Mistral Compute' (2025-06-11), data centre in Essonne, Bloc E; NVIDIA press release same day (18,000 Grace Blackwell GPUs). Feasibility arithmetic is our estimate (~2.5e15 FLOP/s dense BF16 x 40% x ~100 days ~ 1.5e26), not a source claim.",
+      "value": "18,000 GPUs (phase 1)",
+      "direction": "toward YES",
+      "source_url": "https://mistral.ai/news/mistral-compute/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-02-005",
+      "indicator": "I-N-02",
+      "kind": "data-series",
+      "published": "2025-12-01",
+      "summary": "Bloc B's leading developers released frontier-competitive open-weight models during 2025 at an estimated ~3-5e24 FLOP; no Bloc B organisation was publicly estimated near 1e26, so Bloc B did not yet count as a second jurisdiction.",
+      "detail": "Epoch estimates: DeepSeek-V3.2 4.2e24 (2025-12-01), Kimi K2 Thinking 4.2e24 (Moonshot, 2025-11-06), Qwen3-235B 4.8e24 (Alibaba). Estimate entry dates not verified.",
+      "value": "~4-5e24 FLOP (Bloc B max)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/open-closed-eci-gap",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-N-02-006",
+      "indicator": "I-N-02",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "A frontier developer with joint headquarters in Bloc A and a third jurisdiction released a late-2025 flagship with unknown compute. Even if it is above 1e26, attribution would add at most one jurisdiction, depending on how dual headquarters are counted. A counting rule is needed.",
+      "detail": "Epoch lists Google DeepMind country as 'Bloc G, Bloc A' (Gemini 3 Pro, 2025-11-18, compute Unknown). Method note: decide whether dual-HQ organisations count for both jurisdictions.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/models/gemini-3-pro",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

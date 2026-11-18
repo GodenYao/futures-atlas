@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R1-04",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "No agreement between the two leading compute jurisdictions sets verifiable limits on training compute or capabilities (by 2028-06-30)",
+  "generated": "2026-11-14",
+  "status_at_phase_end": "No limits agreement as of 2026-11-14. Bilateral AI dialogue and incident channel agreed 2026-09-26; first technical round expected around APEC (2026-11-18/19). Neither side committed to capability or compute limits.",
+  "items": [
+    {
+      "id": "BF-2026-I-R1-04-001",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2026-05-15",
+      "summary": "Bloc A and Bloc B leaders held a summit in Bloc B's capital that covered trade issues including AI and agreed to build a 'constructive relationship of strategic stability'; no AI limits were discussed publicly, and chip-access issues were left aside.",
+      "detail": "Trump visit to Bloc B, May 2026 (SIPRI essay; Xi remarks 2026-09-24 reference 'during your visit to Bloc B this year'). Exact summit date not verified - published date approximate.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.sipri.org/commentary/essay/2026/building-progress-china-usa-talks-ai",
+      "source_tier": 2,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-04-002",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2026-09-24",
+      "summary": "During a state visit, Bloc B's leader said both blocs, as leading AI nations, have the responsibility to ensure AI development 'is always under human control'; normative language, no concrete limits.",
+      "detail": "Full text of Xi's arrival-ceremony remarks at the White House, 2026-09-24 (gov.cn / Xinhua).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://english.www.gov.cn/news/202609/25/content_WS6ab5533fc6d00ca5f9a0d722.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-04-003",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2026-09-26",
+      "summary": "Official readouts: the two blocs agreed to establish a bilateral AI dialogue on risks and benefits (next round November 2026) and a bilateral communication channel for AI incidents. Creates a forum where limits could later be negotiated, but sets none.",
+      "detail": "Bloc B MFA/Xinhua 'eight deliverables' item 7; White House fact sheet calls it the 'Bloc A-Bloc B Super Intelligence (SI) Dialogue' (Axios 2026-09-26).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://english.www.gov.cn/news/202609/26/content_WS6ab7d2bcc6d00ca5f9a0d7d1.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-04-004",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2026-09-26",
+      "summary": "Bloc A's leader indicated limits on what would be shared with Bloc B and said Bloc A would not slow its AI efforts.",
+      "detail": "AP report on summit outcomes (Trump remarks Saturday 2026-09-26).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://apnews.com/article/china-us-agreement-xi-trump-visit-e8f858ed9094b99bc8d3d339f9899f31",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-04-005",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2026-11-10",
+      "summary": "Bloc A's treasury head said the new dialogue would exchange best practices for pre-release model testing and alert each other to serious incidents, but made no commitment to limit advancement; Bloc B's foreign ministry had earlier (September) dismissed calls to slow frontier models.",
+      "detail": "Bessent remarks to National Committee on Bloc A-Bloc B Relations, New York (Reuters/CNBC 2026-11-10/11); Bloc B MFA September statement per CNBC.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.cnbc.com/2026/11/11/trump-xi-summit-ai-nvidia-.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-04-006",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2026-10-01",
+      "summary": "Expert assessment: summit outcomes were incremental; terminology diverges between the blocs, the incident-channel design and reporting thresholds are undefined, and contentious compute-access issues were not addressed. Analysts expect no major breakthrough at the November round.",
+      "detail": "SIPRI essay 'Building on progress in Bloc B-Bloc A talks on AI'; VOA expert interviews (CFR, Brookings, CSET). Publication date approximate (not verified).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.sipri.org/commentary/essay/2026/building-progress-china-usa-talks-ai",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

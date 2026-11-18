@@ -1,0 +1,97 @@
+{
+  "indicator": "I-N-01",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": ">= 15 distinct organisations have a training run >= 1e26 FLOP (Epoch AI, snapshot 2027-12-31)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Far below threshold on known data: Epoch central estimates put 4 notable models above 1e26 FLOP, from 2 organisations (both Bloc A). Count is a lower bound because several Bloc A flagship models have no compute estimate.",
+  "items": [
+    {
+      "id": "BF-2026-I-N-01-001",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2026-04-13",
+      "summary": "Annual AI index report notes that leading Bloc A developers have stopped reporting training compute, so threshold counts drawn from public data are increasingly estimates and lower bounds.",
+      "detail": "Stanford AI Index 2026 (uses Epoch AI data); Foundation Model Transparency Index fell to 40 from 58.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://hai.stanford.edu/news/inside-the-ai-index-12-takeaways-from-the-2026-report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-N-01-002",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2026-04-24",
+      "summary": "The leading Bloc B open-weight flagship of spring 2026 was estimated by a secondary tracker at ~1e25 FLOP, an order of magnitude below the 1e26 threshold; no compute was disclosed by the developer.",
+      "detail": "DeepSeek-V4-Pro (DeepSeek, Apr 2026; 1.6T params, 49B active), ~9.7e24 FLOP estimate per DatacentersX frontier-training-runs table (last verified Oct 2026). Release date approximate (April 2026).",
+      "value": "~9.7e24 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://datacentersx.com/frontier-training-runs.html",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-N-01-003",
+      "indicator": "I-N-01",
+      "kind": "event",
+      "published": "2026-09-03",
+      "summary": "A Bloc A developer released a frontier model trained on >=100,000 latest-generation accelerators; it became the largest known training run, but the developer was already above 1e26 FLOP, so the count of distinct organisations did not change.",
+      "detail": "OpenAI GPT-6 Astra, trained at Stargate Abilene, Texas (Bloc A). OpenAI's earlier GPT-4.5 (Feb 2025) already >1e26 per Epoch.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/gpt-6-astra/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-N-01-004",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2026-10-15",
+      "summary": "Epoch AI estimated the new record run at ~9.4e26 FLOP (90% CI ~4.6e26-1.8e27). With it, Epoch's database holds 4 notable models above 1e26 FLOP from only 2 distinct organisations.",
+      "detail": "Epoch model page GPT-6 Astra (9.4e26, Likely; revised down from ~1e27). Models >1e26: GPT-6 Astra, GPT-4.5 (OpenAI); Grok 4, Grok 3 (xAI). All Bloc A.",
+      "value": "2 organisations (4 models)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/models/gpt-6-astra",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-N-01-005",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2026-10-19",
+      "summary": "Independent tally of Epoch data (models published to 28 Oct 2026): four notable models exceed 1e26 FLOP, all from Bloc A companies.",
+      "detail": "AI Adoption, 'Largest AI Training Runs' (published 2026-10-19, updated 2026-11-04): GPT-6 Astra 9.4e26, Grok 4 5e26, GPT-4.5 3.8e26, Grok 3 3.5e26. Secondary analysis of tier-1 data.",
+      "value": "4 models",
+      "direction": "toward NO",
+      "source_url": "https://aiadoption.org/data/training-compute-of-notable-ai-models",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-N-01-006",
+      "indicator": "I-N-01",
+      "kind": "data-gap",
+      "published": "2026-10-31",
+      "summary": "Many flagship models from at least three other Bloc A frontier developers have no Epoch compute estimate; trackers describe them as 'likely candidates' above 1e26, so the organisation count (2) is a floor, not a ceiling. No known run above 1e27 yet.",
+      "detail": "DatacentersX (verified Oct 2026) and AI Wiki 'Training compute' (Oct 2026): Gemini 3 / 3.1 Pro (Google), Claude models (Anthropic), Muse Spark (Meta) undisclosed; Epoch has no estimate. Date approximate (October 2026).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://aiwiki.ai/wiki/training_compute",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

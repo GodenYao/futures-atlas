@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R6-01",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Nonfarm business labour productivity growth in 2027 < 2.5% (Bloc A BLS; annual)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "The 2027 window had not started. Baseline as known in 2025: 2024 annual productivity growth was first reported at 2.3% (Feb) and revised to ~2.8% (May), above the 2.5% bar. 2025 quarters were volatile: Q1 -1.5% (later -1.8%), the first decline since 2022; Q2 +3.3% annualised (revised up from 2.4%), +1.5% year on year. The Q3 release slipped past phase end because of the federal shutdown, so no 2025 annual figure was available in-phase. The cycle average since 2019Q4 was ~1.8%/yr, below 2.5%.",
+  "items": [
+    {
+      "id": "BF-2025-I-R6-01-001",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2025-02-12",
+      "summary": "The official statistics office reported nonfarm business labour productivity grew 2.3% in 2024 (output +2.9%, hours +0.6%), after 1.6% in 2023 and -1.5% in 2022.",
+      "detail": "Bloc A BLS, The Economics Daily 'Productivity up 2.3 percent in 2024' (2025-02-12), from Productivity and Costs Q4 2024 preliminary (2025-02-06).",
+      "value": "2.3% (2024 annual, first print)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/opub/ted/2025/productivity-up-2-3-percent-in-2024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-01-002",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2025-05-08",
+      "summary": "Q1 2025 nonfarm productivity fell 0.8% annualised (first decline since Q2 2022; +1.4% y/y). The same release revised 2024 annual growth up to ~2.8% and put the current-cycle average (since 2019Q4) at 1.8%/yr against a long-run 2.1%.",
+      "detail": "Bloc A BLS Productivity and Costs, First Quarter 2025, Preliminary (USDL 25-0715, 2025-05-08). 2024 annual revision value read from release text/table (2.8%); interim March revision not checked.",
+      "value": "-0.8% (Q1 2025 SAAR); 2024 rev. ~2.8%",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_05082025.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-01-003",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2025-06-05",
+      "summary": "The revised Q1 2025 estimate deepened the decline to -1.5% annualised (+1.3% y/y).",
+      "detail": "Bloc A BLS Productivity and Costs, First Quarter 2025, Revised (2025-06-05). Later revised to -1.8% with the Aug annual revision (per Reuters 2025-09-04).",
+      "value": "-1.5% (Q1 2025 SAAR, revised)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_06052025.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-01-004",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2025-08-07",
+      "summary": "Preliminary Q2 2025 nonfarm productivity rose 2.4% annualised (+1.3% y/y). Q1 was revised to -1.8%.",
+      "detail": "Bloc A BLS Productivity and Costs, Second Quarter 2025, Preliminary (2025-08-07); values as quoted in BLS revised release and Econoday.",
+      "value": "+2.4% (Q2 2025 SAAR, prelim)",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_08072025.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-01-005",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2025-09-04",
+      "summary": "Q2 2025 nonfarm productivity was revised up to +3.3% annualised (output +4.4%, hours +1.1%); year-on-year growth was +1.5%. A news agency noted productivity could get a boost from the AI investment boom.",
+      "detail": "Bloc A BLS Productivity and Costs, Second Quarter 2025, Revised (2025-09-04; DOL PDF prod2_09042025); Reuters 2025-09-04.",
+      "value": "+3.3% (Q2 2025 SAAR); +1.5% y/y",
+      "direction": "toward NO",
+      "source_url": "https://dol.gov/newsroom/economicdata/prod2_09042025.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-01-006",
+      "indicator": "I-R6-01",
+      "kind": "data-gap",
+      "published": "2025-11-06",
+      "summary": "The Q3 2025 preliminary productivity release (normally early November) was postponed by the federal government shutdown (1 Oct - 12 Nov 2025) and did not appear before phase end, so no 2025 annual estimate was available in-phase.",
+      "detail": "BLS release schedule disruption; per run_log run 6 note, Q3 2025 BLS release slipped to Jan 2026 (post-phase, not used).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/schedule/news_release/prod2.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

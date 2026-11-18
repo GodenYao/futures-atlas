@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R5-03",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": ">= 20% of announced >100 MW AI data-centre capacity is outside the two leading jurisdictions (Epoch data-centre tracker; IEA; 2027)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "Well below threshold: in Epoch's frontier data-centre register (~96 sites), ~8% of planned IT power (~3.2 of ~38.4 GW) is outside Bloc A and Bloc B; Epoch's chip-import data put ~18% of 2022-H1 2026 AI compute outside the two blocs, with Bloc A's share of new compute rising (78% in H1 2026). Bloc B coverage in the register is weak (9-31%), which biases the denominator.",
+  "items": [
+    {
+      "id": "BF-2026-I-R5-03-001",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2026-10-27",
+      "summary": "Epoch AI chip-imports explorer: of 27.4M H100-equivalents of AI compute delivered 2022-June 2026, ~72% went to Bloc A and ~10% to Bloc B, leaving ~18% elsewhere (largest: a Bloc C bloc ~5%, a Southeast Asian hub ~2%). Bloc A's share of new compute rose from ~60% (2022-24) to 72% (2025) and 78% (H1 2026).",
+      "detail": "Epoch AI, 'Introducing the AI Chip Imports explorer' (Melito & Juniewicz): Bloc A 19.8M, Bloc B 2.6M (incl. domestic), Bloc C 1.4M, Bloc I 0.7M H100e. Bloc B range 1.9-4.2M under alt assumptions. Compute, not announced MW capacity.",
+      "value": "~18% outside two blocs (compute delivered)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/latest/introducing-the-ai-chip-imports-explorer",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-03-002",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2026-11-06",
+      "summary": "Tally of Epoch's frontier data-centre register: planned IT power ~33.1 GW in Bloc A and ~2.1 GW in Bloc B versus ~3.2 GW in all other countries combined (~8% of planned). Online now: ~12.6 GW Bloc A, ~0.9 GW Bloc B, ~1.6 GW elsewhere.",
+      "detail": "Compute Terminal calculation from Epoch AI Frontier Data Centers (CC BY 4.0), as of 2026-11-06: Bloc I 1.42 GW planned, Bloc K 1.00, Bloc Y 0.23, Bloc T 0.14, Bloc M 0.13, Bloc G 0.09, Bloc Z 0.07, Bloc 27 0.05, Bloc W 0.04, Bloc 28 0.01. Secondary aggregation of tier-1 data.",
+      "value": "~8% of planned IT power",
+      "direction": "toward NO",
+      "source_url": "https://compute-terminal.com/datacentres",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-03-003",
+      "indicator": "I-R5-03",
+      "kind": "data-gap",
+      "published": "2026-09-30",
+      "summary": "Epoch's data-centre research covers ~44% of global AI compute (86 sites) and ~53% of compute deployed in 2026, but only 9-31% of Bloc B data centres, so country shares of tracked capacity are biased.",
+      "detail": "Epoch AI, 'Scaling our global AI data center research' (date approximate, ~Sept-Oct 2026).",
+      "value": "44% coverage",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/latest/scaling-ai-data-centers-research",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-03-004",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2026-10-28",
+      "summary": "Analysis of sovereign-AI projects: government-backed sovereign compute totals ~167,000 H100e across 30 countries, only ~3-4.5% of the ~5M H100e outside the two blocs; most non-bloc compute is in commercial facilities, concentrated in a handful of countries.",
+      "detail": "Consensus Drift substack 'Counting the chips behind sovereign AI' (Bloc C, Bloc I, Bloc O, Bloc N, Bloc W, Bloc G ~3/4 of non-Bloc A/Bloc B compute). Date approximate.",
+      "value": "~5M H100e outside two blocs",
+      "direction": "neutral",
+      "source_url": "https://consensusdrift.substack.com/p/counting-the-chips-behind-sovereign",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-03-005",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2026-01-15",
+      "summary": "IEA baseline (2025 report, current in 2026): Bloc A ~45%, Bloc B ~25%, Europe ~15% of global data-centre electricity use (2024); the two blocs account for ~80% of projected growth to 2030 - i.e. ~30% of all data-centre load is outside them, but AI-specific large campuses are far more concentrated.",
+      "detail": "IEA 'Energy and AI' (Apr 2025) executive summary; still IEA's reference figures in 2026 'Key Questions on Energy and AI'. 'published' set to phase start as carried-forward baseline.",
+      "value": "~30% outside (all data centres, electricity)",
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/energy-and-ai/executive-summary",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

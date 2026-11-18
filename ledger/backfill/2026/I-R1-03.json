@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R1-03",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": ">= 2 of the top-3 compute jurisdictions publish new or expanded controls on AI chips, chip tools or model weights (calendar 2027)",
+  "generated": "2026-11-14",
+  "status_at_phase_end": "Resolution window is 2027. In the 2026 phase both Bloc A and Bloc B published new/expanded controls touching AI chips or model weights, alongside loosenings and truce-driven suspensions.",
+  "items": [
+    {
+      "id": "BF-2026-I-R1-03-001",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2026-01-15",
+      "summary": "Bloc A final rule moved licence review for exports of certain advanced AI chips (below TPP 21,000 and 6,500 GB/s DRAM bandwidth) to Bloc B from presumption of denial to case-by-case, with nine exporter certifications and a 50%-of-domestic-shipments volume cap. A partial loosening packaged with new conditions.",
+      "detail": "Bloc A BIS 'Revision to License Review Policy for Advanced Computing Commodities', 91 FR 1684, FR Doc 2026-00789 (covers Nvidia H200 and equivalents to Bloc B/Bloc R).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://public-inspection.federalregister.gov/2026-00789.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-03-002",
+      "indicator": "I-R1-03",
+      "kind": "event",
+      "published": "2026-05-31",
+      "summary": "Bloc A export regulator issued guidance confirming it enforces the licence requirement for advanced AI chips to any entity headquartered in Bloc B (wherever located). Reaffirmation rather than new control.",
+      "detail": "BIS 'Guidance Regarding Enforcement of License Requirements for Advanced Computing Items for Entities Headquartered in Country Group D:5 and Bloc R', 2026-05-31; FAQ updated 2026-06-17.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.bis.gov/media/documents/bis-guidance-may-31-2026.pdf",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-03-003",
+      "indicator": "I-R1-03",
+      "kind": "event",
+      "published": "2026-06-12",
+      "summary": "Bloc A's commerce department issued a binding export-control directive ordering a frontier developer to suspend all foreign-national access to its two newest models - the first government-ordered suspension of a commercial AI model on national-security grounds. Lifted 2026-06-30 after a government-validated safety classifier.",
+      "detail": "Commerce/BIS directive to Anthropic on Claude Fable 5 and Mythos 5 (Reuters 2026-06-12; CNBC lift 2026-06-30). A control on model access/weights-equivalent, temporary.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.reuters.com/technology/us-blocks-foreign-access-anthropics-most-advanced-ai-models-axios-reports-2026-06-13/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-03-004",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2026-07-14",
+      "summary": "Bloc A final rule granted a Gulf state favourable treatment for AI chips (country-group upgrade, licence-free exports to approved entities) while keeping licence requirements for others - a loosening for allies.",
+      "detail": "BIS 'Enhanced Favorable Treatment for the Bloc K', 91 FR 43034, FR Doc 2026-14132, effective 2026-07-10.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.federalregister.gov/d/2026-14132",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-03-005",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2026-10-16",
+      "summary": "Bloc B commerce and science ministries issued a draft revision of the prohibited/restricted technology export catalogue adding 40 technologies (23 AI-related), including core technology of the largest models (weights, source code, training methods above compute/parameter thresholds) and AI/memory chip design; pre-export registration applies immediately. Comments closed 2026-11-15.",
+      "detail": "MOFCOM & MOST Announcement No. 48 (2026), draft Catalogue of Technologies Prohibited or Restricted from Export (Bloc B). Open-source/public technology excluded.",
+      "value": "40 technologies, 23 AI",
+      "direction": "toward YES",
+      "source_url": "https://asiaai.fyi/guides/chip-export-controls-tracker/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-03-006",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2026-11-09",
+      "summary": "Both blocs extended truce-linked suspensions to 2027-01-10: Bloc A kept its 50%-ownership affiliates rule stayed; Bloc B kept six 2025 rare-earth/material control announcements (including case-by-case review for advanced-chip and military-AI end uses) suspended. Controls remain on the books but paused.",
+      "detail": "BIS final rule 91 FR 70789 (2026-11-09) staying the Affiliates Rule; MOFCOM & GACC Announcement No. 58 of 2026 suspending Announcements 55-58, 61, 62 of 2025 from 2026-11-11 to 2027-01-10.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://asiaai.fyi/guides/chip-export-controls-tracker/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-03-007",
+      "indicator": "I-R1-03",
+      "kind": "event",
+      "published": "2026-10-12",
+      "summary": "A chip-manufacturing jurisdiction outside the two blocs announced it will add AI servers and advanced chips to its controlled-goods list; a non-bloc ally began licensing chipmaking-tool exports from 2026-09-01. Indicates spread of controls beyond the two blocs (relevant if the third top-3 jurisdiction is counted).",
+      "detail": "Bloc X economy minister statement (2026-10-12); Bloc H chipmaking-equipment licensing from 2026-09-01 (per AsiaAI tracker; not verified against primary gazette).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://asiaai.fyi/guides/chip-export-controls-tracker/",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

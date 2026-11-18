@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R3-04",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "An international body gains inspection or compute-verification powers covering >= 2 of the top-5 compute jurisdictions (treaty text, official gazettes; by 2029-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not met; no body held such powers in 2025. Multilateral activity focused on science and dialogue: the UN General Assembly created an independent scientific panel and a global dialogue on AI governance (no inspection mandate). Bloc B proposed a new world AI cooperation organisation centred on capacity-building and standards. A UN advisory brief and civil-society campaigns (AI red lines) set out verification options, but no treaty text with inspection or compute-verification powers was negotiated.",
+  "items": [
+    {
+      "id": "BF-2025-I-R3-04-001",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2025-06-15",
+      "summary": "The UN Secretary-General's Scientific Advisory Board issued a science brief on verifying frontier AI. It assessed compute as the most promising verification target (detectable, excludable, quantifiable) and discussed hardware-enabled mechanisms. Advisory only, with no powers.",
+      "detail": "UN SAB, 'Verification of Frontier AI' science brief (file dated 2025-06; exact day not verified).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.un.org/scientific-advisory-board/sites/default/files/2025-06/verification_of_frontier_ai.pdf",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-04-002",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2025-07-26",
+      "summary": "Bloc B's government proposed a new world AI cooperation organisation (tentative headquarters in its largest commercial city), focused on capacity-building, bridging the AI divide and aligning governance rules and standards, alongside a 13-point global AI governance action plan. No inspection or verification mandate was proposed.",
+      "detail": "Premier Li Qiang, WAIC 2025 opening, Shanghai, 2025-07-26; MFA remarks by Ma Zhaoxu (WAICO); Global AI Governance Action Plan. Reuters/Xinhua 2025-07-26.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.mfa.gov.cn/eng/xw/wjbxw/202507/t20250730_11679453.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-04-003",
+      "indicator": "I-R3-04",
+      "kind": "treaty-law",
+      "published": "2025-08-26",
+      "summary": "The UN General Assembly established an Independent International Scientific Panel on AI and a Global Dialogue on AI Governance. These are the first universal-membership AI bodies, but their mandate covers assessment and dialogue only, with no inspection or compute-verification powers.",
+      "detail": "UNGA Resolution A/RES/79/325 (2025-08-26), following the Global Digital Compact. First Dialogue scheduled Geneva July 2026.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.un.org/global-digital-compact/en/ai",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-04-004",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2025-09-22",
+      "summary": "A global call by 200+ public figures (including 10 Nobel laureates), launched at the UN General Assembly, urged governments to agree by end-2026 on internationally binding, verifiable 'red lines' for AI. It is advocacy, not a mandate.",
+      "detail": "Global Call for AI Red Lines (CeSIA, The Future Society, CHAI), launched 2025-09-22 at UNGA80; NBC, Le Monde, El Pais same day.",
+      "value": "200+ signatories at launch",
+      "direction": "toward YES",
+      "source_url": "https://red-lines.ai/",
+      "source_tier": 3,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-04-005",
+      "indicator": "I-R3-04",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No treaty or agreement in 2025 gave an international body inspection or compute-verification powers over any top-5 compute jurisdiction. Academic proposals (conditional AI-safety treaties, verification frameworks) remained proposals only.",
+      "detail": "E.g. arXiv 2503.18956 (conditional AI safety treaty, Mar 2025); Oxford AIGI 'Verification for International AI Governance' (Jul 2025). Council of Europe AI Convention (2024) has no inspection powers.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://arxiv.org/abs/2503.18956",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

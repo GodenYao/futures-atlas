@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R4-05",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "A top-5 developer reports AI systems did >= 50% of code or experiments in a frontier training project (technical report or system card; by 2028-12-31)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "Company-wide code share already well above 50% at two top-5 Bloc A developers (>80% of merged code at one as of May 2026; 'majority' / >75% of production code at another), but no report yet scopes the figure to a specific frontier training project, and experiments remain human-directed. Likely resolves YES on a liberal reading; strict reading requires project-level attribution.",
+  "items": [
+    {
+      "id": "BF-2026-I-R4-05-001",
+      "indicator": "I-R4-05",
+      "kind": "data-series",
+      "published": "2026-06-04",
+      "summary": "A top-5 Bloc A developer reported that >80% of code merged into its production codebase in May 2026 was authored by its own model (up from low single digits in early 2025); engineers merged 8x as much code per day in Q2 2026 as in 2024; the developer called for a verifiable option to pause frontier development.",
+      "detail": "Anthropic Institute, 'When AI builds itself' (Favaro & Clark, 2026-06-04; updated 2026-09-18). Leadership separately estimated >=90% incl. scripts/experimental code. Figure is company-wide, not a single training project.",
+      "value": ">80% of merged code (May 2026)",
+      "direction": "toward YES",
+      "source_url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-05-002",
+      "indicator": "I-R4-05",
+      "kind": "data-series",
+      "published": "2026-09-18",
+      "summary": "Update to the same essay: the developer's models now lead ~26% of its R&D tasks end-to-end from a high-level prompt under human supervision - i.e. experiments are still mostly human-led.",
+      "detail": "Anthropic essay update 2026-09-18, as reported by LA Times / Bloc A Times 2026-09-19 (via you.com summary).",
+      "value": "~26% of R&D led end-to-end",
+      "direction": "toward NO",
+      "source_url": "https://for.you.com/posts/ai-labs-edge-toward-self-improving-models-not-there-yet-06f90e9d",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-05-003",
+      "indicator": "I-R4-05",
+      "kind": "event",
+      "published": "2026-09-06",
+      "summary": "Another top-5 Bloc A developer said it reached its goal of an 'automated research intern' (well-defined multi-day research tasks under human direction); experiments per researcher hit an all-time high in Aug 2026; targets an automated AI researcher by March 2028. No code or experiment share published.",
+      "detail": "OpenAI, 'Research acceleration: The view inside OpenAI' (2026-09-06).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/research-acceleration-view-inside-openai/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-05-004",
+      "indicator": "I-R4-05",
+      "kind": "data-series",
+      "published": "2026-10-13",
+      "summary": "A third top-5 Bloc A developer's frontier safety report stated AI agents 'author a majority of production code' at its AI lab and that most production code is over 75% AI-written; some internal agents run with the host user's full privileges.",
+      "detail": "Google DeepMind Gemini 4 Argon Safety & Security Report, quoted by The Midas Project Watchtower 2026-10-13.",
+      "value": ">75% of production code",
+      "direction": "toward YES",
+      "source_url": "https://www.themidasproject.com/watchtower/google-10132026",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-05-005",
+      "indicator": "I-R4-05",
+      "kind": "data-series",
+      "published": "2026-11-05",
+      "summary": "Independent evaluator found AI cannot yet fully automate substantial parts of a top-5 developer's model training pipeline, while ~80% of a ~1.9x capability-progress acceleration is likely due to AI used in R&D.",
+      "detail": "METR, 'Independent Assessment of AI R&D Acceleration at Anthropic in October 2026'.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-05-006",
+      "indicator": "I-R4-05",
+      "kind": "event",
+      "published": "2026-11-10",
+      "summary": "In its IPO filing the first developer said it does not expect to safely let its model fully build its successors without meaningful human supervision and is weighing human-review requirements for certain research decisions.",
+      "detail": "Anthropic S-1/A No. 2 (2026-11-10), per The Next Web 2026-11-12.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://thenextweb.com/news/anthropic-ai-research-threshold-metr-ipo-filing",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

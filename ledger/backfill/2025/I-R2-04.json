@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R2-04",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "A top-10 economy legally authorises fully automated decisions (no human sign-off) in a new benefits, tax or immigration domain (official gazette; OECD.AI; by 2028-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not resolved. In 2025 one top-10 economy enacted a general relaxation of its solely-automated-decision rule (any lawful basis, safeguards incl. human intervention on request; not in force until 2026; not domain-specific). Bloc A's federal executive guidance pushed faster AI adoption but required human oversight and human review/appeal for high-impact uses that explicitly include benefits and immigration. The supranational AI rulebook covering three top-10 economies classifies benefits and migration AI as high-risk with mandatory human oversight. No statute newly authorising no-human-sign-off decisions in benefits, tax or immigration was found.",
+  "items": [
+    {
+      "id": "BF-2025-I-R2-04-001",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2025-02-02",
+      "summary": "First obligations of a supranational AI regulation covering three top-10 economies began to apply (prohibited practices, AI literacy). The regulation classifies AI used for public-benefit eligibility and for migration, asylum and border control as high-risk, with mandatory human oversight from August 2026: a legal headwind against no-human-sign-off decisions there.",
+      "detail": "Bloc C AI Act (Regulation (Bloc C) 2024/1689): Art. 5 prohibitions apply from 2025-02-02; Annex III points 5(a) (public assistance benefits) and 7 (migration/asylum/border); Art. 14 human oversight; high-risk obligations from 2026-08-02. Bloc D, Bloc E, Bloc F are top-10 economies.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-04-002",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2025-04-03",
+      "summary": "Bloc A's federal budget office ordered agencies to accelerate AI use and cut 'bureaucratic' barriers, but kept minimum practices for 'high-impact AI': human oversight and intervention, and timely human review and appeal for affected people. Benefits adjudication, continued-eligibility determinations and immigration/asylum risk assessments are presumed high-impact.",
+      "detail": "OMB Memorandum M-25-21 'Accelerating Federal Use of AI through Innovation, Governance, and Public Trust', 2025-04-03 (rescinds M-24-10); Section 4(b)(v)-(vi), Section 6 categories (k), (m). Executive guidance, not statute; CAIO may waive practices.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.whitehouse.gov/wp-content/uploads/2025/02/M-25-21-Accelerating-Federal-Use-of-AI-through-Innovation-Governance-and-Public-Trust.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-04-003",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2025-06-19",
+      "summary": "A top-10 economy enacted a data law replacing its general prohibition on solely automated significant decisions with a permissive regime: allowed on any lawful basis outside special-category data, subject to safeguards (information, representations, human intervention on request, contestation). It is general rather than specific to benefits, tax or immigration, applies only from 2026, and keeps human intervention available.",
+      "detail": "Bloc G Data (Use and Access) Act 2025, Royal Assent 2025-06-19; s.80 inserts Bloc G GDPR Arts 22A-22D (verified on legislation.gov.uk). Commenced 2026-02-05.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://legislation.gov.uk/ukpga/2025/18/section/80/enacted",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-04-004",
+      "indicator": "I-R2-04",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No 2025 statute was found in Bloc A, Bloc B or other top-10 economies that newly authorises fully automated (no human sign-off) decisions in a benefits, tax or immigration domain. Pre-existing full-automation bases (e.g. tax assessment in one top-10 economy) are not new domains. Bloc B and several other top-10 economies' legal sources were not systematically searched.",
+      "detail": "Checked: Bloc A federal (OMB), Bloc G, Bloc C AI Act. Not systematically checked: Bloc B, Bloc N, Bloc O, Bloc E, Bloc F, Bloc P, Bloc Q national gazettes. Bloc D § 155(4) AO (tax) and § 31a SGB X (social) predate 2025.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://oecd.ai/en/dashboards/overview",
+      "source_tier": 1,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

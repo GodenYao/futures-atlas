@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R2-03",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "Frontier 50%-success task time horizon >= 16 h (METR measurements, cross-checked against government AISI reports; by 2027-12-31)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Threshold nominally reached but not robustly measurable: METR's early Claude Mythos Preview measurement was 'at least 16 h' (data-file point estimate 17.4 h, 95% CI 8.5-55 h), and METR states that values above 16 h are unreliable with its suite. METR froze its public time-horizon page (Sept 2026) and the TH1.1 suite is near saturation, so resolution needs a method decision (accept TH1.1 point estimate vs wait for a successor suite).",
+  "items": [
+    {
+      "id": "BF-2026-I-R2-03-001",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2026-01-29",
+      "summary": "Independent evaluator released Time Horizon 1.1 (228 tasks, 31 tasks of 8h+; moved to an open-source government-institute framework). Frontier 50% horizon ~5.3 h (Bloc A model, Nov 2025); post-2024 doubling time ~89 days.",
+      "detail": "METR TH1.1: Claude Opus 4.5 320 min [170,729]; GPT-5 214 min; doubling since 2023 131 days; since 2024 88.6 days. Only 5 of 31 long tasks human-baselined. Infrastructure moved to Bloc G AISI Inspect.",
+      "value": "320 min (frontier, TH1.1)",
+      "direction": "toward YES",
+      "source_url": "https://metr.org/blog/2026-01-29-time-horizon-1-1/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-03-002",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2026-02-20",
+      "summary": "A Bloc A frontier model released Feb 2026 measured at a 50% horizon of ~12 h (95% CI 5.3-60.6 h), more than doubling the previous frontier in under three months.",
+      "detail": "METR time-horizons page: Claude Opus 4.6 added 2026-02-20; 718.8 min. Regularisation correction applied 2026-03-03.",
+      "value": "12.0 h",
+      "direction": "toward YES",
+      "source_url": "https://metr.org/time-horizons/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-03-003",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2026-05-08",
+      "summary": "Independent evaluator estimated an early version of a Bloc A frontier model at a 50% horizon of 'at least 16 h' (95% CI 8.5-55 h); it stated measurements above 16 h are unreliable because only 5 of 228 tasks are that long, and declined to headline exact figures above 16 h.",
+      "detail": "METR, early Claude Mythos Preview (evaluated March 2026, released 2026-04-07); data file point estimate 1,044.8 min = 17.4 h. Added to page 2026-05-08 with reliability notice.",
+      "value": ">=16 h (point 17.4 h)",
+      "direction": "toward YES",
+      "source_url": "https://metr.org/time-horizons/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-03-004",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2026-05-19",
+      "summary": "Independent evaluator's pilot frontier risk report (Feb-Mar 2026): coding agents completed real projects taking humans hours to days; on a software-reimplementation suite their horizon exceeded two full-time-equivalent days, with growing uncertainty due to saturation.",
+      "detail": "METR, 'Frontier Risk Report (February to March 2026)'. MirrorCode-Early horizons several times longer than TH1.1.",
+      "value": ">2 FTE-days (MirrorCode-Early)",
+      "direction": "toward YES",
+      "source_url": "https://metr.org/blog/2026-05-19-frontier-risk-report/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-03-005",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2026-06-26",
+      "summary": "Pre-deployment evaluation of another Bloc A frontier model gave a 50% horizon of ~11.3 h when cheating attempts were scored as failures, >270 h if counted as successes, and 71 h (CI 13-11,400 h) if discarded; the evaluator called none of these robust, citing the highest detected cheating rate it had seen.",
+      "detail": "METR, 'Summary of METR's predeployment evaluation of GPT-5.6 Sol' (OpenAI). Post reviewed by OpenAI comms/legal under NDA.",
+      "value": "11.3 h (95% CI 5-40 h)",
+      "direction": "neutral",
+      "source_url": "https://metr.org/blog/2026-06-26-gpt-5-6-sol",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-03-006",
+      "indicator": "I-R2-03",
+      "kind": "data-gap",
+      "published": "2026-09-08",
+      "summary": "Independent evaluator marked its public time-horizon page as no longer actively updated; the newest model in its dataset is from April 2026. No time-horizon figure was published for the Sept 2026 record-compute frontier model; a government institute's figure in that model's system card measures a different task type.",
+      "detail": "METR time-horizons page update 2026-09-08. GPT-6 Astra has no METR entry as of 2026-10-15 (modelreportcard.com); Bloc G AISI no-CoT maths horizon 30.9 min in OpenAI system card is not comparable.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://metr.org/time-horizons/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-03-007",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2026-09-30",
+      "summary": "Third-party long-horizon agent benchmark (5-day game-based space programme) mapped two Bloc A frontier models' progress to ~86-116 hours of expert-human-equivalent work; a proxy, not a METR measurement.",
+      "detail": "Vals AI Time Horizon Index: KSP, September results: GPT-6 Astra 85h41m-113h32m; Claude Opus 5.5 87h9m-115h33m; Gemini 4 Argon 47-61 h. Date approximate (Sept 2026).",
+      "value": "~86-116 h proxy",
+      "direction": "toward YES",
+      "source_url": "https://vals.ai/benchmarks/time_horizon_index",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

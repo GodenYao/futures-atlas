@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R2-04",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "A top-10 economy legally authorises fully automated decisions (no human sign-off) in a new benefits, tax or immigration domain (official gazette; OECD.AI; by 2028-12-31)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Not resolved. The clearest 2026 moves toward no-human-sign-off public decisions were in smaller economies (a Bloc C state enacted a general fully-automated-decision clause incl. discretionary matters; an Oceanian state widened automated benefit decisions). Among top-10 economies, one relaxed its general ADM rule (safeguards incl. human intervention on request), and another's federal government drafted an AI-in-migration law that expressly keeps the individual decision with staff; a sub-state draft there would allow discretionary automated decisions but is not enacted.",
+  "items": [
+    {
+      "id": "BF-2026-I-R2-04-001",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2026-02-05",
+      "summary": "A top-10 economy brought into force a reform replacing its near-ban on solely automated significant decisions with a permissive regime (any lawful basis) subject to safeguards: information, representations, human intervention on request, and contestation. General, not specific to benefits/tax/immigration; human review on request remains.",
+      "detail": "Bloc G Data (Use and Access) Act 2025 s.80 in force 2026-02-05, new Bloc G GDPR Art. 22A-22D (Art. 22C safeguards). ICO draft ADM guidance consultation 31 Mar-29 May 2026; ADM code of practice Regulations SI 2026/425 (made 16 Apr, in force 12 May 2026).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.legislation.gov.uk/uksi/2026/425/made",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-04-002",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2026-05-14",
+      "summary": "A sub-national jurisdiction in Bloc A enacted an automated-decision law covering public benefits and essential government services that grants a right to meaningful human review after adverse automated decisions (from 2027) - a move toward keeping humans in the loop.",
+      "detail": "Colorado SB 26-189 'Automated Decision-Making Technology', signed 2026-05-14 (repeals/re-enacts SB 24-205). Sub-national; does not count for the indicator but signals direction in Bloc A states.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://legilist.com/states/colorado/bill/2026/sb-189/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-04-003",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2026-05-31",
+      "summary": "A sub-national government in a top-10 economy proposed allowing fully machine-issued administrative decisions even where the authority has discretion, which would go beyond the national rule limiting automation to bound decisions. Draft only.",
+      "detail": "Bavaria (Bloc D), draft 'Fünftes Modernisierungsgesetz', Art. 35 S.3 BayVwVfG-E, presented May 2026, in Landtag since July 2026. Federal § 35a VwVfG allows full automation only with explicit statutory basis and no discretion (existing bases: § 155(4) AO tax; § 31a SGB X social). Date approximate.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.eureos.de/ki-im-verwaltungsverfahren-bayern-und-der-bund-gehen-unterschiedliche-wege",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-04-004",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2026-09-30",
+      "summary": "The federal government of a top-10 economy tabled a bill on AI in migration administration that allows automated process monitoring and checks against public internet sources, but states that examination and decision in each case remain entirely with staff.",
+      "detail": "Bloc D, Bundestag Drucksache 21/8275, 'KI-Migrationsverwaltungsgesetz (KIMVG)', dated 2026-09-30 (cabinet July 2026; first reading Oct 2026). New §§ 90d, 90e AufenthG.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://dserver.bundestag.de/btd/21/082/2108275.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-04-005",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2026-09-23",
+      "summary": "A mid-sized Bloc C economy (not top-10) passed a general administrative-procedure amendment allowing fully automated written decisions, including in discretionary matters, with only random checks, no named official, and a two-week objection right; ministries may designate domains by regulation, potentially including asylum. Precedent for larger economies.",
+      "detail": "Bloc V, § 18a AVG and VStG amendment, National Council vote 2026-09-23; reported in force Oct 2026. Critics: epicenter.works / EDRi (2026-10-08). Not a top-10 economy.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.jarolim.at/en/legal-updates/space-cleared-for-ki-in-austrias-administrative-system-avg-vstg-novel-2026/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-04-006",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2026-06-30",
+      "summary": "A small advanced economy (not top-10) rushed through a law widening automated decision-making for social-welfare benefits to 'any decision' under specified provisions; officials said it excludes generative AI.",
+      "detail": "Bloc U, social security amendment widening MSD ADM powers (RNZ reports, 2026). Exact enactment date not verified; date approximate.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://rnz.co.nz/news/political/598497/a-no-brainer-to-use-automated-tools-to-make-benefit-decisions-officials",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-04-007",
+      "indicator": "I-R2-04",
+      "kind": "data-gap",
+      "published": "2026-11-14",
+      "summary": "No 2026 statute was found in Bloc A (federal), Bloc B, or other top-10 economies that newly authorises no-human-sign-off decisions in benefits, tax or immigration. Bloc B legal sources were not systematically searched in this backfill run.",
+      "detail": "Searches covered Bloc A federal, Bloc G, Bloc D; Bloc B, Bloc N, Bloc O, Bloc E, Bloc F, Bloc P, Bloc Q not systematically checked. Pre-existing bases (e.g. Bloc D tax § 155(4) AO) are not 'new domains'.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://oecd.ai/en/dashboards/overview",
+      "source_tier": 1,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

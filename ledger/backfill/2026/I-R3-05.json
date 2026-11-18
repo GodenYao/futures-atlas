@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R3-05",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "A mandatory registry of large training clusters (or chip-location tracking) operates in >= 2 of the top-3 jurisdictions (official gazettes; by 2028-12-31)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Not met. Bloc A: a chip location-verification bill cleared a House committee 42-0 (Mar 2026) and was filed as a Senate defence-bill amendment (Jun 2026), but the vehicle stalled; the 2024 proposed cluster-reporting rule was never finalised and existing export rules only require license-holder reporting. Bloc B: state-led national computing network and licensing of computing centres by the industry ministry, but no public registry of large training clusters identified. Neither qualifies as an operating mandatory cluster registry or chip-tracking regime.",
+  "items": [
+    {
+      "id": "BF-2026-I-R3-05-001",
+      "indicator": "I-R3-05",
+      "kind": "event",
+      "published": "2026-03-26",
+      "summary": "A Bloc A House committee unanimously (42-0) advanced a bill requiring location-verification mechanisms on exported advanced AI chips and reporting of diversion or tampering; the industry association opposed it the same month as 'untested and potentially infeasible'.",
+      "detail": "Chip Security Act, H.R. 3447, ordered reported by House Foreign Affairs Committee 2026-03-26. Applies to exported chips only, not domestic clusters.",
+      "value": "42-0",
+      "direction": "toward YES",
+      "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/3447/text/ih",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-05-002",
+      "indicator": "I-R3-05",
+      "kind": "event",
+      "published": "2026-05-31",
+      "summary": "Bloc A's export-control agency issued enforcement guidance confirming licence requirements for advanced computing items to entities headquartered in Bloc B and other restricted destinations wherever located; licensing, not a location-tracking or cluster registry.",
+      "detail": "Bloc A BIS guidance dated 2026-05-31 (Country Group D:5 and Bloc R; § 744.23 / § 742.6 EAR). AI Diffusion Rule (with data-centre VEU inventory reporting) not enforced since May 2025.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.bis.gov/media/documents/bis-guidance-may-31-2026.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-05-003",
+      "indicator": "I-R3-05",
+      "kind": "event",
+      "published": "2026-06-09",
+      "summary": "Bloc B reportedly plans ~USD 295bn over five years on a state-coordinated network of interconnected AI computing hubs; its industry ministry had licensed thousands of computing centres. Implies state visibility over large clusters but no published cluster registry or chip-tracking mandate was identified.",
+      "detail": "Bloomberg 2026-06-09 (2 trillion yuan national computing network), via secondary summary; MIIT licensed >=7,000 computing centres (Reuters 2025-07-24).",
+      "value": "~USD 295bn plan",
+      "direction": "neutral",
+      "source_url": "https://www.theaiconsultingnetwork.com/blog/china-295-billion-ai-data-center-buildout-cre-investors-2026",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-05-004",
+      "indicator": "I-R3-05",
+      "kind": "event",
+      "published": "2026-06-24",
+      "summary": "A bipartisan amendment to Bloc A's annual defence bill would require, within a year, every exported data-centre AI chip to carry location checks (ping, audit or attestation) and let the trade ministry keep a per-chip location and end-user record; its vehicle stalled after a procedural vote in July.",
+      "detail": "S.Amdt. 6105 to S. 4784 (FY2027 NDAA), filed 2026-06-24; vehicle stalled 2026-07-14; not voted as of 2026-11-12 (congressonchina.com).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://congressonchina.com/amendments/samdt6105-119/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-05-005",
+      "indicator": "I-R3-05",
+      "kind": "event",
+      "published": "2026-11-12",
+      "summary": "Investigative report: the leading Bloc A chipmaker privately told a legislator it could implement chip location tracking, contrary to its industry association's public position; the sponsor plans a stricter bill requiring licences to operate advanced GPUs. A think-tank found ping-based verification the most cost-effective option.",
+      "detail": "MIT Technology Review 2026-11-12 (Nvidia; Rep. Bill Foster); CSET analysis Sept 2026.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.technologyreview.com/2026/11/12/1148483/nvidia-chip-tracking/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-05-006",
+      "indicator": "I-R3-05",
+      "kind": "data-gap",
+      "published": "2026-11-14",
+      "summary": "No gazetted, operating mandatory registry of large training clusters or chip-location tracking was found in any top-3 jurisdiction as of phase end. Bloc B regulatory sources were only lightly searched.",
+      "detail": "The 2024 BIS proposed rule on reporting by frontier developers and compute providers (NPRM 2024-09-09) was not finalised. The third top-3 jurisdiction (Bloc C) not checked in this run.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.bis.gov/press-release/commerce-proposes-reporting-requirements-frontier-ai-developers-compute-providers",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

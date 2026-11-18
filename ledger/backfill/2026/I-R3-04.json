@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R3-04",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "An international body gains inspection or compute-verification powers covering >= 2 of the top-5 compute jurisdictions (treaty text, official gazettes; by 2029-12-31)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Not met; no body has inspection or verification powers. 2026 produced only non-binding mechanisms: a UN scientific panel (assessment only) and global dialogue, and a Bloc A-Bloc B agreement to set up an AI-incident communication channel and dialogue (first session due November). Calls for an IAEA-style inspection agency came from Bloc A legislators and civil society, not governments.",
+  "items": [
+    {
+      "id": "BF-2026-I-R3-04-001",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2026-03-03",
+      "summary": "The UN Independent International Scientific Panel on AI held its inaugural meeting; its mandate is evidence-based assessment, with no inspection or verification powers.",
+      "detail": "Established by UNGA resolution A/RES/79/325 (2025-08-26); inaugural meeting UN HQ New York 2026-03-03. Preliminary report July 2026.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.un.org/independent-international-scientific-panel-ai/en",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-04-002",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2026-07-15",
+      "summary": "The UN scientific panel published its preliminary report and the UN Global Dialogue on AI Governance continued; both are deliberative fora without verification mandates.",
+      "detail": "Preliminary Report PDF dated 2026-07 on un.org; Global Dialogue on AI Governance page. Exact day approximate.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.un.org/independent-international-scientific-panel-ai/sites/default/files/2026-07/en_Preliminary%20Report_.pdf",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-04-003",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2026-09-20",
+      "summary": "In high-level talks, Bloc A proposed a bilateral AI dialogue with a notification system for national-security-level AI incidents; chip export controls were excluded from the agenda.",
+      "detail": "Bloc A Treasury Secretary Bessent and Vice Premier He Lifeng, New York talks ending 2026-09-20 (CNN, Al Jazeera).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://edition.cnn.com/2026/09/20/business/us-china-trade-talks-ai-intl-hnk",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-04-004",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2026-09-25",
+      "summary": "A Bloc A legislative committee held its first hearing calling for a binding, verifiable bilateral treaty on catastrophic AI risks, and a member urged the executive to work toward an IAEA-style international AI inspection agency with access to both blocs' data centres. Advocacy only.",
+      "detail": "House Select Committee on the CCP (Democratic members) letter to Secretary of State Rubio following the hearing; date approximate (around the Sept 2026 Trump-Xi summit).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://democrats-selectcommitteeontheccp.house.gov/sites/evo-subsites/democrats-selectcommitteeontheccp.house.gov/files/evo-media-document/letter-to-sec-rubio-on-us-prc-ai.pdf",
+      "source_tier": 1,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-04-005",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2026-09-26",
+      "summary": "After a leaders' summit, Bloc A and Bloc B agreed to set up a communication mechanism for AI-related incidents and an AI-specific dialogue scheduled for November - the first bilateral AI safety channel between the two largest compute jurisdictions, with no inspection or verification element. Bloc A's leader said separately it would not 'put on brakes'.",
+      "detail": "Trump-Xi summit, Bloc A (AP via PBS; CNBC 2026-09-26). Guardian 2026-09-27 quotes Trump.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://pbs.org/newshour/world/china-and-u-s-agree-to-establish-ai-safety-channel-and-continue-trade-and-military-talks",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-04-006",
+      "indicator": "I-R3-04",
+      "kind": "data-gap",
+      "published": "2026-11-14",
+      "summary": "No treaty text or gazette granting any international body inspection or compute-verification powers was found as of phase end; the first bilateral AI dialogue session was scheduled for November and had no published outcome.",
+      "detail": "Checked UN mechanisms and Bloc A-Bloc B channel; Council of Europe Framework Convention has no compute verification. CNBC 2026-11-11 notes dialogue still pending.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://cnbc.com/2026/11/11/trump-xi-summit-ai-nvidia-.html",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

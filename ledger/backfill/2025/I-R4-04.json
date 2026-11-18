@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R4-04",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Largest known training run >= 5e27 FLOP (Epoch AI; by 2027-12-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not met. The largest known run at end-2025 was ~5e26 FLOP (a Bloc A model, July 2025), ~10x below threshold. The record rose from ~3.5-3.8e26 (Feb) to ~5e26 (Jul). Frontier compute growth looked slower than the 5x/yr trend because developers moved effort to post-training: one flagship (Aug) used less compute (~5e25) than its predecessor (~3.8e26). Epoch argued this pause was temporary. Late-2025 flagships had no compute estimates.",
+  "items": [
+    {
+      "id": "BF-2025-I-R4-04-001",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2025-02-17",
+      "summary": "A Bloc A developer released the first model estimated above 1e26 FLOP (~3.5e26), setting a new largest-run record.",
+      "detail": "xAI Grok 3 (released 2025-02-17), Colossus (Memphis). Epoch 'How many AI models will exceed compute thresholds?' (2025-05-30) names it the first >1e26 model.",
+      "value": "~3.5e26 FLOP",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/publications/model-counts-compute-thresholds",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-04-002",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2025-02-27",
+      "summary": "A second Bloc A developer released a model estimated at 3.8e26 FLOP (125-day run), briefly the largest known run.",
+      "detail": "OpenAI GPT-4.5 (2025-02-27); Epoch model page 3.8e26 FLOP.",
+      "value": "3.8e26 FLOP",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/models/gpt-4-5",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-04-003",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2025-07-09",
+      "summary": "The first Bloc A developer released a new record run, which a compute tracker later estimated at ~5e26 FLOP ('the largest AI training run to date'), costing ~$490M and ~310 GWh. The largest known run at end-2025 stood ~10x below the 5e27 threshold.",
+      "detail": "xAI Grok 4 (2025-07-09); Epoch Data Insight 'What did it take to train Grok 4?' (2025-09-12; data updated 2025-11-17).",
+      "value": "~5e26 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/grok-4-training-resources",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-04-004",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2025-08-08",
+      "summary": "A compute tracker estimated a new Bloc A flagship (Aug 2025) used ~5e25 FLOP in total, likely less than its predecessor's >1e26. This was the first GPT-series flagship to shrink in compute, because training effort shifted to reinforcement-learning post-training.",
+      "detail": "Epoch AI 'Notes on GPT-5 training compute' (Substack/X thread, ~2025-08-08; date approximate).",
+      "value": "~5e25 FLOP (GPT-5, median)",
+      "direction": "toward NO",
+      "source_url": "https://epochai.substack.com/p/notes-on-gpt-5-training-compute",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-04-005",
+      "indicator": "I-R4-04",
+      "kind": "forecast",
+      "published": "2025-09-26",
+      "summary": "The tracker argued the slowdown is temporary: once post-training scales up, the developer's next flagship will probably use more compute than its Feb-2025 model, returning to the ~5x/yr growth trend for the most compute-intensive runs.",
+      "detail": "Epoch Gradient Update 'Why GPT-5 used less training compute than GPT-4.5 (but GPT-6 probably won't)' (late Sept 2025; date approximate).",
+      "value": "~5x/yr (trend for largest runs)",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/gradient-updates/why-gpt5-used-less-training-compute-than-gpt45-but-gpt6-probably-wont",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-04-006",
+      "indicator": "I-R4-04",
+      "kind": "data-gap",
+      "published": "2025-11-24",
+      "summary": "Late-2025 flagships from two other Bloc A developers had no public compute estimate, so the 'largest known run' may understate the true frontier.",
+      "detail": "Epoch entries for Gemini 3 Pro (2025-11-18, compute unknown) and Claude Opus 4.5 (2025-11-24, 'very likely >1e25').",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/models/gemini-3-pro",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

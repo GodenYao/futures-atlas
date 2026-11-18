@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R1-02",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "A government in a top-3 compute jurisdiction takes equity, a golden share or a formal priority-access security partnership with a top-5 frontier developer (by 2027-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not resolved in 2025. Bloc A: defence-ministry prototype agreements (up to $200M each) with four leading developers and a national AI-for-science mission inviting private partners - security partnerships, but not equity or priority-access terms; government took equity in a domestic chipmaker (not a frontier developer), setting a precedent. Bloc B: local and national state funds repeatedly invested in leading developers (one received state capital from five city governments in 2025), but none is clearly a global top-5 frontier developer.",
+  "items": [
+    {
+      "id": "BF-2025-I-R1-02-001",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2025-01-20",
+      "summary": "Bloc B set up a national AI industry investment fund (~CNY 60bn) under its state chip-fund structure, creating a vehicle for direct state equity in AI developers.",
+      "detail": "Bloc B's National AI Industry Investment Fund (国家人工智能产业投资基金), registered January 2025 with Big Fund III and Finance Ministry capital; later (2026) invested in DeepSeek with voting rights. Exact registration day approximate; source not directly verified this run.",
+      "value": "~CNY 60bn fund",
+      "direction": "toward YES",
+      "source_url": "https://www.reuters.com/technology/china-sets-up-new-82-billion-ai-investment-fund-2025-01-20/",
+      "source_tier": 2,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-02-002",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2025-03-03",
+      "summary": "A leading Bloc B developer raised >CNY 1bn led by a city state-owned investment group, the first of a 2025 'state-backed funding spree' (further city funds 13 and 19 March).",
+      "detail": "Zhipu AI: Hangzhou City Investment Group (>CNY 1bn, 3 Mar), Zhuhai Huafa Group (CNY 500M, 13 Mar), Chengdu Hi-Tech Zone (CNY 300M, 19 Mar). Reuters 2025-03-03 and 2025-03-19.",
+      "value": ">CNY 1.8bn (March 2025)",
+      "direction": "toward YES",
+      "source_url": "https://www.reuters.com/technology/artificial-intelligence/chinese-ai-firm-zhipu-raises-257-mln-state-backed-funding-spree-2025-03-19/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-02-003",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2025-06-16",
+      "summary": "Bloc A's defence ministry awarded a top-5 frontier developer a one-year prototype contract (up to $200M) for frontier AI for warfighting and enterprise national-security missions.",
+      "detail": "OpenAI DoD/CDAO contract announced 2025-06-16 (CNBC); 'OpenAI for Government' launched same day. A procurement contract, not equity or priority access.",
+      "value": "$200M ceiling",
+      "direction": "toward YES",
+      "source_url": "https://www.cnbc.com/2025/06/16/openai-wins-200-million-us-defense-contract.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-02-004",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2025-07-02",
+      "summary": "The same Bloc B developer took a further CNY 1bn from a fifth city's state investors while preparing an IPO; state capital from five local governments by mid-2025.",
+      "detail": "Zhipu: Pudong Venture Capital Group and Zhangjiang Group (Shanghai), CNY 1bn, 2025-07-02; Bloc B AI Industry Investment Fund CNY 200M (April). Caixin.",
+      "value": "CNY 1bn",
+      "direction": "toward YES",
+      "source_url": "https://www.caixinglobal.com/2025-07-03/chinas-zhipu-ai-secures-140-million-investment-from-shanghai-state-funds-amid-ipo-push-102337464.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-02-005",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2025-07-14",
+      "summary": "Bloc A's defence AI office announced 'partnerships with frontier AI companies': prototype agreements of up to $200M each with four leading developers to adopt frontier AI for national security. Closest 2025 event to a 'security partnership', but non-exclusive and without priority-access or ownership terms.",
+      "detail": "CDAO awards to Anthropic, Google, OpenAI, xAI (Reuters/CNBC/DefenseScoop 2025-07-14; Anthropic two-year OTA with $200M ceiling).",
+      "value": "up to $200M each, 4 developers",
+      "direction": "toward YES",
+      "source_url": "https://www.cnbc.com/2025/07/14/anthropic-google-openai-xai-granted-up-to-200-million-from-dod.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-02-006",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2025-08-22",
+      "summary": "Bloc A's government took a ~10% equity stake in a domestic chipmaker by converting grants - precedent for state equity in strategic tech firms, though not a frontier AI developer.",
+      "detail": "Bloc A government ~9.9% stake in Intel (announced 2025-08-22) from CHIPS Act grants. Context only for this indicator; not directly verified this run.",
+      "value": "~10% stake",
+      "direction": "toward YES",
+      "source_url": "https://www.reuters.com/legal/transactional/us-government-take-10-stake-intel-2025-08-22/",
+      "source_tier": 2,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-02-007",
+      "indicator": "I-R1-02",
+      "kind": "treaty-law",
+      "published": "2025-11-24",
+      "summary": "Bloc A executive order launched a national AI-for-science mission (compared to the Manhattan Project), directing the energy ministry to build a national AI platform and set up partnership mechanisms with external firms 'possessing advanced AI' capabilities.",
+      "detail": "Executive Order 14363 'Launching the Genesis Mission', signed 2025-11-24, Federal Register 2025-21665 (2025-11-28). Cooperative R&D/user-facility agreements; no equity or priority access. Verified via Federal Register.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://federalregister.gov/documents/2025/11/28/2025-21665/launching-the-genesis-mission",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

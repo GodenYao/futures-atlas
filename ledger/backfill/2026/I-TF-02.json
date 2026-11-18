@@ -1,0 +1,83 @@
+{
+  "indicator": "I-TF-02",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "Top-1% wealth share at 2027Q4 >= 2025Q4 + 1 pp (Federal Reserve Distributional Financial Accounts, 2027Q4 release)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Latest DFA vintage (2026-09-18): Bloc A top-1% share of household net worth 32.5% in Q2 2026, a series record; 2025Q4 baseline 31.8% in the same vintage, so the +1 pp threshold would be 32.8%. Quarterly values are revised with each vintage; earlier-vintage readings not separately archived here.",
+  "items": [
+    {
+      "id": "BF-2026-I-TF-02-001",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2026-09-18",
+      "summary": "Bloc A central-bank distributional accounts: top-1% share of household net worth reached 32.5% in Q2 2026, the highest since the series began in 1989; up 0.8 pp from Q1 2026 and 0.7 pp above the 2025Q4 baseline.",
+      "detail": "Federal Reserve Board DFA, FRED series WFRBST01134, updated 2026-09-18 (Bloc A). Values in this vintage: Q2 2025 31.1, Q3 2025 31.5, Q4 2025 31.8, Q1 2026 31.7, Q2 2026 32.5.",
+      "value": "32.5 %",
+      "direction": "toward YES",
+      "source_url": "https://fred.stlouisfed.org/series/WFRBST01134",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-02-002",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2026-06-15",
+      "summary": "Q1 2026 distributional accounts reading: top-1% net-worth share 31.7%, marginally below the 2025Q4 level (31.8%).",
+      "detail": "FRED/ALFRED WFRBST01134 Q1 2026 value as shown in the 2026-09-18 vintage (Bloc A). Exact Q1 release date not verified (DFA typically follows the Z.1 release in mid-June); the value at first publication may differ slightly.",
+      "value": "31.7 %",
+      "direction": "neutral",
+      "source_url": "https://alfred.stlouisfed.org/series?seid=WFRBST01134",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-02-003",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2026-03-20",
+      "summary": "2025Q4 baseline reading of the top-1% net-worth share: 31.8% (current vintage), defining the +1 pp threshold at about 32.8%.",
+      "detail": "FRED WFRBST01134 Q4 2025 value in the 2026-09-18 vintage (Bloc A). Q4 data first published with the March 2026 Z.1/DFA update; exact date and first-vintage value not verified.",
+      "value": "31.8 %",
+      "direction": "neutral",
+      "source_url": "https://fred.stlouisfed.org/series/WFRBST01134",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-02-004",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2026-09-18",
+      "summary": "Same release: top-1% held 50.9% of corporate equities and mutual-fund shares; bottom 50% held 2.3% of net worth; top-1% share up 1.4 pp year on year, attributed mainly to equity-price gains.",
+      "detail": "Federal Reserve DFA Q2 2026 (Bloc A), FRED WFRBST01122 (equities share 50.9). Secondary summary by 24/7 Wall St (2026-11-14) cross-checked against FRED release table.",
+      "value": "50.9 % (equities share)",
+      "direction": "toward YES",
+      "source_url": "https://fred.stlouisfed.org/release/tables?eid=813804&rid=453",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-02-005",
+      "indicator": "I-TF-02",
+      "kind": "data-gap",
+      "published": "2026-11-14",
+      "summary": "No quarterly distributional wealth series comparable to the Bloc A accounts exists for Bloc B; the indicator relies on a single-jurisdiction source.",
+      "detail": "Federal Reserve DFA covers the Bloc A only; Bloc B publishes no official quarterly wealth-distribution series (only irregular survey/academic estimates).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.federalreserve.gov/releases/efa/efa-distributional-financial-accounts.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

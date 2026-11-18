@@ -1,0 +1,28 @@
+# Evaluative words that usually signal judging instead of describing.
+# Hits are WARNINGS only (the PR still passes); reviewers decide.
+# Whole-word, case-insensitive. One term per line.
+alarming
+catastrophic
+dangerous
+disastrous
+reckless
+irresponsible
+terrifying
+scary
+shocking
+dystopian
+doom
+doomed
+heroic
+brilliant
+game-changer
+game-changing
+revolutionary
+good news
+bad news
+sadly
+fortunately
+unfortunately
+thankfully
+worryingly
+finally

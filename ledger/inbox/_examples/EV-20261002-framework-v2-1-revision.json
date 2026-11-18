@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "EV-20261002-framework-v2-1-revision",
+  "source_url": "https://www.themidasproject.com/watchtower/meta-10022026",
+  "published": "2026-10-02",
+  "title": "Meta, Moderate Change on Oct 02, 2026 | Watchtower | The Midas Project",
+  "summary": "A top-5 developer renamed and revised its safety framework (v2.1). The diff adds a loss-of-control category but deletes the maximum-elicitation testing commitment, a numeric cyber threshold and a provisional deployment hold; several deletions are not listed in the developer's changelog.",
+  "detail": "Meta Superintelligence Scaling Framework v2.1; diff published by The Midas Project Watchtower, 2026-10-02.",
+  "roads": ["R4"],
+  "indicator": "I-R4-03",
+  "direction": "raises",
+  "reasoning": "Removing published testing and deployment-hold commitments is the kind of weakening I-R4-03 counts, which bears on the race road R4.",
+  "counterpoint": "The same revision adds a loss-of-control category, and the developer may argue the deleted items were replaced by other controls not visible in a text diff.",
+  "source_type": "other",
+  "access": "open",
+  "language": "en",
+  "submitted_by": "gh:GodenYao",
+  "licence": "CC-BY-4.0"
+}

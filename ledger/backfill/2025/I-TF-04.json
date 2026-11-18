@@ -1,0 +1,97 @@
+{
+  "indicator": "I-TF-04",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "A top-3 compute jurisdiction legislates guaranteed public access to frontier AI, or an AI dividend or sovereign fund paid to citizens (official gazette, by 2028-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not met in 2025 and no bill was pending. Bloc A's executive ordered a plan for a national sovereign wealth fund (not AI-specific, no citizen payout) and its national AI plan contained no public-access guarantee. Bloc B's 'AI+' policy set adoption targets and 'inclusive' language but no legal access right or dividend. AI-dividend and public-wealth-fund ideas circulated only in think-tank and lab-researcher essays.",
+  "items": [
+    {
+      "id": "BF-2025-I-TF-04-001",
+      "indicator": "I-TF-04",
+      "kind": "treaty-law",
+      "published": "2025-02-03",
+      "summary": "Bloc A's head of government ordered a plan for a national sovereign wealth fund within 90 days. Not AI-specific and with no citizen dividend; later cited by advocates of an AI-funded public wealth fund.",
+      "detail": "Executive Order 14196 'A Plan for Establishing a Bloc A Sovereign Wealth Fund' (signed 2025-02-03). No fund was legislated in 2025. Not verified via web_extract this run.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.federalregister.gov/documents/2025/02/06/2025-02297/a-plan-for-establishing-a-united-states-sovereign-wealth-fund",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-04-002",
+      "indicator": "I-TF-04",
+      "kind": "forecast",
+      "published": "2025-04-22",
+      "summary": "Policy essay by researchers at a frontier developer and a governance think tank proposed 'predistribution': national AI sovereign wealth funds, AI bonds paying citizen dividends, compute as a public utility. Advocacy only.",
+      "detail": "Saffron Huang & Sam Manning, 'Here's How To Share AI's Future Wealth', Noema, 2025-04-22.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.noemamag.com/heres-how-to-share-ais-future-wealth",
+      "source_tier": 3,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-04-003",
+      "indicator": "I-TF-04",
+      "kind": "forecast",
+      "published": "2025-07-15",
+      "summary": "Think-tank proposal for a Bloc A strategic sovereign wealth fund taking minority stakes in frontier AI firms and paying universal basic dividends on the model of a state oil-revenue fund.",
+      "detail": "Liam Epstein (Convergence Analysis), 'Lead, Own, Share: Sovereign Wealth Funds for Transformative AI', SSRN 5343934, July 2025 (day approximate; listed in Windfall Trust Policy Atlas).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5343934",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-04-004",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2025-07-23",
+      "summary": "Bloc A's national AI action plan focused on deregulation, infrastructure and exports; it contained no guaranteed public access to frontier AI and no dividend mechanism.",
+      "detail": "'Bloc A's AI Action Plan', White House, 2025-07-23. Research-access pilot (NAIRR) covers researchers, not the general public.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.whitehouse.gov/wp-content/uploads/2025/07/Americas-AI-Action-Plan.pdf",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-04-005",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2025-08-26",
+      "summary": "Bloc B's cabinet issued an 'AI+' policy targeting >70% penetration of intelligent terminals/agents by 2027 and 'inclusive' sharing of AI benefits; a policy opinion, not a statutory access guarantee or dividend.",
+      "detail": "State Council 'Opinions on Deeply Implementing the AI+ Action' (国务院关于深入实施'人工智能+'行动的意见), dated 2025-08-21, published ~2025-08-26/27. Not verified via web_extract this run.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gov.cn/zhengce/content/202508/content_7037861.htm",
+      "source_tier": 1,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-04-006",
+      "indicator": "I-TF-04",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No bill to guarantee public access to frontier AI or to create an AI dividend/sovereign fund was introduced in any top-3 compute jurisdiction during 2025 (first such Bloc A bill came in 2026).",
+      "detail": "Searches of 2025 legislative trackers found none; the Bloc A A.I. Sovereign Wealth Fund Act (S. 4825) was announced in 2026 and is outside this phase - mentioned only to mark the as-of boundary.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.congress.gov/crs-product/IF13301",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

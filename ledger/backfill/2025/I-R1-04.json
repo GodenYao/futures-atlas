@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R1-04",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "No agreement between the two leading compute jurisdictions sets verifiable limits on training compute or capabilities (official readouts, treaty texts; by 2028-06-30)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Condition held throughout 2025: no bilateral agreement on compute or capability limits, verifiable or otherwise. Multilateral activity was non-binding (summit declaration not signed by Bloc A; UN scientific panel and dialogue limited to non-military, non-prescriptive work). The October leaders' meeting covered trade and chip controls but not AI risk limits. Bloc A's national AI plan framed AI as a race to win; Bloc B proposed a global AI cooperation body without verification provisions.",
+  "items": [
+    {
+      "id": "BF-2025-I-R1-04-001",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2025-02-11",
+      "summary": "At a multilateral AI summit, Bloc B and ~60 other states signed a non-binding declaration on 'inclusive and sustainable' AI; Bloc A (and one other leading AI state) declined, with Bloc A's vice-head of government warning against 'excessive regulation' and against cooperating with Bloc B.",
+      "detail": "Bloc E AI Action Summit, 2025-02-10/11; Bloc A and Bloc G did not sign; Bloc B signed (Guardian, BBC 2025-02-11). No compute or capability limits in the text.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.theguardian.com/technology/2025/feb/11/us-uk-paris-ai-summit-artificial-intelligence-declaration",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-04-002",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2025-07-23",
+      "summary": "Bloc A published a national AI action plan centred on 'winning the AI race' via deregulation, infrastructure and exports; it proposes no international limits on training compute or capabilities.",
+      "detail": "'Bloc A's AI Action Plan' (White House, 2025-07-23) and three accompanying executive orders. Not directly verified this run.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.whitehouse.gov/wp-content/uploads/2025/07/Americas-AI-Action-Plan.pdf",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-04-003",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2025-07-26",
+      "summary": "Bloc B published a Global AI Governance Action Plan and proposed a world AI cooperation organisation; the plan emphasises capacity-building and multilateral norms, with no verification or compute-limit mechanism and no mention of military AI.",
+      "detail": "Bloc B's Global AI Governance Action Plan released at WAIC Shanghai (2025-07-26); Premier Li Qiang proposed a World AI Cooperation Organization. RSIS notes it omits military applications.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://rsis.edu.sg/rsis-publication/rsis/ip25101-ai-nc3-and-the-future-of-strategic-stability-in-the-trump-2-0-era/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-04-004",
+      "indicator": "I-R1-04",
+      "kind": "treaty-law",
+      "published": "2025-08-26",
+      "summary": "The UN General Assembly established, by consensus, a 40-member Independent International Scientific Panel on AI and an annual Global Dialogue on AI Governance; both are explicitly limited to the non-military domain and the panel's reports are 'non-prescriptive'. No limits or verification powers.",
+      "detail": "UNGA resolution A/RES/79/325, adopted 2025-08-26 (verified via UN digital library).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://digitallibrary.un.org/nanna/record/4087699/files/A_RES_79_325-EN.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-04-005",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2025-10-30",
+      "summary": "First in-person leaders' meeting since 2019 between the two blocs produced politically (not legally) binding trade de-escalation, including a mutual pause on export-control measures; AI risk, compute limits and military AI were not addressed.",
+      "detail": "Trump-Xi meeting at Gimhae Air Base, Busan, 2025-10-30; White House fact sheet. Hudson Institute: security topics including arms control deferred.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.hudson.org/foreign-policy/busans-unfinished-agenda-richard-weitz",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-04-006",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2025-12-31",
+      "summary": "The only bilateral AI-security commitment remained the 2024 leaders' statement on keeping human control over nuclear-use decisions; analysts judged further steps unlikely in the near term. No negotiation on compute or capability limits was reported in 2025.",
+      "detail": "RSIS IP25101 (2025) on AI/NC3; Brookings commentary. Status summary as of year-end, date nominal.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.brookings.edu/articles/how-will-ai-influence-us-china-relations-in-the-next-5-years/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

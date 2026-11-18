@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R3-01",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "An AI incident with >= USD 1bn damage or >= 100 deaths is officially attributed to AI (OECD AIM; government statements; by 2027-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not met in 2025. The most severe developer-attributed incidents were agentic-AI cyber operations: a data-extortion spree against at least 17 organisations (Aug) and a state-linked espionage campaign that ran 80-90% autonomously against ~30 targets with a handful of confirmed intrusions (Nov). Neither had quantified damage near USD 1 bn. Harms to individuals (e.g. wrongful-death suits over chatbot conversations) were in single or low double digits and are allegations, not official attributions. Aggregate AI-enabled fraud is large but is not a single attributed incident.",
+  "items": [
+    {
+      "id": "BF-2025-I-R3-01-001",
+      "indicator": "I-R3-01",
+      "kind": "data-series",
+      "published": "2025-01-29",
+      "summary": "First government-backed international scientific report on advanced-AI safety catalogued harms already occurring (scams, non-consensual imagery, bias, reliability failures) and risks of large-scale malicious use or loss of control, but cited no single AI incident at the scale of USD 1 bn damage or 100 deaths.",
+      "detail": "International AI Safety Report 2025 (chair Y. Bengio; 96 experts, 30 countries + UN/Bloc C/OECD), published 2025-01-29.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gov.uk/government/publications/international-ai-safety-report-2025",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-01-002",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2025-08-26",
+      "summary": "First wrongful-death lawsuit against a leading Bloc A chatbot developer alleged its model coached a teenager toward suicide. It is a single death and a court allegation, not an official attribution, and far below the 100-death threshold; it prompted the developer to announce added safeguards.",
+      "detail": "Raine v. OpenAI, Inc., CGC-25-628528, San Francisco Superior Court, filed 2025-08-26 (complaint verified via CCH copy). OpenAI blog 'Helping people when they need it most' same day. Similar earlier suit vs Character.AI (Oct 2024). Further suits followed in Nov 2025.",
+      "value": "1 death (alleged)",
+      "direction": "neutral",
+      "source_url": "https://business.cch.com/plsd/RainevOpenAI-Complaint.pdf",
+      "source_tier": 3,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-01-003",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2025-08-27",
+      "summary": "A Bloc A developer reported disrupting a criminal 'vibe hacking' operation in which its coding agent automated reconnaissance, intrusion, data theft and ransom calculation against at least 17 organisations (healthcare, emergency services, government, a defence contractor). Ransom demands were USD 75k-500k each; total damage not quantified and far below USD 1 bn.",
+      "detail": "Anthropic, 'Detecting and countering misuse of AI: August 2025' and Threat Intelligence Report (GTG-2002), 2025-08-27. Developer-attributed (interested party).",
+      "value": ">=17 organisations; demands up to $0.5M each",
+      "direction": "toward YES",
+      "source_url": "https://www.anthropic.com/news/detecting-countering-misuse-aug-2025",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-01-004",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2025-11-13",
+      "summary": "A Bloc A developer attributed with high confidence to a Bloc B state-sponsored group the first reported largely AI-orchestrated cyber-espionage campaign: its agent performed 80-90% of tactical operations against ~30 targets (major technology firms, government agencies), with a handful of validated intrusions. No damage figure was given; the model's hallucinations limited effectiveness.",
+      "detail": "Anthropic, 'Disrupting the first reported AI-orchestrated cyber espionage campaign' (GTG-1002, detected mid-Sept 2025), 2025-11-13; report changelog 2025-11-17 clarifying attribution confidence. MITRE ATT&CK lists it as Campaign C0062. Attribution to a Bloc B state-sponsored group is the developer's assessment.",
+      "value": "~30 targets; handful of intrusions",
+      "direction": "toward YES",
+      "source_url": "https://www.anthropic.com/news/disrupting-AI-espionage",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-01-005",
+      "indicator": "I-R3-01",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No 2025 incident was found that a government or developer officially attributed to AI with damage of at least USD 1 bn or at least 100 deaths. AI-enabled fraud losses are tallied only in aggregate (annual national crime reports published after year-end), which does not fit the single-incident rule. Bloc B incident disclosures were not systematically searched.",
+      "detail": "FBI IC3 2025 report (AI-related complaints ~$893M aggregate) published April 2026, so excluded under the as-of rule. OECD AIM / AIID 2025 entries not systematically reviewed in this run.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://oecd.ai/en/incidents",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

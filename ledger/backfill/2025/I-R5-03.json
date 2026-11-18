@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R5-03",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": ">= 20% of announced >100 MW AI data-centre capacity is outside the two leading jurisdictions (Epoch data-centre tracker; IEA; 2027)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not measurable precisely in 2025, and likely below the bar. The best available share data put Bloc A + Bloc B at ~70% of data-centre electricity (IEA, 2024 data) and ~90% of AI supercomputer performance (Epoch, Mar 2025). The tracker of >100 MW AI campuses launched in Nov 2025 covering only Bloc A sites. Large announcements outside the two blocs grew in 2025 (a 1 GW Gulf campus, a ~€20B Bloc C gigafactory fund, a Nordic campus, a Gulf sovereign AI firm), but most were plans with first phases due in 2026 or later. No 2025 series fits the indicator's 'announced >100 MW capacity' denominator.",
+  "items": [
+    {
+      "id": "BF-2025-I-R5-03-001",
+      "indicator": "I-R5-03",
+      "kind": "event",
+      "published": "2025-02-11",
+      "summary": "A non-bloc regional union launched a plan to mobilise €200B for AI, including a €20B fund for about four 'AI gigafactories' of ~100,000 latest-generation chips each. A June call drew 77 expressions of interest; construction was not expected before 2027.",
+      "detail": "Bloc C Commission InvestAI press release IP/25/467 (AI Action Summit, Bloc E, 2025-02-11); Commission AI Gigafactories timeline page.",
+      "value": "€20B (gigafactory fund)",
+      "direction": "toward YES",
+      "source_url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_25_467",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-03-002",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2025-04-10",
+      "summary": "An intergovernmental energy agency estimated that data centres used ~415 TWh (~1.5% of global electricity) in 2024. Bloc A accounted for 45%, Bloc B for 25% and a non-bloc region for 15%, so ~30% of consumption was outside the two blocs. Bloc A and Bloc B together account for ~80% of projected growth to 2030, implying the outside share will fall.",
+      "detail": "IEA, 'Energy and AI' special report (2025-04-10), executive summary and 'Energy demand from AI'. Electricity share, not announced >100 MW AI capacity; all data centres, not AI-only.",
+      "value": "~30% outside two blocs (2024 DC electricity)",
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/energy-and-ai/executive-summary",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-03-003",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2025-04-23",
+      "summary": "A compute tracker's dataset of 500+ AI supercomputers found Bloc A hosted ~75% and Bloc B ~15% of AI supercomputer performance (Mar 2025), leaving ~10% elsewhere. Bloc A capacity was ~9x Bloc B's and ~17x a non-bloc regional union's. Coverage was only 10-20% of the total and weak for Bloc B.",
+      "detail": "Epoch AI, 'Trends in AI supercomputers' (Pilz et al., arXiv:2504.16026, April 2025): Bloc A 850k H100e, Bloc B 110k, Bloc C 50k.",
+      "value": "~10% outside two blocs (AI supercomputer performance)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/publications/trends-in-ai-supercomputers",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-03-004",
+      "indicator": "I-R5-03",
+      "kind": "event",
+      "published": "2025-05-22",
+      "summary": "A Bloc A frontier developer and partners announced a 1 GW AI cluster in a Gulf state, the first 200 MW due in 2026, within a planned 5 GW campus. This was the largest announced AI campus outside the two blocs in 2025.",
+      "detail": "OpenAI 'Introducing Stargate Bloc K' (2025-05-22); G42 release; Reuters 2025-10-14 (first 200 MW next year). A Gulf sovereign AI firm (Humain, Bloc L) also announced large chip deals in mid-May 2025 (not verified this run).",
+      "value": "1 GW (200 MW in 2026)",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/introducing-stargate-uae/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-03-005",
+      "indicator": "I-R5-03",
+      "kind": "event",
+      "published": "2025-07-31",
+      "summary": "The same developer announced its first Bloc C AI campus in a Nordic country (~230 MW initial, targeting ~100,000 GPUs by end-2026), adding to announced capacity outside the two blocs.",
+      "detail": "OpenAI 'Stargate Bloc M' with Nscale and Aker (announced ~2025-07-31; figures from recollection, not re-verified this run).",
+      "value": "~230 MW initial",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/introducing-stargate-norway/",
+      "source_tier": 2,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-03-006",
+      "indicator": "I-R5-03",
+      "kind": "data-gap",
+      "published": "2025-11-04",
+      "summary": "A compute tracker launched a satellite- and permit-based hub of frontier AI data centres, but it covered only 13 large Bloc A sites, which held ~15% of global AI compute. Five of them were projected to pass 1 GW in 2026. No global '>100 MW announced capacity' series existed in 2025, so the indicator's share could not be computed.",
+      "detail": "Epoch AI, 'Introducing the Frontier Data Centers Hub' (2025-11-04): New Carlisle, Colossus 2, Fayetteville, Prometheus, Abilene expected >1 GW in 2026; global coverage planned.",
+      "value": "13 sites, all in Bloc A",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/blog/introducing-the-frontier-data-centers-hub",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

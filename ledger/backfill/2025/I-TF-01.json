@@ -1,0 +1,97 @@
+{
+  "indicator": "I-TF-01",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Labour share (nonfarm business, 4-quarter average) in 2027 is >= 1 pp below 2025 (BLS Productivity & Costs, Q4 2027 release)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "2025 is the baseline year itself. As of end-2025 only Q1-Q2 2025 data had been published: Q1 showed unit labour costs (+6.9%) outrunning unit nonlabour payments (-0.3%), i.e. labour share up; Q2 showed nonlabour payments slightly ahead (+2.0% vs +1.6%). The Q3 release (scheduled 6 Nov) was delayed to Jan 2026 by the 43-day federal shutdown, so no 2025 4-quarter average was computable in-phase. No AI-driven fall in labour share was visible in 2025 data published in 2025.",
+  "items": [
+    {
+      "id": "BF-2025-I-TF-01-001",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2025-03-06",
+      "summary": "Revised Q4 2024 release: 2024 nonfarm-business productivity +2.8%; Q4 unit labour costs +3.8% vs unit nonlabour payments -0.5% (annualised), pointing to a slight rise in labour share at end-2024.",
+      "detail": "BLS Productivity and Costs, Q4 2024 revised (2025-03-06); quarterly figures as later shown in the 2025-08-07 release Table 2 (Bloc A). Exact Q4-2024 revision values taken from the later table, so may differ slightly from the March vintage.",
+      "value": "ULC +3.8% vs nonlabour -0.5% (Q4 2024, q/q ann.)",
+      "direction": "toward NO",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_08072025.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-01-002",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2025-06-05",
+      "summary": "Revised Q1 2025 release: nonfarm-business productivity fell ~1.5-1.8% (annualised); unit labour costs rose ~6.6-6.9% while unit nonlabour payments fell - labour share rose in Q1 2025.",
+      "detail": "BLS Productivity and Costs Q1 2025 revised (2025-06-05). Values per revised figures shown in the 2025-08-07 vintage (productivity -1.8%, ULC +6.9%, nonlabour -0.3%).",
+      "value": "ULC +6.9% vs nonlabour -0.3% (Q1 2025, q/q ann.)",
+      "direction": "toward NO",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_08072025.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-01-003",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2025-08-07",
+      "summary": "Preliminary Q2 2025 release: nonfarm-business productivity +2.4%, unit labour costs +1.6% vs unit nonlabour payments +2.0% (annualised) - labour share roughly flat to slightly down. Year-on-year ULC +2.6% vs nonlabour +1.4%.",
+      "detail": "BLS Productivity and Costs, Second Quarter 2025, Preliminary (2025-08-07), Table 2 (verified). Indexes 2017=100: ULC 123.6, nonlabour 130.2, price deflator 126.5.",
+      "value": "ULC +1.6% vs nonlabour +2.0% (Q2 2025, q/q ann.)",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_08072025.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-01-004",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2025-09-04",
+      "summary": "Revised Q2 2025 release: nonfarm-business productivity revised up to +3.3% (annualised), implying a smaller unit-labour-cost rise and a slight fall in labour share in Q2.",
+      "detail": "BLS Productivity and Costs, Second Quarter 2025, Revised (2025-09-04).",
+      "value": "productivity +3.3% (Q2 2025, q/q ann.)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_09042025.pdf",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-01-005",
+      "indicator": "I-TF-01",
+      "kind": "data-gap",
+      "published": "2025-11-06",
+      "summary": "The Q3 2025 preliminary release scheduled for 6 Nov 2025 (and the 9 Dec revision) did not appear because of a federal funding lapse; Q3 data were first published 8 Jan 2026. The 2025 baseline could not be computed within the phase.",
+      "detail": "BLS release schedule (Q3 2025 initial 2025-11-06, revision 2025-12-09); shutdown note in the delayed release. 43-day Bloc A government shutdown, Oct-Nov 2025.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://blsmon1.bls.gov/productivity/schedule-releases.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-01-006",
+      "indicator": "I-TF-01",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No comparable quarterly labour-share series exists for Bloc B; the indicator relies on a single-jurisdiction source.",
+      "detail": "Same known gap as the 2026 phase: BLS covers the Bloc A only; Bloc B NBS publishes no quarterly labour-share equivalent.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://fred.stlouisfed.org/series/PRS85006173",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

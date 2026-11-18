@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R2-02",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Share of firms using AI to produce goods or services >= 2x its 2025 average (Bloc A Census Bureau BTOS, 2027Q4)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "2025 is the baseline year. Original-wording series ('in producing goods or services'): 6.3% (Jan) rising to 10.0% (Oct 2025); Jan-Oct 2025 monthly average ~8.4%, so 2x ~ 16.8%. The question was broadened from the 2025-11-17 collection ('in any of its business functions'), with a new time series from the 2025-12-04 release: Dec 2025 17.3%. No November value on either basis. The baseline therefore covers only Jan-Oct, and the 2027 reading will be on a different question (series break; method decision pending, shared with I-R6-04).",
+  "items": [
+    {
+      "id": "BF-2025-I-R2-02-001",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2025-02-13",
+      "summary": "Early-2025 reading of the statistics office's biweekly firm survey: 6.3% of firms used AI in producing goods or services (January 2025 average), up from 4.8% in January 2024; expected use in six months 9.3%.",
+      "detail": "Bloc A Census BTOS national monthly average Jan 2025 = 6.3% (Jan 2024 4.8%), as tabulated in Census 'BTOS AI Core Question Updates' (2025-12-03). Release date approximate (BTOS publishes biweekly; mid-Feb for January cycles).",
+      "value": "6.3%",
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/hfp/btos/downloads/AI%20Question%20Wording%20Updates.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-02-002",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2025-07-10",
+      "summary": "Mid-year reading: firm AI use in production reached 9.2% (June 2025), up ~46% since January, then levelled off at ~9.3-9.4% through September.",
+      "detail": "Bloc A Census BTOS monthly averages: Mar 7.4, Apr 7.9, May 8.6, Jun 9.2, Jul 9.3, Aug 9.4, Sep 9.3 (%). Release date approximate (early July for June cycles).",
+      "value": "9.2% (Jun 2025)",
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/hfp/btos/downloads/AI%20Question%20Wording%20Updates.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-02-003",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2025-11-06",
+      "summary": "Last reading on the original wording: 10.0% of firms used AI in producing goods or services (October 2025); expected use 14.1%. Information sector 29%, finance and insurance 17%.",
+      "detail": "Bloc A Census BTOS Oct 2025 monthly average (last full month before the wording change). Release date approximate; federal shutdown Oct-Nov 2025 may have delayed publication.",
+      "value": "10.0% (Oct 2025)",
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/hfp/btos/downloads/AI%20Question%20Wording%20Updates.pdf",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-02-004",
+      "indicator": "I-R2-02",
+      "kind": "data-gap",
+      "published": "2025-12-03",
+      "summary": "The statistics office replaced 'in producing goods or services' with 'in any of its business functions' from the 2025-11-17 collection and started a new time series from the 2025-12-04 release, citing a level shift; the original question is no longer asked. The series named by this indicator ends in October 2025.",
+      "detail": "Bloc A Census Bureau, 'BTOS AI Core Question Updates' (dated 2025-12-03, verified). Cognitive testing from early 2025 found respondents using AI in hiring, accounting, R&D, etc. answered 'no' under the old wording. Old data kept in 'AI Core Questions (Original)' table.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/hfp/btos/downloads/AI%20Question%20Wording%20Updates.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-02-005",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2025-12-04",
+      "summary": "First reading on the new, broader question: 17.3% of firms used AI in any business function (December 2025 average); expected use in six months 21.1%. About 1.7x the last original-wording value, which roughly measures the level shift.",
+      "detail": "Bloc A Census BTOS new series, first released 2025-12-04; Dec 2025 national average 17.3% (Census update PDF; same figure in EIG 'How Many Businesses Are Using AI?').",
+      "value": "17.3% (new wording)",
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/hfp/btos/data",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-02-006",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2025-12-31",
+      "summary": "Derived baseline: the mean of the January-October 2025 monthly averages on the original wording is ~8.4%, so the indicator threshold on that basis would be ~16.8%. The new-wording December value (17.3%) already exceeds that figure, which shows the threshold cannot be applied across the break without a splice.",
+      "detail": "Own calculation from Census table: (6.3+6.8+7.4+7.9+8.6+9.2+9.3+9.4+9.3+10.0)/10 = 8.42%. Not a published statistic.",
+      "value": "~8.4% (2025 avg, original wording, Jan-Oct)",
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/hfp/btos/downloads/AI%20Question%20Wording%20Updates.pdf",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-02-007",
+      "indicator": "I-R2-02",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No comparable high-frequency firm AI-use series exists for Bloc B; only Bloc A data are available for this indicator.",
+      "detail": "No Bloc B NBS biweekly or quarterly firm AI-adoption series found.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/programs-surveys/btos.html",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

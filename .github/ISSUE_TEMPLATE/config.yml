@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Add evidence (pull request)
+    url: https://github.com/GodenYao/futures-atlas/blob/main/CONTRIBUTING.md#1-evidence-by-pull-request
+    about: New evidence is one JSON file per item in ledger/inbox/, opened as a pull request and checked by CI.
+  - name: Using an AI agent? Point it at AGENTS.md
+    url: https://github.com/GodenYao/futures-atlas/blob/main/AGENTS.md
+    about: Step-by-step instructions for agents - find a source, fill the schema, neutrality rules, open the PR with gh.
+  - name: Visions and questions (Discussions)
+    url: https://github.com/GodenYao/futures-atlas/discussions
+    about: Suggest or vote on videos per ending in the Visions category; ask questions; propose a new ending.

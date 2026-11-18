@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R2-01",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "Relative employment index of ages 22-25 in the most AI-exposed occupation quintile falls >= 5 pts from its 2026 level (Stanford Digital Economy Lab 'Canaries' series, last 2027 release)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "2026 is the baseline year. Series moved from ad-hoc paper revisions to a monthly public dashboard (June 2026). The relative shortfall widened from 15% (Jul-2025 vintage) to 19% (Jun-2026 vintage), and the dashboard reported a sharpening decline (~4.4% annualised) in recent months as of Oct 2026 - momentum toward YES if sustained.",
+  "items": [
+    {
+      "id": "BF-2026-I-R2-01-001",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2026-03-05",
+      "summary": "A frontier developer's economists published a new AI-exposure measure: no systematic rise in unemployment for highly exposed workers since late 2022, but suggestive evidence that hiring of younger workers has slowed in exposed occupations.",
+      "detail": "Massenkoff & McCrory, 'Labor market impacts of AI: A new measure and early evidence', Anthropic (Bloc A). Interested party.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.anthropic.com/research/labor-market-impacts",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-01-002",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2026-06-10",
+      "summary": "The Canaries series became a monthly public dashboard (AI Economic Indicators). First note: aggregate differences between exposed and less-exposed occupations are modest, but early-career (22-25) employment is clearly correlated with exposure; automation-type usage correlates with weaker employment, augmentation-type does not.",
+      "detail": "Stanford Digital Economy Lab with ADP Research, launch press release and Research Note #1 (June 2026 update). Early-career workers = 7.4% of sample employment (Nov 2022).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://digitaleconomy.stanford.edu/app/uploads/2026/06/AIEI_SDEL_Research_Note_01.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-01-003",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2026-08-12",
+      "summary": "Revised Canaries paper (payroll data to June 2026): employment of ages 22-25 in highly AI-exposed occupations is 19% below where it would be had it kept pace with less-exposed peers, up from 15% at the July-2025 vintage. In levels, the two most-exposed quintiles fell ~11% since Nov 2022 while the three least-exposed grew ~10%. Adjustment is via reduced hiring; no comparable gap for experienced workers.",
+      "detail": "Brynjolfsson, Chandar, Chen, 'Canaries in the Coal Mine? Six Facts...' revised 2026-08-12 (Bloc A ADP data). Authors caution: descriptive not causal; attenuates with education controls; larger than in national survey benchmarks; some pre-trends.",
+      "value": "19% relative shortfall (Jun 2026)",
+      "direction": "toward YES",
+      "source_url": "https://digitaleconomy.stanford.edu/news/canariesaug26/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-01-004",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2026-08-12",
+      "summary": "In the same paper, the most-exposed quintile for ages 22-25 declined ~18 percentage points relative to the least-exposed quintile (regression estimate), the closest published figure to this indicator's quintile-level index.",
+      "detail": "Canaries August 2026 PDF, robustness table Panel A coefficient -0.179 for ages 22-25, top vs bottom quintile (Bloc A).",
+      "value": "-17.9 pp (Q5 vs Q1)",
+      "direction": "toward YES",
+      "source_url": "https://digitaleconomy.stanford.edu/app/uploads/2026/08/Canaries_August2026.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-01-005",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2026-10-21",
+      "summary": "Canaries Dashboard monthly update: employment of ages 22-25 in the two most AI-exposed occupations has fallen >3% per year since Nov 2022, with the decline sharpening to ~4.4% annualised in recent months.",
+      "detail": "Stanford Digital Economy Lab AI Economic Indicators, Canaries Dashboard update 2026-10-21, as reported by Stanford News / HAI (Oct 2026). Occupations: software developers, customer service representatives (Bloc A).",
+      "value": "-4.4% annualised (recent months)",
+      "direction": "toward YES",
+      "source_url": "https://hai.stanford.edu/news/tracking-ais-real-time-footprint-on-the-labor-market",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-01-006",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2026-06-30",
+      "summary": "Administrative-data studies from two small open economies outside the two blocs found no significant negative effect of AI exposure on youth or junior employment through 2025, a counterpoint to the payroll-panel pattern.",
+      "detail": "Kauhanen & Rouvinen (2026), ETLA Working Paper 135 (Bloc T); Facius & Iacono (2026), CESifo WP 12752 (Bloc M). Exact publication dates not verified (mid-2026 approx.), cited via Alex Imas substack review.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://aleximas.substack.com/p/has-ai-impacted-the-labor-market",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R2-01-007",
+      "indicator": "I-R2-01",
+      "kind": "data-gap",
+      "published": "2026-11-14",
+      "summary": "The Canaries series covers only Bloc A payroll data; no comparable age-by-AI-exposure employment series exists for Bloc B. The 2026 baseline level for the indicator must be fixed from the dashboard's 2026 vintages, which are revised monthly.",
+      "detail": "Indicator uses Bloc A ADP data only; no NBS (Bloc B) equivalent series found.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://digitaleconomy.stanford.edu/project/indicators/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

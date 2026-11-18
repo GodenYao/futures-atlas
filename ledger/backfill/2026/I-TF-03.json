@@ -1,0 +1,97 @@
+{
+  "indicator": "I-TF-03",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "Median per-capita disposable income growth < mean growth in 2027 annual data (national statistics office; one indicator per leading jurisdiction)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Bloc B statistics office: median growth below mean growth in 2025 annual data (4.4% vs 5.0%) and in every cumulative 2026 release after Q1 (H1 4.7% vs 5.2%; Jan-Sep 4.6% vs 5.3%); Q1 2026 was the exception (5.0% vs 4.9%). Bloc A has no directly comparable per-capita median/mean disposable-income growth pair in its annual release.",
+  "items": [
+    {
+      "id": "BF-2026-I-TF-03-001",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2026-01-19",
+      "summary": "Bloc B 2025 annual household survey: median per-capita disposable income +4.4% nominal vs mean +5.0%; median equal to 83.5% of mean. Median growth below mean growth (urban median +3.7% vs urban mean +4.3%).",
+      "detail": "Bloc B NBS 2025 residents' income and consumption release (2026-01-19): mean 43,377 yuan (+5.0% nominal), median 36,231 yuan (+4.4%). Read via People's Daily Online reprint of the NBS release.",
+      "value": "median +4.4% vs mean +5.0% (nominal, 2025)",
+      "direction": "toward YES",
+      "source_url": "http://finance.people.com.cn/n1/2026/0119/c1004-40648162.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-03-002",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2026-04-16",
+      "summary": "Bloc B Q1 2026: median per-capita disposable income +5.0% vs mean +4.9% - median slightly faster than mean (median/mean ratio 81.6%).",
+      "detail": "Bloc B NBS Q1 2026 income release (2026-04-16): mean 12,782 yuan (+4.9%), median 10,433 yuan (+5.0%). Read via reprint on Bloc B Real Estate Association site citing NBS.",
+      "value": "median +5.0% vs mean +4.9% (nominal, Q1 2026 y/y)",
+      "direction": "toward NO",
+      "source_url": "http://www.fangchan.com/data/142/2026-04-16/7450378006746697785.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-03-003",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2026-07-15",
+      "summary": "Bloc B H1 2026: median per-capita disposable income +4.7% vs mean +5.2%; median/mean ratio 82.8%.",
+      "detail": "Bloc B NBS H1 2026 income release (2026-07-15), mean 22,981 yuan, median 19,036 yuan.",
+      "value": "median +4.7% vs mean +5.2% (nominal, H1 2026 y/y)",
+      "direction": "toward YES",
+      "source_url": "https://www.stats.gov.cn/sj/zxfbhjd/202607/t20260715_1964129.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-03-004",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2026-10-19",
+      "summary": "Bloc B Jan-Sep 2026: median per-capita disposable income +4.6% vs mean +5.3%; gap widened to 0.7 pp; property income +1.6% vs wage income +5.3%.",
+      "detail": "Bloc B NBS Q1-Q3 2026 income release (2026-10-19): mean 34,230 yuan, median 28,388 yuan (82.9% of mean); urban median +3.9% vs urban mean +4.5%.",
+      "value": "median +4.6% vs mean +5.3% (nominal, Jan-Sep 2026 y/y)",
+      "direction": "toward YES",
+      "source_url": "https://www.stats.gov.cn/sj/zxfb/202610/t20261019_1965612.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-03-005",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2026-09-15",
+      "summary": "Bloc A annual income report for 2025: real median household income +2.6% to a record level. The release reports household (not per-capita disposable) income, so it does not map directly onto the median-vs-mean per-capita test.",
+      "detail": "Bloc A Census Bureau, Income in the Bloc A: 2025 (P60-289), released 2026-09-15: median household income $87,460 vs $85,210 in 2024. Mean comparison not extracted.",
+      "value": "+2.6 % (real median household income, 2025)",
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/newsroom/press-releases/2026/income-poverty-health-insurance-coverage.html",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-03-006",
+      "indicator": "I-TF-03",
+      "kind": "data-gap",
+      "published": "2026-11-14",
+      "summary": "No Bloc A official series publishes per-capita disposable-income median and mean growth side by side; a comparable Bloc A series must be constructed (e.g. from household-survey microdata or distributional national accounts).",
+      "detail": "Bloc A Census CPS ASEC reports household money income (pre-tax); BEA distribution of personal income is a prototype series. Neither is a direct equivalent of the Bloc B NBS per-capita disposable median/mean pair.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/library/publications/2026/demo/p60-289.html",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

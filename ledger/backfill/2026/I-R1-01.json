@@ -1,0 +1,110 @@
+{
+  "indicator": "I-R1-01",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": ">= 90% of training compute of the 10 largest known 2027 training runs belongs to organisations headquartered in the two leading jurisdictions",
+  "generated": "2026-11-14",
+  "items": [
+    {
+      "id": "BF-2026-I-R1-01-001",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2026-01-02",
+      "summary": "Epoch AI data insight: since 2023 every model at the capability frontier (Epoch Capabilities Index) came from Bloc A; Bloc B models trailed by 7 months on average (range 4-14 months). Frontier capability sits entirely within the two leading jurisdictions.",
+      "detail": "Epoch 'Bloc B AI models have lagged the Bloc A frontier by 7 months on average since 2023' (Luke Emberson, 2026-01-02). All frontier models Bloc A-developed; Bloc B models trail.",
+      "value": "7 months mean lag",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/data-insights/us-vs-china-eci",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-01-002",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2026-04-13",
+      "summary": "Stanford AI Index 2026 (using Epoch data): Bloc A models remain the most compute-intensive versus Bloc B models, though the gap cannot be fully substantiated because leading Bloc A developers stopped reporting training compute. Both blocs together dominate notable-model output.",
+      "detail": "AI Index 2026 ch.1 Fig 1.1.14: Bloc A models continue to be the most computationally intensive compared to Bloc B models; Bloc A 673 vs Bloc B 179 notable models in Epoch DB (per secondary tally).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://hai.stanford.edu/assets/files/ai_index_report_2026_chapter_1_research_development.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-01-003",
+      "indicator": "I-R1-01",
+      "kind": "event",
+      "published": "2026-09-03",
+      "summary": "A Bloc A developer released a new frontier model that became the largest known training run in the Epoch database, extending the record set by another Bloc A developer in July 2025.",
+      "detail": "OpenAI GPT-6 Astra released 2026-09-03; trained on >=100,000 NVIDIA GB200 in Abilene, Texas. Previous record Grok 4 (xAI, 5e26 FLOP, Jul 2025).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/gpt-6-astra/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-01-004",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2026-10-15",
+      "summary": "Epoch AI estimated the new record run at ~9.4e26 FLOP (90% CI ~4.6e26-1.8e27), revised down from an initial ~1e27. As of the phase end, all notable models above 1e26 FLOP in the Epoch database belong to Bloc A organisations.",
+      "detail": "Epoch model page GPT-6 Astra: training compute 9.4e26 FLOP, Country = Bloc A. Epoch notebook posted ~2026-10-15. Models >1e26: GPT-6 Astra, Grok 4 (5e26), GPT-4.5 (3.8e26), Grok 3 (3.5e26) - all Bloc A (secondary tally of Epoch data, aiadoption.org).",
+      "value": "9.4e26 FLOP",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/models/gpt-6-astra",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-01-005",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2026-10-27",
+      "summary": "Epoch AI Chip Imports explorer: of 27.4M H100e of AI compute arriving 2022-H1 2026, ~72% went to Bloc A and ~10% to Bloc B (incl. domestic chips); Bloc A share of new arrivals rose to 72% in 2025 and 78% in H1 2026. Compute stock is concentrated in the two leading jurisdictions (~82%), with Bloc A dominant.",
+      "detail": "Bloc A 19.8M H100e (72%), Bloc B 2.6M (10%, range 1.9-4.2M), Bloc C 1.4M (5%), Bloc I 0.7M (2%).",
+      "value": "72% / 10% cumulative H100e share",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/latest/introducing-the-ai-chip-imports-explorer",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-01-006",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2026-11-05",
+      "summary": "Analysis of Epoch Capabilities Index data (as of 2026-10-31): best Bloc B model trails the Bloc A frontier by ~7 months / ~10 ECI points, essentially unchanged since December 2025; no organisation outside the two blocs near the frontier.",
+      "detail": "Inside Bloc B's Machine newsletter computing from Epoch eci_scores.csv: DeepSeek V4.1 Flash (2026-10-17) best Bloc B model, 158.8 ECI vs GPT-6 Astra 169. Secondary analysis of tier-1 data.",
+      "value": "~10 ECI points gap",
+      "direction": "toward YES",
+      "source_url": "https://www.icmintelligence.com/p/deepseek-scored-higher-and-fell-further",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-01-007",
+      "indicator": "I-R1-01",
+      "kind": "data-gap",
+      "published": "2026-11-14",
+      "summary": "Frontier developers in Bloc A no longer disclose training compute; Epoch figures for the largest runs are estimates from cluster size (rated 'Likely'/'Speculative'). Compute estimates for Bloc B frontier runs are also sparse. Indicator resolution (2027 runs) will rely on estimates with wide intervals.",
+      "detail": "Stanford AI Index 2026 notes Bloc A labs have stopped reporting compute; Foundation Model Transparency Index fell to 40 from 58.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://hai.stanford.edu/news/inside-the-ai-index-12-takeaways-from-the-2026-report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

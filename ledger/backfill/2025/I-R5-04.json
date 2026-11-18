@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R5-04",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Price of inference at fixed capability falls >= 10x from 2026 to 2027 (Epoch / AI Index price series; 2027 annual)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "The 2026->2027 window had not started, but the 2025 base rate was well above 10x/yr. A compute tracker (Mar 2025) found the price to reach fixed benchmark scores fell 9-900x per year (median 50x; 200x using post-2024 data only). An annual AI report (Apr 2025) found GPT-3.5-level cost fell >280x in ~2 years. 2025 price moves were consistent with this: a Bloc A reasoning model cut 80% (Jun), a new Bloc A flagship launched at lower per-token prices (Aug), and a Bloc B developer cut API prices 50%+ (Sep). Key caveat: the fastest declines come from short windows and may not last.",
+  "items": [
+    {
+      "id": "BF-2025-I-R5-04-001",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2025-03-13",
+      "summary": "A compute tracker found that the price of reaching fixed performance on six benchmarks fell 9-900x per year (median 50x). Using only data from 2024 on, the median was 200x per year. Example: GPT-4-level PhD-science performance got ~40x cheaper per year. The fastest rates rest on <1 year of data.",
+      "detail": "Epoch AI Data Insight 'LLM inference prices have fallen rapidly but unequally across tasks' (March 2025; X thread ~2025-03-13; date approximate).",
+      "value": "9-900x/yr (median 50x)",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/data-insights/llm-inference-price-trends",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-04-002",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2025-04-07",
+      "summary": "An annual AI report found that the inference cost of a system at GPT-3.5 level (64.8% MMLU) fell over 280-fold from Nov 2022 to Oct 2024, from ~$20 to ~$0.07 per million tokens, driven by capable small models.",
+      "detail": "Stanford HAI, 2025 AI Index Report, Top Takeaway 7 (published ~2025-04-07).",
+      "value": ">280x over ~23 months",
+      "direction": "toward YES",
+      "source_url": "https://hai.stanford.edu/ai-index/2025-ai-index-report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-04-003",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2025-06-10",
+      "summary": "A Bloc A developer cut the API price of its flagship reasoning model by 80% (to ~$2/$8 per million input/output tokens), a step change at fixed capability.",
+      "detail": "OpenAI o3 price reduction (2025-06-10). Recollection; not verified via web_extract this run.",
+      "value": "-80% (o3 API)",
+      "direction": "toward YES",
+      "source_url": "https://platform.openai.com/docs/pricing",
+      "source_tier": 2,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-04-004",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2025-08-07",
+      "summary": "The same developer launched a new flagship (ECI ~150, the frontier at release) at ~$1.25/$10 per million tokens, below its earlier frontier model's launch price for higher capability.",
+      "detail": "OpenAI GPT-5 launch pricing (2025-08-07). Price from recollection; ECI from Epoch table (GPT-5 medium = 150 anchor).",
+      "value": "$1.25 / $10 per M tokens",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/introducing-gpt-5/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-04-005",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2025-09-29",
+      "summary": "A Bloc B developer released an experimental open-weight model with sparse attention at about the same benchmark performance as its predecessor, and cut API prices by 50%+ (input $0.56 -> $0.28 per M tokens; output to $0.42).",
+      "detail": "DeepSeek, 'Introducing DeepSeek-V3.2-Exp' (2025-09-29); Reuters, TechCrunch, heise same day.",
+      "value": "-50%+ (same capability)",
+      "direction": "toward YES",
+      "source_url": "https://www.deepseek.com/en/news/v3-2-exp/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-04-006",
+      "indicator": "I-R5-04",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No single official series pins 'price at fixed capability' for the indicator. Estimates depend heavily on the benchmark and threshold chosen (9x to 900x/yr), so a 10x bar can pass or fail depending on method. The indicator needs a frozen benchmark/threshold before 2026.",
+      "detail": "Method note derived from Epoch (Mar 2025) range; AI Index uses MMLU 64.8% threshold.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/data-insights/llm-inference-price-trends",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

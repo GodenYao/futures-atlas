@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R6-02",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "Combined capex of the 5 largest spenders falls year on year for 2 consecutive quarters (securities filings; by 2028-06-30)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "Far from triggering: combined quarterly capex of the four largest Bloc A cloud/platform spenders rose every quarter of 2026 (~$130B Q1, ~$165B Q2, ~$202-209B Q3), +84-108% year over year in Q3; all guide to higher 2027 spending. Fifth-largest spender varies by basis (an enterprise-cloud provider, ~$28.5B in its latest quarter, or a space/AI conglomerate). Stress signal: free cash flow turned negative at several, funded by record bond issuance.",
+  "items": [
+    {
+      "id": "BF-2026-I-R6-02-001",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2026-05-01",
+      "summary": "Q1 2026 combined capex of the four largest Bloc A hyperscalers ~$130B, up ~80% year over year from ~$72B.",
+      "detail": "Microsoft 30.9, Alphabet 35.7, Amazon 44.2, Meta 19.0 ($B, purchases of P&E), compiled from filings by Kufenberg. Earnings dates late Apr/early May 2026 (approximate).",
+      "value": "$129.8B (Q1 2026, 4 firms)",
+      "direction": "toward NO",
+      "source_url": "https://kufenberg.ch/blog/news/ai-spending-now-outruns-big-techs-cash",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R6-02-002",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2026-07-31",
+      "summary": "Q2 2026 combined capex of the same four firms ~$165B, up ~87% year over year; one firm raised its full-year range in July.",
+      "detail": "Microsoft 35.8, Alphabet 44.9, Amazon 54.2, Meta 30.1 ($B). Alphabet raised 2026 guidance to $195-205B (July). Date approximate (late-July earnings).",
+      "value": "$165.1B (Q2 2026, 4 firms)",
+      "direction": "toward NO",
+      "source_url": "https://kufenberg.ch/blog/news/ai-spending-now-outruns-big-techs-cash",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R6-02-003",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2026-10-29",
+      "summary": "Q3 2026: the four largest spenders reported ~$202B (purchases of P&E) / ~$209B (company capex definitions), roughly double a year earlier; adding a fifth (an enterprise-cloud provider, $28.5B) gives ~$230B. Combined 2026 guidance $720-740B for the four; none cut its range except one trimming to ~$170B on delayed third-party capacity.",
+      "detail": "Amazon 77.3 (cash capex 75.9), Alphabet 51.4, Microsoft 39.4 (45.2 incl. finance leases), Meta 33.9-34.9, Oracle 28.5 (FY27Q1). Earnings 2026-10-21 (Meta), 10-28 (Alphabet, Microsoft), 10-29 (Amazon).",
+      "value": "~$202-209B (Q3 2026, 4 firms), +84-108% y/y",
+      "direction": "toward NO",
+      "source_url": "https://supercyclehq.com/blog/reports/hyperscaler-capex-october-2026",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R6-02-004",
+      "indicator": "I-R6-02",
+      "kind": "forecast",
+      "published": "2026-10-29",
+      "summary": "All four largest spenders signalled higher 2027 capex ('increase significantly', 'meaningfully more', 'accelerate', 'continue investing aggressively'); implied Q4 2026 combined capex (incl. a fifth firm) $247-272B.",
+      "detail": "Q3 2026 earnings calls (Alphabet CFO Ashkenazi; Amazon CFO Olsavsky; Microsoft; Meta). Business Insider tally incl. SpaceX: $556B spent in first three quarters, $803-828B full-year.",
+      "value": "$803-828B (2026, 5 firms incl. SpaceX)",
+      "direction": "toward NO",
+      "source_url": "https://businessinsider.com/amazon-alphabet-meta-microsoft-spacex-capex-ai-spending-total-2026-10",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R6-02-005",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2026-10-30",
+      "summary": "Financing strain: in Q3 2026 capex exceeded operating cash flow at four of the five largest spenders (combined shortfall ~$32B); one raised $115B of long-term debt in nine months. A leading indicator of possible future cuts, not yet a decline.",
+      "detail": "Alphabet FCF -$9.1B, Meta -$1.2 to -2.1B, Oracle -$5.4B, Amazon -$34.8B (quarter), Microsoft +$18.6B. Kufenberg / Global Terminal from filings.",
+      "value": "-$31.8B combined FCF (Q3 2026, 5 firms)",
+      "direction": "toward YES",
+      "source_url": "https://kufenberg.ch/blog/news/ai-spending-now-outruns-big-techs-cash",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

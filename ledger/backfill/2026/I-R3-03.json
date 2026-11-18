@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R3-03",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "A top-3 compute jurisdiction has licensing or pre-approval of frontier training above a compute threshold in force (official gazette; by 2028-12-31)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Not met. No top-3 compute jurisdiction has training licensing in force. Bloc A: after the agent-containment incidents, federal bills proposing a deployment bar (>1e26), a federal charter to develop >=1e25 models, and licensed third-party verifiers were introduced or heard (Jul-Sep 2026); none reported out of committee. Sub-national transparency laws exist; a new sub-national bill would let a state office cap training compute. Bloc B: no AI law on the 2026 legislative plan; its Oct 2026 draft adds export licensing for >=1e26 model technology, not training approval; generative-AI service filing (deployment, since 2023) continues.",
+  "items": [
+    {
+      "id": "BF-2026-I-R3-03-001",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2026-03-31",
+      "summary": "Bloc B's central legislative work plan for 2026 again omitted a comprehensive AI law; a draft has never been published, so a statutory licensing basis for frontier training remains absent.",
+      "detail": "Bloc B State Council 2026 Legislative Work Plan (no AI Law item), per Legal500 Country Comparative Guide 2026 (Bloc B AI chapter). Date of plan approximate.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.legal500.com/guides/chapter/china-artificial-intelligence/?export-pdf=",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-03-002",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2026-07-23",
+      "summary": "A Bloc A federal bill was introduced that would create licensed independent verification organisations to audit very large developers training models above 1e26 operations, with federal power to intervene on imminent catastrophic risk and pre-emption of state rules. Audit regime, not training pre-approval; introduced only.",
+      "detail": "FRONTIER Act, H.R. 9925 (119th Congress), referred to House Energy & Commerce and Science committees 2026-07-23.",
+      "value": "threshold 1e26 FLOP",
+      "direction": "toward YES",
+      "source_url": "https://www.congress.gov/bill/119th-congress/house-bill/9925/text",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-03-003",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2026-09-23",
+      "summary": "A Bloc A federal bill was introduced that would freeze further training of models >=1e25 operations until a new AI department issues rules, then require a federal charter to develop such models and approval before deployment - the first explicit training-licensing proposal in a top-3 jurisdiction. Referred to committee, no action. The same day, 26 sub-national attorneys general asked the legislature for mandatory federal safety testing.",
+      "detail": "Ban Artificial Superintelligence Act of 2026, S. 5493 (Senate) and H.R. 10538 (Rep. Casar, House, next day). No further action as of 2026-11-02 (superintelligencelicensing.com).",
+      "value": "threshold 1e25 FLOP",
+      "direction": "toward YES",
+      "source_url": "https://superintelligencelicensing.com/guides/should-superintelligence-require-a-license",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-03-004",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2026-09-30",
+      "summary": "A Bloc A Senate committee held a hearing on a bill barring deployment of models trained above 1e26 operations unless the developer joins a federal evaluation programme; not reported out by early November.",
+      "detail": "S. 2938, Senate Homeland Security and Governmental Affairs Committee hearing 2026-09-30.",
+      "value": "threshold 1e26 FLOP",
+      "direction": "toward YES",
+      "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/2938",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-03-005",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2026-10-16",
+      "summary": "Bloc B released draft export-control revisions requiring a licence to export the core technology (weights, checkpoints, code) of models trained with >=1e26 operations, >=2 trillion parameters, or ranked global top-10, with interim pre-export registration from that date. This controls cross-border transfer, not domestic training.",
+      "detail": "Bloc B MOFCOM/MOST Announcement No. 48 (2026-10-16), draft revision of the Catalogue of Technologies Prohibited and Restricted from Export; comments to 2026-11-15. Bloc B Daily 2026-11-09.",
+      "value": "threshold 1e26 FLOP (export)",
+      "direction": "neutral",
+      "source_url": "https://www.chinadaily.com.cn/a/202611/09/WS6af11ce5e4b03ebf8519b305.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-03-006",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2026-10-29",
+      "summary": "A sub-national legislature in Bloc A introduced a bill that would let a state office limit compute large developers devote to training or automated AI research and let the attorney general seek court halts; lowers the coverage threshold to 1e25. Sub-national and introduced only.",
+      "detail": "New York 'RAISE Act 2.0' (S10731, Sen. Gounardes / AM Wright), introduced 2026-10-29. California Frontier AI Safety Act announced 2026-10-20 (compute-share reporting).",
+      "value": "threshold 1e25 FLOP",
+      "direction": "toward YES",
+      "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10731",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R3-03-007",
+      "indicator": "I-R3-03",
+      "kind": "data-series",
+      "published": "2026-11-02",
+      "summary": "Status review: as of November 2026 no country has an AI licensing agency; enacted law in top compute jurisdictions remains disclosure/notification (regional bloc requires notice and evaluation above 1e25), transparency statutes, and chip export licences.",
+      "detail": "superintelligencelicensing.com guide, updated 2026-11-02 (Bloc C GPAI notification under AI Act; CA SB 53; NY RAISE).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://superintelligencelicensing.com/guides/should-superintelligence-require-a-license",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

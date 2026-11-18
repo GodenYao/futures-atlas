@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R4-03",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "A top-5 developer weakens or withdraws a published safety-framework commitment, documented by a text diff (framework documents, archived; calendar 2027)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "The resolution window is calendar 2027, so 2025 items only show the base rate. That base rate was high. Documented framework diffs from two top-5 Bloc A developers loosened commitments: one cut insider threats from its ASL-3 security scope nine days before an ASL-3 launch (May) and had earlier dropped a pledge to define next-tier evaluations (March); another removed persuasion from its framework, merged its levels, and added a clause allowing it to lower safeguards if a rival ships without them (April). A third developer was accused by 60 lawmakers of breaching a reporting pledge (no text diff). Some changes also tightened rules (new ML R&D and manipulation thresholds in one framework, Sept).",
+  "items": [
+    {
+      "id": "BF-2025-I-R4-03-001",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2025-03-31",
+      "summary": "A top-5 Bloc A developer's safety policy v2.1 dropped its 2023 commitment to define next-tier (ASL-4) evaluations before first training an ASL-3 model. The change appeared in the PDF but not in the web changelog, according to a watchdog.",
+      "detail": "Anthropic RSP v2.1 (2025-03-31); documented by The Midas Project Watchtower entry 'Anthropic, Moderate Violation' (filed under 2025-05-14).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.themidasproject.com/watchtower/anthropic-05142025",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-03-002",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2025-04-15",
+      "summary": "A top-5 Bloc A developer's framework v2 removed persuasion as a tracked risk category, moved nuclear/radiological to 'research', replaced four risk levels with two, and added a clause that it 'may adjust' safeguard requirements if a rival releases a high-risk system without comparable safeguards (subject to conditions). Press and critics read this as a competitive-pressure loosening.",
+      "detail": "OpenAI, 'Our updated Preparedness Framework' (2025-04-15) and Preparedness Framework v2 PDF; TechCrunch 2025-04-15; Axios 2025-04-15.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/updating-our-preparedness-framework/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-03-003",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2025-04-09",
+      "summary": "A top-5 Bloc A developer released a flagship (25 March) without the safety report it had pledged in voluntary commitments. A short model card followed after 22 days and a fuller one in late April; government testers got access only after release. This was a breach in practice, not a text change.",
+      "detail": "Google Gemini 2.5 Pro; Fortune 2025-04-09; TIME 2025-08-29 (60 Bloc G parliamentarians' open letter via PauseAI alleging breach of Bloc H Frontier AI Safety Commitments).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://fortune.com/2025/04/09/google-gemini-2-5-pro-missing-model-card-in-apparent-violation-of-ai-safety-promises-to-us-government-international-bodies",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-03-004",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2025-05-14",
+      "summary": "The first developer's safety policy v2.2 narrowed its ASL-3 security standard to exclude 'sophisticated insiders' (staff with access to weight-processing systems) as well as state-compromised insiders. It then launched its first ASL-3 model eight to nine days later. The developer's changelog documents the diff; a watchdog rated it a moderate violation.",
+      "detail": "Anthropic RSP v2.2 (effective 2025-05-14), changelog 'ASL-3 Security'; Midas Project analysis 2025-07-08.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www-cdn.anthropic.com/872c653b2d0501d6ab44cf87f43e1dc4853e4d37.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-03-005",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2025-08-29",
+      "summary": "Sixty lawmakers in a non-bloc jurisdiction published an open letter accusing the third developer of a 'breach of trust' over the delayed safety report, and asked it to commit to fixed reporting timelines. The developer said it was meeting its commitments.",
+      "detail": "PauseAI Bloc G open letter 'Dear Sir Demis' (2025-08-29); TIME exclusive and Fortune coverage same day.",
+      "value": "60 lawmakers",
+      "direction": "neutral",
+      "source_url": "https://time.com/7313320/google-deepmind-gemini-ai-safety-pledge",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-03-006",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2025-09-22",
+      "summary": "The third developer's framework v3 added a harmful-manipulation threshold and extended safety-case reviews to large internal deployments at ML R&D thresholds. These were tightening changes, which show that framework revisions do not only loosen.",
+      "detail": "Google DeepMind, 'Strengthening our Frontier Safety Framework' (FSF v3). Date from recollection; v3.1 PDF later posted.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://deepmind.google/blog/strengthening-our-frontier-safety-framework/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

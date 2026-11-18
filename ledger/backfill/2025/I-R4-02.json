@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R4-02",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "A developer system card or government AISI evaluation reports a model at the developer's highest published autonomy or AI-R&D risk tier (by 2027-12-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not met. In 2025 the leading Bloc A developers moved up tiers only in misuse domains: one activated its second-highest safety level (CBRN) as a precaution in May; another treated its models as High in bio/chem from July/August. On autonomy/AI R&D every system card reported 'not reached': one firm's AI-R&D-4 check (Nov) was not crossed but its rule-out evaluations were close to saturated; another's self-improvement score was below High; a third's ML R&D score was 'substantially below' the alert threshold. An independent evaluator put the frontier time horizon at ~2h17m (Aug) and judged AI R&D automation risk unlikely.",
+  "items": [
+    {
+      "id": "BF-2025-I-R4-02-001",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2025-05-22",
+      "summary": "A Bloc A developer launched its new flagship under its second-highest published safety level (ASL-3) as a precaution, because it could not rule out the CBRN capability threshold. It ruled out the next level (ASL-4) and reported no autonomy-tier finding. This was a step up in the misuse domain, not autonomy.",
+      "detail": "Anthropic, 'Activating AI Safety Level 3 protections' (2025-05-22) and ASL-3 implementation report; Claude Opus 4.",
+      "value": "ASL-3 (CBRN, precautionary)",
+      "direction": "neutral",
+      "source_url": "https://www.anthropic.com/news/activating-asl3-protections",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-02-002",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2025-08-07",
+      "summary": "A second Bloc A developer's flagship system card treated the model as High capability in biology/chemistry (precautionary), but said it 'did not meet our High thresholds' for AI self-improvement, showing only modest gains on those evaluations.",
+      "detail": "OpenAI GPT-5 System Card (2025-08-07), Preparedness Framework section 6.1.3 AI Self-Improvement. High bio designation had first been applied to ChatGPT agent (July 2025).",
+      "value": "AI self-improvement: below High",
+      "direction": "toward NO",
+      "source_url": "https://openai.com/index/gpt-5-system-card/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-02-003",
+      "indicator": "I-R4-02",
+      "kind": "data-series",
+      "published": "2025-08-07",
+      "summary": "An independent evaluator measured the same flagship's 50% time horizon at about 2h17m (CI ~1-4.5h). It concluded the model is unlikely to pose catastrophic risk through AI R&D automation, rogue replication or sabotage, and is far from the required capability.",
+      "detail": "METR, 'Details about METR's evaluation of OpenAI GPT-5' (report dated around release, 2025-08-07; exact posting date approximate).",
+      "value": "2h17m (50% time horizon)",
+      "direction": "toward NO",
+      "source_url": "https://metr.org/evaluations/gpt-5-report/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-02-004",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2025-09-22",
+      "summary": "A third Bloc A developer's revised safety framework expanded its ML R&D thresholds to cover large-scale internal deployments and added safety-case reviews when such thresholds are reached. This changed the rules for the top autonomy tier but reported no model at it.",
+      "detail": "Google DeepMind, 'Strengthening our Frontier Safety Framework' (FSF v3, 2025-09-22; date from recollection, not re-verified).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://deepmind.google/blog/strengthening-our-frontier-safety-framework/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-02-005",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2025-11-18",
+      "summary": "The third developer's new flagship safety report found no critical capability level reached. ML R&D (acceleration and automation level 1) aggregate was 'substantially below the alert threshold'; cybersecurity hit its alert threshold; exploratory misalignment levels were not reached.",
+      "detail": "Google DeepMind, Gemini 3 Pro Frontier Safety Framework Report (Nov 2025) and model card; release date 2025-11-18.",
+      "value": "ML R&D CCL: not reached (below alert)",
+      "direction": "toward NO",
+      "source_url": "https://deepmind.google/models/fsf-reports/gemini-3-pro",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-02-006",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2025-11-24",
+      "summary": "The first developer's new flagship system card found the model does not cross its top AI-R&D threshold (AI R&D-4); none of 18 internal survey participants thought it did. But the card said the rule-out evaluations were saturated or nearly so and no longer useful as rule-outs, so later calls will rest more on judgement.",
+      "detail": "Anthropic, System Card: Claude Opus 4.5 (November 2025), section 7.3 Autonomy evaluations.",
+      "value": "AI R&D-4: not crossed; rule-out evals near saturation",
+      "direction": "toward YES",
+      "source_url": "https://www-cdn.anthropic.com/bf10f64990cfda0ba858290be7b8cc6317685f47.pdf",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R4-02-007",
+      "indicator": "I-R4-02",
+      "kind": "data-series",
+      "published": "2025-12-18",
+      "summary": "A government AI security institute's first trends report described rapid gains in autonomy skills, including simplified AI R&D and self-replication tasks. It did not report any model at a developer's highest autonomy tier.",
+      "detail": "Bloc G AISI Frontier AI Trends Report (2025-12-18), autonomy skills section.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.aisi.gov.uk/frontier-ai-trends-report",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

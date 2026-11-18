@@ -1,0 +1,83 @@
+{
+  "indicator": "I-TF-03",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Median per-capita disposable income growth < mean growth in 2027 annual data (national statistics office; one indicator per leading jurisdiction)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Bloc B statistics office: median growth was below mean growth in every 2025-published release - 2024 annual (5.1% vs 5.3%), Q1 2025 (5.0% vs 5.5%), Jan-Sep 2025 (4.5% vs 5.1%; gap widening, property income +1.7%). Pattern pre-dates any plausible AI effect, so the condition is a base-rate tendency rather than an AI signal. Bloc A still lacks a comparable per-capita disposable median/mean pair.",
+  "items": [
+    {
+      "id": "BF-2025-I-TF-03-001",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2025-01-17",
+      "summary": "Bloc B 2024 annual household survey: median per-capita disposable income +5.1% vs mean +5.3%; median 84.0% of mean. Median growth slightly below mean growth (urban median and mean both +4.6%).",
+      "detail": "Bloc B NBS 2024 residents' income and consumption release (2025-01-17): mean 41,314 yuan, median 34,707 yuan (CCTV/CNR reprints of NBS release).",
+      "value": "median +5.1% vs mean +5.3% (nominal, 2024)",
+      "direction": "toward YES",
+      "source_url": "https://news.cctv.cn/2025/01/17/ARTI5mhpujQm4avx61PyHszO250117.shtml",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-03-002",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2025-04-16",
+      "summary": "Bloc B Q1 2025: median per-capita disposable income +5.0% vs mean +5.5%; median 81.6% of mean.",
+      "detail": "Bloc B NBS Q1 2025 income release (2025-04-16): mean 12,179 yuan, median 9,939 yuan; urban median +4.5% vs urban mean +4.9%.",
+      "value": "median +5.0% vs mean +5.5% (nominal, Q1 2025 y/y)",
+      "direction": "toward YES",
+      "source_url": "https://www.stats.gov.cn/xxgk/sjfb/zxfb2020/202504/t20250416_1959322.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-03-003",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2025-10-20",
+      "summary": "Bloc B Jan-Sep 2025: median per-capita disposable income +4.5% vs mean +5.1% (gap 0.6 pp); urban median +3.9% vs urban mean +4.4%; property income +1.7% vs wage income +5.4%.",
+      "detail": "Bloc B NBS Q1-Q3 2025 income release (2025-10-20): mean 32,509 yuan, median 27,149 yuan (83.5% of mean). Verified via stats.gov.cn and gov.cn.",
+      "value": "median +4.5% vs mean +5.1% (nominal, Jan-Sep 2025 y/y)",
+      "direction": "toward YES",
+      "source_url": "https://www.stats.gov.cn/sj/zxfbhjd/202510/t20251020_1961604.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-03-004",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2025-09-09",
+      "summary": "Bloc A annual income report for 2024: real median household income ~$83,730, change from 2023 not statistically significant. Household money income, not per-capita disposable income, so not directly comparable.",
+      "detail": "Bloc A Census Bureau 'Income in the Bloc A: 2024' (P60), released 2025-09-09. Value from memory of release coverage; not verified via web_extract this run.",
+      "value": "~$83,730 (median household income, 2024)",
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/library/publications/2025/demo/p60-286.html",
+      "source_tier": 1,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-TF-03-005",
+      "indicator": "I-TF-03",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No Bloc A official series publishes per-capita disposable-income median and mean growth side by side; a comparable Bloc A series must be constructed. The Bloc B H1 2025 release was not retrieved this run.",
+      "detail": "CPS ASEC = pre-tax household money income; BEA distribution of personal income is a prototype. NBS H1 2025 release (mid-July 2025) not extracted.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.bea.gov/data/special-topics/distribution-of-personal-income",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

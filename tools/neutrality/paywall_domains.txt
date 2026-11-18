@@ -1,0 +1,22 @@
+# Hosts whose articles are usually paywalled. A source on one of these hosts must set
+# "access": "paywall" and give an "access_note" (where a free copy, abstract or archive is).
+# Subdomains match too (asia.nikkei.com matches nikkei.com). One host per line.
+# Prefer the primary source (filing, paper, official page) over paywalled coverage of it.
+ft.com
+wsj.com
+bloomberg.com
+economist.com
+nytimes.com
+washingtonpost.com
+theinformation.com
+barrons.com
+nikkei.com
+thetimes.co.uk
+telegraph.co.uk
+foreignaffairs.com
+semianalysis.com
+stratechery.com
+caixinglobal.com
+handelsblatt.com
+lesechos.fr
+theathletic.com

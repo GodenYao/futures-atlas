@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R3-02",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "A top-5 developer publicly halts frontier training >= 30 days, citing safety (developer announcement + independent confirmation; by 2027-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not met in 2025. Safety-motivated actions were limited to deployment-side measures: a top-5 developer deployed its flagship under raised (ASL-3) safeguards as a precaution, and another delayed an open-weight release by ~3 weeks for added safety testing. No top-5 developer announced a halt to frontier training. A broad public statement (Oct 2025) called for prohibiting superintelligence development until safe and controllable, but no developer adopted a pause.",
+  "items": [
+    {
+      "id": "BF-2025-I-R3-02-001",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2025-05-22",
+      "summary": "A top-5 Bloc A developer, unable to rule out that its new flagship crossed a CBRN-uplift capability threshold, deployed it under heightened (ASL-3) deployment and security safeguards as a precaution instead of pausing; training and release continued.",
+      "detail": "Anthropic, 'Activating AI Safety Level 3 protections' (Claude Opus 4 launch, 2025-05-22) and accompanying report (verified via search snippets). ASL-4 ruled out.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.anthropic.com/news/activating-asl3-protections",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-02-002",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2025-07-12",
+      "summary": "A top-5 Bloc A developer postponed an open-weight model release 'indefinitely' to run additional safety tests, stating released weights cannot be recalled. It was a release delay, not a training halt, and the model shipped ~3 weeks later.",
+      "detail": "Sam Altman post on X 2025-07-11/12 (PDT/UTC); TechCrunch 2025-07-11. gpt-oss released 2025-08-05.",
+      "value": "~24-day release delay",
+      "direction": "neutral",
+      "source_url": "https://techcrunch.com/2025/07/11/openai-delays-the-release-of-its-open-model-again/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-02-003",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2025-10-22",
+      "summary": "A public statement signed by hundreds of public figures, including leading AI scientists, called for a prohibition on developing superintelligence until there is broad scientific consensus that it can be done safely and controllably, plus strong public buy-in. No top-5 developer endorsed it or paused.",
+      "detail": "Future of Life Institute, 'Statement on Superintelligence' (2025-10-22); signatories incl. Bengio, Hinton, Wozniak, Branson (CNBC 2025-10-22). Signatures later exceeded 64,000.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://superintelligence-statement.org/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-02-004",
+      "indicator": "I-R3-02",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No public announcement by a top-5 developer of a training halt of 30 days or more citing safety was found for 2025. Training pauses are generally not disclosed in real time, so absence of evidence is weak evidence; disclosures made after 2025 are excluded under the as-of rule.",
+      "detail": "Searched developer blogs/press for 2025. Later disclosures (e.g. 2026 IPO filing describing a pre-training pause) are out of phase.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.anthropic.com/news/activating-asl3-protections",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

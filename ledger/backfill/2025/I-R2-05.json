@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R2-05",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Recent-graduate unemployment minus the all-worker rate >= 2.0 pp in any 2027 quarter (NY Fed College Labor Market, 2027 quarterly)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "In 2025 the gap peaked near the threshold early in the year: March 2025 5.8% vs 4.0% (1.8 pp; a record 1.8 pp in April per later reporting), then narrowed to ~0.8 pp in June (4.8% vs 4.0%) and roughly 1 pp in Q3 (5.3% average; all-worker rate ~4.3%, not verified). Underemployment rose to 41.8% in Q3, the highest since 2020. The Q3 update was delayed to December by the federal shutdown, and October 2025 data are missing/estimated.",
+  "items": [
+    {
+      "id": "BF-2025-I-R2-05-001",
+      "indicator": "I-R2-05",
+      "kind": "data-series",
+      "published": "2025-04-25",
+      "summary": "Regional central bank's Q1 2025 update: recent-graduate (22-27) unemployment jumped to 5.8% in March 2025, the highest since 2013 outside the pandemic, vs 4.0% for all workers: a gap of 1.8 pp, just below the 2.0 pp threshold.",
+      "detail": "NY Fed 'Labor Market for Recent College Graduates', 2025:Q1 data; values per Forbes (2025-06-28), Bloc A Today (2025-06-05), Fast Company. Release date approximate (late April 2025; NY Fed Instagram reel 'deteriorated noticeably in the first quarter of 2025').",
+      "value": "gap 1.8 pp (5.8% vs 4.0%, Mar 2025)",
+      "direction": "toward YES",
+      "source_url": "https://www.forbes.com/sites/eriksherman/2025/06/28/even-more-bad-news-for-younger-workers-more-unemployment-less-money/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-05-002",
+      "indicator": "I-R2-05",
+      "kind": "data-series",
+      "published": "2025-08-05",
+      "summary": "Q2 2025 update: the recent-graduate rate eased to 4.8% in June vs 4.0% for all workers (gap ~0.8 pp), well below threshold. Graduates in computer engineering and computer science had above-average jobless rates.",
+      "detail": "NY Fed tracker, values as reported by Fortune (2025-09-21) citing Yardeni. Release date approximate (early Aug 2025). Later vintages show Q2 2025 average ~5.3% (seasonal/revision differences); single-month value used here.",
+      "value": "gap ~0.8 pp (4.8% vs 4.0%, Jun 2025)",
+      "direction": "toward NO",
+      "source_url": "https://fortune.com/2025/09/21/gen-z-job-crisis-unemployment-rate-recent-college-graduates-ai-entry-level-jobs",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-05-003",
+      "indicator": "I-R2-05",
+      "kind": "data-series",
+      "published": "2025-08-14",
+      "summary": "Another regional central bank's analysis: young college graduates (23-27) averaged 4.59% unemployment in 2025 vs 3.25% for all college graduates; the recent-graduate disadvantage has persisted and widened since the late 2010s.",
+      "detail": "St. Louis Fed On the Economy, 'Recent College Grads Bear Brunt of Labor Market Shifts', August 2025 (own CPS definition, not NY Fed; day approximate).",
+      "value": "4.59% (ages 23-27, 2025 avg to date)",
+      "direction": "neutral",
+      "source_url": "https://www.stlouisfed.org/on-the-economy/2025/aug/recent-college-grads-bear-brunt-labor-market-shifts",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-05-004",
+      "indicator": "I-R2-05",
+      "kind": "data-series",
+      "published": "2025-12-19",
+      "summary": "Delayed Q3 2025 update: recent-graduate unemployment 'remained elevated' at an average 5.3%; with the all-worker rate around 4.3%, the gap was ~1 pp. Underemployment rose to 41.8%, its highest since 2020.",
+      "detail": "NY Fed social posts 2025-12-19 (chart 'Remained elevated at an average of 5.3 percent in 2025:Q3') and 2025-12-29 (underemployment 41.8%). All-worker Q3 average (~4.3%) inferred from BLS Jul-Sep 2025 rates (4.2/4.3/4.4), not verified on NY Fed chart.",
+      "value": "gap ~1.0 pp (5.3% Q3 avg)",
+      "direction": "toward NO",
+      "source_url": "https://x.com/NewYorkFed/status/2005676412691210490",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-05-005",
+      "indicator": "I-R2-05",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "October 2025 survey data are missing (federal shutdown) and later estimated by the source, so the Q4 2025 reading carries extra uncertainty. The series covers Bloc A only; Bloc B publishes youth (16-24, excluding students) unemployment but no recent-graduate vs all-worker series on a comparable basis.",
+      "detail": "NY Fed chart notes: 'October 2025 results are estimated due to missing data.' Bloc B NBS youth unemployment not graduate-specific.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.newyorkfed.org/research/college-labor-market",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

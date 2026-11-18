@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R5-01",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": ">= 15 distinct organisations with a >= 1e26 FLOP run (shared with I-N-01; counted once per family 'holders') (Epoch AI; 2027-12-31)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "Same evidence as I-N-01 (family 'holders', counted once): Epoch lists 4 models above 1e26 FLOP from 2 organisations, both Bloc A; floor rather than ceiling because several flagships lack estimates. Far below 15. Items below share cluster keys with I-N-01 and must not be double-counted.",
+  "items": [
+    {
+      "id": "BF-2026-I-R5-01-001",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2026-04-13",
+      "summary": "Annual AI index notes leading Bloc A developers stopped reporting training compute; threshold counts from public data are estimates and lower bounds. (Duplicate of I-N-01-001.)",
+      "detail": "Stanford AI Index 2026. cluster: CL-2026-04-13-ai-index-compute-opacity.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://hai.stanford.edu/news/inside-the-ai-index-12-takeaways-from-the-2026-report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-01-002",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2026-04-24",
+      "summary": "The leading Bloc B open-weight flagship of spring 2026 was estimated at ~1e25 FLOP, an order of magnitude below 1e26; diffusion of 1e26-scale runs beyond Bloc A not observed. (Duplicate of I-N-01-002.)",
+      "detail": "DeepSeek-V4-Pro ~9.7e24 FLOP (Epoch 'Likely' per AI Wiki; DatacentersX). cluster: CL-2026-04-deepseek-v4-compute.",
+      "value": "~9.7e24 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://aiwiki.ai/wiki/training_compute",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-01-003",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2026-07-15",
+      "summary": "A Bloc B open-weight model released mid-2026 was given a speculative estimate of ~2e25 FLOP; no non-Bloc-A organisation is known above 1e26.",
+      "detail": "Moonshot AI Kimi K3 (Jul 2026), ~2e25 speculative, DatacentersX frontier runs table. Release day approximate.",
+      "value": "~2e25 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://datacentersx.com/frontier-training-runs.html",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-01-004",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2026-10-15",
+      "summary": "Epoch AI's database holds 4 notable models above 1e26 FLOP from only 2 distinct organisations (both Bloc A) after adding the Sept 2026 record run. (Duplicate of I-N-01-004.)",
+      "detail": "GPT-6 Astra 9.4e26, GPT-4.5 (OpenAI); Grok 4, Grok 3 (xAI). cluster: CL-2026-10-15-epoch-astra.",
+      "value": "2 organisations",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/models/gpt-6-astra",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-01-005",
+      "indicator": "I-R5-01",
+      "kind": "data-gap",
+      "published": "2026-10-31",
+      "summary": "At least three more Bloc A developers' flagships are likely above 1e26 but lack Epoch estimates; even counting them the total would be ~5 organisations, well short of 15. (Duplicate of I-N-01-006.)",
+      "detail": "Google (Gemini 3/4), Anthropic (Claude), Meta (Muse) undisclosed. cluster: CL-2026-10-undisclosed-1e26.",
+      "value": "~5 organisations (upper reading)",
+      "direction": "toward NO",
+      "source_url": "https://datacentersx.com/frontier-training-runs.html",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

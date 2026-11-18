@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R2-03",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Frontier 50%-success task time horizon >= 16 h (METR measurements, cross-checked against government AISI reports; by 2027-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "The series was introduced in March 2025 (~1 h frontier horizon, ~7-month doubling over 6 years). Frontier 50% horizon rose through 2025: ~1.5 h (Apr), ~2.3 h (Aug), ~2.7 h (Nov), then ~4.8 h (95% CI 1.8-20 h) for a Bloc A model measured in Dec 2025. End-2025 value ~4.8 h vs 16 h threshold: about 1.7 doublings short, with a recent doubling time of ~4-5 months.",
+  "items": [
+    {
+      "id": "BF-2025-I-R2-03-001",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2025-03-19",
+      "summary": "Independent evaluator introduced the task-completion time-horizon metric: the frontier 50% horizon was ~1 hour (Bloc A model, Feb 2025), doubling about every 7 months over six years, with a faster pace since 2024; extrapolation implies day-to-week-long software tasks within a decade.",
+      "detail": "METR, 'Measuring AI Ability to Complete Long Software Tasks' (Kwa, West, Becker et al.), 2025-03-19 (verified). Claude 3.7 Sonnet ~59 min (TH1.0; later 55 min).",
+      "value": "~1 h (frontier, Mar 2025)",
+      "direction": "neutral",
+      "source_url": "https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-03-002",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2025-04-16",
+      "summary": "A Bloc A reasoning model released in April 2025 measured at a 50% horizon of ~1.5 hours, a new frontier.",
+      "detail": "METR measurement of OpenAI o3 (released 2025-04-16): ~1 h 30 min (TH1.0 91 min, CI 47-158 min), cited in METR GPT-5 report. Exact METR publication day for o3 not verified (April 2025).",
+      "value": "~1.5 h",
+      "direction": "toward YES",
+      "source_url": "https://evaluations.metr.org/gpt-5-report/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-03-003",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2025-08-07",
+      "summary": "Pre-deployment evaluation of a Bloc A frontier model: 50% horizon ~2 h 17 min (95% CI 65 min-4 h 25 min), consistent with the faster 2024-25 trend; the evaluator judged it far from thresholds of concern (e.g. 50% horizon >40 h for AI R&D or rogue replication). It flagged early suite saturation and reward-hacking effects.",
+      "detail": "METR, 'Details about METR's evaluation of OpenAI GPT-5', 2025-08-07 (verified via search snippet of report). 80% horizon ~25 min.",
+      "value": "2.28 h",
+      "direction": "toward YES",
+      "source_url": "https://evaluations.metr.org/gpt-5-report/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-03-004",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2025-11-19",
+      "summary": "A Bloc A coding-agent model released in November 2025 measured at ~2 h 42 min (50%).",
+      "detail": "METR measurement of OpenAI GPT-5.1-Codex-Max (released 2025-11-19), ~2 h 42 min, cited as prior record when Claude Opus 4.5 result posted. METR publication day approximate (Nov 2025).",
+      "value": "2.7 h",
+      "direction": "toward YES",
+      "source_url": "https://metr.org/time-horizons/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-03-005",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2025-12-19",
+      "summary": "Independent evaluator estimated another Bloc A frontier model at a 50% horizon of ~4 h 49 min (95% CI 1 h 49 min-20 h 25 min), above the prior trendline (doubling ~4-4.5 months); 80% horizon ~27 min. The very wide upper bound shows the suite is approaching saturation.",
+      "detail": "METR post on Claude Opus 4.5 (Anthropic, released 2025-11-24), reposted on LessWrong and LinkedIn; date approximate (~2025-12-19/20, from X trending item ID timestamp).",
+      "value": "4.8 h (CI 1.8-20.4 h)",
+      "direction": "toward YES",
+      "source_url": "https://www.lesswrong.com/posts/q5ejXr4CRuPxkgzJD/claude-opus-4-5-achieves-50-time-horizon-of-around-4-hrs-49",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-03-006",
+      "indicator": "I-R2-03",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No government AI safety institute published a comparable time-horizon measurement in 2025 for cross-checking, and no Bloc B frontier model had a published horizon at the frontier level. The evaluator's 2025 suite had few tasks longer than 8 h, limiting how far above ~16 h it could measure.",
+      "detail": "METR TH1.0 suite (HCAST 189 tasks + RE-Bench + SWAA); TH1.1 with 31 tasks of 8 h+ only released 2026-01-29.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://metr.org/time-horizons/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

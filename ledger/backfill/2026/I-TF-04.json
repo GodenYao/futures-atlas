@@ -1,0 +1,97 @@
+{
+  "indicator": "I-TF-04",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "A top-3 compute jurisdiction legislates guaranteed public access to frontier AI, or an AI dividend or sovereign fund paid to citizens (official gazette, by 2028-12-31)",
+  "generated": "2026-11-15",
+  "status_at_phase_end": "Not resolved. No top-3 compute jurisdiction had enacted such a law by 2026-11-14. In Bloc A the idea moved from think-tank/lab proposals to an introduced federal bill (AI sovereign wealth fund with citizen dividends, June 2026), referred to committee; no floor action found.",
+  "items": [
+    {
+      "id": "BF-2026-I-TF-04-001",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2026-04-15",
+      "summary": "A top-5 frontier developer published a policy blueprint proposing a public wealth fund giving every citizen a stake in AI-driven growth, with returns distributed directly to citizens.",
+      "detail": "OpenAI, 'Industrial Policy for the Intelligence Age: Ideas to Keep People First' (April 2026; exact day not verified). Interested party (developer proposing policy about its own sector).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://cdn.openai.com/pdf/561e7512-253e-424b-9734-ef4098440601/Industrial%20Policy%20for%20the%20Intelligence%20Age.pdf",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-04-002",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2026-06-01",
+      "summary": "A Bloc A senator announced forthcoming legislation for public ownership of half the equity of the largest AI companies via a sovereign fund paying citizen dividends, citing similar proposals by two frontier developers.",
+      "detail": "Sen. Bernie Sanders, New York Times op-ed 'The Public Should Own Half of the Big A.I. Companies' and Senate floor speech (Congressional Record S2467, 2026-06-01), Bloc A. Cites OpenAI public wealth fund and Anthropic sovereign-fund proposals.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.congress.gov/119/crec/2026/06/01/172/92/modified/CREC-2026-06-01-pt1-PgS2467.htm",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-04-003",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2026-06-18",
+      "summary": "Bill introduced in the Bloc A upper chamber: one-time 50% equity excise on AI companies with >$200m AI receipts, deposited in a public AI sovereign wealth fund; 5% annual distribution authorised for direct payments to citizens (est. >$1,000 per person). Referred to committee; not enacted.",
+      "detail": "S. 4825 (119th Congress), 'Bloc A A.I. Sovereign Wealth Fund Act', introduced by Sen. Sanders 2026-06-18, referred to Senate Finance Committee (Bloc A). Sponsor estimates fund value ~$7tn.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.congress.gov/119/bills/s4825/BILLS-119s4825is.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-04-004",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2026-06-20",
+      "summary": "Bloc A executive-branch principal reportedly said the administration supports giving citizens a stake in AI companies but prefers 'pre-distribution' to cash dividends.",
+      "detail": "Tom's Hardware report on VP JD Vance remarks following the Sanders bill (Bloc A). Date approximate; quote not checked against primary transcript.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/bernie-sanders-files-bill-proposing-50-percent-public-ownership-of-us-ai-firms-and-giving-out-usd1-000-dividends-vp-vance-says-trump-supports-giving-the-american-people-a-stake-in-ai-companies-prefers-pre-distribution-over-giving-away-cash",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-04-005",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2026-09-01",
+      "summary": "Press reports that a top-5 developer discussed giving the Bloc A government a ~5% equity stake framed as citizens sharing AI upside; no agreement confirmed.",
+      "detail": "Financial Times report on OpenAI discussing a 5% government stake, as cited by Tech Policy Press (Bloc A). FT article not accessed (paywall); date approximate.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://techpolicy.press/is-the-age-of-purely-privatesector-ai-coming-to-an-end",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-TF-04-006",
+      "indicator": "I-TF-04",
+      "kind": "data-gap",
+      "published": "2026-11-14",
+      "summary": "No enacted statute guaranteeing citizen access to frontier AI or paying an AI dividend was found in any top-3 compute jurisdiction as of the phase end; public-compute programmes elsewhere target researchers and firms, not citizens.",
+      "detail": "Search of congress.gov, OECD.AI policy database and press found only proposals (Bloc A S.4825) and researcher-access compute programmes (e.g. Bloc P sovereign compute, Bloc C AI factories). No Bloc B measure found that guarantees citizen access or dividends.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://oecd.ai/en/dashboards/policy-initiatives/ai-sovereign-compute-infrastructure-program",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

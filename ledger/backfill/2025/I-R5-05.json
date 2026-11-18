@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R5-05",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "No top-3 compute jurisdiction bans or licenses open-weight release at the frontier tier (official gazettes; by 2028-06-30)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Holding (no ban or licence) at end-2025. A Bloc A export rule (Jan) put a licence requirement on closed model weights above 1e26 FLOP but expressly exempted published (open) weights; it was not enforced from May. Bloc A's July national AI plan actively encouraged open-weight models. A non-bloc regional union began obligations for general-purpose model providers (Aug), with partial open-source exemptions that do not cover systemic-risk models; these are transparency and safety duties, not a release licence. Bloc B policy in 2025 promoted open source; its existing service filing regime covers public-facing services, not weight release (not re-verified this run).",
+  "items": [
+    {
+      "id": "BF-2025-I-R5-05-001",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2025-01-15",
+      "summary": "A Bloc A interim final export rule created a licence requirement for weights of closed models trained with >=1e26 operations. It explicitly excluded published (open-weight) models and models weaker than the best open-weight model, stating no controls on open-weight models were being imposed.",
+      "detail": "Bloc A BIS 'Framework for Artificial Intelligence Diffusion', 90 FR 4544 (published 2025-01-15, effective 2025-01-13), new ECCN 4E091, Note 1.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2025/01/15/2025-00636/framework-for-artificial-intelligence-diffusion",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-05-002",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2025-05-13",
+      "summary": "Two days before the compliance date, the Bloc A commerce agency told enforcement officials not to enforce the January rule and announced a rescission and future replacement, so even the closed-weight control lapsed in practice.",
+      "detail": "Bloc A Department of Commerce press release, 2025-05-13 ('Rescission of Biden-Era AI Diffusion Rule'); the formal rescission was not completed within 2025.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.bis.gov/press-release/department-commerce-announces-rescission-biden-era-artificial-intelligence-diffusion-rule-strengthens",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-05-003",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2025-07-23",
+      "summary": "Bloc A's national AI action plan had a section 'Encourage Open-Source and Open-Weight AI'. It said release decisions are 'fundamentally up to the developer' and the government should create a supportive environment, which signals no near-term licensing.",
+      "detail": "White House, 'Bloc A's AI Action Plan' (July 2025), Pillar I.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.whitehouse.gov/wp-content/uploads/2025/07/Americas-AI-Action-Plan.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-05-004",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2025-08-02",
+      "summary": "A non-bloc regional union's general-purpose AI model obligations took effect. Open-source models get partial exemptions, but models with systemic risk (presumed at >1e25 FLOP) must still notify, evaluate and mitigate. These are post-release duties, not a ban or licence on release. Its position among the top-3 compute jurisdictions is uncertain (~3% of AI supercomputer performance by one count).",
+      "detail": "Bloc C AI Act (Regulation (Bloc C) 2024/1689) Arts. 51-55, applicable from 2025-08-02; GPAI Code of Practice published 2025-07-10. Epoch (Apr 2025) put Bloc C at ~50k H100e vs Bloc B 110k.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://digital-strategy.ec.europa.eu/en/policies/guidelines-gpai-providers",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-05-005",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2025-08-26",
+      "summary": "Bloc B's state council 'AI+' action guideline called for promoting an open-source ecosystem, consistent with its leading developers releasing frontier open weights throughout 2025. No 2025 gazette introduced licensing of weight release.",
+      "detail": "Bloc B State Council, Opinions on deepening the 'AI+' action (Aug 2025; date from recollection). The 2023 Interim Measures for Generative AI Services require filing for public-facing services, not weight publication. Not verified via web_extract this run.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.gov.cn/zhengce/content/202508/content_7037861.htm",
+      "source_tier": 1,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

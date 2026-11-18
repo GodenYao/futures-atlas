@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R3-05",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "A mandatory registry of large training clusters (or chip-location tracking) operates in >= 2 of the top-3 jurisdictions (official gazettes; by 2028-12-31)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not met; zero of top-3. Bloc A's outgoing administration issued an export rule (Jan 2025) with data-centre authorisation and reporting elements, but its successor rescinded it before compliance began (May 2025). Bills mandating location verification for export-controlled AI chips were introduced in both chambers (May 2025) but not enacted. Bloc B took the opposite line: its cyberspace regulator summoned the leading Bloc A chip vendor over alleged tracking and remote-shutdown features (Jul 2025), treating chip-location tracking as a security threat. Neither bloc ran a mandatory domestic cluster registry.",
+  "items": [
+    {
+      "id": "BF-2025-I-R3-05-001",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2025-01-15",
+      "summary": "Bloc A's outgoing administration published a global AI-chip export framework with country tiers, compute caps, and a validated-end-user programme for data centres with security and reporting conditions. These were partial cluster-oversight elements, with compliance due mid-May 2025.",
+      "detail": "BIS Interim Final Rule 'Framework for Artificial Intelligence Diffusion' (90 FR 4544, 2025-01-15), incl. Data Center VEU and controls on closed model weights >1e26 FLOP.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2025/01/15/2025-00636/framework-for-artificial-intelligence-diffusion",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-05-002",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2025-05-08",
+      "summary": "A bill introduced in Bloc A's upper chamber would require location-verification mechanisms on export-controlled AI chips within 180 days of enactment, plus diversion and tampering reporting, and would let the commerce ministry keep a record of each chip's location and end user. A companion bill followed on 2025-05-15. Neither was enacted in 2025.",
+      "detail": "Chip Security Act, S.1705 (Sen. Cotton, introduced 2025-05-08; referred to Banking Committee) and House companion (Reps. Foster, Huizenga, Moolenaar, Krishnamoorthi, 2025-05-15). Status at end-2025: introduced.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/1705/text",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-05-003",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2025-05-13",
+      "summary": "Bloc A's commerce department rescinded the January chip-export framework two days before compliance and promised a replacement rule. It instead issued anti-diversion guidance and added licence requirements for two Southeast Asian transit markets.",
+      "detail": "BIS press release 2025-05-13 (verified via search snippet): rescission of AI Diffusion Rule; guidance on Huawei Ascend, diversion red flags; licensing for Bloc I and Bloc J.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.bis.gov/press-release/department-commerce-announces-rescission-biden-era-artificial-intelligence-diffusion-rule-strengthens",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-05-004",
+      "indicator": "I-R3-05",
+      "kind": "event",
+      "published": "2025-07-23",
+      "summary": "Bloc A's national AI action plan recommended exploring location-verification features on advanced chips and stronger end-use monitoring against diversion. It was a policy recommendation, not a mandate.",
+      "detail": "'Bloc A's AI Action Plan' (White House, 2025-07-23), section on export-control enforcement ('explore leveraging new and existing location verification features'). Wording recalled, not re-verified in this run.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.whitehouse.gov/wp-content/uploads/2025/07/Americas-AI-Action-Plan.pdf",
+      "source_tier": 1,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-05-005",
+      "indicator": "I-R3-05",
+      "kind": "event",
+      "published": "2025-07-31",
+      "summary": "Bloc B's cyberspace regulator summoned the leading Bloc A AI-chip vendor to explain alleged 'backdoor' risks (tracking, positioning, remote shutdown) in chips sold into Bloc B, citing Bloc A legislative proposals for mandatory tracking. The vendor denied any backdoors. This signals that Bloc B will resist foreign chip-location tracking.",
+      "detail": "CAC statement 2025-07-31 (cac.gov.cn/2025-07/31/c_1755675743897163.htm) on Nvidia H20; CNBC/SCMP/NYT 2025-07-31.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.cac.gov.cn/2025-07/31/c_1755675743897163.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R3-05-006",
+      "indicator": "I-R3-05",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No mandatory registry of large training clusters and no chip-location-tracking mandate was in force in any top-3 compute jurisdiction at end-2025. Bloc B's domestic compute-network schemes are not a public mandatory cluster registry (not systematically checked).",
+      "detail": "Checked: Federal Register/BIS, Congress.gov, CAC. Third top-3 jurisdiction not separately checked.",
+      "value": "0 of 3",
+      "direction": "toward NO",
+      "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/1705/text",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

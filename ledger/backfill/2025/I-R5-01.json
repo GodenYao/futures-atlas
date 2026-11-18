@@ -1,0 +1,75 @@
+{
+  "indicator": "I-R5-01",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": ">= 15 distinct organisations with a >= 1e26 FLOP run (shared with I-N-01; counted once per family) (Epoch AI; 2027-12-31)",
+  "generated": "2026-11-18",
+  "merged_with": "I-N-01",
+  "counting_note": "Per owner ruling 2026-11-17 (adjudications.md), I-R5-01 and I-N-01 are merged and I-N-01 is canonical. The items below mirror 2025/I-N-01.json (see duplicate_of) and must NOT be counted as separate evidence.",
+  "status_at_phase_end": "Not met: 2 distinct organisations (both Bloc A) known above 1e26 FLOP at end-2025, against a threshold of 15. Late-2025 flagships of other Bloc A developers lacked compute estimates, so 2 is a floor. Bloc B flagships were estimated at ~3-5e24.",
+  "items": [
+    {
+      "id": "BF-2025-I-R5-01-001",
+      "duplicate_of": "BF-2025-I-N-01-002",
+      "indicator": "I-R5-01",
+      "kind": "event",
+      "published": "2025-02-17",
+      "summary": "A Bloc A developer released the first model estimated above 1e26 FLOP (~3.5e26); organisation count 1.",
+      "detail": "xAI Grok 3; Epoch 'How many AI models will exceed compute thresholds?' (2025-05-30).",
+      "value": "1 organisation",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/publications/model-counts-compute-thresholds",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-01-002",
+      "duplicate_of": "BF-2025-I-N-01-003",
+      "indicator": "I-R5-01",
+      "kind": "event",
+      "published": "2025-02-27",
+      "summary": "A second Bloc A developer released a model estimated at 3.8e26 FLOP; organisation count 2.",
+      "detail": "OpenAI GPT-4.5; Epoch model page.",
+      "value": "2 organisations",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/models/gpt-4-5",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-01-003",
+      "duplicate_of": "BF-2025-I-N-01-006",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2025-11-06",
+      "summary": "Leading Bloc B open-weight releases of 2025 were estimated at ~3-5e24 FLOP, ~20-30x below threshold; no third organisation was publicly estimated above 1e26 during 2025.",
+      "detail": "Epoch estimates for DeepSeek-R1, Qwen3-235B, Kimi K2 (Thinking), DeepSeek-V3.2; entry dates of estimates not verified.",
+      "value": "~3-5e24 FLOP (Bloc B flagships)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/open-closed-eci-gap",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R5-01-004",
+      "duplicate_of": "BF-2025-I-N-01-007",
+      "indicator": "I-R5-01",
+      "kind": "data-gap",
+      "published": "2025-11-24",
+      "summary": "Late-2025 flagships of three other Bloc A developers had no compute estimate, so the count of 2 is a floor.",
+      "detail": "Epoch entries Gemini 3 Pro (compute unknown), Claude Opus 4.5 ('very likely >1e25').",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/models/gemini-3-pro",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

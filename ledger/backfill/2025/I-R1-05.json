@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R1-05",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Combined FY2027 capex of the 5 largest AI/cloud spenders >= 1.2x FY2026 (securities filings; on FY2027 filings)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Not resolvable until FY2027 filings; 2025 sets the trajectory. Four largest Bloc A spenders guided ~$320B for 2025 in February and kept raising (to ~$380B by October); quarterly purchases of P&E rose every quarter ($71.9B Q1 -> $88.2B Q2 -> $97.3B Q3). By end-October all four said 2026 capex would be 'significantly' or 'notably' larger. Year-on-year growth ran ~60-75%, far above the 1.2x bar; the question for resolution is whether growth persists into 2027. Q4 2025 figures were published only in 2026 and are excluded under the as-of rule.",
+  "items": [
+    {
+      "id": "BF-2025-I-R1-05-001",
+      "indicator": "I-R1-05",
+      "kind": "event",
+      "published": "2025-01-21",
+      "summary": "A Bloc A frontier developer and partners announced a joint venture to invest up to $500B in AI data centres over four years ($100B initially), alongside the head of government.",
+      "detail": "Stargate (OpenAI, SoftBank, Oracle, MGX), announced at the White House 2025-01-21. Not a filing; announced intent. Not verified via web_extract this run.",
+      "value": "$500B (4-year intent)",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/announcing-the-stargate-project/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-05-002",
+      "indicator": "I-R1-05",
+      "kind": "forecast",
+      "published": "2025-02-08",
+      "summary": "After Q4 2024 earnings, the four largest Bloc A cloud/platform spenders guided up to ~$320B combined capex for 2025, vs ~$230B in 2024 (~+40%), despite a Bloc B low-cost model release prompting efficiency questions.",
+      "detail": "CNBC 2025-02-08: Amazon >$100B, Microsoft $80B (FY2025), Alphabet $75B, Meta $60-65B. NYT 2025-02-08 'What DeepSeek? Big Tech keeps its A.I. building boom alive'.",
+      "value": "~$320B (2025 guidance, 4 firms)",
+      "direction": "toward YES",
+      "source_url": "https://www.cnbc.com/2025/02/08/tech-megacaps-to-spend-more-than-300-billion-in-2025-to-win-in-ai.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-05-003",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2025-05-01",
+      "summary": "Q1 2025 combined purchases of property and equipment of the four largest spenders: ~$71.9B, roughly flat vs Q4 2024 but +62% year on year.",
+      "detail": "Microsoft 16.7 (FY25Q3), Alphabet 17.2, Amazon 25.0, Meta 12.9 ($B), from 10-Q cash-flow statements (compiled by ai-industry-reviews.com / coolpowerindex.com from SEC XBRL). Filing dates late Apr-early May 2025 (approximate).",
+      "value": "$71.9B (Q1 2025, 4 firms)",
+      "direction": "toward YES",
+      "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-05-004",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2025-07-31",
+      "summary": "Q2 2025 combined purchases of P&E of the four: ~$88.2B (+67% y/y); one firm raised full-year guidance to ~$85B.",
+      "detail": "Microsoft 17.1, Alphabet 22.4, Amazon 32.2, Meta 16.5 ($B). Alphabet raised 2025 guidance from $75B to $85B in July. Same compiled SEC-filing source; dates approximate.",
+      "value": "$88.2B (Q2 2025, 4 firms)",
+      "direction": "toward YES",
+      "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-05-005",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2025-10-30",
+      "summary": "Q3 2025 combined purchases of P&E of the four: ~$97.3B (+65% y/y). Full-year 2025 guidance raised again: one firm to $91-93B, another to $70-72B, a third to ~$125B; combined ~$380B for 2025.",
+      "detail": "Microsoft 19.4 (FY26Q1; ~$35B incl. finance leases), Alphabet 24.0, Amazon 35.1, Meta 18.8 ($B). Reuters 2025-10-29 (Alphabet, Meta), Livemint/CNBC 2025-10-31.",
+      "value": "$97.3B (Q3 2025, 4 firms)",
+      "direction": "toward YES",
+      "source_url": "https://www.reuters.com/business/media-telecom/alphabet-beats-quarterly-revenue-estimates-strong-ad-cloud-demand-2025-10-29",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-05-006",
+      "indicator": "I-R1-05",
+      "kind": "forecast",
+      "published": "2025-10-31",
+      "summary": "All four largest spenders signalled higher 2026 capex: 'significant increase' (one CFO), growth 'considerably faster' in 2026 (another), capex growth to accelerate in the new fiscal year (a third), and 'higher next year' (the fourth). Analysts projected ~$3T of big-tech data-centre spending through 2028.",
+      "detail": "Q3 2025 calls: Alphabet CFO Ashkenazi, Meta (Zuckerberg: 'aggressively front-load building capacity'), Microsoft CFO Hood, Amazon CFO Olsavsky. Morgan Stanley ~$3T 2025-2028 estimate cited by Livemint.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.cnbc.com/2025/10/31/tech-ai-google-meta-amazon-microsoft-spend.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-05-007",
+      "indicator": "I-R1-05",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "Identity of the fifth-largest spender and capex definitions differ by firm (cash P&E vs including finance leases; fiscal years ending June or May). The indicator needs a fixed list and definition before FY2027 resolution.",
+      "detail": "Candidates for fifth: Oracle (FY ends May), CoreWeave, xAI (private), ByteDance/Alibaba (Bloc B, different exchanges). Microsoft reports finance leases separately.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://datacentercensus.com/ai-capex",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

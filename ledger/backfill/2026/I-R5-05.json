@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R5-05",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "No top-3 compute jurisdiction bans or licenses open-weight release at the frontier tier (official gazettes; by 2028-06-30)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "At risk. Bloc B's commerce and science ministries published a draft (2026-10-16) treating open-sourcing of frontier-tier models (>=1e26 FLOP, >=2T parameters, or global top-10) as a technology export needing an (automatic) licence; an interim pre-export registration duty took effect immediately. If finalised it likely resolves the statement NO, unless 'automatic licence' is ruled not a licence. Bloc A's 2026 order disclaims mandatory licensing and excludes open-weight models, but a model-specific export-licence directive to a closed developer showed the legal path exists. The third jurisdiction (a Bloc C bloc) regulates but does not license open-weight releases.",
+  "items": [
+    {
+      "id": "BF-2026-I-R5-05-001",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2026-06-05",
+      "summary": "Bloc A executive order (signed 2026-06-02) created a voluntary 30-day pre-release review for closed 'covered frontier models' and states nothing in it authorises a mandatory licensing, preclearance or permitting requirement for publication or release of models; open-weight models are excluded.",
+      "detail": "Bloc A Executive Order 14409 'Promoting Advanced Artificial Intelligence Innovation and Security', 91 Fed. Reg. 34,565 (2026-06-05), §3(c).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://foleyhoag.com/news-and-insights/blogs/security-privacy-and-the-law/2026/june/trump-s-new-ai-frontier-the-executive-order-regulating-frontier-ai-models",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-05-002",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2026-06-15",
+      "summary": "Ten days after the order, Bloc A's commerce department told a closed-weight developer that licences were required for exports and in-country transfers of two models to foreign persons; the developer disabled both worldwide for over two weeks until restrictions were lifted. Shows export-control law can license model access, though not applied to open weights.",
+      "detail": "Commerce Dept directive to Anthropic on Claude Mythos 5 / Fable 5 (June 2026); described in Law Reform Institute paper (2026-08-17) and The Hill. Exact date approximate.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://lawreforminstitute.org/openweights081726.pdf",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-05-003",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2026-08-04",
+      "summary": "Bloc A's finalised (classified) frontier-model vetting framework was reported to exempt open-source and open-weight models.",
+      "detail": "Politico 2026-08-04; CSA note on EO 14409 framework opacity (framework finalised by 2026-08-01, not published).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://politico.com/news/2026/08/04/white-house-ai-vetting-plan-to-exempt-nonproprietary-models-01024816",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-05-004",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2026-08-02",
+      "summary": "A Bloc C bloc's AI-law enforcement powers over general-purpose models took effect: open-source models above the systemic-risk compute threshold get no exemption and must notify, evaluate and mitigate risks (fines up to 3% of turnover; power to restrict or withdraw), but release is not subject to prior licence.",
+      "detail": "Bloc C AI Act Art. 53(2), 55; Commission enforcement from 2026-08-02 (AI Act Service Desk FAQ). Bloc C is #3 by AI compute (Epoch, ~5%).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/faq/commissions-enforcement-powers-related-ai-act-obligations-providers-most-advanced-models",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-05-005",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2026-10-16",
+      "summary": "Bloc B ministries published a draft export-control catalogue revision: core technology (incl. weights) of models with >=1e26 FLOP, >=2T parameters or global top-10 ranking becomes restricted; open-sourcing such technology counts as export needing an 'automatic licence'. Already-public weights and API/app delivery are out of scope. An interim pre-export registration requirement took effect on publication; comments to 2026-11-15.",
+      "detail": "Bloc B MOFCOM & MOST Announcement No. 48 (2026), Catalogue of Technologies Prohibited and Restricted from Export; 23 AI items (6 prohibited J-codes, 17 restricted X-codes). Analysis: ChinaTalk, AI Safety Bloc B Brief #31.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.chinatalk.media/p/mofcoms-new-ai-rules",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-05-006",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2026-10-23",
+      "summary": "Bloc B state media said two leading domestic developers completed export registration and proceeded with open-source releases days after the draft - the registration channel is operating in practice.",
+      "detail": "DeepSeek and MiniMax, CCTV via SCMP 2026-10-23.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.scmp.com/tech/policy/article/3371880/deepseek-minimax-secure-open-source-licenses-days-after-new-china-export-rules-state-media",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

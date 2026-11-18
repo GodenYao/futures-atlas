@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R4-03",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "A top-5 developer weakens or withdraws a published safety-framework commitment, documented by a text diff (calendar 2027)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "Resolution window is 2027, but the 2026 base rate is high: at least four Bloc A frontier developers published framework revisions in 2026 that a policy watchdog documented by text diff as removing or softening commitments (pause pledge, numeric thresholds, max-elicitation testing, whistleblower language). Some revisions also added safeguards. Strong prior toward YES for 2027.",
+  "items": [
+    {
+      "id": "BF-2026-I-R4-03-001",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2026-02-24",
+      "summary": "A top-5 Bloc A developer replaced its if-then scaling policy with v3.0, dropping its implied unilateral pause commitment and demoting higher security standards to 'industry-wide recommendations'; it added public risk reports and a safety roadmap. Executives cited competitors 'blazing ahead'.",
+      "detail": "Anthropic RSP v3.0 (2026-02-24). TIME 'Anthropic drops flagship safety pledge'; GovAI analysis; Midas Project Watchtower 'Major change'.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.themidasproject.com/watchtower/anthropic-02242026",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-03-002",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2026-03-02",
+      "summary": "The same developer silently replaced its legally-filed compliance framework, modifying risk thresholds in all categories and narrowing the AI R&D scope to specific fields; prior version no longer published.",
+      "detail": "Anthropic Frontier Compliance Framework update (Watchtower 2026-03-02); question raised over California SB 53 30-day disclosure rule.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.themidasproject.com/watchtower/anthropic-030226",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-03-003",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2026-04-07",
+      "summary": "A Bloc A developer rewrote its frontier framework (v2), broadening triggers and adding a loss-of-control domain and whistleblower protections, while relabelling its top threshold from 'Stop development' to 'Develop with mitigations'. Mixed; mostly a strengthening.",
+      "detail": "Meta 'Advanced AI Scaling Framework' v2 (Watchtower 2026-04-07).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.themidasproject.com/watchtower/meta-04072026",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-03-004",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2026-07-11",
+      "summary": "A Bloc A frontier developer rewrote and shortened its framework, removing both quantitative deployment criteria, whistleblower-protection language, the transparency/third-party review section and references to state law.",
+      "detail": "xAI Frontier AI Framework dated 2026-06-30 (Watchtower 2026-07-11, 'Major change'). Note: xAI's top-5 status depends on the site's developer ranking.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.themidasproject.com/watchtower/xai-07112026",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-03-005",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2026-07-24",
+      "summary": "A top-5 developer's compliance framework raised the bar for activating its automated-AI-R&D tier (requiring a doubling vs both expected and fastest previously observed progress) and dropped 'writing large amounts of critical code' as a named trigger for its misalignment tier.",
+      "detail": "Anthropic FCF update aligned with RSP v3.4 (effective 2026-07-08); Watchtower 2026-07-24.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.themidasproject.com/watchtower/anthropic-07242026",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-03-006",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2026-10-02",
+      "summary": "A Bloc A developer renamed and revised its framework (v2.1), adding a loss-of-control category but deleting its maximum-elicitation testing commitment, its numeric cyber threshold and the provisional deployment hold, and softening mitigation-robustness language; several deletions not noted in its changelog.",
+      "detail": "Meta Superintelligence Scaling Framework v2.1 (Watchtower 2026-10-02).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.themidasproject.com/watchtower/meta-10022026",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-03-007",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2026-10-13",
+      "summary": "Watchdog found a Bloc A developer's first full frontier-safety report may fall below its own framework (no named governance function, no explicit acceptable-residual-risk determination) - a compliance gap rather than a text weakening.",
+      "detail": "Google DeepMind Gemini 4 Argon report vs FSF v3.1 (Watchtower 2026-10-13).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.themidasproject.com/watchtower/google-10132026",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

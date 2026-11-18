@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R1-05",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "Combined FY2027 capex of the 5 largest AI/cloud spenders >= 1.2x FY2026 (on FY2027 filings)",
+  "generated": "2026-11-14",
+  "status_at_phase_end": "FY2026 base forming: big-four calendar-2026 guidance ~USD 720-740bn after Q3 reports (all Bloc A firms); two of the five explicitly guided 2027 'significantly'/'meaningfully' higher; sell-side forecasts ~+50% for 2027. Cash-flow strain and one guidance trim are counter-signals.",
+  "items": [
+    {
+      "id": "BF-2026-I-R1-05-001",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2026-02-05",
+      "summary": "Q4-2025 earnings season: the largest spenders guided 2026 capex sharply higher - one ~USD 200bn (vs ~USD 131bn in 2025), another USD 175-185bn (vs USD 91bn), another USD 115-135bn (vs USD 72bn). Analysts raised top-5 2026 estimates to ~USD 750bn (+~67% y/y).",
+      "detail": "Amazon ~$200bn (2026-02-05), Alphabet $175-185bn (2026-02-04), Meta $115-135bn (2026-01-28). CreditSights 2026-02-09 top-5 estimate ~$750bn.",
+      "value": "~USD 750bn (top-5 2026 estimate)",
+      "direction": "toward YES",
+      "source_url": "https://www.reuters.com/business/retail-consumer/amazon-projects-200-billion-capital-spending-this-year-2026-02-05",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-05-002",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2026-07-30",
+      "summary": "Mid-year guidance raised again: one spender to ~USD 220bn (citing higher memory costs and insufficient capacity), another to USD 195-205bn; the latter said capex would 'increase significantly in 2027'.",
+      "detail": "Alphabet $195-205bn (2026-07-22); Amazon ~$220bn cash capex (2026-07-30); Meta $130-145bn; Microsoft ~$175bn calendar 2026 (2026-07-29). Compiled from company calls via secondary tracker.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-05-003",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2026-10-28",
+      "summary": "Q3-2026 filings: one spender's quarterly purchases of property and equipment were USD 51.4bn (+114% y/y) with negative free cash flow (-USD 9.1bn); it held 2026 guidance and again said 2027 capex will rise significantly.",
+      "detail": "Alphabet Q3 2026 earnings release (SEC EDGAR exhibit 99.1).",
+      "value": "USD 51.4bn Q3 capex",
+      "direction": "toward YES",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/0001652044/000165204426000080/googexhibit991q32026.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-05-004",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2026-10-28",
+      "summary": "Another top spender trimmed its 2026 capex outlook to ~USD 170bn from ~USD 175bn because third-party GPU capacity was delayed to H1 2027, while saying spending would accelerate in H1 2027. Delay shifts spend into FY2027 rather than reducing it.",
+      "detail": "Microsoft FY27 Q1: $45.2bn capex incl. finance leases (+30% y/y), below $50.7bn consensus; CFO Amy Hood comments (CNBC 2026-10-29).",
+      "value": "~USD 170bn CY2026",
+      "direction": "toward YES",
+      "source_url": "https://cnbc.com/2026/10/29/microsoft-google-ai-capex-estimates.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-05-005",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2026-10-29",
+      "summary": "After Q3 reports, the big four guided calendar-2026 capex at ~USD 720-740bn; their Q3 capex was ~USD 208.7bn (+84% y/y). The largest spender (Q3 ~USD 75.9bn) said 2027 spend will be 'meaningfully' higher; a fifth spender guides ~USD 90-95bn gross for its fiscal year to May 2027.",
+      "detail": "Amazon ~$220bn, Alphabet $195-205bn, Microsoft ~$170bn, Meta $135-145bn; Oracle FY27 up to ~$95bn gross / <=$70bn net cash.",
+      "value": "USD 720-740bn (big-four CY2026 guidance)",
+      "direction": "toward YES",
+      "source_url": "https://supercyclehq.com/blog/reports/hyperscaler-capex-october-2026",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-05-006",
+      "indicator": "I-R1-05",
+      "kind": "forecast",
+      "published": "2026-09-24",
+      "summary": "Sell-side forecast: hyperscaler capex projected at ~USD 1.2tn in 2027 (~+50% y/y) and USD 1.4tn in 2028; consensus ~USD 1.1tn for 2027. Implies a ratio well above the 1.2x threshold if realised.",
+      "detail": "Goldman Sachs research 'AI capex, required revenues, and what's priced in the AI trade' (2026-09-24).",
+      "value": "~USD 1.2tn 2027 forecast",
+      "direction": "toward YES",
+      "source_url": "https://www.gspublishing.com/content/research/en/reports/2026/09/24/17991761-4354-496a-bf3a-26b281c829fc.pdf",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-05-007",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2026-10-30",
+      "summary": "Financing strain: several of the five spenders had negative free cash flow, halted buybacks, and issued new equity to fund capex; credit outlook for one was revised to negative. A constraint that could cap 2027 growth.",
+      "detail": "Alphabet ~$50bn new stock in June + $12.4bn ATM; Oracle $19.9bn stock; Meta $22.5bn forward share sale (2026-10-26); S&P outlook on Meta negative. Big-five buybacks $4.4bn in Q3 (Kobeissi tally via Yahoo).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://finance.yahoo.com/markets/stocks/articles/alphabet-amazon-meta-haven-t-061248991.html",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

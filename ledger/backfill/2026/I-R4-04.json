@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R4-04",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "Largest known training run >= 5e27 FLOP (Epoch AI; by 2027-12-31)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "Not met: largest known run ~9.4e26 FLOP (Epoch, 'Likely', 90% CI ~4.6e26-1.8e27), about 5x below threshold. Epoch's 4-6x/yr frontier trend would put end-2027 near 5e27, so the indicator sits close to the trend line; multi-hundred-thousand-GPU clusters running in 2026 make a >1e27 run in 2027 likely.",
+  "items": [
+    {
+      "id": "BF-2026-I-R4-04-001",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2026-01-01",
+      "summary": "Entering 2026, the largest known training run was a Bloc A model from July 2025 at ~5e26 FLOP (Epoch 'Speculative'); this record stood for ~14 months.",
+      "detail": "xAI Grok 4, ~5e26 FLOP, Colossus 1 (~200k H100/H200), Epoch estimate.",
+      "value": "5e26 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://exponentialtracker.com/curve/ai_compute",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-04-002",
+      "indicator": "I-R4-04",
+      "kind": "event",
+      "published": "2026-04-15",
+      "summary": "A Bloc A developer's owner said its newest cluster was training seven models in parallel, including two flagship variants of ~6T and ~10T parameters; site reported at ~550,000 latest-generation GPUs. No compute disclosed; trackers name this the most likely first >1e27 run.",
+      "detail": "Elon Musk post on Colossus 2 (Memphis), April 2026 (exact date approximate); Grok 5 unreleased as of Nov 2026. DatacentersX frontier runs table.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://datacentersx.com/frontier-training-runs.html",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-04-003",
+      "indicator": "I-R4-04",
+      "kind": "event",
+      "published": "2026-09-03",
+      "summary": "A Bloc A developer released a flagship trained on >=100,000 latest-generation accelerators (pretraining ~Jan-Jul 2026), becoming the largest known run.",
+      "detail": "OpenAI GPT-6 Astra, Stargate Abilene, NVIDIA GB200.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/models/gpt-6-astra",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-04-004",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2026-10-15",
+      "summary": "Epoch AI estimated the new record run at 9.4e26 FLOP ('Likely'; 90% interval 4.6e26-1.8e27; P(>1e27) = 0.44), revised down from ~1e27; split ~7.5e26 pretraining + ~1.4e26 RL. Threshold 5e27 is ~5x higher.",
+      "detail": "Epoch model page GPT-6 Astra (row changed 2026-10-15); estimate from chip count x time x utilisation Monte Carlo. Reported via The Hum and Exponential Tracker.",
+      "value": "9.4e26 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/models/gpt-6-astra",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-04-005",
+      "indicator": "I-R4-04",
+      "kind": "data-gap",
+      "published": "2026-10-31",
+      "summary": "Epoch has no compute estimate for several Bloc A flagships of 2026 (from at least three developers), so the 'largest known run' may understate the true frontier.",
+      "detail": "No Epoch figure for Claude Opus 5.5, Gemini 4 Argon, GPT-5.5, Muse Spark (The Hum, Oct 2026; DatacentersX). Date approximate.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://hum.vibes.dev/s/epoch-gpt-6-astra-9-4e26-flop-estimate-disputed",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R4-04-006",
+      "indicator": "I-R4-04",
+      "kind": "forecast",
+      "published": "2026-11-12",
+      "summary": "Epoch's trend dashboard puts frontier training compute growth at 4-6x per year (doubling ~4.6-6 months) and gigawatt data-centre build time ~2 years. Extrapolating from 9.4e26 (Sept 2026) gives roughly 3-7e27 by end-2027 - straddling the threshold.",
+      "detail": "Epoch 'Trends in AI' page (accessed Nov 2026); extrapolation is this ledger's arithmetic, not Epoch's.",
+      "value": "4-6x/yr",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/trends",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

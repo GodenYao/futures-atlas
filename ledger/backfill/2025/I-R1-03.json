@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R1-03",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": ">= 2 of the top-3 compute jurisdictions publish new or expanded controls on AI chips, chip tools or model weights (official gazettes; calendar 2027)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "Resolves on calendar 2027; 2025 shows the base rate. Both leading jurisdictions published new or expanded controls in 2025: Bloc A (model-weight and chip framework in January, later rescinded; foundry due-diligence rule; 50%-affiliates rule in September) and Bloc B (October rare-earth controls with case-by-case review for advanced-chip and military-AI end uses). Late 2025 brought a partial truce: both sides suspended their autumn measures for one year from 10 Nov 2025, and Bloc A moved to allow sales of a more advanced chip to Bloc B in December. Pattern: controls are issued often, but are also traded away.",
+  "items": [
+    {
+      "id": "BF-2025-I-R1-03-001",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2025-01-15",
+      "summary": "Bloc A published an interim final rule revising controls on advanced computing chips worldwide (three-tier country framework) and adding the first export control on closed model weights of certain advanced AI models.",
+      "detail": "BIS 'Framework for Artificial Intelligence Diffusion', Federal Register 2025-00636 (2025-01-15); compliance date 2025-05-15. A companion foundry due-diligence rule was issued the same week.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2025/01/15/2025-00636/framework-for-artificial-intelligence-diffusion",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-03-002",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2025-05-12",
+      "summary": "Bloc A's commerce ministry began rescinding the January diffusion/model-weights rule before it took effect, while issuing guidance that strengthens chip controls (e.g., on using a Bloc B firm's advanced accelerators anywhere, and diversion risks).",
+      "detail": "BIS press release 2025-05-12: rescission of AI Diffusion Rule; guidance that using Huawei Ascend chips anywhere may violate the EAR; warnings on training Bloc B models with Bloc A chips. Mixed: removes weight control, adds chip guidance.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.bis.gov/press-release/department-commerce-announces-rescission-biden-era-artificial-intelligence-diffusion-rule-strengthens",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-03-003",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2025-09-30",
+      "summary": "Bloc A expanded end-user controls so that any entity >=50% owned by listed parties is automatically restricted (Affiliates Rule), widening chip and tool export restrictions to subsidiaries.",
+      "detail": "BIS interim final rule 'Expansion of End-User Controls to Cover Affiliates of Certain Listed Entities', 90 FR 47201 (2025-09-30), effective 2025-09-29.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://federalregister.gov/documents/full_text/html/2025/11/12/2025-19846.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-03-004",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2025-10-09",
+      "summary": "Bloc B published extraterritorial rare-earth export controls (with a 50% rule) requiring case-by-case review of exports for R&D/production of logic chips at 14 nm and below, 256+-layer memory, related chip-making equipment and materials, and AI with potential military use.",
+      "detail": "MOFCOM Announcement 2025 No. 61 (and Nos. 56-62), 2025-10-09; Part 1(c) effective on issuance, extraterritorial parts planned for 2025-12-01. CSET translation verified via search snippet.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://cset.georgetown.edu/wp-content/uploads/t0656_china_rare_earth_controls_2025_61_EN.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-03-005",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2025-11-12",
+      "summary": "After a bilateral trade truce, Bloc A suspended its Affiliates Rule for one year from 2025-11-10, and Bloc B suspended global implementation of its October export controls in exchange. Shows controls are negotiable and can be paused.",
+      "detail": "BIS final rule 2025-19846 (FR 2025-11-12) staying the rule until 2026-11-09; Bloc B's reciprocal suspension of the Oct 9 measures (per Squire Patton Boggs).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://public-inspection.federalregister.gov/2025-19846.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R1-03-006",
+      "indicator": "I-R1-03",
+      "kind": "event",
+      "published": "2025-12-08",
+      "summary": "Bloc A's head of government said a more advanced accelerator could be sold to approved customers in Bloc B with a share of revenue to the government - a loosening of chip controls rather than a tightening.",
+      "detail": "Trump announcement allowing Nvidia H200 exports to Bloc B with 25% to the Bloc A government (reported 2025-12-08). Not verified via web_extract this run.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.reuters.com/world/china/trump-says-us-will-allow-nvidias-h200-chip-exports-china-2025-12-08/",
+      "source_tier": 2,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

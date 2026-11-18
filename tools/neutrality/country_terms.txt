@@ -1,0 +1,221 @@
+# Country names, nationalities and capital metonyms. The map and the public ledger show blocs
+# (Bloc A, Bloc B, ...), never countries.
+#
+# Used by:
+#   tools/validate_evidence.mjs  - WARNING if a term appears in summary / reasoning / counterpoint
+#                                  (the reviewer agent rewrites it to a bloc label before merge)
+#   tools/anonymize.mjs          - rewrites every term of a group to that group's bloc label,
+#                                  using a PRIVATE mapping file passed on the command line
+#
+# Format: one group per line, terms separated by "|". The first term names the group (the
+# entity); the others are abbreviations, demonyms / adjectives and capital metonyms for it.
+# A trailing "@supranational" marks a group that is not a country: anonymize.mjs maps it only
+# if the private mapping lists it (or with --assign-supranational).
+# Matching is whole-word. The validator matches case-insensitively; anonymize.mjs matches the
+# written case or ALL CAPS. Short ALL-CAPS abbreviations always match case-sensitively so
+# ordinary words such as "us" are fine. '#' starts a comment.
+# This is the ONLY file in the repo that may list country names. Maintainers may add terms;
+# a change here is logged in CHANGELOG.md.
+
+# --- most frequent in AI news (abbreviations, demonyms, capitals in the same group) ---
+United States | United States of America | US | U.S. | USA | U.S.A. | America | American | Americans | Washington
+China | People's Republic of China | PRC | Chinese | Beijing
+United Kingdom | UK | U.K. | Britain | Great Britain | British | London
+European Union | EU | E.U. | European | Brussels @supranational
+Taiwan | ROC | Taiwanese | Taipei
+South Korea | Republic of Korea | Korea | ROK | Korean | Koreans | Seoul
+North Korea | DPRK | Pyongyang
+United Arab Emirates | UAE | Emirati | Emiratis | Abu Dhabi
+Saudi Arabia | KSA | Saudi | Riyadh
+Japan | Japanese | Tokyo
+India | Indian | New Delhi
+Russia | Russian | Russians | Moscow
+France | French | Paris
+Germany | German | Germans | Berlin
+Canada | Canadian | Canadians | Ottawa
+Australia | Australian | Australians | Canberra
+Israel | Israeli | Israelis | Jerusalem | Tel Aviv
+Iran | Iranian | Tehran
+Ukraine | Ukrainian | Kyiv
+Netherlands | Holland | Dutch
+Italy | Italian
+Mexico | Mexican
+Singapore | Singaporean
+Switzerland | Swiss
+Brazil | Brazilian
+Indonesia | Indonesian
+Turkey | Türkiye | Turkish
+Vietnam | Viet Nam | Vietnamese
+Malaysia | Malaysian
+Pakistan | Pakistani
+Nigeria | Nigerian
+Czechia | Czech Republic
+Côte d'Ivoire | Ivory Coast
+Cabo Verde | Cape Verde
+Myanmar | Burma
+Hong Kong
+Macau
+
+# --- other countries / territories ---
+Afghanistan
+Albania
+Algeria
+Andorra
+Angola
+Antigua and Barbuda
+Argentina
+Armenia
+Austria
+Azerbaijan
+Bahamas
+Bahrain
+Bangladesh
+Barbados
+Belarus
+Belgium
+Belize
+Benin
+Bhutan
+Bolivia
+Bosnia and Herzegovina
+Botswana
+Brunei
+Bulgaria
+Burkina Faso
+Burundi
+Cambodia
+Cameroon
+Central African Republic
+Chad
+Chile
+Colombia
+Comoros
+Congo
+Costa Rica
+Croatia
+Cuba
+Cyprus
+Denmark
+Djibouti
+Dominica
+Dominican Republic
+Ecuador
+Egypt
+El Salvador
+Equatorial Guinea
+Eritrea
+Estonia
+Eswatini
+Ethiopia
+Fiji
+Finland
+Gabon
+Gambia
+Georgia
+Ghana
+Greece
+Grenada
+Guatemala
+Guinea
+Guinea-Bissau
+Guyana
+Haiti
+Honduras
+Hungary
+Iceland
+Iraq
+Ireland
+Jamaica
+Jordan
+Kazakhstan
+Kenya
+Kiribati
+Kosovo
+Kuwait
+Kyrgyzstan
+Laos
+Latvia
+Lebanon
+Lesotho
+Liberia
+Libya
+Liechtenstein
+Lithuania
+Luxembourg
+Madagascar
+Malawi
+Maldives
+Mali
+Malta
+Marshall Islands
+Mauritania
+Mauritius
+Micronesia
+Moldova
+Monaco
+Mongolia
+Montenegro
+Morocco
+Mozambique
+Namibia
+Nauru
+Nepal
+New Zealand
+Nicaragua
+Niger
+North Macedonia
+Norway
+Oman
+Palau
+Palestine
+Panama
+Papua New Guinea
+Paraguay
+Peru
+Philippines
+Poland
+Portugal
+Qatar
+Romania
+Rwanda
+Saint Kitts and Nevis
+Saint Lucia
+Saint Vincent and the Grenadines
+Samoa
+San Marino
+Sao Tome and Principe
+Senegal
+Serbia
+Seychelles
+Sierra Leone
+Slovakia
+Slovenia
+Solomon Islands
+Somalia
+South Africa
+South Sudan
+Spain
+Sri Lanka
+Sudan
+Suriname
+Sweden
+Syria
+Tajikistan
+Tanzania
+Thailand
+Timor-Leste
+Togo
+Tonga
+Trinidad and Tobago
+Tunisia
+Turkmenistan
+Tuvalu
+Uganda
+Uruguay
+Uzbekistan
+Vanuatu
+Vatican
+Venezuela
+Yemen
+Zambia
+Zimbabwe

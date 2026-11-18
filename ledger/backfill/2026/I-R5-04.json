@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R5-04",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "Price of inference at fixed capability falls >= 10x from 2026 to 2027 (Epoch / AI Index price series; 2027 annual)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "Historical trend sits just above threshold: Epoch's Sept 2026 study finds ~13x/yr cost decline at fixed performance since 2023 (75x/yr right after a level debuts, slowing to ~4.7x/yr two years on). Other methods give 5-10x/yr. Resolution depends heavily on which capability level is fixed; frontier list prices held or rose in 2026. Lean toward YES for a freshly-SOTA 2026 level, toward NO for older levels.",
+  "items": [
+    {
+      "id": "BF-2026-I-R5-04-001",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2026-03-23",
+      "summary": "Academic study (revised) finds frontier-model price for a given benchmark score falls ~5-10x per year, while the cost of running frontier models through benchmarks rose ~3-18x per year.",
+      "detail": "Gundlach et al., arXiv paper revised 2026-03-23 (MIT researchers), as cited by Safeguard 2026-10-19 and The Decoder 2026-09-24.",
+      "value": "5-10x/yr",
+      "direction": "toward NO",
+      "source_url": "https://safeguard.sh/resources/blog/is-ai-getting-cheaper-cost-per-token-trends-and-caveats",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-04-002",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2026-04-13",
+      "summary": "Annual AI index restates that GPT-3.5-level query cost fell >280-fold (Nov 2022-Oct 2024, ~$20 to ~$0.07 per million tokens), the standard fixed-capability reference series.",
+      "detail": "Stanford AI Index 2026 (carry-forward of 2025 series), per secondary compilations.",
+      "value": "~280x over ~23 months",
+      "direction": "toward YES",
+      "source_url": "https://hai.stanford.edu/news/inside-the-ai-index-12-takeaways-from-the-2026-report",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-04-003",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2026-08-07",
+      "summary": "Market tracker reported average token price falling ~43% in ten weeks to ~$1.16-1.18 per million tokens after mid-2026 price cuts (not capability-adjusted).",
+      "detail": "Crypto Briefing, early Aug 2026 (date approximate). Blended price, low methodological rigor.",
+      "value": "~$1.17 / M tokens",
+      "direction": "toward YES",
+      "source_url": "https://cryptobriefing.com/ai-token-prices-record-lows/",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-04-004",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2026-09-22",
+      "summary": "Epoch AI: across five benchmarks the cost of achieving a fixed performance level (counting all tokens, including reasoning) fell ~47% per quarter since 2023, i.e. ~13x per year; 75x/yr just after a level first becomes SOTA, ~4.7x/yr two years later. Example: cost to match a top early-2025 reasoning score on a science benchmark fell ~725x in under 18 months.",
+      "detail": "Epoch AI, 'The plunging price of thought' (Emberson & Roodman). Benchmarks: AIME, chess puzzles, FrontierMath t1-3, GPQA Diamond, mystery puzzles (39-53%/quarter).",
+      "value": "~13x/yr (47%/quarter)",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/publications/the-plunging-price-of-thought",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-04-005",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2026-10-16",
+      "summary": "A Bloc A developer scheduled list-price increases for two current models, and frontier list prices broadly held or rose in 2026, even as one developer cut its top tier from $15/$75 to $4/$20 per million tokens.",
+      "detail": "Google Gemini 4 Argon and Gemini 3.8 Flash price increases (pricing page updated 2026-10-16); Anthropic Opus tier cut. Via Safeguard 2026-10-19.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://safeguard.sh/resources/blog/is-ai-getting-cheaper-cost-per-token-trends-and-caveats",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-04-006",
+      "indicator": "I-R5-04",
+      "kind": "forecast",
+      "published": "2026-03-15",
+      "summary": "Industry analyst forecast: provider inference cost for a comparable ~1-trillion-parameter model will be >90% lower in 2030 than 2025 (well under 10x/yr), while cost per agentic workflow rises.",
+      "detail": "Gartner forecast, March 2026 (exact date approximate), via AI Price Index tracker.",
+      "value": ">90% lower by 2030",
+      "direction": "toward NO",
+      "source_url": "https://tracker.kimsalmi.com/ai-price-index",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R5-02",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "The best open-weight model reaches the frontier score of 6 months earlier (Epoch Capabilities Index; rolling, 2027-12-31)",
+  "generated": "2026-11-16",
+  "status_at_phase_end": "Condition held for most of 2026 on Epoch's soft (statistical-tie) definition: average open-closed lag ~4 months (8 ECI points) Jan-May 2026; lag stays within 1-8 months since mid-2024. Under a strict point-estimate definition the lag is ~6 months - borderline. Cyber-specific lag is 6-7 months. Open-weight frontier is led by Bloc B developers.",
+  "items": [
+    {
+      "id": "BF-2026-I-R5-02-001",
+      "indicator": "I-R5-02",
+      "kind": "data-series",
+      "published": "2026-04-07",
+      "summary": "A Bloc B open-weight model became the first downloadable model to pass the index's 150 anchor point (set by a Bloc A model released ~8 months earlier).",
+      "detail": "Z.ai GLM-5.1, ECI ~150.7 (April 2026), vs GPT-5 = 150 (Aug 2025). Exponential Tracker compilation of Epoch ECI; release day approximate.",
+      "value": "ECI 150.7",
+      "direction": "neutral",
+      "source_url": "https://exponentialtracker.com/curve/open_weight_frontier",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-02-002",
+      "indicator": "I-R5-02",
+      "kind": "data-series",
+      "published": "2026-05-29",
+      "summary": "Epoch AI: since January 2026 the most capable open-weight models lagged frontier closed models by an average of 4 months (8 ECI points, 90% CI 7-11), slightly wider than the 3-month average for 2023-Oct 2025; ~6 months under a strict-dominance definition. Epoch says the true gap is likely understated.",
+      "detail": "Epoch Data Insight 'Open models lag state-of-the-art closed models by 4 months' (Edwards & Emberson).",
+      "value": "4 months (8 ECI pts)",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/data-insights/open-closed-eci-gap",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-02-003",
+      "indicator": "I-R5-02",
+      "kind": "data-series",
+      "published": "2026-07-16",
+      "summary": "A Bloc B open-weight release closed to within 5.6 ECI points of the standing closed record (a Bloc A model from June 2026), under a non-commercial licence.",
+      "detail": "Moonshot Kimi K3, ECI 158.6 vs Claude Fable 5 (Exponential Tracker from Epoch ECI).",
+      "value": "gap 5.6 ECI pts",
+      "direction": "toward YES",
+      "source_url": "https://exponentialtracker.com/curve/open_weight_frontier",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-02-004",
+      "indicator": "I-R5-02",
+      "kind": "data-series",
+      "published": "2026-09-03",
+      "summary": "Two Bloc A closed records in September 2026 reopened the open-closed gap to ~10.4 ECI points (sawtooth pattern: widening on closed releases, collapsing on open ones).",
+      "detail": "Claude Fable 5.1 (2026-09-01) and GPT-6 Astra (2026-09-03); Exponential Tracker.",
+      "value": "gap 10.4 ECI pts",
+      "direction": "toward NO",
+      "source_url": "https://exponentialtracker.com/curve/open_weight_frontier",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-02-005",
+      "indicator": "I-R5-02",
+      "kind": "data-series",
+      "published": "2026-10-16",
+      "summary": "Epoch AI: on a cybersecurity-specific index the best open-weight model (Bloc B) scores where the closed frontier stood 6-7 months earlier - just outside the 6-month bar for that domain.",
+      "detail": "Epoch Data Insight 'Open-weight models trail closed models in cyber capabilities by 6-7 months': GLM-5.3 Cyber ECI 160 vs Claude Opus 5.5 / GPT-6 Astra 171. (Another analysis labels GLM-5.3 closed weights.)",
+      "value": "6-7 months (cyber ECI)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/open-closed-cyber-eci-gap",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R5-02-006",
+      "indicator": "I-R5-02",
+      "kind": "data-series",
+      "published": "2026-10-30",
+      "summary": "Best open-weight model reached ECI ~161.4 (Bloc B, Oct 2026), ~7.6 points below the closed frontier at release - roughly the closed frontier level of ~4-6 months earlier. Index refits can revise history.",
+      "detail": "Moonshot Kimi K3.1 Pro 161.37; DeepSeek V4.1 Flash 159.4. Exponential Tracker (Epoch ECI; Nov 2026 refit). Release day approximate.",
+      "value": "ECI 161.4 (gap 7.6)",
+      "direction": "toward YES",
+      "source_url": "https://exponentialtracker.com/curve/open_weight_frontier",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

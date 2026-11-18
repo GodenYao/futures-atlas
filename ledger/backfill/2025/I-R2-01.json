@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R2-01",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Relative employment index of ages 22-25 in the most AI-exposed occupation quintile falls >= 5 pts from its 2026 level (Stanford Digital Economy Lab 'Canaries' series, last 2027 release)",
+  "generated": "2026-11-17",
+  "status_at_phase_end": "The Canaries series first appeared in Aug 2025 (13% relative decline for ages 22-25 in the most-exposed occupations, firm-time controlled, data to Jul 2025), revised in Nov 2025 to 16% (data to Sep 2025); levels: -6% for 22-25 in the most-exposed occupations since late 2022 vs +6-9% for older workers. Pre-2026 vintages, so no 2026 baseline yet; the trend was widening. A broader occupational-mix study (Oct 2025) found no economy-wide disruption.",
+  "items": [
+    {
+      "id": "BF-2025-I-R2-01-001",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2025-08-26",
+      "summary": "First release of the Canaries series: with payroll data to July 2025, early-career workers (22-25) in the most AI-exposed occupations had a 13% relative employment decline vs the least-exposed, after firm-level controls; older workers in the same occupations were stable or growing.",
+      "detail": "Brynjolfsson, Chandar, Chen, 'Canaries in the Coal Mine? Six Facts...', Stanford Digital Economy Lab working paper, initially circulated August 2025 (day per press coverage, 2025-08-26), ADP data (Bloc A). The Aug-2026 revision confirms the 13% figure for the July-2025 vintage.",
+      "value": "-13% relative (Jul 2025 data)",
+      "direction": "toward YES",
+      "source_url": "https://www.rivista.ai/wp-content/uploads/2025/09/1756729755699.pdf",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-01-002",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2025-10-01",
+      "summary": "A policy research lab measuring the occupational mix found no discernible economy-wide labour-market disruption in the 33 months after the first mass-market chatbot launched; exposure, automation and augmentation measures were unrelated to employment changes, though it flagged a possible early-career divergence among recent graduates.",
+      "detail": "The Budget Lab at Yale (with Brookings), 'Evaluating the Impact of AI on the Labor Market: Current State of Affairs', 2025-10-01 (Bloc A).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://budgetlab.yale.edu/research/evaluating-impact-ai-labor-market-current-state-affairs",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-01-003",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2025-11-13",
+      "summary": "Revised Canaries paper (data to September 2025): relative decline for ages 22-25 in the most-exposed occupations widened to 16% (firm-time controlled; 15 log points top vs bottom quintile). In levels, 22-25-year-olds in the most-exposed occupations were down 6% since late 2022 while older workers were up 6-9%.",
+      "detail": "Canaries November 13, 2025 version PDF (Stanford Digital Economy Lab). Declines concentrated where AI automates (per Anthropic usage data), not augments.",
+      "value": "-16% relative (Sep 2025 data); -15 log pts Q5 vs Q1",
+      "direction": "toward YES",
+      "source_url": "https://digitaleconomy.stanford.edu/app/uploads/2025/12/CanariesintheCoalMine_Nov25.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-01-004",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2025-11-13",
+      "summary": "The authors caution that the patterns are descriptive and may partly reflect other factors (e.g. interest rates, pre-trends); the series is drawn from one payroll processor's clients and covers Bloc A only.",
+      "detail": "Canaries Nov 2025 PDF conclusion: 'our main estimates may be influenced by factors other than generative AI'. ADP sample (Bloc A).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://digitaleconomy.stanford.edu/app/uploads/2025/12/CanariesintheCoalMine_Nov25.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R2-01-005",
+      "indicator": "I-R2-01",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "The indicator's baseline is the 2026 level, which did not exist in 2025; in 2025 the series existed only as two paper vintages with differing methods, not a regular release. No comparable age-by-exposure series exists for Bloc B.",
+      "detail": "Regular monthly Canaries Dashboard launched only in June 2026. No Bloc B NBS equivalent.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://digitaleconomy.stanford.edu/project/indicators/canaries-dashboard",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

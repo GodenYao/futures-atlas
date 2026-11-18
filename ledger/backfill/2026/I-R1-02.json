@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R1-02",
+  "phase": "2026",
+  "phase_window": [
+    "2026-01-01",
+    "2026-11-14"
+  ],
+  "statement": "A government in a top-3 compute jurisdiction takes equity, a golden share or a formal priority-access security partnership with a top-5 frontier developer (by 2027-12-31)",
+  "generated": "2026-11-14",
+  "status_at_phase_end": "Not resolved: no signed government equity stake in a top-5 frontier developer as of 2026-11-14; equity talks reported in Bloc A; state fund took a voting stake in Bloc B's leading developer (not clearly top-5 globally); defence classified-use agreement signed in Bloc A.",
+  "items": [
+    {
+      "id": "BF-2026-I-R1-02-001",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2026-02-27",
+      "summary": "Bloc A's defence ministry designated a top-5 frontier developer a 'supply chain risk to national security' after it refused to drop contractual limits on autonomous weapons and domestic mass surveillance; the head of government ordered all federal agencies to stop using its products.",
+      "detail": "Bloc A Defense Secretary Hegseth designated Anthropic a supply-chain risk; President Trump directed agencies to cease using Anthropic. Formally notified 2026-03-05 (NYT). Shows state leverage over frontier developers; reported D.C. Circuit upheld exclusion 2026-09-25 (single secondary source).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.cnbc.com/2026/02/27/openai-strikes-deal-with-pentagon-hours-after-rival-anthropic-was-blacklisted-by-trump.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-02-002",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2026-02-27",
+      "summary": "Hours later, another top-5 frontier developer signed an agreement with Bloc A's defence ministry to deploy its models in classified environments (amended 2026-03-02 after backlash). A deployment contract, not clearly a 'formal priority-access security partnership' under the indicator's wording.",
+      "detail": "OpenAI-Pentagon classified-use agreement 2026-02-27, amended 2026-03-02; reportedly cleared 2026-05-01.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://fortune.com/2026/02/28/openai-pentagon-deal-anthropic-designated-supply-chain-risk-unprecedented-action-damage-its-growth/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-02-003",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2026-06-05",
+      "summary": "The Bloc A head of government said the government may take direct equity stakes in leading frontier developers; talks with one top-5 developer about a government stake were confirmed by press.",
+      "detail": "CNBC confirmed ongoing talks between Sam Altman and the White House on a possible government stake in OpenAI; Trump named OpenAI, Anthropic, xAI.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.cnbc.com/2026/06/05/trump-open-ai-altman-stake.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-02-004",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2026-06-16",
+      "summary": "Bloc B's leading frontier developer closed its first external round (~USD 7.4bn); a state national AI industry fund invested directly and is the only investor holding voting rights and exempt from lock-up. State stake small (~0.3% reported), and the developer is not clearly among the global top-5.",
+      "detail": "DeepSeek Series A >CNY 50bn at >USD 50bn valuation (The Information via Reuters, 2026-06-16); Bloc B's National AI Industry Investment Fund (Big Fund III JV) ~CNY 1bn, direct, voting. Founder Liang Wenfeng ~CNY 20bn.",
+      "value": "~CNY 1bn state fund; ~0.28% stake",
+      "direction": "toward YES",
+      "source_url": "https://trendforce.com/news/2026/06/17/news-deepseek-completes-first-funding-round-raises-over-cny-50-billion-at-valuation-above-cny-330-billion",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-02-005",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2026-07-02",
+      "summary": "Press reported a top-5 frontier developer proposed donating 5% of its equity (~USD 42.6bn) to the Bloc A government to seed a public wealth fund; not signed, reportedly would need legislation. Another top-5 developer said it was not in equity talks.",
+      "detail": "Financial Times via TechCrunch/TNW 2026-07-02: OpenAI proposed 5% stake; discussed with Trump, Lutnick, Bessent. Anthropic not participating.",
+      "value": "5% proposed",
+      "direction": "toward YES",
+      "source_url": "https://techcrunch.com/2026/07/02/openai-proposed-donating-5-of-its-equity-to-a-us-sovereign-wealth-fund",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-02-006",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2026-10-18",
+      "summary": "A top-5 frontier developer committed 5% of its shares to an internal public-benefit fund (pending stockholder approval) rather than to a government vehicle; as of 2026-10-20 the equity-sharing proposals of leading developers remained unresolved.",
+      "detail": "AP 2026-10-20: Anthropic Public Benefit Fund (announced Sunday 2026-10-18); OpenAI Public Wealth Fund idea from April 2026 policy paper. Non-governmental, so not a resolution.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://thebusinessjournal.com/anthropic-openai-share-ai-wealth-public-benefit-funds",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2026-I-R1-02-007",
+      "indicator": "I-R1-02",
+      "kind": "data-series",
+      "published": "2026-11-01",
+      "summary": "Ownership analysis of Bloc B's five leading AI developers: state capital arrives later via funds rather than direct registers (e.g., 18 government bodies reach ~18.1% of one developer by look-through; ~4.9% of a listed developer per its prospectus).",
+      "detail": "WireScreen 'Built and Owned' report: Moonshot 18.1% look-through government; Zhipu (HK-listed 2026-01-08) 4.9% government + 3.5% Tsinghua; DeepSeek 0.28% national AI fund with votes. Publication date approximate (report date not verified).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://wirescreen.ai/briefings/china-ai",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}
