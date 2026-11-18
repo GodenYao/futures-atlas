@@ -37,7 +37,7 @@ const tone=(c,k)=>[c[0]*k,c[1]*k,c[2]*k];
 const BLOC={
  // C1 r5: Bloc A walls lifted ~12 % (owner: Bloc A too dark in close-up), Bloc B ground desaturated (world view: an orange patch)
  // r4 T: lobe grounds split in tone AND value so the two blocs read apart at world zoom: A cool blue-slate, B pale warm grey (low chroma)
- A:{name:'Bloc A',walls:['#7489A0','#8498AE','#697D94','#90A2B8'],roof:'#5E6A78',roof2:'#6A7684',ground:'#4F5C70',deck:'#62707E',
+ A:{name:'Bloc A',walls:['#7489A0','#8498AE','#697D94','#90A2B8'],roof:'#5E6A78',roof2:'#6A7684',ground:'#5F6C80',deck:'#62707E',
   light:'#CFEFFF',core:'#A8E0F0',pod:'#8FA4BA'},
  B:{name:'Bloc B',walls:['#C29A62','#D0AA74','#B08A58','#DAB884'],roof:'#7E6044','roof2':'#8E6E4C',ground:'#77736A',deck:'#8E7A60',
   light:'#F2C894',core:'#F2C894',pod:'#C4A274'}};
@@ -227,7 +227,7 @@ function layA(T,L){const R=T.R,k=T.k,hw=T.hw,sg=hash2(T.seed*.71,3.3)<.5?-1:1,K=
  K.arc={x:c[0],z:c[1],w:4.0*k,d:3.2*k,h:6.2*k,tiers:7,ry:0};const a=K.arc;
  const zm=a.z+sg*a.d*.17;L.zm=zm;   // mag-lev axis: straight along x through the arcology front, beside the core, out over the trench
  const mid=Math.atan2(a.z-cz,a.x-cx);K.mastA0=mid+PI/4;
- K.masts=[];for(let i=0;i<4;i++){const an=K.mastA0+i*PI/2;K.masts.push({x:cx+Math.cos(an)*4.55*k,z:cz+Math.sin(an)*4.55*k,h:9.6*k,a:an});}
+ K.masts=[];for(let i=0;i<4;i++){const an=K.mastA0+i*PI/2;K.masts.push({x:cx+Math.cos(an)*5.25*k,z:cz+Math.sin(an)*5.25*k,h:9.6*k,a:an});}   // r5x: 4.55 -> 5.25k, clear of the gimbal ring sweep (MID ring tube reached 4.7k)
  K.fins={n:32,r0:2.4*k,r1:3.7*k,h:.5*k};
  // two arched data aqueducts: pit rim -> arcology faces
  const ends=[[a.x+a.w*.2,a.z+sg*a.d*.5],[a.x+a.w*.5,a.z+sg*a.d*.42]];
@@ -236,8 +236,8 @@ function layA(T,L){const R=T.R,k=T.k,hw=T.hw,sg=hash2(T.seed*.71,3.3)<.5?-1:1,K=
  const x0=a.x+a.w/2-.2*k,x1=-hw*.3,y=2.1*k,pyl=[];for(let x=x0+.9*k;x<-hw*1.22;x+=1.7*k)pyl.push(x);pyl.push(-hw*1.22);
  L.maglev={z:zm,x0,x1,y,pyl,pods:4,w:.3*k};
  c=fit(T,cx+.3*k,cz+sg*5.9*k,1.0*k,.93);K.ops={x:c[0],z:c[1],w:1.5*k,d:1.0*k,st:8,ry:0};
- for(let i=0;i<6;i++)L.drones.push({bloc:'A',x:cx,z:cz,r:(i<3?5.2:4.9)*k,y:(i<3?2.6:8.3)*k,w:(i<3?.3:-.24),ph:i*TAU/3+hash2(i,T.seed)*.5});
- L.ko.push({x:cx,z:cz,r:4.9*k,n:'coreA'},{x:a.x,z:a.z,r:2.3*k,n:'arcA'},{x:K.ops.x,z:K.ops.z,r:1.0*k,n:'opsA'});
+ for(let i=0;i<6;i++)L.drones.push({bloc:'A',x:cx,z:cz,r:(i<3?4.75:6.3)*k,y:(i<3?2.6:8.3)*k,w:(i<3?.3:-.24),ph:i*TAU/3+hash2(i,T.seed)*.5});
+ L.ko.push({x:cx,z:cz,r:5.7*k,n:'coreA'},{x:a.x,z:a.z,r:2.3*k,n:'arcA'},{x:K.ops.x,z:K.ops.z,r:1.0*k,n:'opsA'});
  L.solids.push({n:'coreA',x:cx,z:cz,r:4.9*k},{n:'arcA',x:a.x,z:a.z,w:a.w,d:a.d,ry:0},{n:'opsA',x:K.ops.x,z:K.ops.z,w:K.ops.w,d:K.ops.d,ry:0});
  L.lots.push({x:a.x,z:a.z,w:a.w,d:a.d,ry:0,st:Math.round(a.h/ST),kind:'arcology',bloc:'A',seed:lotSeed(a.x,a.z)});
  L.labels.push({text:K.P.name,x:cx,z:cz});return K;}
@@ -268,7 +268,7 @@ function layB(T,L){const R=T.R,k=T.k,hw=T.hw,sg=hash2(T.seed*.37,9.1)<.5?-1:1,K=
 // ---- the divide: trench section, lip masts, hex block rows, the two severed stubs ----
 function layDivide(T,L){const k=T.k,hw=T.hw,zs=[T.rb(PI/2),T.rb(-PI/2)],z0=-zs[1]*.9,z1=zs[0]*.9,zm=L.zm,M=L.maglev;L.zWall=[z0,z1];
  // floor |x|<fl at ground level; battered walls fl->top rising wallH; lip deck top->lip; backfill slope lip->out
- L.trench={z0,z1,fl:hw*.5,top:hw*.62,lip:hw*.86,out:hw*1.2,wallH:.95*k,butt:1.5*k,zm};
+ L.trench={z0,z1,fl:hw*.5,top:hw*.62,lip:hw*.86,out:hw*1.45,wallH:.7*k,butt:1.5*k,zm};   // r5x (vision: trench read as a raised wall): lower walls .95k -> .7k, gentler ground-toned backfill 1.2 -> 1.45 hw
  for(const s of[-1,1]){let i=0;for(let z=z0+.8*k;z<z1-.4*k;z+=4.8*k,i++){if(Math.abs(z-zm)<1.1*k)continue;
    L.masts.push({x:s*hw*.74,z:z+(s>0?1.6*k:0),s,h:(2.3+.5*hash2(i,s))*k,ph:hash2(s*3.1,i)*TAU});}}
  L.hexF={z0:z0+.5*k,z1:z1-.5*k,step:.62*k,r:.2*k,rows:3,gap:1.3*k};   // gap = clear floor under the stubs
@@ -532,7 +532,7 @@ function* coreA(B,S,K,mid){const T=B.T,k=T.k,c=K.core,m=K.mono,cx=c.x,cz=c.z,se=
  // struts, no 3-band cage) and the gimbal rings are solid shaded bands (tube x1.3 -> x2.3, 3 -> 5 sides, 16 -> 24 segments)
  // G1 r6 T (vision r5 merge: gimbal complex still a thin pale-blue wireframe): MID = 2 of the 3 rings as thick matte slate bands
  // (building material: no metal specular glints), tube x2.3 -> x3.6, 6 sides; light/dark facet split gives a shaded mass
- if(mid){monoSeams(S.light,B,K,cx,y,cz,1);const rk=hex('#505864',T.A);for(const r of[K.rings[0],K.rings[2]]){const ax=ringAxes(r);torus(S.building,[cx,y+m.cy,cz],ax[0],ax[1],r.r,r.tube*3.6,24,6,i=>tone(rk,i%6<3?1.1:.7));}}
+ if(mid){monoSeams(S.light,B,K,cx,y,cz,1);const rk=hex('#505864',T.A);for(const r of[K.rings[0],K.rings[2]]){const ax=ringAxes(r);torus(S.building,[cx,y+m.cy,cz],ax[0],ax[1],r.r,r.tube*2.6,24,6,i=>tone(rk,i%6<3?1.1:.7));}}   // r5x: tube 3.6 -> 2.6 (clears the masts)
  yield 1;
  // four clamp masts + tension cables to the monolith corners
  const cor=rectPts(cx,cz,m.w,m.d,m.ry);for(const ms of K.masts){mastA(B,S,K,ms,y,cor,mid);yield 1;}}
@@ -572,7 +572,7 @@ function* coreB(B,S,K,mid){const T=B.T,k=T.k,c=K.core,cx=c.x,cz=c.z,se=seatC(T,c
 
 // ======================= the divide: trench walls, buttresses, sensor masts, hex block fields =======================
 function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL,.8*T.A),cd=hex(PAL.concrete,.62*T.A),er=hex(PAL.earth,.9*T.A),st=hex(PAL.steel,.65*T.A),dk=hex(PAL.dark,T.A);
- const segL=(mid?3:1.5)*k,yt=(s,z)=>T.yl(s*t.top,z)+t.wallH,DTR=hex('#2A2E38',T.A);
+ const segL=(mid?3:1.5)*k,yt=(s,z)=>T.yl(s*t.top,z)+t.wallH,DTR=hex('#22252E',T.A);   // r5x: '#2A2E38' -> '#22252E' (probe: trench centre L ~40 = Bloc A ground, no split)
  // C1 r5: solid dark trench floor (building family, so the apron blend cannot wash it out) = the dark divide line at world zoom
  for(let z=t.z0;z<t.z1-.01;z+=segL){const e=Math.min(t.z1,z+segL),P=(x,zz)=>[x,T.yl(x,zz)+.03,zz];
   quadUp(S.building,P(-t.fl,z),P(0,z),P(0,e),P(-t.fl,e),tone(DTR,.8));quadUp(S.building,P(0,z),P(t.fl,z),P(t.fl,e),P(0,e),tone(DTR,.8));}
@@ -580,12 +580,14 @@ function* divideGen(B,S,mid){const T=B.T,L=B.L,k=T.k,t=L.trench,cc=hex(PAL.concL
   for(let z=t.z0;z<t.z1-.01;z+=segL){const e=Math.min(t.z1,z+segL),zc=(z+e)/2,ya=yt(s,z),ye=yt(s,e),sg=(Math.round(z/segL)&1)?1:.92;
    // C1 r5 (owner: the trench read as a WALL): depth shading - the inner face is split in two bands, dark toward the floor
    // (shadowed shaft) and mid-tone toward the lip, so the cut reads as sunken; the lip itself is pale (lit edge)
-   const fa0=T.yl(s*t.fl,z)-.1,fe0=T.yl(s*t.fl,e)-.1,mx=s*(t.fl+(t.top-t.fl)*.55),ma=lerp(fa0,ya,.55),me=lerp(fe0,ye,.55);
-   quadO(S.building,[s*t.fl,fa0,z],[s*t.fl,fe0,e],[mx,me,e],[mx,ma,z],tone(DTR,sg),[s*t.out*3,ya,zc]);
-   quadO(S.building,[mx,ma,z],[mx,me,e],[s*t.top,ye,e],[s*t.top,ya,z],tone(cc,.62*sg),[s*t.out*3,ya,zc]);
-   quadUp(S.building,[s*t.top,ya,z],[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.top,ye,e],tone(cc,1.12));
+   const fa0=T.yl(s*t.fl,z)-.1,fe0=T.yl(s*t.fl,e)-.1,mx=s*(t.fl+(t.top-t.fl)*.55),ma=lerp(fa0,ya,.55),me=lerp(fe0,ye,.55),gG=hex(s<0?BLOC.A.ground:BLOC.B.ground,T.A);
+   // r5x: whole inner face dark (shaft), lip top + backfill slope in the bloc's own ground tone (no pale causeway top) -> a cut, not a wall
+   const sh=s>0?.75:1;   // r5x probe: the light comes from -x, so B's inner face and A's backfill slope face it (lit 100-150 vs floor 35 = berm read) -> dim both
+   quadO(S.building,[s*t.fl,fa0,z],[s*t.fl,fe0,e],[mx,me,e],[mx,ma,z],tone(DTR,sg*sh),[s*t.out*3,ya,zc]);
+   quadO(S.building,[mx,ma,z],[mx,me,e],[s*t.top,ye,e],[s*t.top,ya,z],tone(DTR,1.05*sg*sh),[s*t.out*3,ya,zc]);
+   quadUp(S.building,[s*t.top,ya,z],[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.top,ye,e],tone(gG,1.08));
    if(mid||(Math.round(z/segL)&1)===0)box(S.light,s*(t.top+.03*k),ya-.005,zc,(mid?.13:.035)*k,.03*k,(e-z)*(mid?.96:.7),0,glow(B,PAL.cool,mid?.5:.5));   // G1 r6 T: MID lip gain .8 -> .5 (pale line at world zoom); lit lip: dashed edge light (MID: continuous line = the divide at world zoom; r4 T: .07 -> .13 k wide, .9 -> .8)
-   quadO(S.building,[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.out,T.yl(s*t.out,e)-.03,e],[s*t.out,T.yl(s*t.out,z)-.03,z],mid?tone(cc,.95):er,[0,ya-9,zc]);}   // r4 T: MID backfill = pale lip (was orange earth)
+   quadO(S.building,[s*t.lip,ya,z],[s*t.lip,ye,e],[s*t.out,T.yl(s*t.out,e)-.03,e],[s*t.out,T.yl(s*t.out,z)-.03,z],tone(gG,s<0?.55:1.0),[0,ya-9,zc]);}   // r4 T: MID backfill = pale lip (was orange earth); r5x: bloc ground tone (both tiers)
   yield 1;
   for(let z=t.z0+t.butt*.5;z<t.z1;z+=t.butt*(mid?2:1)){const yf=T.yl(s*t.fl,z)-.05;fin(S.building,s*t.fl*.62,z,s*t.top,z,yf,yf,.06*k,(yt(s,z)-yf)*.55,.24*k,tone(DTR,1.25));}
   yield 1;}
@@ -607,7 +609,7 @@ function* groundGen(B,S,mid){const T=B.T,L=B.L,R=T.R,k=T.k,hw=T.hw,NR=mid?6:12,N
  // a dark continuous trench band (|x| < 1.2 hw) framed by a pale lit lip band (1.2-1.9 hw), then each bloc's own ground tone
  const DK=hex('#2B2F39',T.A*.9),LP=hex(PAL.concL,T.A*(mid?1.0:.9));
  const V=(i,j)=>{const a=j*TAU/NS,r=Math.min(T.rb(a)*1.12,R*1.1)*i/NR,x=Math.cos(a)*r,z=Math.sin(a)*r;return[x,T.yl(x,z)-.03,z];};
- const col=x=>{const ax=Math.abs(x),c=x<0?cA:cB,t=ss(hw*1.05,hw*1.3,ax),pl=ss(hw*1.1,hw*1.3,ax)*(1-ss(hw*1.55,hw*2.0,ax))*.85,o=[lerp(DK[0],c[0],t),lerp(DK[1],c[1],t),lerp(DK[2],c[2],t)];
+ const col=x=>{const ax=Math.abs(x),c=x<0?cA:cB,t=ss(hw*1.05,hw*1.3,ax),pl=ss(hw*1.1,hw*1.3,ax)*(1-ss(hw*1.55,hw*2.0,ax))*.3,o=[lerp(DK[0],c[0],t),lerp(DK[1],c[1],t),lerp(DK[2],c[2],t)];
   return[lerp(o[0],LP[0],pl),lerp(o[1],LP[1],pl),lerp(o[2],LP[2],pl)];};
  for(let i=0;i<NR;i++){for(let j=0;j<NS;j++){const p0=V(i,j),p1=V(i+1,j),p2=V(i+1,j+1),p3=V(i,j+1),c=col((p0[0]+p2[0])/2);
    if(i===0)triUp(S.ground,p0,p1,p2,c);else quadUp(S.ground,p0,p1,p2,p3,c);}if(!mid&&i%3===2)yield 1;}
