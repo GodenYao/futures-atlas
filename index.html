@@ -236,29 +236,33 @@ ol,ul{padding-left:20px}li{margin:5px 0}
  #legend.open .hd{margin-bottom:6px}#legend.open .hd::after{content:' ▾'}#legend:not(.open)>*:not(.hd){display:none}#legend:not(.open){width:auto;padding:4px 10px 4px 8px}}
  html,body{overscroll-behavior:none} /* M3: no pull-to-refresh / scroll chaining (layout unchanged) */
  /* ===== M3 phone layout (body.m3 is set by fa4_app.js only on phones: FAT.mob and short side <= 600 px; ?m3=0/1). Desktop never matches. ===== */
- #mbtn,#msheet{display:none}
+ #mbtn,#msheet,#menu .mfoot{display:none}
  body.m3{-webkit-text-size-adjust:100%;touch-action:manipulation}
- body.m3 #hud{left:10px;top:max(8px,env(safe-area-inset-top));width:auto;max-width:calc(100vw - 70px)}
- body.m3 #hud .ttl{gap:6px;flex-wrap:wrap;row-gap:4px}
- body.m3 #hud .t1{font-size:13px;letter-spacing:.16em;white-space:nowrap}
- body.m3 #hud .k{font-size:10px;letter-spacing:.08em;white-space:nowrap}
- body.m3 #hud .sample{font-size:9px;padding:2px 5px;white-space:nowrap}
- body.m3 #hud .hl{margin-top:5px;font-size:11px;line-height:1.35;white-space:normal}
- body.m3 #hud .hl b{font-size:13px}body.m3 #hud .hl .lb0{margin-right:5px}
- body.m3 #mbtn{display:flex;flex-direction:column;justify-content:center;gap:5px;position:fixed;right:8px;top:max(6px,env(safe-area-inset-top));width:44px;height:44px;z-index:31;background:rgba(10,14,19,.82);border:1px solid var(--pline);padding:0 12px;cursor:pointer}
+ /* M3b: ONE clean header row (360-600 px): [‹ World in close-up/region] FUTURES ATLAS | leading site ≈x% (ellipsis) ........ [menu] */
+ body.m3 #hud{position:fixed;left:0!important;right:0;top:0!important;width:auto!important;max-width:none!important;height:calc(52px + env(safe-area-inset-top));box-sizing:border-box;padding:env(safe-area-inset-top) 62px 0 12px!important;display:flex;align-items:center;gap:10px;white-space:nowrap;overflow:hidden;border:none!important;border-bottom:1px solid rgba(130,140,160,.22)!important;z-index:30}
+ body.m3.m3nav #hud{padding-left:var(--m3nl,100px)!important}
+ body.m3 #hud .ttl{flex:none;flex-wrap:nowrap;gap:0;min-width:0}
+ body.m3 #hud .t1{font-size:12px;letter-spacing:.14em;white-space:nowrap}
+ body.m3 #hud .sample,body.m3 #hud .k,body.m3 #hud .ex,body.m3 #hud .mv,body.m3 #hud #lens,body.m3 #hud #lenscard{display:none!important}
+ body.m3 #hud .hl{flex:1 1 auto;min-width:0;margin:0;padding-left:10px;border-left:1px solid rgba(130,140,160,.3);font-size:11px;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ body.m3 #hud .hl b{font-size:13px;margin-right:6px}body.m3 #hud .hl .lb0,body.m3 #hud .hl .rg,body.m3 #hud .hl em{display:none}
+ @media (max-width:440px){body.m3.m3nav #hud .ttl{display:none}body.m3.m3nav #hud .hl{border-left:none;padding-left:0}}
+ body.m3 #mbtn{display:flex;flex-direction:column;justify-content:center;gap:5px;position:fixed;right:8px;top:calc(env(safe-area-inset-top) + 4px);width:44px;height:44px;z-index:31;background:rgba(10,14,19,.82);border:1px solid var(--pline);padding:0 12px;cursor:pointer}
  body.m3 #mbtn i{display:block;height:1.5px;background:var(--t1)}
  body.m3.mopen #mbtn{border-color:var(--acc)}
  body.m3 #menu{display:none;position:fixed;right:8px;top:calc(max(6px,env(safe-area-inset-top)) + 50px);width:min(260px,calc(100vw - 16px));max-width:none;max-height:calc(100vh - 70px);overflow-y:auto;flex-direction:column;flex-wrap:nowrap;gap:0;background:rgba(10,14,19,.97);border:1px solid var(--pline);padding:4px 0;z-index:31}
  body.m3.mopen #menu{display:flex}
  body.m3 #menu button{text-align:left;padding:12px 16px;font-size:12px;text-shadow:none}
- body.m3 #menu .mfoot{border-top:1px solid var(--pline);margin-top:4px;padding:8px 16px 6px;font:400 10px/1.6 var(--f2);color:var(--t3);letter-spacing:.04em}
+ body.m3 #menu .mfoot{display:block;border-top:1px solid var(--pline);margin-top:4px;padding:8px 16px 6px;font:400 10px/1.6 var(--f2);color:var(--t3);letter-spacing:.04em}
  body.m3 #menu .mfoot a{color:var(--t2);pointer-events:auto}
  body.m3 #foot,body.m3 #tltab,body.m3 #axf{display:none!important}
- body.m3 #nav{left:10px;max-width:calc(100vw - 20px);flex-wrap:wrap;gap:4px 8px}
- body.m3 #back{padding:8px 10px}body.m3 #crumb{font-size:10px;letter-spacing:.08em;padding:2px 0;white-space:normal}
+ body.m3 #nav{left:8px;top:calc(env(safe-area-inset-top) + 8px)!important;max-width:none;flex-wrap:nowrap;gap:0;z-index:32}
+ body.m3 #back{height:36px;padding:0 12px;font-size:12px;letter-spacing:.06em;white-space:nowrap;background:rgba(10,14,19,.9);border:1px solid var(--acc);color:var(--t1)}body.m3 #crumb{display:none}
+ body.m3 #menu{top:calc(env(safe-area-inset-top) + 54px)!important}
  body.m3 #fps{top:auto;bottom:4px;font-size:9px}
  body.m3 #msheet{display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;height:62px;z-index:24;background:rgba(10,14,19,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-top:1px solid var(--pline);transition:height .28s cubic-bezier(.2,.7,.2,1);padding-bottom:env(safe-area-inset-bottom);overscroll-behavior:contain}
- body.m3.m3card #msheet{display:none}
+ body.m3l.m3card #msheet{display:none}
+ body.m3p.m3card #msheet{z-index:27} /* M3b portrait: the main sheet stays under the card sheet (card stacks above it, never overlapping) */
  body.m3 #msheet.drag,body.m3 #card.drag{transition:none!important}
  body.m3 #msheet .grab,body.m3 #card .cgrab{height:20px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab}
  body.m3 #msheet .grab i,body.m3 #card .cgrab i{display:block;width:40px;height:4px;border-radius:2px;background:#56606c}
@@ -282,7 +286,9 @@ body.m3 #week{flex:1 1 0;min-width:0;white-space:normal;text-align:left;line-hei
  body.m3 .mevo{display:block;width:100%;margin-top:8px;min-height:40px}
  body.m3 #card{left:0;right:0;top:auto;bottom:0;width:auto;max-height:none!important;height:44vh;padding:0 14px calc(14px + env(safe-area-inset-bottom));z-index:26;border-left:none;border-right:none;border-bottom:none;overscroll-behavior:contain;transition:opacity .34s ease,transform .36s cubic-bezier(.2,.7,.2,1),height .28s cubic-bezier(.2,.7,.2,1)}
  body.m3 #card.cv0{transform:translateY(24px)}
- body.m3 #card .cgrab{position:sticky;top:0;margin:0 -14px;background:rgba(10,14,19,.97);z-index:3}
+ /* M3b: translucent card (city stays visible behind it); slower fade-in after the camera has arrived */
+ body.m3 #card{background:rgba(10,14,19,.66)!important;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);transition:opacity .45s ease,transform .45s cubic-bezier(.2,.7,.2,1),height .28s cubic-bezier(.2,.7,.2,1),bottom .28s cubic-bezier(.2,.7,.2,1)}
+ body.m3 #card .cgrab{position:sticky;top:0;margin:0 -14px;background:rgba(10,14,19,.55);z-index:3}
  body.m3 #card .x{top:20px;right:4px;width:40px;height:38px;display:flex;align-items:center;justify-content:center;z-index:4}
  body.m3 #card h2{font-size:19px}
  body.m3 #card .mpn{display:flex;gap:6px;margin:0 44px 8px 0}
@@ -2320,7 +2326,7 @@ function lensFx(A,B,from,to){const ref=to==='pooled'?A:poolSt(),fx={t0:performan
  let lead=null,lv=-1;for(const o of O){const v=B.p[o.id]||0;if(v>lv){lv=v;lead=o;}}
  const R0=fx.roads[0],sg=v=>(v>0?'+':'−')+Math.abs(Math.round(v));
  const c=LFX.cap;c.textContent=to==='pooled'?`Pooled lens · back from ${LENSI[from].n}${R0?` · ${R0.id} ${sg(R0.d)} pp`:''} · leading site → ${lead.n}`:`${LENSI[to].n} lens: ${R0?`${R0.id} ${sg(R0.d)} pp vs Pooled`:'little change vs Pooled'} · leading site → ${lead.n}`;
- c.style.opacity='1';{const tl=document.getElementById('tl'),b=tl&&tl.getBoundingClientRect();c.style.top=((b&&b.height?b.top:innerHeight-150)-44)+'px';}clearTimeout(LFX.ct);LFX.ct=setTimeout(()=>{c.style.opacity=to==='pooled'?'0':'.9';},8000); // caption sits above the timeline glass (top centre collided with badges of north sites)
+ c.style.opacity='1';{const tl=document.getElementById('tl'),b=tl&&tl.getBoundingClientRect();c.style.top=((b&&b.height?b.top:innerHeight-150)-44)+'px';if(typeof capPlace==='function')capPlace(c);}clearTimeout(LFX.ct);LFX.ct=setTimeout(()=>{c.style.opacity=to==='pooled'?'0':'.9';},8000); // caption sits above the timeline glass (top centre collided with badges of north sites)
  // (e) gentle camera drift toward the biggest gainer (world view only, only from the default framing; back home on Pooled)
  if(view==='world'&&Math.abs(tg.d-WORLDV.d)<25){if(to==='pooled'){tg.tx=WORLDV.tx;tg.tz=WORLDV.tz;}else{const g=[...fx.sites].filter(s=>s.d>0&&!s.o.cliff)[0];if(g){tg.tx=WORLDV.tx+clamp((g.o.X-WORLDV.tx)*.16,-8,8);tg.tz=WORLDV.tz+clamp((g.o.Z-WORLDV.tz)*.16,-6,6);}}}
  kick(7000);}
@@ -3460,9 +3466,10 @@ var CARD={want:false,pend:false,tm:0,sw:0,hid:0,vis(){const c=document.getElemen
 function cardShow(h){const cd=document.getElementById('card');CARD.want=true;clearTimeout(CARD.hid);clearTimeout(CARD.sw);
  const put=()=>{cd.innerHTML=h;cd.scrollTop=0;fitCard();};const left=typeof flyLeft==='function'?flyLeft():0;
  if(!RMOT){cd.classList.remove('cv0');cd.style.display='block';put();CARD.pend=false;return;}
- if(left>60&&!CARD.pend){const at=Math.max(190,left-FLY.dur*.4);
+ if(left>60&&!CARD.pend){const at=window.M3&&M3.on?left+160:Math.max(190,left-FLY.dur*.4); /* M3b phones: the card fades in only AFTER the camera has arrived (city overview first, then the translucent card) */
   if(CARD.vis()){cd.classList.add('cv0');CARD.sw=setTimeout(put,170);}else{cd.classList.add('cv0');cd.style.display='block';put();}
-  CARD.pend=true;clearTimeout(CARD.tm);CARD.tm=setTimeout(()=>{CARD.pend=false;if(CARD.want){cd.classList.remove('cv0');fitCard();kick(500);}},at);return;}
+  CARD.pend=true;clearTimeout(CARD.tm);const fin=()=>{if(window.M3&&M3.on&&CARD.want&&typeof flyLeft==='function'&&flyLeft()>20){CARD.tm=setTimeout(fin,Math.min(400,flyLeft()+120));return;} /* M3b: slow frames stretch the fly; wait for it */
+   CARD.pend=false;if(CARD.want){window.__cardIn={t:performance.now(),fly:typeof flyLeft==='function'?flyLeft():0};cd.classList.remove('cv0');fitCard();kick(500);}};CARD.tm=setTimeout(fin,at);return;}
  put();if(cd.style.display!=='block'){cd.classList.add('cv0');cd.style.display='block';void cd.offsetWidth;}
  if(!CARD.pend)cd.classList.remove('cv0');}
 function closeCard(){sel=null;selR=null;CARD.want=false;CARD.pend=false;clearTimeout(CARD.tm);clearTimeout(CARD.sw);const cd=document.getElementById('card');
@@ -3486,7 +3493,24 @@ function updateHUD(){document.getElementById('hudWeek').textContent=isoW(day);
 let LANIM_END=()=>pulls(day,LCUR);
 // r2 V1(g) COMPARE replaced in r3 by the U10 toggle below
 const CMP={on:false};
-function cmpCap(txt){const c=LFX.cap;c.textContent=txt;c.style.opacity='1';const tl=document.getElementById('tl'),b=tl&&tl.getBoundingClientRect();c.style.top=((b&&b.height&&!tl.classList.contains('hid')?b.top:innerHeight-60)-44)+'px';clearTimeout(LFX.ct);}
+function cmpCap(txt){const c=LFX.cap;c.textContent=txt;c.style.opacity='1';const tl=document.getElementById('tl'),b=tl&&tl.getBoundingClientRect();c.style.top=((b&&b.height&&!tl.classList.contains('hid')?b.top:innerHeight-60)-44)+'px';capPlace(c);clearTimeout(LFX.ct);}
+// M3b (owner: the replay caption covered the 'hide timeline' button): one placement rule for the bottom caption (#lcap). It keeps its
+// default spot unless that box would touch a control: then it is lifted above the highest of them (timeline glass, its hide/show tab, the
+// phone sheet / card sheet). Narrow screens wrap it (max width = viewport - 24 px) instead of running off both edges.
+function capPlace(c){if(!c)return;const W=innerWidth,m3=window.M3&&M3.on,nar=W<760;if(!c._o)c._o={font:c.style.font,padding:c.style.padding,ws:c.style.whiteSpace};
+ /* narrow: full-width strip with 12 px side margins, smaller type (the centred nowrap pill ran off both edges); wide: the original inline style */
+ c.style.left=nar?'12px':'50%';c.style.right=nar?'12px':'';c.style.transform=nar?'none':'translateX(-50%)';c.style.font=nar?'500 12px/17px var(--f2)':c._o.font;c.style.padding=nar?'6px 10px':c._o.padding;
+ c.style.whiteSpace=nar?'normal':c._o.ws;c.style.maxWidth='';c.style.textAlign=nar?'center':'';c.style.boxSizing=nar?'border-box':'';
+ const vis=e=>{if(!e)return null;const cs=getComputedStyle(e);if(cs.display==='none'||cs.visibility==='hidden'||+cs.opacity<.05)return null;const r=e.getBoundingClientRect();return r.width&&r.height&&r.top<innerHeight?r:null;};
+ const obs=[];if(m3){const st=M3.sheetTop();obs.push({left:0,right:W,top:st,bottom:innerHeight});}
+ else{const tl=document.getElementById('tl');if(tl&&!tl.classList.contains('hid'))obs.push(vis(tl));obs.push(vis(document.getElementById('tltab')));}
+ for(const id of['msheet','card','play'])obs.push(vis(document.getElementById(id)));
+ /* the floating axis-end buttons (.axi): the bottom-centre one sits just above the sheet; side ones are at the edges and ignored */
+ document.querySelectorAll('.axi').forEach(e=>{const r=vis(e);if(r&&Math.abs((r.left+r.right)/2-W/2)<W*.3)obs.push(r);});
+ const ob=obs.filter(Boolean);let top=m3?M3.sheetTop()-(c.offsetHeight||34)-10:(parseFloat(c.style.top)||0);c.style.top=top+'px';const h=c.offsetHeight||34,r=c.getBoundingClientRect(),x0=r.left,x1=r.right;
+ for(let k=0;k<4;k++){let hit=null;for(const o of ob)if(o.left<x1+6&&o.right>x0-6&&o.top<top+h+8&&o.bottom>top-2){if(!hit||o.top<hit.top)hit=o;}if(!hit)break;top=hit.top-h-10;}
+ const ft=m3?M3.ftop()+6:8;c.style.top=Math.max(ft,top)+'px';}
+window.capPlace=capPlace;
 // r3 U10 (owner): the hold / A-B flicker was undiscoverable -> explicit ON/OFF toggle 'Compare with Pooled' (lens popover + ROADS header; key C toggles).
 // ON + a non-Pooled lens: lens roads solid, Pooled widths = dashed outlines on the same roads, persistent ▲/▽ pp badges on every road and the top 5 sites,
 // ROADS legend in two columns 'Pooled | <lens>' with the difference, one-line caption at the top. OFF: badges fade after 6 s as before.
@@ -3645,7 +3669,7 @@ var RPL=(()=>{const R={on:false,amp:2.5,mk:[],byWk:{},pul:[],pill:{},lean:null,m
   for(const s in st.src){o.src[s]={};for(const r in st.src[s])o.src[s][r]=st.src[s][r]*(k[r]||1);}return o;};
  const lerpW=(A,B,e)=>{const o={w:{},src:{}};for(const r in B.w)o.w[r]=A.w[r]+(B.w[r]-A.w[r])*e;for(const s in B.src){o.src[s]={};for(const r in B.src[s])o.src[s][r]=((A.src[s]||{})[r]||0)+(B.src[s][r]-((A.src[s]||{})[r]||0))*e;}return o;};
  const morph=B=>{R.mA=R.cur||{w:{...curP.w},src:JSON.parse(JSON.stringify(curP.src))};R.mB=B;R.mt0=performance.now();};
- const cap=t=>{const c=LFX.cap;if(!t){if(c.dataset.rpl){c.style.opacity='0';delete c.dataset.rpl;}return;}c.dataset.rpl=1;c.textContent=t;c.style.opacity='1';const tl=document.getElementById('tl'),b=tl&&tl.getBoundingClientRect();c.style.top=((b&&b.height&&!tl.classList.contains('hid')?b.top:innerHeight-60)-44)+'px';clearTimeout(LFX.ct);};
+ const cap=t=>{const c=LFX.cap;if(!t){if(c.dataset.rpl){c.style.opacity='0';delete c.dataset.rpl;}return;}c.dataset.rpl=1;c.textContent=t;c.style.opacity='1';const tl=document.getElementById('tl'),b=tl&&tl.getBoundingClientRect();c.style.top=((b&&b.height&&!tl.classList.contains('hid')?b.top:innerHeight-60)-44)+'px';capPlace(c);clearTimeout(LFX.ct);};
  R.has=wk=>!!R.byWk[wk];
  R.pre=(d0,d1)=>{if(!RMOT)return;R.on=true;R.lastT=performance.now();};
  R.step=(d0,d1)=>{const now=performance.now();if(!RMOT){for(const m of R.mk)m.a=m.wk*7<=day?1:0;kick(400);return;}
@@ -4093,18 +4117,28 @@ if(typeof g1Build==='function'&&typeof G1L!=='undefined'){const gb0=g1Build;g1Bu
 // and the sheet, and the portrait world pose is solved so all 13 sites fit. Desktop never gets body.m3, so nothing changes there.
 var M3={on:false,por:false,kd:1,dmax:240,top:new Set(),snap:0,csnap:1,vo:0,vk:'',
  ftop(){const h=document.getElementById('hud'),r=h&&h.getBoundingClientRect();return r&&r.height?r.bottom+4:52;},
- sheetTop(){const c=document.getElementById('card');if(c&&c.style.display==='block'&&!c.classList.contains('cv0')){const r=c.getBoundingClientRect();if(r.height)return r.top;}
+ sheetTop(){const c=document.getElementById('card');if(c&&c.style.display==='block'){
+   // M3b: while the card waits to fade in (cv0, camera still flying), use its FINAL top so the fly lands on the final framing (no camera
+   // move after the card appears); offsetHeight ignores the cv0 slide transform
+   if(M3.por&&window.CARD&&CARD.want&&c.offsetHeight)return innerHeight-(parseFloat(c.style.bottom)||0)-c.offsetHeight;
+   if(!c.classList.contains('cv0')){const r=c.getBoundingClientRect();if(r.height)return r.top;}}
   const s=document.getElementById('msheet');if(s&&s.offsetHeight&&getComputedStyle(s).display!=='none')return s.getBoundingClientRect().top;return innerHeight-60;}};
-(function(){const q=URLQ.get('m3');M3.on=q==='1'||(q!=='0'&&typeof FAT!=='undefined'&&FAT.mob&&Math.min(innerWidth,innerHeight)<=600);if(!M3.on)return;
- const B=document.body,$=id=>document.getElementById(id);B.classList.add('m3');
- const orient=()=>{M3.por=innerHeight>=innerWidth;B.classList.toggle('m3p',M3.por);B.classList.toggle('m3l',!M3.por);};orient();
+// M3b (owner: Chrome device mode showed the squeezed desktop layout): the phone layout is driven by the VIEWPORT, independent of the render
+// tier, and re-evaluated on every resize / orientation change / device-mode switch (no reload needed). Portrait width <= 600, or a
+// landscape phone (height <= 600 and width <= 1000, or any FAT.mob device with short side <= 600). ?m3=1 forces it on, ?m3=0 off.
+M3.want=()=>{const q=URLQ.get('m3');if(q==='1')return true;if(q==='0')return false;const w=innerWidth,h=innerHeight,s=Math.min(w,h);
+ return (h>=w&&w<=600)||(w>h&&h<=600&&(w<=1000||(typeof FAT!=='undefined'&&FAT.mob)));};
+M3.build=function(){if(M3.built)return;M3.built=true;
+ const B=document.body,$=id=>document.getElementById(id);
+ const orient=()=>{if(!M3.on)return;M3.por=innerHeight>=innerWidth;B.classList.toggle('m3p',M3.por);B.classList.toggle('m3l',!M3.por);};M3.orient=orient;
+ M3.W0={...WORLDV};M3.fov0=CAM.fov;M3.fog0=(typeof LOOK!=='undefined'&&LOOK.fog)?[LOOK.fog[1],LOOK.fog[2]]:(SC.fog?[SC.fog.near,SC.fog.far]:null);
  // browser gestures: no page pinch-zoom / pull-to-refresh / long-press menu over the app (pages and inputs keep text selection)
- const pg=()=>$('page').style.display==='block';
+ const pg=()=>!M3.on||$('page').style.display==='block'; /* M3b: every guard is off while the layout is desktop */
  document.addEventListener('gesturestart',e=>{if(!pg())e.preventDefault();},{passive:false}); // iOS Safari page zoom
  document.addEventListener('touchmove',e=>{if(e.touches.length>1&&!pg())e.preventDefault();},{passive:false});
  document.addEventListener('contextmenu',e=>{if(!pg()&&!e.target.closest('a,input,textarea'))e.preventDefault();});
  // a tooltip opened by a tap (axis tab / long press) closes on the next touch anywhere (touch has no mouseleave)
- document.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;const t=$('tip');if(t&&t.style.display!=='none')t.style.display='none';},true);
+ document.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||!M3.on)return;const t=$('tip');if(t&&t.style.display!=='none')t.style.display='none';},true);
  // top bar: menu button; nav + footer text move into the dropdown
  const mb=document.createElement('button');mb.id='mbtn';mb.setAttribute('aria-label','Menu');mb.setAttribute('aria-expanded','false');mb.innerHTML='<i></i><i></i><i></i>';B.appendChild(mb);
  const menu=$('menu'),setM=o=>{B.classList.toggle('mopen',o);mb.setAttribute('aria-expanded',o?'true':'false');};
@@ -4115,9 +4149,10 @@ var M3={on:false,por:false,kd:1,dmax:240,top:new Set(),snap:0,csnap:1,vo:0,vk:''
  const S=document.createElement('section');S.id='msheet';S.setAttribute('aria-label','Map panels');
  S.innerHTML='<div class="grab" aria-hidden="true"><i></i></div><div class="tabs" role="tablist"><button role="tab" data-t="roads">Roads</button><button role="tab" data-t="tl">Timeline</button><button role="tab" data-t="ev">Evidence</button></div>'+
   '<div class="pane" data-t="roads"></div><div class="pane" data-t="tl"></div><div class="pane" data-t="ev"></div>';B.appendChild(S);
- const pane=t=>S.querySelector('.pane[data-t="'+t+'"]'),L=$('legend'),T=$('tl');pane('roads').appendChild(L);pane('tl').appendChild(T);
- L.classList.add('open');new MutationObserver(()=>{if(!L.classList.contains('open'))L.classList.add('open');}).observe(L,{attributes:true,attributeFilter:['class']});
- T.classList.remove('hid');
+ const pane=t=>S.querySelector('.pane[data-t="'+t+'"]'),L=$('legend'),T=$('tl');M3.L0=[L,L.parentNode,L.nextSibling];M3.T0=[T,T.parentNode,T.nextSibling];
+ M3.dock=on=>{if(on){pane('roads').appendChild(L);pane('tl').appendChild(T);L.classList.add('open');T.classList.remove('hid');}
+  else{for(const[e,p,n]of[M3.L0,M3.T0])p.insertBefore(e,n&&n.parentNode===p?n:null);T.classList.toggle('hid',typeof tlHidden!=='undefined'&&!!tlHidden);}};
+ new MutationObserver(()=>{if(M3.on&&!L.classList.contains('open'))L.classList.add('open');}).observe(L,{attributes:true,attributeFilter:['class']});
  const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  const evHTML=()=>{const A=(typeof BF!=='undefined'?BF:[]).slice().sort((a,b)=>(b.published||'').localeCompare(a.published||'')),n=A.length;
   return `<div class="mevh">Evidence ledger · ${n} items</div><div class="mevr">${RD6.map(r=>`<button class="btn mono" data-r="${r.id}" style="color:${r.c}">${r.id}</button>`).join('')}<button class="btn mono" data-r="">All ▸</button></div>`+
@@ -4126,10 +4161,14 @@ var M3={on:false,por:false,kd:1,dmax:240,top:new Set(),snap:0,csnap:1,vo:0,vk:''
  pane('ev').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(b)openPage('evidence',b.dataset.r||undefined);});
  let tab='roads';
  const H=()=>innerHeight,snaps=()=>M3.por?[62,Math.round(H()*.42),H()-Math.round(M3.ftop())-6]:[54,Math.round(H()*.62),H()-Math.round(M3.ftop())-6];
- const csnaps=()=>M3.por?[118,Math.round(H()*.44),H()-Math.round(M3.ftop())-6]:[96,Math.round(H()*.7),H()-58];
- M3.setSnap=(k,anim)=>{M3.snap=Math.max(0,Math.min(2,k));S.style.height=snaps()[M3.snap]+'px';S.dataset.s=M3.snap;afterMove();};
- M3.setCSnap=k=>{M3.csnap=Math.max(0,Math.min(2,k));const c=$('card');c.style.height=csnaps()[M3.csnap]+'px';c.dataset.s=M3.csnap;afterMove();};
- const afterMove=()=>{AXKEY='';if(typeof visPlace==='function'&&window.VIS&&VIS.el)visPlace();kick(700);};
+ // M3b: the card sheet stacks ON TOP of the main sheet in portrait (main sheet stays reachable: pulling up Timeline collapses the card to its
+ // compact snap and pushes it up, never over it). Compact snap first (title + first lines), the city stays visible behind the glass.
+ const shH=()=>(M3.por&&C.style.display==='block'&&getComputedStyle(S).display!=='none')?(S.classList.contains('drag')?S.offsetHeight:snaps()[M3.snap])||62:0;M3.shH=shH; /* target height, not offsetHeight (mid-transition) */
+ const csnaps=()=>{const b=shH(),top=H()-Math.round(M3.ftop())-6-b;return M3.por?[Math.min(top,Math.round(clamp(H()*.26,150,240))),Math.min(top,Math.round(H()*.48)),top]:[96,Math.round(H()*.7),H()-58];};
+ const stack=()=>{if(!M3.on)return;const b=shH(),bb=b?b+'px':'';if(C.style.bottom!==bb)C.style.bottom=bb;if(C.style.display==='block'){const s=csnaps(),h=Math.max(56,Math.min(s[2],s[M3.csnap]))+'px';if(!C.classList.contains('drag')&&C.style.height!==h)C.style.height=h;}};M3.stack=stack;
+ M3.setSnap=(k,anim)=>{M3.snap=Math.max(0,Math.min(2,k));S.style.height=snaps()[M3.snap]+'px';S.dataset.s=M3.snap;if(M3.snap>0&&M3.csnap>0&&C.style.display==='block')M3.csnap=0;stack();afterMove();};
+ M3.setCSnap=k=>{M3.csnap=Math.max(0,Math.min(2,k));if(M3.csnap>0&&M3.snap>0&&M3.por){M3.snap=0;S.style.height=snaps()[0]+'px';S.dataset.s=0;}const c=$('card');c.style.height=csnaps()[M3.csnap]+'px';c.dataset.s=M3.csnap;stack();afterMove();};
+ const afterMove=()=>{AXKEY='';if(M3.stack)M3.stack();if(typeof visPlace==='function'&&window.VIS&&VIS.el)visPlace();if(window.capPlace&&typeof LFX!=='undefined'&&LFX.cap&&+LFX.cap.style.opacity>0){capPlace(LFX.cap);clearTimeout(M3.cpt);M3.cpt=setTimeout(()=>{if(+LFX.cap.style.opacity>0)capPlace(LFX.cap);},420);} /* again after the sheet transition + axis buttons settle */kick(700);};
  M3.tab=t=>{tab=t;S.querySelectorAll('.tabs button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on);});
   S.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.dataset.t===t));if(t==='ev')pane('ev').innerHTML=evHTML();if(t==='tl')setTimeout(()=>{try{drawTL();}catch(e){}},40);};
  S.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.t===tab&&M3.snap>0)M3.setSnap(0);else{M3.tab(b.dataset.t);if(M3.snap===0)M3.setSnap(1);}});
@@ -4144,12 +4183,13 @@ var M3={on:false,por:false,kd:1,dmax:240,top:new Set(),snap:0,csnap:1,vo:0,vk:''
  const C=$('card'),ORD=O.slice(),nm=o=>o.n;
  const cg=document.createElement('div');cg.className='cgrab';cg.innerHTML='<i></i>';dragSheet(C,csnaps,M3.setCSnap,cg);
  const pn=document.createElement('div');pn.className='mpn';pn.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!focusO)return;const i=ORD.indexOf(focusO),o=ORD[(i+(b.dataset.k==='n'?1:ORD.length-1))%ORD.length];enterO(o);});
- const fix=()=>{if(C.firstChild!==cg)C.insertBefore(cg,C.firstChild);const close=view==='basin'&&focusO;
+ const fix=()=>{if(!M3.on){if(cg.parentNode)cg.remove();if(pn.parentNode)pn.remove();const V=window.VIS&&VIS.el;if(V&&V.parentNode===C)B.appendChild(V);return;}
+  if(C.firstChild!==cg)C.insertBefore(cg,C.firstChild);const close=view==='basin'&&focusO;
   if(close){const i=ORD.indexOf(focusO),p=ORD[(i+ORD.length-1)%ORD.length],n=ORD[(i+1)%ORD.length];const k=p.id+n.id;if(pn._k!==k){pn._k=k;pn.innerHTML=`<button data-k="p" aria-label="Previous ending">‹ ${esc(nm(p))}</button><button data-k="n" aria-label="Next ending">${esc(nm(n))} ›</button>`;}if(cg.nextSibling!==pn)C.insertBefore(pn,cg.nextSibling);}
   else if(pn.parentNode)pn.remove();
   const V=window.VIS&&VIS.el;if(V){if(close){const h2=C.querySelector('h2');const at=h2?h2.nextSibling:null;if(V.parentNode!==C||(h2&&V.previousSibling!==h2))C.insertBefore(V,at);}else if(V.parentNode===C)B.appendChild(V);}};
  M3.fix=fix;new MutationObserver(fix).observe(C,{childList:true});
- let cOpen=false;new MutationObserver(()=>{const o=C.style.display==='block';B.classList.toggle('m3card',o);if(o&&!cOpen)M3.setCSnap(1);cOpen=o;afterMove();}).observe(C,{attributes:true,attributeFilter:['style','class']});
+ let cOpen=false;new MutationObserver(()=>{if(!M3.on){cOpen=false;return;}const o=C.style.display==='block';B.classList.toggle('m3card',o);if(o&&!cOpen)M3.setCSnap(0);else if(o)stack();cOpen=o;afterMove();}).observe(C,{attributes:true,attributeFilter:['style','class']});
  // top-N labels (whisper titles on the world view): the 4 largest shares + the selected site; the others show their name on tap
  M3.topUpd=()=>{try{const st=curP;const r=O.map(o=>[o.id,st.p[o.id]||0]).sort((a,b)=>b[1]-a[1]);M3.top=new Set(r.slice(0,4).map(x=>x[0]));if(sel)M3.top.add(sel);}catch(e){}};
  // camera: free area = top bar .. sheet top (a pulled-up sheet stops pushing the scene at mid screen)
@@ -4159,7 +4199,10 @@ var M3={on:false,por:false,kd:1,dmax:240,top:new Set(),snap:0,csnap:1,vo:0,vk:''
   M3.vx=0;const fb=Math.max(M3.sheetTop(),innerHeight*.5);return clamp(innerHeight/2-(ft+fb)/2,-innerHeight*.3,innerHeight*.3);};
  M3.vx=0;M3.vxc=0;
  M3.voApply=(snap)=>{const g=M3.voGoal(),gx=M3.vx;let mv=false;if(snap){M3.vo=g;M3.vxc=gx;}else{if(Math.abs(g-M3.vo)>.4||Math.abs(gx-M3.vxc)>.4){M3.vo+=(g-M3.vo)*.14;M3.vxc+=(gx-M3.vxc)*.14;mv=true;}else{M3.vo=g;M3.vxc=gx;}}
-  const W=innerWidth,Hh=innerHeight,k=W+'|'+Hh+'|'+M3.vo.toFixed(1)+'|'+M3.vxc.toFixed(1);if(k!==M3.vk){M3.vk=k;if(Math.abs(M3.vo)>.3||Math.abs(M3.vxc)>.3)CAM.setViewOffset(W,Hh,M3.vxc,M3.vo,W,Hh);else CAM.clearViewOffset();}return mv;};
+  const W=innerWidth,Hh=innerHeight,k=W+'|'+Hh+'|'+M3.vo.toFixed(1)+'|'+M3.vxc.toFixed(1);if(k!==M3.vk){M3.vk=k;if(Math.abs(M3.vo)>.3||Math.abs(M3.vxc)>.3)CAM.setViewOffset(W,Hh,M3.vxc,M3.vo,W,Hh);else CAM.clearViewOffset();}
+  // M3b: fog follows the camera distance beyond the world pose, so the zoomed-out whole-map view is not washed out
+  if(SC.fog&&M3.fog0){const s=Math.max(M3.fsh||0,(cam.d||0)-WV0.d);if(Math.abs(s-(M3.fs||0))>.5){M3.fs=s;SC.fog.near=M3.fog0[0]+s;SC.fog.far=M3.fog0[1]+s;}}
+  return mv;};
  // world pose: vertical FOV opened up in portrait (keeps a usable horizontal field), then the smallest distance (over a few pitches) at which
  // every site's ground dot and marker fit inside the free area. Close-up distances scale by kd (same horizontal field as on desktop).
  M3.fit=()=>{orient();const a=innerWidth/innerHeight,F=M3.por?clamp(2*Math.atan(.26/a)*180/Math.PI,28,56):28;CAM.fov=F;CAM.aspect=a;CAM.updateProjectionMatrix();
@@ -4169,11 +4212,34 @@ var M3={on:false,por:false,kd:1,dmax:240,top:new Set(),snap:0,csnap:1,vo:0,vk:''
    for(const o of O)for(const y of[o.gy||0,(o.gy||0)+15]){const[x,yy,v]=proj(o.X,y,o.Z);if(!v||x<16||x>W-16||yy<ft||yy>fb)return false;}return true;};
   let best=null;for(const p of(M3.por?[.8,.9,1.0,1.1]:[.62,.7,.78]))for(const dz of[-10,0,10])for(let d=140;d<=760;d+=8){if(ok(cx,cz+dz,d,p)){if(!best||d<best.d-12||(Math.abs(d-best.d)<=12&&Math.abs(p-.9)<Math.abs(best.pit-.9)))best={tx:cx,tz:cz+dz,d,pit:p};break;}}
   if(!best)best={tx:WV0.tx,tz:WV0.tz,d:WV0.d*M3.kd,pit:WV0.pit};
-  Object.assign(WORLDV,best,{yaw:0,ly:0});M3.dmax=Math.max(240,best.d*1.2);
+  Object.assign(WORLDV,best,{yaw:0,ly:0});
+  // M3b (owner: 'cannot zoom out far enough to see the whole map'): the zoom-out limit is the distance at which the WHOLE terrain incl. the
+  // rim edges (|X| <= AXX+10, |Z| <= AXZ+10) fits the free area (top bar .. collapsed sheet) with a margin, x1.08, at the world pose.
+  {const ft2=M3.ftop()+10,fb2=innerHeight-(M3.por?62:54)-10,ex=(typeof AXX!=='undefined'?AXX:70)+10,ez=(typeof AXZ!=='undefined'?AXZ:50)+10;
+   const okR=d=>{const cp=Math.cos(best.pit);CAM.position.set(best.tx,-2+d*Math.sin(best.pit),best.tz+d*cp);CAM.lookAt(best.tx,-2,best.tz);CAM.updateMatrixWorld();
+    for(const x of[-ex,0,ex])for(const z of[-ez,ez])for(const y of[0,8]){const[X,Y,v]=proj(x,y,z);if(!v||X<10||X>W-10||Y<ft2||Y>fb2)return false;}return true;};
+   let dout=0;for(let d=best.d;d<=1250;d+=10)if(okR(d)){dout=d;break;}M3.dout=dout||1250;}
+  M3.dmax=Math.max(240,best.d*1.2,M3.dout*1.08);M3.fsh=Math.max(0,best.d-WV0.d);
   const sh=Math.max(0,best.d-WV0.d);if(SC.fog){SC.fog.near=LOOK.fog[1]+sh;SC.fog.far=LOOK.fog[2]+sh;}
   if(view==='world'){Object.assign(tg,WORLDV);Object.assign(cam,WORLDV);}M3.info={fov:+F.toFixed(1),kd:+M3.kd.toFixed(2),...best};};
- addEventListener('resize',()=>{const p=M3.por;orient();M3.setSnap(M3.snap);if(C.style.display==='block')M3.setCSnap(M3.csnap);if(p!==M3.por||view==='world'){M3.fit();if(view==='world')kick(800);}});
- M3.tab('roads');M3.setSnap(0);})();
+ M3.onResize=()=>{const p=M3.por;orient();M3.setSnap(M3.snap);if(C.style.display==='block')M3.setCSnap(M3.csnap);if(p!==M3.por||view==='world'){M3.fit();if(view==='world')kick(800);}};
+ // nav (close-up / region): the header row gets '‹ World' at its left; the HUD text shifts right of it (body.m3nav)
+ {const nv=$('nav'),bk=$('back');new MutationObserver(()=>{const o=M3.on&&nv.style.display==='flex';B.classList.toggle('m3nav',o);if(o)B.style.setProperty('--m3nl',(bk.offsetWidth+18)+'px');}).observe(nv,{attributes:true,attributeFilter:['style']});}
+ M3.tab('roads');};
+// M3b: switch the phone layout on / off at runtime (resize, rotation, Chrome device-mode toggle). Off restores the desktop DOM + camera.
+M3.set=(on,boot)=>{on=!!on;if(on===M3.on&&M3.built)return;if(!on&&!M3.built)return;if(on)M3.build();M3.on=on;
+ const B=document.body,$=id=>document.getElementById(id),C=$('card'),bk=$('back');B.classList.toggle('m3',on);
+ if(on){M3.orient();M3.dock(true);if(M3.bk0==null)M3.bk0=bk.innerHTML;bk.innerHTML='‹ World';bk.setAttribute('aria-label','Back to the world map');M3.setSnap(0);
+  if(C.style.display==='block'){B.classList.add('m3card');M3.setCSnap(0);}}
+ else{B.classList.remove('m3p','m3l','m3card','mopen','m3nav');M3.dock(false);if(M3.bk0!=null)bk.innerHTML=M3.bk0;bk.removeAttribute('aria-label');
+  C.style.height='';C.style.bottom='';delete C.dataset.s;if(M3.fix)M3.fix();
+  CAM.fov=M3.fov0;CAM.clearViewOffset();M3.vo=0;M3.vxc=0;M3.vx=0;M3.vk='';Object.assign(WORLDV,M3.W0);M3.fs=0;
+  if(SC.fog&&M3.fog0){SC.fog.near=M3.fog0[0];SC.fog.far=M3.fog0[1];}if(view==='world'){Object.assign(tg,WORLDV);Object.assign(cam,WORLDV);}}
+ if(boot)return;
+ try{resize();if(on){M3.fit();M3.topUpd();}CAM.aspect=innerWidth/innerHeight;CAM.updateProjectionMatrix();setNav();if(typeof fitCard==='function')fitCard();if(typeof visPlace==='function'&&window.VIS&&VIS.el)visPlace();AXKEY='';camApply();}catch(e){if(window.__errs)window.__errs.push('m3 set: '+e.message);}
+ kick(1200);};
+addEventListener('resize',()=>{const w=M3.want();if(w!==M3.on){M3.set(w);return;}if(M3.on&&M3.onResize)M3.onResize();});
+if(M3.want())M3.set(true,true);
 
 // ======================= INIT =======================
 // M1: hand the device tier to the generator-city tier manager (mobile: NEAR only for the focused close-up; low: FAR everywhere).
