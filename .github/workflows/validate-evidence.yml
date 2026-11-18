@@ -1,0 +1,61 @@
+name: Validate evidence
+
+# Runs on every pull request that touches the evidence inbox (or the rules that check it).
+# Read-only: no secrets, no write token, safe for pull requests from forks.
+on:
+  pull_request:
+    paths:
+      - "ledger/inbox/**"
+      - "ledger/schema/**"
+      - "ledger/indicators.json"
+      - "tools/validate_evidence.mjs"
+      - "tools/neutrality/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-evidence-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: List changed inbox files
+        id: changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git diff --name-only --diff-filter=AMR "$BASE_SHA"...HEAD -- ledger/inbox \
+            | grep -v '^ledger/inbox/README\.md$' > changed.txt || true
+          git diff --name-only --diff-filter=D "$BASE_SHA"...HEAD -- ledger/inbox > deleted.txt || true
+          echo "count=$(wc -l < changed.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "Changed inbox files:"; cat changed.txt
+          # Editing or deleting someone else's item is allowed only for maintainers; flag it for review.
+          git diff --name-only --diff-filter=M "$BASE_SHA"...HEAD -- ledger/inbox \
+            | grep -v '^ledger/inbox/README\.md$' \
+            | while read -r f; do echo "::warning file=$f::This PR modifies an existing inbox item; reviewers check it is the submitter's own item or a maintainer edit."; done
+          while read -r f; do [ -n "$f" ] && echo "::warning file=$f::This PR deletes an inbox item."; done < deleted.txt
+
+      - name: Validate changed items
+        if: steps.changed.outputs.count != '0'
+        run: xargs -a changed.txt -d '\n' node tools/validate_evidence.mjs
+
+      - name: Re-validate the whole inbox (catches rule or schema changes)
+        run: node tools/validate_evidence.mjs --all
+
+      - name: Check JSON files parse
+        run: |
+          for f in ledger/schema/evidence.schema.json ledger/indicators.json; do
+            node -e 'JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))' "$f" || { echo "::error file=$f::invalid JSON"; exit 1; }
+          done
