@@ -1,11 +1,27 @@
-# Futures Atlas (design sample)
+# Futures Atlas
 
-An open, interactive 3D map of possible AI futures over the next ten years: six roads from "Now" fan out into thirteen outcomes (Max Tegmark's twelve *Life 3.0* aftermath scenarios plus "Normal technology"). Road width = estimated share; lenses show how different schools of thought would weigh the same evidence.
+An open, interactive 3D map of possible AI futures over the next ten years. Six roads lead
+from NOW to thirteen endings: Max Tegmark's twelve *Life 3.0* aftermath scenarios plus
+"Normal technology" (Narayanan & Kapoor).
 
-**Status: DESIGN SAMPLE.** All numbers on the map are illustrative only and are not forecasts. Placement of outcomes is our interpretation of Tegmark's scenarios.
+- Live map: https://godenyao.github.io/futures-atlas/
 
-- Live preview: https://godenyao.github.io/futures-atlas/
-- Older samples: `samples/`
+## What it is
+
+- **An evidence-weighted map of scenarios.** Road widths start from editorial weights set
+  by the maintainer and move each week with reviewed public evidence in [`ledger/`](ledger/).
+- **Recomputable.** [`engine/`](engine/) replays the ledger and reproduces every share on the
+  map (`node engine/recompute`, no dependencies).
+- **Neutral.** No ending is rated good or bad. Rival powers are unnamed (Bloc A, Bloc B), with
+  no flags or national colours.
+
+## What it is not
+
+- **Not a forecast.** The numbers say how the evidence so far tilts a set of editorial
+  starting weights, not how likely an ending is.
+- Not a poll: votes on Visions never change the map.
+- Not finished: one maintainer, one reviewed year of evidence (2026). Lenses other than
+  Baseline are maintainer presets, not the views of the thinkers they are named after.
 
 ## Contribute
 

@@ -1,0 +1,9 @@
+{
+ "_doc": "Public review record for evidence phase 2026, read by engine/recompute. Phase 2026 was reviewed and approved on 2026-11-17. Items count from the first weekly snapshot on or after their own published date. 'hold' lists indicators that are shown but not counted. 'wording_overrides' corrects fields of single items at load time; only overrides that change a counted field are listed here (the ledger files themselves are not edited).",
+ "phase": "2026",
+ "approved": "2026-11-17",
+ "counting": {"hold": []},
+ "wording_overrides": {
+  "BF-2026-I-R6-04-004": {"published": "2026-05-29"}
+ }
+}
