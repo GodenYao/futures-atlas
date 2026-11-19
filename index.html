@@ -4346,40 +4346,66 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
  // ---------- Round d (F): a very faint thin ground line NOW -> the leading ending's city (LEAD = header 'leading site', active lens + replay week) ----------
  // no text on the map; hovering the line (or NOW) shows 'Leading: <ending> <share>%'. Drawn first in the overlay = behind trail and labels.
  B.ld=null;
- // Round f (owner 11-19): the faint 1 px leading line is GONE. A breathing particle STREAM (3D Points, 1 draw call, depth-tested) flows
- // from NOW to the leading ending's city along a gentle quadratic arc that clears the terrain (control height solved from 25 samples).
- // Brass/NOW gold, normal blending (no additive white), breathing 3.6 s; leader change = fade out -> new arc -> fade in (~0.5 s);
- // reduced motion = static dotted arc. ldDraw keeps only the hover hit-test (projected arc) - nothing is drawn on the overlay.
- const LS={id:null,f:0,A:null};
- const lsArc=(o)=>{const x0=NOWD.X,z0=NOWD.Z,x2=o.X,z2=o.Z,dx=x2-x0,dz=z2-z0,D=Math.hypot(dx,dz)||1,nx=-dz/D,nz=dx/D,b=.12*D,xc=(x0+x2)/2+nx*b,zc=(z0+z2)/2+nz*b,
-   y0=hMesh(x0,z0)+.7,y2=hMesh(x2,z2)+1.6;let yc=(y0+y2)/2+.07*D;
-  const q=(a,c,e,t)=>(1-t)*(1-t)*a+2*t*(1-t)*c+t*t*e;
-  for(let i=1;i<25;i++){const t=i/25,X=q(x0,xc,x2,t),Z=q(z0,zc,z2,t),need=hMesh(X,Z)+1.3,w=2*t*(1-t);const r=(need-(1-t)*(1-t)*y0-t*t*y2)/w;if(r>yc)yc=r;}
-  return{p0:[x0,y0,z0],pc:[xc,yc,zc],p2:[x2,y2,z2],D,at:t=>[q(x0,xc,x2,t),q(y0,yc,y2,t),q(z0,zc,z2,t)]};};
- const ldDraw=(g,W,H,tlT)=>{B.ld=null;if(typeof LEAD==='undefined'||!LEAD||!LEAD.o||!TER_BUILT||!(view==='world'||view==='basin'))return;const o=LEAD.o,P=[],A=lsArc(o);
-  for(let i=0;i<=28;i++){const p=A.at(i/28),c=proj(p[0],p[1],p[2]);P.push([c[0],c[1],c[2]&&c[1]<=tlT]);}
-  B.ld={id:o.id,n:o.n,c:LEAD.c,X:o.X,Z:o.Z,P};};
- {const N=96,pa=new Float32Array(N*3),sd=new Float32Array(N*2);for(let i=0;i<N;i++){const h=Math.sin(i*127.1+3.7)*43758.5453;sd[i*2]=i/N;sd[i*2+1]=h-Math.floor(h);}
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pa,3));g.setAttribute('aS',new THREE.BufferAttribute(sd,2));
-  const LU={uP0:{value:new THREE.Vector3()},uPC:{value:new THREE.Vector3()},uP2:{value:new THREE.Vector3()},uN:{value:new THREE.Vector3(1,0,0)},uT:{value:0},uM:{value:1},uF:{value:0},
-   uPx:{value:1},uFN:{value:1e4},uFF:{value:2e4},uCol:{value:new THREE.Vector3(232/255,204/255,140/255)}};
-  const VSL=`attribute vec2 aS;uniform vec3 uP0,uPC,uP2,uN;uniform float uT,uM,uPx,uFN,uFF;varying float vA;
-void main(){float t=uM>.5?fract(aS.x+aS.y*.013+uT*(.05+.025*aS.y)):aS.x;float u=1.-t;vec3 p=u*u*uP0+2.*t*u*uPC+t*t*uP2;
- float j=(aS.y-.5)*2.;p+=uN*(j*.32*sin(3.14159*t))+vec3(0.,.18*sin(aS.y*40.+uT*1.3)*uM,0.);
- float br=.5+.5*sin(uT*6.2832/3.6-t*2.2);float dens=uM>.5?smoothstep(.15,.75,fract(aS.y*7.3+floor(uT/3.6)*.37)*.6+br*.7):1.;
- float ends=smoothstep(0.,.06,t)*smoothstep(1.,.975,t);vec4 mv=viewMatrix*vec4(p,1.);float fog=1.-.5*smoothstep(uFN,uFF,-mv.z);
- vA=ends*fog*(uM>.5?(.45+.55*br)*dens:.75);gl_PointSize=clamp(uPx*(3.2+2.2*br*uM)*240./max(1.,-mv.z),2.6*uPx,8.*uPx);gl_Position=projectionMatrix*mv;}`;
-   const FSL=`uniform vec3 uCol;uniform float uF;varying float vA;void main(){vec2 d=gl_PointCoord-.5;float r=dot(d,d)*4.;if(r>1.)discard;float a=vA*uF*(1.-r)*.95;if(a<.01)discard;gl_FragColor=vec4(uCol*(.92+.12*(1.-r)),a);}`;
-  const m=new THREE.ShaderMaterial({uniforms:LU,vertexShader:VSL,fragmentShader:FSL,transparent:true,depthWrite:false,depthTest:true});
-  const pts=new THREE.Points(g,m);pts.frustumCulled=false;pts.renderOrder=4;pts.name='b4lead';pts.visible=false;SC.add(pts);B.lsM=pts;
-  ANIM.push(()=>{if(!TER_BUILT||typeof LEAD==='undefined'||!LEAD||!LEAD.o){pts.visible=false;return;}const wv=view==='world'||view==='basin',id=LEAD.o.id,dt=.06;
-   if(LS.id!==id){LS.f=Math.max(0,LS.f-dt*1.8);if(LS.f<=.02||LS.id==null){LS.id=id;LS.f=0;}}else LS.f=Math.min(1,LS.f+dt*1.8);
-   const o=byId[LS.id]||LEAD.o,A=lsArc(o);LS.A=A;LU.uP0.value.set(...A.p0);LU.uPC.value.set(...A.pc);LU.uP2.value.set(...A.p2);
-   const dx=A.p2[0]-A.p0[0],dz=A.p2[2]-A.p0[2],D=Math.hypot(dx,dz)||1;LU.uN.value.set(-dz/D,0,dx/D);
-   LU.uT.value=RMOT?performance.now()/1000:0;LU.uM.value=RMOT?1:0;LU.uF.value=wv?LS.f:0;LU.uPx.value=(RD.getPixelRatio?RD.getPixelRatio():1)*(PH?.85:1);
-   if(SC.fog){LU.uFN.value=SC.fog.near;LU.uFF.value=SC.fog.far;}pts.visible=wv&&LS.f>.005;if(LS.id!==id||LS.f<1)kick(120);});
-  B.lsInfo=()=>({id:LS.id,lead:LEAD&&LEAD.o&&LEAD.o.id,f:+LS.f.toFixed(2),vis:pts.visible,end:LS.A&&[+LS.A.p2[0].toFixed(2),+LS.A.p2[2].toFixed(2)],city:LEAD&&LEAD.o&&[+LEAD.o.X.toFixed(2),+LEAD.o.Z.toFixed(2)],
-   from:LS.A&&[+LS.A.p0[0].toFixed(2),+LS.A.p0[2].toFixed(2)],now:[+NOWD.X.toFixed(2),+NOWD.Z.toFixed(2)],wk:BFR.weeks[Math.max(0,NOWM.idx)],arcY:LS.A&&+LS.A.pc[1].toFixed(2)});}
+ // Round g (owner 11-19): the leading STREAM lives in SCREEN space on the 2D overlay (0 draw calls; the round-f 3D Points ground arc
+ // 'b4lead' is removed). It flows from the floating NOW LABEL (exit point of the label box - or its cliff-icon row - on the ray toward
+ // the icon) to the leading city's ICON (its ring edge, 16*LK px, nearest the label), recomputed every overlay frame, as a gentle arc
+ // bowed upward. Fine misty look: many tiny gaussian sprites (0.7-3 px sprites, sub-px..1.5 px visible core, varied alpha) + a faint
+ // haze band of large soft sprites with slow width/turbulence. Breathing in sync, one 3.6 s clock: the NOW label glow peaks at phase 0,
+ // a brightness crest travels label -> icon and arrives at phase .55 when the icon glow peaks (glows = soft sprites behind label/icon,
+ // no size change). Reduced motion = static faint haze, no particles, no pulse. Hidden when the label is hidden, the icon is not drawn
+ // or off-screen, an endpoint is under the open card, or outside world view. Hover on the arc = 'Leading: <ending> <share>%'.
+ const LS={id:null,f:0,tl:0,ms:[],vis:false,G:null};
+ const SPR=(()=>{const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d'),R=x.createRadialGradient(16,16,0,16,16,16);
+  R.addColorStop(0,'rgba(238,214,156,1)');R.addColorStop(.2,'rgba(236,210,150,.66)');R.addColorStop(.45,'rgba(232,204,140,.22)');R.addColorStop(.72,'rgba(232,204,140,.05)');R.addColorStop(1,'rgba(232,204,140,0)');
+  x.fillStyle=R;x.fillRect(0,0,32,32);return c;})();
+ const hs=(i,k)=>{const h=Math.sin(i*127.1+k*311.7+3.7)*43758.5453;return h-Math.floor(h);};
+ const BP=3.6,ARR=.55,sst=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
+ const pulse=(ph,c)=>{let d=Math.abs(ph-c);d=Math.min(d,1-d);return Math.exp(-(d*d)/(2*.085*.085));};
+ const brAt=(t,ph)=>{const c=ph/ARR;if(c>1.3)return .42;const d=t-c;return .42+.58*Math.exp(-d*d/(2*.15*.15));};
+ const inR=(p,r,pd)=>r&&p[0]>=r.left-pd&&p[0]<=r.right+pd&&p[1]>=r.top-pd&&p[1]<=r.bottom+pd;
+ const exitPt=(b,tx,ty)=>{const cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2,dx=tx-cx,dy=ty-cy,hw=(b[2]-b[0])/2,hh=(b[3]-b[1])/2;const s=Math.min(dx?hw/Math.abs(dx):1e9,dy?hh/Math.abs(dy):1e9);return[cx+dx*s,cy+dy*s];};
+ const eDist=(p,r)=>{if(!r||!r.width)return 1e9;const ins=p[0]>=r.left&&p[0]<=r.right&&p[1]>=r.top&&p[1]<=r.bottom;if(ins)return Math.min(p[0]-r.left,r.right-p[0],p[1]-r.top,r.bottom-p[1]);
+  return Math.hypot(Math.max(r.left-p[0],0,p[0]-r.right),Math.max(r.top-p[1],0,p[1]-r.bottom));};
+ const lsGeo=(o,W,tlT)=>{const m=o&&o._mw;if(!m||!m.ok||m.x<0||m.x>W||m.y<40||m.y>tlT)return null;if(typeof NOWL==='undefined'||NOWL.style.display==='none')return null;
+  const nr=NOWL.getBoundingClientRect();if(!nr.width)return null;const LK=o._LK||1,ri=16*LK,cx=m.x,cy=m.y;let a=exitPt([nr.left,nr.top,nr.right,nr.bottom],cx,cy);
+  const ce=NOWL.querySelector('.b4cr'),q=ce&&ce.getBoundingClientRect();if(q&&q.width&&a[1]>=nr.bottom-.5&&a[0]>=q.left&&a[0]<=q.right)a=exitPt([q.left,q.top,q.right,q.bottom],cx,cy);
+  if(a[0]<0||a[0]>W||a[1]<0||a[1]>tlT)return null;let ux=a[0]-cx,uy=a[1]-cy;const L0=Math.hypot(ux,uy)||1;ux/=L0;uy/=L0;const b=[cx+ux*(ri+1),cy+uy*(ri+1)];
+  const D=Math.hypot(b[0]-a[0],b[1]-a[1]);if(D<24)return null;
+  if(typeof cardOpen==='function'&&cardOpen()){const ck=document.getElementById('card'),cr=ck&&ck.getBoundingClientRect();if(cr&&cr.width&&(inR(a,cr,4)||inR(b,cr,4)))return null;}
+  let nx=-(b[1]-a[1])/D,ny=(b[0]-a[0])/D;if(ny>0){nx=-nx;ny=-ny;}const bow=Math.min(110,.22*D);let k=[(a[0]+b[0])/2+nx*bow,(a[1]+b[1])/2+ny*bow];if(k[1]<8)k[1]=8;
+  return{o,a,b,k,c:[cx,cy],ri,LK,nr,q,D};};
+ const qb=(G,t)=>{const u=1-t;return[u*u*G.a[0]+2*t*u*G.k[0]+t*t*G.b[0],u*u*G.a[1]+2*t*u*G.k[1]+t*t*G.b[1]];};
+ const qn=(G,t)=>{const dx=2*(1-t)*(G.k[0]-G.a[0])+2*t*(G.b[0]-G.k[0]),dy=2*(1-t)*(G.k[1]-G.a[1])+2*t*(G.b[1]-G.k[1]),l=Math.hypot(dx,dy)||1;return[-dy/l,dx/l];};
+ const ldDraw=(g,W,H,tlT)=>{const T0=performance.now(),now=T0/1000,dt=Math.min(.1,LS.tl?now-LS.tl:0);LS.tl=now;B.ld=null;LS.vis=false;
+  if(typeof LEAD==='undefined'||!LEAD||!LEAD.o||!TER_BUILT||view!=='world'){LS.G=null;return;}const id=LEAD.o.id;
+  if(LS.id!==id){LS.f=Math.max(0,LS.f-dt*2.2);if(LS.f<=.02||LS.id==null){LS.id=id;LS.f=0;}}else LS.f=Math.min(1,LS.f+dt*2.2);
+  const o=byId[LS.id]||LEAD.o,G=lsGeo(o,W,tlT);LS.G=G;if(!G)return;const P=[];for(let i=0;i<=28;i++){const p=qb(G,i/28);P.push([p[0],p[1],true]);}
+  B.ld={id:LEAD.o.id,n:LEAD.o.n,c:LEAD.c,X:LEAD.o.X,Z:LEAD.o.Z,P};const al=LS.f;if(al<.01)return;LS.vis=true;
+  const ph=RMOT?(now%BP)/BP:0,sc=PH?.85:1,LB=(window.LBLBOX||[]);g.save();g.globalCompositeOperation='source-over';
+  // synced glows behind the NOW label and the leading icon (drawn before markers; label is DOM on top) - alpha only, no size change
+  {const gL=RMOT?pulse(ph,0):0,gI=RMOT?pulse(ph,ARR):0,r=G.nr,bw=r.width+80,bh=r.height+56;
+   g.globalAlpha=al*(.07+.24*gL);g.drawImage(SPR,r.left+r.width/2-bw/2,r.top+r.height/2-bh/2,bw,bh);
+   const rr=G.ri*2.1;g.globalAlpha=al*(.05+.2*gI);g.drawImage(SPR,G.c[0]-rr,G.c[1]-rr,2*rr,2*rr);}
+  // misty ribbon: two soft round-capped strokes along a slowly turbulent copy of the arc (continuous from label edge to icon ring)
+  {const RB=[];for(let i=0;i<=24;i++){const t=i/24,p=qb(G,t),n=qn(G,t),w=Math.sin(Math.PI*t)*(RMOT?1.6*Math.sin(now*.5+i*.9):0);RB.push([p[0]+n[0]*w,p[1]+n[1]*w]);}
+   g.lineCap='round';g.lineJoin='round';g.strokeStyle='rgb(232,204,140)';const bm=RMOT?.75+.25*brAt(.5,ph):.8;
+   for(const[lw,aa]of[[10*sc,.035],[4.5*sc,.05],[1.6*sc,.06]]){g.lineWidth=lw;g.globalAlpha=al*aa*bm;g.beginPath();g.moveTo(RB[0][0],RB[0][1]);for(let i=1;i<RB.length;i++)g.lineTo(RB[i][0],RB[i][1]);g.stroke();}}
+  // haze band on top: large soft sprites, slow width variation + turbulence, brightness crest label -> icon
+  const M=PH?24:38;for(let j=0;j<M;j++){let t=(j+.5)/M+(RMOT?.012*Math.sin(now*.4+j):0);t=Math.max(0,Math.min(1,t));const p=qb(G,t),n=qn(G,t),
+   off=(hs(j,1)-.5)*4+(RMOT?2.2*Math.sin(now*.55+j*1.7):0),e=.55+.45*Math.sin(Math.PI*t),
+   rad=(8+5*hs(j,2))*e*sc*(1+(RMOT?.14*Math.sin(now*.3+j*2.3):0)),ends=sst(0,.02,t)*sst(1,.98,t);
+   g.globalAlpha=al*(.07+.04*hs(j,3))*(RMOT?brAt(t,ph)*1.2:.75)*ends;if(g.globalAlpha<.003)continue;g.drawImage(SPR,p[0]+n[0]*off-rad,p[1]+n[1]*off-rad,2*rad,2*rad);}
+  // fine light dust: stateless hashed particles (none under reduced motion)
+  let nd=0;if(RMOT){const N=PH?160:340;for(let i=0;i<N;i++){const h=hs(i,5),t=(hs(i,4)+now*(.04+.035*hs(i,6)))%1,ends=sst(0,.02,t)*sst(1,.98,t);if(ends<.02)continue;
+    const p=qb(G,t),n=qn(G,t),lat=(h-.5)*2*(6.5*Math.sin(Math.PI*t)+1.2)*sc+1.5*Math.sin(now*(.5+h)+i),x=p[0]+n[0]*lat,y=p[1]+n[1]*lat;
+    let hid=false;if(t>.12&&t<.88)for(const bx of LB){if(x>bx[0]&&x<bx[2]&&y>bx[1]&&y<bx[3]){hid=true;break;}}if(hid)continue;
+    const s7=hs(i,7),d=(.7+2.3*s7*s7)*sc,a=al*(.22+.6*hs(i,8))*brAt(t,ph)*ends*(.78+.22*Math.sin(now*(1.1+h*1.4)+i*2.1));if(a<.01)continue;
+    g.globalAlpha=Math.min(1,a);g.drawImage(SPR,x-d/2,y-d/2,d,d);nd++;}}
+  g.restore();LS.nd=nd;LS.ms.push(performance.now()-T0);if(LS.ms.length>120)LS.ms.shift();};
+ B.lsInfo=()=>{const G=LS.G,ms=LS.ms.slice().sort((a,b)=>a-b),r1=v=>+v.toFixed(1);let dA=null,dB=null;
+  if(G){const nr=NOWL.getBoundingClientRect(),ce=NOWL.querySelector('.b4cr'),q=ce&&ce.getBoundingClientRect();dA=r1(Math.min(eDist(G.a,nr),eDist(G.a,q)));dB=r1(Math.abs(Math.hypot(G.b[0]-G.c[0],G.b[1]-G.c[1])-G.ri));}
+  return{id:LS.id,lead:LEAD&&LEAD.o&&LEAD.o.id,f:+LS.f.toFixed(2),vis:LS.vis,a:G&&G.a.map(r1),b:G&&G.b.map(r1),icon:G&&[r1(G.c[0]),r1(G.c[1]),r1(G.ri)],dA,dB,mode:typeof NOWL!=='undefined'&&NOWL._m,
+   nd:LS.nd||0,ms:ms.length?{avg:+(ms.reduce((s,v)=>s+v,0)/ms.length).toFixed(3),p95:+ms[Math.floor(ms.length*.95)].toFixed(3),n:ms.length}:null,wk:BFR.weeks[Math.max(0,NOWM.idx)]};};
  const dSeg=(x,y,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],l=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/l));return Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy);};
  B.ldHit=(x,y,R)=>{const L=B.ld;if(!L)return false;const P=L.P;if(P[0][2]&&Math.hypot(x-P[0][0],y-P[0][1])<R+6)return true;for(let i=1;i<P.length;i++)if(P[i][2]&&P[i-1][2]&&dSeg(x,y,P[i-1],P[i])<R)return true;return false;};
  B.ldTxt=()=>B.ld?`<div class="h">Leading: ${escH(B.ld.n)} ${B.ld.c.toFixed(0)}%</div>`:'';
