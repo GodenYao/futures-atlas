@@ -26,9 +26,9 @@ FA.PRORUIN={build(site,ctx){const K=FA.G1KIT;if(!K)throw new Error('FA.G1KIT mis
  const streetD=(x,z)=>{const[a,b]=toG(x,z),fa=Math.abs(a/BL-Math.round(a/BL))*BL,fb=Math.abs(b/BL-Math.round(b/BL))*BL;return Math.min(fa,fb);};
  const dens=(x,z)=>{const rr=Math.hypot(x,z),ro=rOut(Math.atan2(z,x));return rr<CR?0:(1-smooth(.5,.95,rr/ro))*smooth(CR,CR+1.2,rr);};
  // palette (linear; the host lifts vertex colours to display space and applies the v4.4 night grade)
- const CON=lin('#6E6862'),CON2=lin('#5A5450'),EDGE=lin('#7C766E'),SOOT=lin('#2A2624'),RUST=lin('#5A3E30'),REBAR=lin('#3A2A24'),MOSS=lin('#383A34'),SCRUB=lin('#45433E'),
-  DRY=lin('#4E4A44'),ASH=lin('#5E5862'),LIP=lin('#5C524E'),CHAR=lin('#1E1A1E'),DUST=lin('#575050'),ROAD=lin('#242124'),DEAD=lin('#2E2826');   // r9 Q1: LIP '#8A8286' -> warm ash grey (vision r8: pale lip mounds read as snow / ice)
- const FAC=[CON,lin('#6A5A4E'),lin('#5E6066'),lin('#72685C')],FLR=lin('#4A4038'),FLR2=lin('#5C5046'),RIM=lin('#6E6058');   // r9 Q1: per-tower cladding tones; crater floor = scorched rock (not a black void); warm ash rim highlight
+ const CON=lin('#807A74'),CON2=lin('#68625E'),EDGE=lin('#8C867E'),SOOT=lin('#2A2624'),RUST=lin('#5A3E30'),REBAR=lin('#3A2A24'),MOSS=lin('#383A34'),SCRUB=lin('#45433E'),
+  DRY=lin('#4E4A44'),ASH=lin('#5E5862'),LIP=lin('#6E6660'),CHAR=lin('#2C282A'),DUST=lin('#575050'),ROAD=lin('#242124'),DEAD=lin('#2E2826');   // r9 Q1: LIP '#8A8286' -> warm ash grey (vision r8: pale lip mounds read as snow / ice); S2 (review 11-18 'glossy black void, ruins read as crates'): ruins ash grey (CON #6E6862 -> #807A74), CHAR #1E1A1E -> charcoal #2C282A, LIP #5C524E -> #6E6660
+ const FAC=[CON,lin('#7A7068'),lin('#70727A'),lin('#827A70')],FLR=lin('#5A5450'),FLR2=lin('#6A645E'),RIM=lin('#8A8078');   // r9 Q1: per-tower cladding tones; crater floor = scorched rock (not a black void); warm ash rim highlight. S2: lighter ash cladding, ash-grey floor (was #4A4038/#5C5046), paler raised rim (was #6E6058)
  const cv=(c,k)=>[c.r*k,c.g*k,c.b*k],mix=(a,b,t)=>({r:a.r+(b.r-a.r)*t,g:a.g+(b.g-a.g)*t,b:a.b+(b.b-a.b)*t}),jit=(c,k)=>cv(c,k*(.88+.24*r()));
  const B=mats.building,ST=mats.stone||B,FO=mats.foliage||B,ME=mats.metal||B;
  const box=(m,x,y,z,sx,sy,sz,rx,ry,rz,c)=>PT.add(m,PT.G.box(),x,y,z,sx,sy,sz,rx,ry,rz,c);
@@ -117,13 +117,19 @@ FA.PRORUIN={build(site,ctx){const K=FA.G1KIT;if(!K)throw new Error('FA.G1KIT mis
  let pool=null;{let mn=1e9,mx=0,mz=0;for(let k=0;k<90;k++){const a=k*2.4,rr=CR*.62*Math.sqrt(k/90),x=Math.cos(a)*rr,z=Math.sin(a)*rr,h=H(x,z);if(h<mn){mn=h;mx=x;mz=z;}}
   const rp=CR*.34;let em=1e9;for(let k=0;k<24;k++){const a=k/24*6.283;em=Math.min(em,H(mx+Math.cos(a)*rp,mz+Math.sin(a)*rp));}const lv=Math.min(mn+.4,em-.06);
   if(lv>mn+.08){const g=new THREE.CircleGeometry(rp,30);g.rotateX(-Math.PI/2);const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),k=1+.18*(vn(x*1.3+9,z*1.3+4)-.5);p.setXYZ(i,mx+x*k,lv,mz+z*k);}
-   const wm=new THREE.MeshStandardMaterial({color:'#1E262E',roughness:.35,metalness:0});   // r10 B: dark rough water (was #34465A r .12 m .2 = sky-blue flat quad)
+   const wm=new THREE.MeshStandardMaterial({color:'#2A3034',roughness:.88,metalness:0});   // r10 B: dark rough water (was #34465A r .12 m .2 = sky-blue flat quad); S2: matte ash-skinned water (was #1E262E r .35 = glossy oil drop)
    wm.name='sd_pool';const m=new THREE.Mesh(g,wm);m.name='sd_pool';m.renderOrder=1;near.add(m);pool={x:mx,z:mz,r:rp,y:lv};
    glows.push({x:mx+.4,y:lv+.03,z:mz+.5,size:1.6,c:lin('#B84A1E').multiplyScalar(.14),an:[.3,2.2,1.3,0]});}}   // faint ember reflection on the water
  for(let k=0;k<26;k++){const a=r()*6.283,rr=CR*(.15+.62*Math.sqrt(r())),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(pool&&Math.hypot(x-pool.x,z-pool.z)<pool.r*1.05)continue;
   if(k<14)heap(x,z,.22+.28*r(),a);else{const c=.2+.3*r();PT.add(ST,PT.G.ico(0),x,H(x,z)-c*.3,z,c*1.4,c*.6,c,(r()-.5)*.5,r()*3,(r()-.5)*.5,jit(r()<.5?FLR2:CON2,1));}}   // rubble + scorched boulders on the floor
  for(let k=0;k<16;k++){const a=r()*6.283,rr=CR*(1.2+.9*r()),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(free(x,z,.3)&&okAt(x,z,.2))box(ST,x,H(x,z)-.06,z,.18,.1,.7+.8*r(),(r()-.5)*.2,-a+Math.PI/2+(r()-.5)*.3,0,jit(SOOT,1));}   // radial ejecta shards
  for(let k=0;k<4;k++){const a=k/4*6.283+r()*.8,rr=CR*(.35+.4*r()),x=Math.cos(a)*rr,z=Math.sin(a)*rr;emberCluster(x,z,.85);if(k<2)embers.push([x,z]);}
+ // S2 (review 11-18): 4 tall jagged stumps on the rim give the crater scale (ash-grey shells, broken top step, rebar tip); own hash so
+ // the r() sequence of everything below is unchanged
+ for(let k=0;k<4;k++){const a=k/4*6.283+.5+hash(k*3.1,site.seed||7)*.9,rr=CR*(1.14+.1*hash(k,5.3)),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(!free(x,z,.6)||!okAt(x,z,.4))continue;
+  const y=lowY(x,z,.9,.9)-.15,hh=2.6+1.6*hash(k,8.7),w=.75+.25*hash(k,2.9),ry=-a+.3*hash(k,4.1);
+  box(ST,x,y,z,w,hh,w*.8,.06*(hash(k,6.6)-.5),ry,.06*(hash(k,1.9)-.5),cv(CON,1));box(ST,x+.12,y+hh,z+.08,w*.55,.7+.6*hash(k,9.2),w*.5,.18,ry,-.12,cv(CON2,1));
+  box(ME,x-.2,y+hh+.4,z,.04,.9,.04,.25,ry,.2,cv(REBAR,1));}
  // ---- street rubble, burnt-out vehicles, bent masts ----
  for(let t=0;t<200;t++){const a=r()*6.283,rr=CR+.5+Math.pow(r(),.9)*(rOut(a)*.92-CR-.5),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(r()>dens(x,z)*.8||!free(x,z,.3)||!okAt(x,z,.15))continue;heap(x,z,.22+.3*r());}   // r9 Q1: 260 -> 200 (tris for the facade grid)
  for(let t=0;t<160;t++){const a=r()*6.283,rr=CR+.8+r()*(R*1.15-CR),x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(streetD(x,z)>.3||r()>dens(x,z)*.3||!free(x,z,.4)||!okAt(x,z,.2))continue;

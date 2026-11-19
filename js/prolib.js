@@ -107,7 +107,7 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
  const ca=Math.cos(kA),sa=Math.sin(kA),avD=(x,z)=>{const t=x*ca+z*sa;return t>0?Math.abs(-x*sa+z*ca):1e9;};
  const st=[];   // stall spots (market + gates)
  // ---- border walls with gates ----
- const SIDES=[['X','M'],['M','H'],['H','X']],WT=[{h:2.0,w:.3,c:'#2C3039'},{h:2.2,w:.32,c:'#282C34'},{h:.75,w:.26,c:'#7A7062',hedge:1}],gates=[];
+ const SIDES=[['X','M'],['M','H'],['H','X']],WT=[{h:2.6,w:.34,c:'#6A6E76'},{h:2.8,w:.36,c:'#646870'},{h:.95,w:.28,c:'#8A806E',hedge:1}],gates=[];   // S2 (review 11-18 'no walls visible'): pale concrete, taller (were #2C3039/#282C34 h 2.0/2.2 = dark on the dark machine ground)
  for(let q=0;q<3;q++){const T=WT[q],nd=NB[q],pp=BP[q];
   for(let i=0;i+1<nd.length;i++){const lim=Math.max(rOut(nd[i+1][1]+.05,SIDES[q][0]),rOut(nd[i+1][1]-.05,SIDES[q][1]))*.97;if(nd[i][0]>=lim)break;
    let[x0,z0]=pp[i],[x1,z1]=pp[i+1];if(nd[i+1][0]>lim){const t=(lim-nd[i][0])/(nd[i+1][0]-nd[i][0]);x1=x0+(x1-x0)*t;z1=z0+(z1-z0)*t;}
@@ -115,9 +115,9 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
    for(let j=0;j<n;j++){const t=(j+.5)/n;if(gate&&Math.abs(t-.5)*L<.7)continue;const px=x0+(x1-x0)*t,pz=z0+(z1-z0)*t;if(!free(px,pz,.3))continue;
     const ha=H(x0+(x1-x0)*j/n,z0+(z1-z0)*j/n),hb=H(x0+(x1-x0)*(j+1)/n,z0+(z1-z0)*(j+1)/n),y=Math.min(ha,hb)-.2,dy=Math.abs(ha-hb);   // footing follows the slope (no floating ends)
     E.box(M.ST,px,y,pz,L/n*1.03,T.h+.2+dy,T.w,ry,jc(cv(T.c),px,pz,.06));
-    if(!T.hedge){E.box(M.ST,px,y+T.h+.2+dy,pz,L/n*1.03,.08,T.w+.08,ry,cv('#6E6C6A'));E.box(M.LT,px,y+T.h+.28+dy,pz,L/n*1.03,.03,T.w*.4,ry,[.2,.3,.36],1);if(j%2===0)E.box(M.ST,px+nx*.2,y,pz+nz*.2,.18,T.h*.8,.2,ry,cv('#30343C'),1);}   // pale coping (reads as a line), cool seam + buttresses (NEAR)
+    if(!T.hedge){E.box(M.ST,px,y+T.h+.2+dy,pz,L/n*1.03,.1,T.w+.1,ry,cv('#A29E96'));E.box(M.LT,px,y+T.h+.3+dy,pz,L/n*1.03,.03,T.w*.45,ry,[.42,.52,.6]);if(j%2===0)E.box(M.ST,px+nx*.2,y,pz+nz*.2,.18,T.h*.8,.2,ry,cv('#585C64'),1);}   // S2: brighter coping + cool top seam on MID too (was NEAR-only, dim)   // pale coping (reads as a line), cool seam + buttresses (NEAR)
     else{E.box(M.ST,px,y+T.h+.2+dy,pz,L/n*1.03,.06,T.w+.06,ry,cv('#847A6C'));E.box(M.FO,px+nx*.32*(q===2?-1:1),y,pz+nz*.32*(q===2?-1:1),L/n*1.02,.62,.32,ry,jc(cv('#3E4C30'),px,pz,.12));}}   // stone coping + hedge on the human side
-   if(gate){const gx=(x0+x1)/2,gz=(z0+z1)/2,gy=H(gx,gz)-.1,ux=Math.cos(ang),uz=Math.sin(ang),hh=T.h+1.0,pc=cv(T.hedge?'#7A7062':'#3C424C');gates.push({x:gx,z:gz,ang,q});
+   if(gate){const gx=(x0+x1)/2,gz=(z0+z1)/2,gy=H(gx,gz)-.1,ux=Math.cos(ang),uz=Math.sin(ang),hh=T.h+1.0,pc=cv(T.hedge?'#8A806E':'#767C86');gates.push({x:gx,z:gz,ang,q});
     for(const s of[-1,1])E.box(M.ST,gx+ux*.78*s,gy,gz+uz*.78*s,.42,hh,.42,ry,pc);E.box(M.ST,gx,gy+hh-.05,gz,2.0,.24,.36,ry,pc);
     for(const s of[-1,1])E.glow(gx+ux*.78*s,gy+hh+.15,gz+uz*.78*s,.6,T.hedge?'#D89A5A':'#7894A8',.5,[.2,6,s,0]);
     for(const s of[-1,1])for(const s2 of[-1,1])st.push([gx+nx*1.1*s+ux*.9*s2,gz+nz*1.1*s+uz*.9*s2,ry]);}}}   // trading stalls on both sides of each gate
@@ -125,7 +125,7 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
  {const rg=rOut(kA,'X')*.95,gx=ca*rg,gz=sa*rg,gy=H(gx,gz)-.1,ry=-(kA+Math.PI/2),ux=-sa,uz=ca;for(const s of[-1,1])E.box(M.ST,gx+ux*.9*s,gy,gz+uz*.9*s,.45,2.4,.45,ry,cv('#4A4E56'));
   E.box(M.ST,gx,gy+2.3,gz,2.3,.26,.4,ry,cv('#4A4E56'));for(const s of[-1,1])E.glow(gx+ux*.9*s,gy+2.6,gz+uz*.9*s,.6,'#C89A66',.5,null);E.anchors.gate={x:gx,y:gy,z:gz};}
  // machine-zone perimeter fence (private wall along its outer edge)
- {let pv=null;for(let a=BA[0]+.03;a<=BA[1]-.03;a+=.11){const rr=rOut(a,'M')*.985,x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(pv&&free(x,z,.3)){const mxx=(x+pv[0])/2,mzz=(z+pv[1])/2,L=Math.hypot(x-pv[0],z-pv[1]);E.box(M.ST,mxx,H(mxx,mzz)-.15,mzz,L*1.04,1.05,.18,-Math.atan2(z-pv[1],x-pv[0]),cv('#2A2D35'));}pv=[x,z];}}
+ {let pv=null;for(let a=BA[0]+.03;a<=BA[1]-.03;a+=.11){const rr=rOut(a,'M')*.985,x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(pv&&free(x,z,.3)){const mxx=(x+pv[0])/2,mzz=(z+pv[1])/2,L=Math.hypot(x-pv[0],z-pv[1]);E.box(M.ST,mxx,H(mxx,mzz)-.15,mzz,L*1.04,1.7,.22,-Math.atan2(z-pv[1],x-pv[0]),cv('#5E626A'));}pv=[x,z];}}   // S2: paler + taller private wall (was #2A2D35 h 1.05)
  // ---- lots per zone (zone-aligned grids) ----
  const lots=(zn,pitch,ga,acc)=>{const out=[],u=[Math.cos(ga),Math.sin(ga)],v=[-Math.sin(ga),Math.cos(ga)],n=Math.ceil(RMAX*1.1/pitch);
   for(let i=-n;i<=n;i++)for(let j=-n;j<=n;j++){const a=i*pitch,b=j*pitch,x=a*u[0]+b*v[0],z=a*u[1]+b*v[1],rr=Math.hypot(x,z);if(rr<3||zoneOf(x,z)!==zn)continue;
@@ -141,7 +141,7 @@ FA.PROLIB={build(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
   // footing (sunk into the slope) with ~.9 u ground lanes between blocks
   if(L===core){let yy=y;for(const s of[[3.3,4.2],[2.5,3.8],[1.7,3.0]]){E.box(M.B,L.x,yy,L.z,s[0],s[1]+.05,s[0]*.9,L.ry,jc(cv('#121418'),L.x,yy,.04));yy+=s[1];}
    E.box(M.LT,L.x,yy,L.z,1.75,.04,1.58,L.ry,SEAM);
-   E.box(M.ME,L.x,yy,L.z,.14,2.4,.14,0,cv('#3E4652'));E.glow(L.x,yy+2.45,L.z,.8,'#6C88A0',.45,[.3,5,0,0]);tall.push({x:L.x,z:L.z,h:yy-y,y});E.anchors.machine={x:L.x,y:yy,z:L.z};continue;}
+   /* S2 (review: 'machine zone = spired skyscraper'): mast + tip glow removed, the core is a flat-topped windowless prism */tall.push({x:L.x,z:L.z,h:yy-y,y});E.anchors.machine={x:L.x,y:yy,z:L.z};continue;}
   const slab=r()<.35,h=(slab?4.4:2.6)+(slab?2.6:2.6)*(1-smooth(.2,1,L.f))*(.6+.6*r()),w=slab?2.7:2.7*(.9+.08*r()),dd=slab?1.25:2.7*(.9+.08*r());
   const parts=slab?[[0,-.8],[0,.8]]:[[0,0]];
   for(const[ox,oz]of parts){const p=E.L2W(L.x,L.z,L.ry,ox,oz),hh=h*(oz>0?.78:1);

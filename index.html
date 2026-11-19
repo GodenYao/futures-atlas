@@ -229,6 +229,10 @@ details.ctx{margin-top:12px}details.ctx summary{cursor:pointer;font:500 11px var
 .ctnote{color:var(--t3);margin:10px 0 0}.ctoth{max-width:880px;color:var(--t2)}.ctoth a,.ctf a{color:var(--t2)}
 .ctmob{gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;margin:0 0 16px;max-width:880px;font-size:14px}
 #foot a.fl{pointer-events:auto;color:var(--t2);text-decoration:none}#foot a.fl:hover{color:var(--acc)}
+#foot a.fl:focus-visible,.tvl .btn:focus-visible{outline:2px solid var(--acc);outline-offset:2px} /* S3 text view: keyboard focus */
+#foot>.cap{max-width:calc(38% - 30px)}#foot>*:last-child{max-width:calc(62% - 30px)} /* S3: the extra 'Text view' link made the right span ~719 px; keep the employer disclaimer whole at >= 1280 px */
+.tvl{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}.tvl .btn{color:var(--t2);border-color:var(--pline)}.tvl .btn[aria-pressed="true"]{color:var(--acc);border-color:var(--acc)}
+.tvo{list-style:decimal;padding-left:26px;margin:14px 0}.tvo li{padding:8px 0;border-bottom:1px solid var(--pline);line-height:1.5}.tvo .tvn{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.tvo .gi{flex:none}
 .t1,.t2,.t3{background:none;color:var(--t2)}
 .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .cols .glass{padding:16px}
@@ -388,7 +392,7 @@ body.m3 #week{flex:1 1 0;min-width:0;white-space:normal;text-align:left;line-hei
   <div id="tlwrap"><canvas id="tlc"></canvas></div>
 </div>
 <button id="tltab" title="Show / hide the timeline (T)">▾ HIDE TIMELINE</button>
-<div id="foot"><span class="cap" id="cap">Futures Atlas v4.5</span><span><a href="#contribute" class="fl">Contribute</a> · <a href="#about" class="fl">About</a> · Personal project, not affiliated with or endorsed by any employer.</span></div>
+<div id="foot"><span class="cap" id="cap">Futures Atlas v4.5</span><span><a href="#text" class="fl">Text view</a> · <a href="#contribute" class="fl">Contribute</a> · <a href="#about" class="fl">About</a> · Personal project, not affiliated with or endorsed by any employer.</span></div>
 <div id="tip"></div>
 <div id="nogl">WebGL is not available in this browser, so the 3D atlas cannot render. Text pages still work via the menu.</div>
 
@@ -2344,7 +2348,12 @@ const AMB2=[];{const r=rng(45);const add=f=>AMB2.push(f);
   for(let k=0;k<4;k++){const p=gs('#B85A30'),a=k/4*6.2832+q()*.9,rr=6+q()*5.5,x=s.X+Math.cos(a)*rr,z=s.Z+Math.sin(a)*rr,ph=q()*6;add(t=>{p.position.set(x,gy(x,z)+.5,z);p.scale.set(2.0,1.7,1);p.material.opacity=.28+.14*Math.sin(t*1.7+ph)*Math.sin(t*.6+ph);});}}
  // U5 whole map: drifting cloud shadows
  for(let k=0;k<4;k++){const m=new THREE.Mesh(new THREE.PlaneGeometry(46,30),new THREE.MeshBasicMaterial({map:glowTex(),color:'#000000',transparent:true,opacity:.15,depthWrite:false}));m.rotation.x=-Math.PI/2;m.renderOrder=3;SC.add(m);const z0=-45+k*28,sp=1.1+r()*.6,ph=r()*220;
-  add(t=>{m.position.set(((t*sp+ph)%240)-120,16,z0+Math.sin(t*.02+k)*6);});}
+  add(t=>{const x=((t*sp+ph)%240)-120,z=z0+Math.sin(t*.02+k)*6;m.position.set(x,16,z);
+   /* S2 (review G2 'floating dark shards'): these flat planes float at y 16, so a low camera saw them from the side or below as dark
+      slivers in the sky (close-ups, map edge). Fade them out past the map edge (also hides the wrap jump) and when the camera's
+      elevation over the plane is shallow; hidden = no draw call. World view (high camera) keeps the drifting shadows. */
+   const ef=1-Math.min(1,Math.max(0,(Math.abs(x)-55)/30)),dx=CAM.position.x-x,dz=CAM.position.z-z,el=(CAM.position.y-16)/Math.max(1,Math.hypot(dx,dz)),ek=Math.min(1,Math.max(0,(el-.45)/.35)),op=.15*ef*ek*ek*(3-2*ek);
+   m.material.opacity=op;m.visible=op>.004;});}
  // U5: river shimmer flowing downstream
  for(const Rv of RIVERS){const L=poly(Rv.pts);for(let k=0;k<3;k++){const p=gs('#BFD8FF'),ph=k/3;add(t=>{const[X,Z]=along(L,((t*.02+ph)%1)*L.tot);p.position.set(X,hMesh(X,Z)+.35,Z);p.scale.set(2.2,1,1);p.material.opacity=.10+.08*Math.sin(t*1.7+k);});}}
  // U5: faint light pulses travelling along the minor town roads
@@ -4608,7 +4617,7 @@ data:()=>`<h1>Data sources</h1><p class="lead">Evidence comes from public source
 <div class="glass"><h4><span class="tier t2">TIER 2</span> Reputable secondary</h4><div class="small">Established research groups, trackers and news outlets reporting on a primary source. Reliability 0.85.</div></div>
 <div class="glass"><h4><span class="tier t3">TIER 3</span> Other</h4><div class="small">Blogs, aggregators and similar. Used with care; reports from these sources fade fastest. Reliability 0.70.</div></div></div>
 <h3>Most-used sources so far</h3><p>Epoch AI, national statistics agencies, official gazettes, METR, lab system cards and company filings. The full list is in the <a href="#evidence">Evidence ledger</a>. There is no automatic data pull: every item is added by hand.</p>`,
-method:()=>`<h1>How it works</h1><p class="lead">The formula, parameters and ledger are public: anyone can recompute the map from the ledger with the engine in the repository (engine/) or fork it. The method version is listed under About.</p>
+method:()=>`<h1>How it works</h1><p class="lead">The formula, parameters and ledger are public: anyone can recompute the map from the ledger with the engine in the repository (engine/) or fork it. The method version is listed under About. The <a href="#text">Text view</a> lists all 13 endings with their current shares as plain text.</p>
 <h3>The model: NOW → 6 roads → 13 sites</h3><p>We stand at the <b>NOW</b> crossroads. Six roads leave it: R1 Rival blocs with obedient AI, R2 Gradual disempowerment, R3 Incident → coordinated restraint, R4 Race → loss of control, R5 Broad diffusion, R6 Gradual adoption. A road's <b>share</b> is how much of where things are heading it carries this week. Each road splits early into branches toward the sites it can end in, by <b>editorial ranges</b>. A site's number = Σ road share × split.</p>
 <h3>Visual rules</h3><ul><li><b>Trunk width = road share.</b> Each branch = road share × split; the branches into one site merge into one vein = that site's share.</li><li><b>Site light is uniform</b>: every site is lit the same; architecture describes the world, it is not a rating.</li><li><b>Terrain is static</b>: valley depth does not change with share; site gauges and road widths show it.</li><li>A site's % and its share ring use the colour of the roads that feed it; the main colour is the biggest feeder.</li><li>Site labels and cards show <b>rounded ranges</b> (to 5 pp). If the leading site's range overlaps the runner-up's, it reads <b>Leading, contested</b>.</li></ul>
 <h3>The ground: two axes</h3><p><b>West → East = who decides?</b> Humans ↔ AI. <b>North → South = how many powers?</b> Many ↔ One. Four basins: Human-led · many powers; Human-led · one or few powers; AI-led · one power; AI-led · many powers. Placement of endings is our interpretation of Tegmark's scenarios (<i>Life 3.0</i>), plus "Normal technology" (Narayanan &amp; Kapoor, 2025; not from the book).</p>
@@ -4644,6 +4653,18 @@ function openPage(k,sub){document.getElementById('pageIn').innerHTML=PAGES[k]();
  if(k==='contribute'&&sub){const c=document.getElementById('ct-'+sub);if(c){p.scrollTop=Math.max(0,c.offsetTop-64);c.classList.add('hl');setTimeout(()=>c.classList.remove('hl'),2400);}}}
 function closePage(){document.getElementById('page').style.display='none';if(location.hash)history.replaceState(null,'',location.pathname+location.search);if(window.SHARE)SHARE.sync();kick();} /* share round: back to the map = the map's own deep link (#/ending/...) again */
 window.openPage=openPage;
+// S3 (11-19): 'Text view' (#text) = accessible plain list of the 13 endings for screen readers, keyboard users and quick reading.
+// Same numbers as the map: final state of the current lens + week (pulls(day,LCUR), = curP once a lens animation ends), the card's
+// range (rangeOf) and the card's 'Where this comes from' feeds (road families, sorted). Lens buttons re-render in place.
+PAGES.text=()=>{const st=pulls(day,LCUR),rows=siteState(st),tot=rows.reduce((a,r)=>a+r.c,0),E=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+ const gl=id=>typeof glyphSVG==='function'?glyphSVG(id,16):'';
+ const fam=id=>Object.entries(st.src[id]||{}).filter(e=>e[1]>.01).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([rid,v])=>`${rid} ${E(RDI[rid].sh)} ${v.toFixed(1)}%`).join(' · ')||'none';
+ return `<h1 id="tvH">Text view</h1><p class="lead">The 13 endings as a plain list, with the same numbers as the map. Sorted by share. Lens: <b>${E(LENSI[LCUR].n)}</b> · week ${isoW(day)}.</p>
+<div class="tvl" role="group" aria-label="Lens">${LENS.map(l=>`<button class="btn" aria-pressed="${l.id===LCUR}" onclick="TVLENS('${l.id}')">${E(l.n)}</button>`).join('')}</div>
+<p class="small">Share = central estimate. Range = the band shown on the ending's card. Leading road families = the roads that feed the most share into this ending (up to three).</p>
+<ol class="tvo">${rows.map(r=>`<li><div class="tvn">${gl(r.o.id)}<b>${E(r.o.n)}</b>${r.lead?` <span class="tag mono">${r.contested?'leading, contested':'leading'}</span>`:''}${r.o.cliff?' <span class="small">(off-map cliff)</span>':''}</div><div>Share ≈${r.c.toFixed(1)}% · range ${rstr(r.rg)}</div><div class="small">Leading road families: ${fam(r.o.id)}</div></li>`).join('')}</ol>
+<p class="small">The 13 endings sum to ${tot.toFixed(1)}%; the remaining ${Math.max(0,100-tot).toFixed(1)}% is “None of these”. Numbers change with the lens and the week; how they are computed is under <a href="#method">How it works</a>.</p>`;};
+window.TVLENS=id=>{setLens(id);const p=document.getElementById('pageIn');p.innerHTML=PAGES.text();const b=p.querySelector('.tvl button[aria-pressed="true"]');if(b)b.focus();};
 function pageRoute(){const m=/^#(\w+)(?:\/([\w-]+))?$/.exec(location.hash||'');if(m&&PAGES[m[1]])openPage(m[1],m[2]);}
 addEventListener('hashchange',pageRoute);
 document.querySelectorAll('#menu button').forEach(b=>b.onclick=()=>openPage(b.dataset.p));
