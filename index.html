@@ -4387,7 +4387,7 @@ const nlGlow=(v,on)=>{if(typeof NOWL==='undefined')return;const s=on>.01?`0 0 0 
   for(let i=1;i<10;i++){const t=i/10,u=1-t,px=u*u*G.a[0]+2*t*u*mx+t*t*G.b[0],py=u*u*G.a[1]+2*t*u*my+t*t*G.b[1];
    if(tb&&px>tb[0]-4&&px<tb[2]+4&&py>tb[1]-4&&py<tb[3]+4)pen+=1;for(const s of O){if(s===G.o)continue;const m=s._mw;if(m&&m.ok&&Math.hypot(px-m.x,py-m.y)<30)pen+=1;}}return pen;};
  // round i tunables (live-editable for harness A/B: B4.TP.body=... then the next 30 Hz rebuild picks it up)
- const TP=B.TP={uh:.24,uhP:.21,uhR:1.5,uhY:4,rm:24,reA:18,reB:28,rmP:15,reAP:11,reBP:18,body:.55,a0:1,bA:.06,bodyB:.25,wv:.38,dn:.5,fil:0,filB:.06,lg:.18,lgB:.18,lgR:1.2,ih:.14,ihB:.20,ihR:2.9,n0:.5,nL:.45};
+ const TP=B.TP={uh:.24,uhP:.21,uhR:1.5,uhY:4,rm:24,reA:18,reB:28,rmP:15,reAP:11,reBP:18,body:.55,a0:1,bA:.06,bodyB:.25,wv:.38,dn:.5,fil:0,filB:.06,lg:.18,lgB:.18,lgR:1.2,ih:.14,ihB:.20,ihR:2.9,n0:.5,nL:.45,crA:.95,crR:.15}; // crest: owner 11-19 'travelling white swell too bright' (was 1.6 / .25)
  const tdBuild=(G,now)=>{const PHh=PH,Bv=bvAt(now),Bi=B.bvFix!=null?B.bvFix:RMOT?brF(now-.45):.6,S=Math.min(window.devicePixelRatio||1,1.5),D=G.D;
   const sg0=Math.max(PHh?8:12,Math.min(PHh?18:34,.1*D));if(TS.tb<0||Math.abs(G.a[0]-TS.ax)+Math.abs(G.b[0]-TS.bx)>2){const p1=tdPen(G,2*sg0),p2=tdPen(G,-2*sg0);TS.flip=TS.flip>0?(p1>0&&p2<p1?-1:1):(p2>0&&p1<p2?1:-1);}
   const sag=TS.flip*sg0*(1-.15*Bv),lift=RMOT?-3.5*Bv:-2,mx=(G.a[0]+G.b[0])/2,my=(G.a[1]+G.b[1])/2+2*sag; // control at 2x sag = midpoint drops by 'sag'
@@ -4417,10 +4417,10 @@ const nlGlow=(v,on)=>{if(typeof NOWL==='undefined')return;const s=on>.01?`0 0 0 
   // 2b icon halo around the leading icon's ring, on the LEADFX clock (.45 s lag), so the ring breath reads clearly
   ox.globalAlpha=Math.min(1,TP.ih+TP.ihB*Bi);ox.drawImage(TL,G.c[0]-ir,G.c[1]-ir,2*ir,2*ir);
   // 3 mist body (+ warm crest stamps)
-  for(let i=0;i<N;i++){const s1=TS.S[4*i+2],x=TS.S[4*i],y=TS.S[4*i+1],dn=TS.S[4*i+3],cr=cw*Math.exp(-(((s1-ce)/.16)**2)),fl=sst(.22,0,Math.min(s1,1-s1)),R=RW(i)*(1+.25*cr);
+  for(let i=0;i<N;i++){const s1=TS.S[4*i+2],x=TS.S[4*i],y=TS.S[4*i+1],dn=TS.S[4*i+3],cr=cw*Math.exp(-(((s1-ce)/.16)**2)),fl=sst(.22,0,Math.min(s1,1-s1)),R=RW(i)*(1+TP.crR*cr);
    const nr=TP.n0+(1-TP.n0)*Math.min(1,s1/TP.nL); // owner 11-19: dimmer near NOW, full strength from nL along
    const a=TP.body*dn*nr*(TP.a0+TP.bA*Bv)*(1+(s1<.5?0:.1)*fl)*(RMOT?1:(.20+.16*s1)/.28);ox.globalAlpha=Math.min(1,a);ox.drawImage(TL,x-R,y-R,2*R,2*R);
-   if(cr>.05){ox.globalAlpha=Math.min(1,a*.6*cr*1.6);ox.drawImage(TW,x-R,y-R,2*R,2*R);}}
+   if(cr>.05){ox.globalAlpha=Math.min(1,a*.6*cr*TP.crA);ox.drawImage(TW,x-R,y-R,2*R,2*R);}}
   // 4 one faint wandering hairline filament (round i: alpha .12-.18, 1 px; TP.fil = 0 drops it)
   if(TP.fil>0){const FS=PHh?16:24,fw=PHh?1.5:2.5;ox.beginPath();for(let i=0;i<=FS;i++){const q=Math.min(48,Math.round(i/FS*48)),t=i/FS,ww=fw*(2*nz(i*.35+tt*.22+5)-1)*Math.sqrt(Math.sin(Math.PI*t)),x=RX[q]+nxv*ww,y=RY[q]+nyv*ww;i?ox.lineTo(x,y):ox.moveTo(x,y);}
    ox.lineWidth=1;ox.lineCap='round';ox.lineJoin='round';ox.strokeStyle='#F6F1FF';ox.globalAlpha=TP.fil+TP.filB*Bv;ox.stroke();}
