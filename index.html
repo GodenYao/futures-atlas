@@ -169,17 +169,18 @@ body.tls #tlwrap{height:200px} /* r3 owner: '&tl=stack' only - taller plot (~172
 body.tlr #tlwrap{height:200px}body.tlr #tl{background:linear-gradient(180deg,rgba(10,9,18,.5),rgba(10,9,18,.85) 26%)!important;border-top:1px solid rgba(200,190,255,.12)!important}
 #tlrail,#tlchips,#tlrld{display:none}
 body.tlr #tlrail{display:block;position:absolute;right:0;top:0;bottom:0;width:190px;cursor:default}
-#tlrail .rh{height:13px;font:500 10px/13px var(--f2);letter-spacing:.12em;text-transform:uppercase;color:#8E88A8;white-space:nowrap}
-#tlrail .rr{display:flex;align-items:center;gap:5px;height:13px;font:500 11.5px/13px var(--f1);letter-spacing:.01em;color:#BDB6D8;transition:opacity .12s}
+#tlrail .rh{height:13px;font:500 10px/13px var(--f2);letter-spacing:.12em;text-transform:uppercase;color:#C2BCD8;white-space:nowrap}
+#tlrail .rr{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:5px;height:13px;font:500 12px/13px var(--f1);letter-spacing:.01em;color:#CBC5E2;transition:opacity .12s,transform .14s ease-out;will-change:transform} /* r6: rows placed by rank via translateY (re-rank on hover <= 150 ms) */
+@media (prefers-reduced-motion:reduce){#tlrail .rr{transition:none}}
 #tlrail .ic{flex:none;width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 1px rgba(200,190,255,.24);display:inline-flex;align-items:center;justify-content:center;color:#CFC8F0}
 #tlrail .ic .gi{margin:0;top:0;width:8px;height:8px}
 #tlrail .nm{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#tlrail .v{flex:none;font:500 10px/13px var(--f2);letter-spacing:0;color:#E6E1F5;padding-right:2px}
+#tlrail .v{flex:none;font:500 11px/13px var(--f2);letter-spacing:0;color:#EEEAF8;padding-right:2px}
 #tlrail .rr.cl .v,#tlrail .rr.cliff .v{color:var(--cc)}#tlrail .rr.cliff .ic{color:var(--cc)}
-#tlrail .rr.none .ic{box-shadow:none;border:1px dotted rgba(200,190,255,.4);width:9px;height:9px}#tlrail .rr.none{color:#8E88A8}
+#tlrail .rr.none .ic{box-shadow:none;border:1px dotted rgba(200,190,255,.4);width:9px;height:9px}#tlrail .rr.none{color:#B4AECB}
 #tlrail .rr.ld .ic{box-shadow:0 0 0 1.25px #C9A45C;color:#EBCB8B}#tlrail .rr.ld .nm{color:#EBCB8B}
-#tlrail .rr.on .nm,#tlrail .rr.on .v{color:#F2EEFF}#tlrail .rr.dim{opacity:.62}
-body.tlr #tlh .lg{display:inline;color:#ABA5C4;font:500 10px var(--f2);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+#tlrail .rr.on .nm,#tlrail .rr.on .v{color:#F2EEFF}#tlrail .rr.dim{opacity:.74} /* r6: dimmed rows keep >= 4.5:1 */
+body.tlr #tlh .lg{display:inline;color:#C2BCD8;font:500 10px var(--f2);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
 #tip.tlst{max-width:none;padding:4px 8px 5px;font:400 11px/14px var(--f2)} /* r4 compact stack tooltip (~130 px tall, 2 columns) */
 #tip.tlst .th{display:flex;justify-content:space-between;gap:12px;color:var(--t1);font-weight:600;padding-bottom:2px;margin-bottom:2px;border-bottom:1px solid var(--pline)}
 #tip.tlst .tg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-flow:column;column-gap:14px}
@@ -329,9 +330,10 @@ body.m3 #week{flex:1 1 0;min-width:0;white-space:normal;text-align:left;line-hei
  body.m3 #tlwrap{height:130px}body.m3.tls #tlwrap{height:172px}body.m3.tlr #tlwrap{height:146px}body.m3.tlr #tlc{height:calc(100% - 30px)}body.m3.tlr #tlrail{display:none}
  body.m3.tlr #tlchips{display:flex;position:absolute;left:0;right:0;bottom:0;height:28px;gap:4px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}body.m3.tlr #tlchips::-webkit-scrollbar{display:none}
  body.m3.tlr #tlchips button{flex:none;display:inline-flex;align-items:center;gap:3px;height:26px;padding:0 7px 0 4px;margin:1px 0;border:1px solid rgba(200,190,255,.16);border-radius:13px;background:rgba(10,9,18,.6);color:#CFC8F0;font:500 11px var(--f2);letter-spacing:0;cursor:pointer}
- body.m3.tlr #tlchips button .gi{margin:0;top:0}body.m3.tlr #tlchips button i{font:500 10px var(--f2);font-style:normal;color:#8E88A8;padding-left:3px}
+ body.m3.tlr #tlchips button .gi{margin:0;top:0}body.m3.tlr #tlchips button i{font:500 10px var(--f2);font-style:normal;color:#A39DBD;padding-left:3px}
  body.m3.tlr #tlchips button.cliff{color:var(--cc)}body.m3.tlr #tlchips button.ld{border-color:#C9A45C;color:#EBCB8B}body.m3.tlr #tlchips button.on{background:rgba(207,200,240,.2);color:#F2EEFF}
- body.m3.tlr #tlrld{display:inline;font:600 13px/1.2 var(--f1);letter-spacing:.02em;color:#EBCB8B;white-space:nowrap}
+ body.m3.tlr #tlh{flex-wrap:nowrap}body.m3.tlr #week{flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3} /* r6: phone ridge header = one line */
+ body.m3.tlr #tlrld{display:inline;overflow:hidden;text-overflow:ellipsis;min-width:0;font:600 13px/1.2 var(--f1);letter-spacing:.02em;color:#EBCB8B;white-space:nowrap}
  body.m3.tlr #play{width:28px;height:28px;position:relative}body.m3.tlr #play::before{content:'';position:absolute;inset:-8px}body.m3 #tip.tlst{font-size:10px;line-height:13px;column-gap:10px}body.m3 #rstop{width:40px;height:40px;margin-left:-4px}body.m3 #rstop i{width:11px;height:11px}body.m3 #tlc{touch-action:none}
  body.m3 .mevh{font:500 11px var(--f2);letter-spacing:.14em;color:var(--t2);text-transform:uppercase;margin:2px 0 8px}
  body.m3 .mevr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}body.m3 .mevr .btn{min-height:34px;min-width:44px}
@@ -3764,7 +3766,7 @@ window.TLS=TLS;
    dotted. Desktop: right rail (DOM, ranked by the latest week, never reordered) = legend + readout (header LATEST · Wxx -> hovered week).
    Phone: header leader in gold + a scrollable chip strip. Perf: three cached offscreen layers (axis / pack / hero) rebuilt only on size, DPR
    or lens change; a frame = clear + 7 drawImage + a few strokes + dots (TLR.ms = per-frame ms); nothing while the panel is hidden. */
-const TLR=new URLSearchParams(location.search).get('tl')==='ridge'?{key:'',S:null,hk:-1,hl:null,rl:null,pin:null,ms:[],msS:[],lab:[],rows:null,chips:null,cOrd:'',hdr:'',wk:'',ld:''}:null;
+const TLR=(()=>{const q=new URLSearchParams(location.search),t=q.get('tl');return t==='ridge'||(!t||!/^(roads|stack|endings)$/.test(t))&&q.get('b4')!=='0'&&typeof BFR!=='undefined'&&!!BFR;})()?{key:'',S:null,hk:-1,hl:null,rl:null,pin:null,ms:[],msS:[],lab:[],rows:null,chips:null,cOrd:'',rOrd:'',hdr:'',wk:'',ld:''}:null; /* r6 owner 11-19: ridge = DEFAULT bottom chart in the B4 view; &tl=roads = old R1-R6 lines, ?b4=0 keeps its old chart */
 if(TLR)document.body.classList.add('tlr');
 const TLRC={pack:'#CFC8F0',hi:'#F2EEFF',g1:'#EBCB8B',g2:'#C9A45C',cl:{selfdestruct:'#E3705F',reversion:'#7FC98B'}};
 function tlrMono(xs,ys){const n=xs.length,d=new Float32Array(Math.max(1,n-1)),m=new Float32Array(n);if(n<2)return m;
@@ -3778,14 +3780,14 @@ function tlrSer(){const T=TLR;if(T.S&&T.ws===WS&&T.lz===LCUR)return T.S;
  let mx=0;for(const id in V)for(const v of V[id])mx=Math.max(mx,v);const YM=Math.max(5,Math.ceil(mx/5)*5);
  const ser=ids.map(id=>({id,n:byId[id].n,kind:byId[id].cliff?'cliff':'pack'})).concat([{id:'none',n:'None of these',kind:'none'}]),ord=ser.slice().sort((a,b)=>V[b.id][K]-V[a.id][K]);
  T.S={D,K,V,YM,crest,con,ser,ord};T.ws=WS;T.lz=LCUR;T.key='';T.rows=null;T.chips=null;T.cOrd='';
- const lg=document.querySelector('#tlh .lg');if(lg)lg.textContent='Weekly share per ending · gold = leader · dashed = contested';return T.S;}
+ const lg=document.querySelector('#tlh .lg');if(lg)lg.textContent='Share per ending · gold = leader · dashed: lead within uncertainty'; /* r6: every week is 'contested' under the header rule, so the dash must not read as missing data */return T.S;}
 function tlrDom(){const T=TLR,S=T.S,wr=document.getElementById('tlwrap');if(!wr)return;
  let rl=document.getElementById('tlrail');if(!rl){rl=document.createElement('div');rl.id='tlrail';wr.appendChild(rl);
   rl.addEventListener('mouseover',e=>{const r=e.target.closest&&e.target.closest('.rr');const id=r?r.dataset.id:null;if(id!==T.rl){T.rl=id;tlrDraw();}});rl.addEventListener('mouseleave',()=>{if(T.rl){T.rl=null;tlrDraw();}});}
  let cs=document.getElementById('tlchips');if(!cs){cs=document.createElement('div');cs.id='tlchips';wr.appendChild(cs);cs.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button');if(!b)return;e.stopPropagation();T.pin=T.pin===b.dataset.id?null:b.dataset.id;tlrDraw();});}
  let ld=document.getElementById('tlrld');if(!ld){ld=document.createElement('span');ld.id='tlrld';const wk=document.getElementById('week');if(wk&&wk.parentNode)wk.parentNode.insertBefore(ld,wk.nextSibling);}
  if(!T.rows){rl.innerHTML='<div class="rh mono"></div>'+S.ord.map(s=>`<div class="rr ${s.kind}" data-id="${s.id}"${s.kind==='cliff'?` style="--cc:${TLRC.cl[s.id]||'#A8A498'}"`:''}><span class="ic">${s.kind==='none'?'':glyphSVG(s.id,9)}</span><span class="nm">${escH(s.n)}</span><span class="v"></span></div>`).join('');
-  T.rows={hd:rl.firstChild,r:{}};rl.querySelectorAll('.rr').forEach(e=>{T.rows.r[e.dataset.id]={e,v:e.querySelector('.v'),t:'',c:''};});}
+  T.rows={hd:rl.firstChild,r:{}};rl.querySelectorAll('.rr').forEach((e,i)=>{e.style.transform=`translateY(${(i+1)*13}px)`;T.rows.r[e.dataset.id]={e,v:e.querySelector('.v'),t:'',c:''};});T.rOrd=S.ord.map(s=>s.id).join();} /* r6: rows absolutely placed by rank (re-rank on hover = transform transition) */
  if(!T.chips){cs.innerHTML=S.ord.map(s=>`<button type="button" class="${s.kind}" data-id="${s.id}" aria-label="${escH(s.n)}"${s.kind==='cliff'?` style="--cc:${TLRC.cl[s.id]||'#A8A498'}"`:''}>${s.kind==='none'?'<i>None</i>':glyphSVG(s.id,20)}<span></span></button>`).join('');
   T.chips={};cs.querySelectorAll('button').forEach(b=>{T.chips[b.dataset.id]={e:b,v:b.querySelector('span'),t:'',c:''};});T.cOrd='';}}
 /* static layers: A = grid + axis labels + month axis, P = pack lines + skirts, H = None + cliffs + crest + pins + evidence ticks (+ phone end labels) */
@@ -3793,65 +3795,70 @@ function tlrBuild(w,h,dpr,PH){const T=TLR,S=T.S,{D,K,V,YM}=S,mk=()=>{const c=doc
  const RW=PH?0:190,GU=PH?30:26,x0=PH?4:30,cw=w-RW-GU,top=PH?7:14,bot=h-(PH?13:16),ch=bot-top,X=d=>x0+d/NDAYS*(cw-x0),Y=v=>bot-v/YM*ch;
  const xs=new Float32Array(D.length);D.forEach((d,k)=>xs[k]=X(d));const PY={},M={},P={};
  for(const s of S.ser){const ys=new Float32Array(D.length);for(let k=0;k<=K;k++)ys[k]=Y(V[s.id][k]);PY[s.id]=ys;M[s.id]=tlrMono(xs,ys);const p=new Path2D();for(let k=0;k<K;k++)tlrSeg(p,xs,ys,M[s.id],k,!k);if(!K){p.moveTo(xs[0],ys[0]);p.lineTo(xs[0]+1,ys[0]);}P[s.id]=p;}
- const[A,ga]=mk(),[LP,gp]=mk(),[LH,gh]=mk(),F=n=>`500 ${n}px "FA Plex",ui-monospace,monospace`;
- // A: grid at every 5, labels 9 px; phone labels inside the plot
- ga.font=F(9);for(let v=0;v<=YM;v+=5){const y=Math.round(Y(v))+.5;ga.fillStyle=v?'rgba(200,190,255,.07)':'rgba(200,190,255,.16)';ga.fillRect(x0,y-.5,cw-x0,1);if(!v&&PH)continue;ga.fillStyle='#8E88A8';
+ const[A,ga]=mk(),[LP,gp]=mk(),[LH,gh]=mk(),[LQ,gq]=mk(),F=n=>`500 ${n}px "FA Plex",ui-monospace,monospace`,TX='#B4AECB'; /* r6: axis text 10 px, #B4AECB = 9:1 on the panel; LQ = elbow pins (hidden while the rail is re-ranked) */
+ // A: grid at every 5, labels 10 px; phone labels inside the plot
+ ga.font=F(10);for(let v=0;v<=YM;v+=5){const y=Math.round(Y(v))+.5;ga.fillStyle=v?'rgba(200,190,255,.07)':'rgba(200,190,255,.16)';ga.fillRect(x0,y-.5,cw-x0,1);if(!v&&PH)continue;ga.fillStyle=TX;
   if(PH){if(v%10&&YM>15)continue;ga.textAlign='left';ga.fillText(v+'%',x0+1,y-2);}else{ga.textAlign='right';ga.fillText(v===YM?v+'%':String(v),x0-5,y+3);}}ga.textAlign='left';
- {const MN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],s0=new Date(START.getTime()),y0=s0.getUTCFullYear(),m0=s0.getUTCMonth(),lng=NDAYS>460,multi=new Date(START.getTime()+NDAYS*864e5).getUTCFullYear()>y0;ga.font=F(PH?9:10);
-  if(!PH&&(s0.getUTCDate()>1||m0)){ga.fillStyle='#8E88A8';ga.fillText(String(y0),x0+3,h-3);} /* r5: year anchor at the origin when the range starts mid-month */  for(let k=0;k<400;k++){const y=y0+Math.floor((m0+k)/12),m=(m0+k)%12,d=Math.round((Date.UTC(y,m,1)-START.getTime())/864e5);if(d>NDAYS)break;if(d<0||(lng&&m%3))continue;ga.fillStyle='rgba(200,190,255,.14)';ga.fillRect(X(d)|0,bot,1,3);ga.fillStyle='#8E88A8';ga.fillText(m===0&&(lng||multi)?String(y):(PH&&!lng?MN[m][0]:MN[m]),X(d)+3,h-(PH?2:3));}}
+ {const MN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],s0=new Date(START.getTime()),y0=s0.getUTCFullYear(),m0=s0.getUTCMonth(),lng=NDAYS>460,multi=new Date(START.getTime()+NDAYS*864e5).getUTCFullYear()>y0;ga.font=F(10);
+  if(!PH&&(s0.getUTCDate()>1||m0)){ga.fillStyle=TX;ga.fillText(String(y0),x0+3,h-3);} /* r5: year anchor at the origin when the range starts mid-month */  for(let k=0;k<400;k++){const y=y0+Math.floor((m0+k)/12),m=(m0+k)%12,d=Math.round((Date.UTC(y,m,1)-START.getTime())/864e5);if(d>NDAYS)break;if(d<0||(lng&&m%3))continue;ga.fillStyle='rgba(200,190,255,.14)';ga.fillRect(X(d)|0,bot,1,3);ga.fillStyle=TX;ga.fillText(m===0&&(lng||multi)?String(y):(PH&&!lng?MN[m][0]:MN[m]),X(d)+3,h-(PH?2:3));}}
  // P: pack lines (1 px lilac 40 %) + 12 px skirt (10 % -> 0, stacked offset strokes)
  const pack=S.ser.filter(s=>s.kind==='pack');gp.lineJoin='round';gp.strokeStyle=TLRC.pack;gp.lineWidth=2;
  for(let i=1;i<=6;i++){gp.globalAlpha=.1*(1-(i-1)/6)/1.6;gp.save();gp.translate(0,i*2);for(const s of pack)gp.stroke(P[s.id]);gp.restore();}
  gp.globalAlpha=.4;gp.lineWidth=1;for(const s of pack)gp.stroke(P[s.id]);gp.globalAlpha=1;
  // H: None (dotted), cliffs, crest (+ glow + 24 px gold skirt; dashed segments while contested), pins, evidence ticks
  gh.lineJoin='round';gh.lineCap='round';gh.setLineDash([1,3]);gh.lineWidth=1;gh.strokeStyle=TLRC.pack;gh.globalAlpha=.25;gh.stroke(P.none);gh.setLineDash([]);gh.globalAlpha=1;T.lab=[];
- const cs=[],cl=S.ser.filter(s=>s.kind==='cliff');gh.font=F(9);
+ const cs=[],cl=S.ser.filter(s=>s.kind==='cliff');gh.font=F(10);
  for(const s of cl){const c=TLRC.cl[s.id]||'#A8A498',y=PY[s.id][K];gh.strokeStyle=c;gh.globalAlpha=.85;gh.lineWidth=1.25;gh.stroke(P[s.id]);gh.globalAlpha=1;gh.fillStyle=c;gh.beginPath();gh.arc(xs[K],y,2,0,6.283);gh.fill();cs.push({s,c,y});}
  const cr=new Path2D(),cd=new Path2D(),sk=new Path2D();for(let k=0;k<K;k++){const id=S.crest[k],p=S.con[k]?cd:cr,pv=k?S.crest[k-1]:null,join=k&&S.con[k]===S.con[k-1];
   if(join&&pv!==id)p.lineTo(xs[k],PY[id][k]); /* leader change = short vertical hop, so the crest stays continuous */tlrSeg(p,xs,PY[id],M[id],k,!join);tlrSeg(sk,xs,PY[id],M[id],k,!k||pv!==id); /* skirt path skips the hops (no glow column) */}
  gh.strokeStyle=TLRC.g2;for(let i=1;i<=12;i++){gh.globalAlpha=.16*(1-(i-1)/12)/1.5;gh.lineWidth=2;gh.save();gh.translate(0,i*2);gh.stroke(sk);gh.restore();}
  gh.globalAlpha=.18;gh.lineWidth=5;gh.stroke(sk);gh.globalAlpha=1;gh.strokeStyle=TLRC.g1;gh.lineWidth=1.75;gh.stroke(cr);gh.setLineDash([5,3]);gh.stroke(cd);gh.setLineDash([]);
  const lid=S.crest[K],PIN={};
- if(!PH){S.ord.forEach((s,i)=>{const y0=Math.round(PY[s.id][K])+.5,yr=(i+1)*13+6.5,p=new Path2D();p.moveTo(xs[K]+3,y0);p.lineTo(cw+5,y0);p.lineTo(w-RW-7,yr);p.lineTo(w-RW-1,yr);PIN[s.id]=p;gh.strokeStyle=s.id===lid?'rgba(201,164,92,.4)':'rgba(207,200,240,.13)';gh.lineWidth=1;gh.stroke(p);}); /* elbow pins: end and row orders are both by latest value, so the slanted middle legs never cross; hovered pin re-stroked per frame */
+ if(!PH){S.ord.forEach((s,i)=>{const y0=Math.round(PY[s.id][K])+.5,yr=(i+1)*13+6.5,p=new Path2D();p.moveTo(xs[K]+3,y0);p.lineTo(cw+5,y0);p.lineTo(w-RW-7,yr);p.lineTo(w-RW-1,yr);PIN[s.id]=p;gq.strokeStyle=s.id===lid?'rgba(201,164,92,.4)':'rgba(207,200,240,.13)';gq.lineWidth=1;gq.stroke(p);}); /* elbow pins: end and row orders are both by latest value, so the slanted middle legs never cross; hovered pin re-stroked per frame */
   /* cliff value labels left of the end dot (rail keeps the decimals; here integer) */
   for(const c of cs){const t=Math.round(V[c.s.id][K])+'%';gh.fillStyle=c.c;gh.textAlign='right';gh.fillText(t,xs[K]-9,c.y-3);const tw=gh.measureText(t).width;T.lab.push({id:c.s.id,k:'cl',t,x:xs[K]-9-tw,y:c.y-11,w:tw,h:10});}gh.textAlign='left';}
  else{/* phone end labels: leader + cliffs only, pushed apart vertically */const L=[{id:lid,c:TLRC.g1,v:V[lid][K]}].concat(cs.map(c=>({id:c.s.id,c:c.c,v:V[c.s.id][K]}))).map(l=>Object.assign(l,{y:Y(l.v)})).sort((a,b)=>a.y-b.y);
   for(let i=1;i<L.length;i++)L[i].y=Math.max(L[i].y,L[i-1].y+10);const ov=L.length?L[L.length-1].y-(bot-4):0;if(ov>0)for(const l of L)l.y-=ov;
-  gh.font=F(9);for(const l of L){const t=Math.round(l.v)+'%';gh.fillStyle=l.c;gh.fillText(t,cw+4,l.y+3);T.lab.push({id:l.id,k:'end',t,x:cw+4,y:l.y-5,w:gh.measureText(t).width,h:10});}}
+  gh.font=F(10);for(const l of L){const t=Math.round(l.v)+'%';gh.fillStyle=l.c;gh.fillText(t,cw+4,l.y+3);T.lab.push({id:l.id,k:'end',t,x:cw+4,y:l.y-5,w:gh.measureText(t).width,h:10});}}
  pinX=EVT.map(ev=>X(dayOf(ev.d)));gh.fillStyle='rgba(200,190,255,.45)';EVT.forEach((ev,i)=>{gh.fillRect(Math.round(pinX[i]),top-10,1,7);});
  {const BW={};for(const b of BF){const d=Math.max(0,Math.min(NDAYS,dayOf(b.published))),wk=Math.floor(d/7);(BW[wk]=BW[wk]||[]).push(b);}
   tlc._bf=[];gh.fillStyle='rgba(207,200,240,.5)';/* r5: lilac evidence ticks (gold = leader only) */for(const wk in BW){const n=BW[wk].length,x=Math.round(X(Math.min(NDAYS,wk*7+3)))+.5;gh.fillRect(x-1,top-10,2,Math.min(8,3+2*n));tlc._bf.push({x,wk:+wk,items:BW[wk]});}}
- T.G={w,h,dpr,PH,RW,GU,x0,cw,top,bot,ch,xs,PY,P,PIN,A,LP,LH};tlc._x0=x0;tlc._cw=cw;}
+ T.G={w,h,dpr,PH,RW,GU,x0,cw,top,bot,ch,xs,PY,P,PIN,A,LP,LH,LQ};tlc._x0=x0;tlc._cw=cw;}
 function tlrDraw(){const T=TLR,t0=performance.now(),tl=document.getElementById('tl');if(tl&&tl.classList.contains('hid')&&!(window.M3&&M3.on))return;
  const r=tlc.getBoundingClientRect();if(!r.width||!r.height)return;if(!WS){WS=[];for(let d=0;d<=NDAYS;d+=7)WS.push(weights(d,LCUR));WS.push(weights(NDAYS,LCUR));}
  const S=tlrSer(),w=r.width,h=r.height,dpr=Math.min(2,window.devicePixelRatio||1),PH=w<600,key=`${w}x${h}@${dpr}`;let stat=0;
  if(T.key!==key){const W=Math.round(w*dpr),H=Math.round(h*dpr);if(tlc.width!==W)tlc.width=W;if(tlc.height!==H)tlc.height=H;tlrDom();tlrBuild(w,h,dpr,PH);T.key=key;stat=1;}
  const G=T.G,g=tgx,{D,K,V}=S,X=d=>G.x0+d/NDAYS*(G.cw-G.x0);let kd=D.indexOf(day);const fk=kd>=0?kd:Math.min(K,Math.floor(day/7));
  const hl=T.hl||T.rl||T.pin||(typeof HOV!=='undefined'&&HOV&&HOV.o?HOV.o.id:null),Wd=tlc.width,Hd=tlc.height,xd=Math.max(0,Math.min(Wd,Math.round(X(day)*dpr))),xc=Math.round(G.cw*dpr)+2;
+ /* r6: desktop rail re-ranks by the HOVERED week (not during playback); elbow pins only fit the latest order, so they hide while re-ranked */
+ const lo=S.ordS||(S.ordS=S.ord.map(s=>s.id).join()),rr=!G.PH&&T.hk>=0&&!playing,ro=rr?S.ord.map(s=>s.id).sort((a,b)=>V[b][T.hk]-V[a][T.hk]).join():lo,rkd=ro!==lo;
  g.setTransform(1,0,0,1,0,0);g.globalAlpha=1;g.clearRect(0,0,Wd,Hd);g.drawImage(G.A,0,0);
  const lay=(L,a)=>{g.globalAlpha=a;if(xd>0)g.drawImage(L,0,0,xd,Hd,0,0,xd,Hd);if(xc-xd>0){g.globalAlpha=a*.3;g.drawImage(L,xd,0,xc-xd,Hd,xd,0,xc-xd,Hd);}if(Wd-xc>0){g.globalAlpha=a;g.drawImage(L,xc,0,Wd-xc,Hd,xc,0,Wd-xc,Hd);}};
- lay(G.LP,hl?.5:1);g.globalAlpha=1;g.setTransform(dpr,0,0,dpr,0,0);
+ lay(G.LP,(T.rl||T.pin)?.2:hl?.5:1);g.globalAlpha=1;g.setTransform(dpr,0,0,dpr,0,0); /* r6: rail row hovered / chip pinned -> pack lines at 20 % */
  /* highlight under the hero layer, so the gold crest stays on top while a line is hovered */
- if(hl&&G.P[hl]){g.strokeStyle=TLRC.hi;g.lineWidth=1.5;g.lineJoin='round';g.stroke(G.P[hl]);if(G.PIN[hl]){g.strokeStyle='rgba(242,238,255,.55)';g.lineWidth=1;g.stroke(G.PIN[hl]);}}
- g.setTransform(1,0,0,1,0,0);lay(G.LH,1);g.globalAlpha=1;g.setTransform(dpr,0,0,dpr,0,0);
+ if(hl&&G.P[hl]){g.strokeStyle=TLRC.hi;g.lineWidth=1.5;g.lineJoin='round';g.stroke(G.P[hl]);if(G.PIN[hl]&&!rkd){g.strokeStyle='rgba(242,238,255,.55)';g.lineWidth=1;g.stroke(G.PIN[hl]);}}
+ g.setTransform(1,0,0,1,0,0);lay(G.LH,1);if(!rkd)lay(G.LQ,1);g.globalAlpha=1;g.setTransform(dpr,0,0,dpr,0,0);
  if(T.hk>=0){const xh=X(D[T.hk]),x=Math.round(xh)+.5;g.strokeStyle='rgba(242,238,255,.4)';g.lineWidth=1;g.setLineDash([3,3]);g.beginPath();g.moveTo(x,G.top-2);g.lineTo(x,G.bot);g.stroke();g.setLineDash([]);
-  if(hl&&G.PY[hl]){g.beginPath();g.arc(xh,G.PY[hl][T.hk],2.5,0,6.283);g.fillStyle=TLRC.hi;g.fill();}
-  const wl=isoW(D[T.hk]).replace(/^\d{4}-/,'');g.font='600 9.5px "FA Plex",ui-monospace,monospace';const tw=g.measureText(wl).width+8,lx=Math.max(G.x0,Math.min(G.cw-tw,xh-tw/2)),ty=G.PH?G.bot+1:G.top-13;g.fillStyle='rgba(8,11,16,.92)';g.fillRect(lx,ty,tw,12);g.fillStyle='#CFC8F0';g.fillText(wl,lx+4,ty+9);T.ptag={x:lx,w:tw,t:wl};} /* probe week tag (lilac; the playhead tag stays gold) */
+  {const cid=S.crest[T.hk];g.beginPath();g.arc(xh,G.PY[cid][T.hk],2.5,0,6.283);g.fillStyle=TLRC.g1;g.fill();} /* r6: crest dot on the probe */
+  if(hl&&G.PY[hl]){const yy=G.PY[hl][T.hk];g.beginPath();g.arc(xh,yy,2.5,0,6.283);g.fillStyle=TLRC.hi;g.fill();
+   const vt=V[hl][T.hk].toFixed(1)+'%';g.font='600 11px "FA Plex",ui-monospace,monospace';const vw=g.measureText(vt).width+8,vx=xh+6+vw>G.cw?xh-6-vw:xh+6,vy=Math.max(G.top,Math.min(G.bot-13,yy-15));g.fillStyle='rgba(8,11,16,.9)';g.fillRect(vx,vy,vw,13);g.fillStyle=TLRC.hi;g.fillText(vt,vx+4,vy+10);} /* r6: value tag for the probed line */
+  const wl=isoW(D[T.hk]).replace(/^\d{4}-/,'');g.font='600 10px "FA Plex",ui-monospace,monospace';const tw=g.measureText(wl).width+8,lx=Math.max(G.x0,Math.min(G.cw-tw,xh-tw/2)),ty=G.PH?G.bot+1:G.top-13;g.fillStyle='rgba(8,11,16,.92)';g.fillRect(lx,ty,tw,12);g.strokeStyle='rgba(207,200,240,.45)';g.lineWidth=1;g.strokeRect(lx+.5,ty+.5,tw-1,11);g.fillStyle='#E2DDF5';g.fillText(wl,lx+4,ty+9);T.ptag={x:lx,w:tw,t:wl};} /* probe week tag (lilac; the playhead tag stays gold) */
  const px=X(day),cx=Math.round(px)+.5,yAt=id=>{const ys=G.PY[id];if(kd>=0)return ys[kd];const k=fk,t=(day-D[k])/((D[k+1]-D[k])||1);return ys[k]+(ys[Math.min(K,k+1)]-ys[k])*t;};
  g.fillStyle=TLRC.hi;g.fillRect(cx-.5,G.top-3,1,G.bot-G.top+3);
  const lid=S.crest[fk];g.beginPath();for(const s of S.ser)if(s.kind==='pack'&&s.id!==lid){const y=yAt(s.id);g.moveTo(px+1.5,y);g.arc(px,y,1.5,0,6.283);}g.fillStyle='rgba(225,220,248,.85)';g.fill();
  for(const s of S.ser){if(s.id===lid||s.kind==='pack')continue;g.beginPath();g.arc(px,yAt(s.id),1.5,0,6.283);g.fillStyle=s.kind==='none'?'rgba(207,200,240,.5)':TLRC.cl[s.id]||'#A8A498';g.fill();}
  g.beginPath();g.arc(px,yAt(lid),2,0,6.283);g.fillStyle=TLRC.g1;g.fill();
- {const wl=isoW(day).replace(/^\d{4}-/,'');g.font='600 9.5px "FA Plex",ui-monospace,monospace';const tw=g.measureText(wl).width+8,th=12,lx=Math.max(G.x0,Math.min(G.cw-tw,px-tw/2)),ty=G.PH?G.bot+1:G.top-13; /* desktop: tag on top of the playhead (clear of the month row); phone: on the time axis */
+ {const wl=isoW(day).replace(/^\d{4}-/,'');g.font='600 10px "FA Plex",ui-monospace,monospace';const tw=g.measureText(wl).width+8,th=12,lx=Math.max(G.x0,Math.min(G.cw-tw,px-tw/2)),ty=G.PH?G.bot+1:G.top-13; /* desktop: tag on top of the playhead (clear of the month row); phone: on the time axis */
   g.fillStyle='rgba(8,11,16,.92)';g.beginPath();if(g.roundRect)g.roundRect(lx,ty,tw,th,2.5);else g.rect(lx,ty,tw,th);g.fill();g.strokeStyle='rgba(201,164,92,.38)';g.lineWidth=1;g.stroke();g.fillStyle=TLRC.g1;g.fillText(wl,lx+4,ty+9);T.tag={x:lx,y:ty,w:tw,h:th,t:wl};}
  // readout: hovered week, else the playhead week (values in place; no reordering on desktop)
  const kr=T.hk>=0?T.hk:fk,rv=id=>(T.hk<0&&kd<0)?(id==='none'?V.none[fk]:(curP.p[id]||0)):V[id][kr],rlid=S.crest[kr];
- const hd=T.hk>=0?isoW(D[T.hk]).replace(/^\d{4}-/,'')+' · ranked by latest':(day===NDAYS?'LATEST · ':'')+isoW(day).replace(/^\d{4}-/,'');
- if(T.rows&&!PH){if(T.hdr!==hd){T.rows.hd.textContent=hd;T.hdr=hd;}for(const s of S.ord){const R=T.rows.r[s.id],t=rv(s.id).toFixed(1),c=(s.id===rlid?'ld ':'')+(hl?(s.id===hl?'on':'dim'):'');if(R.t!==t){R.v.textContent=t;R.t=t;}if(R.c!==c){R.e.classList.toggle('ld',s.id===rlid);R.e.classList.toggle('on',!!hl&&s.id===hl);R.e.classList.toggle('dim',!!hl&&s.id!==hl);R.c=c;}}}
+ const hd=T.hk>=0?(w=>w+(rr?' · ranked by '+w:' · ranked by latest'))(isoW(D[T.hk]).replace(/^\d{4}-/,'')):(day===NDAYS?'LATEST · ':'')+isoW(day).replace(/^\d{4}-/,'');
+ if(T.rows&&!PH){if(T.hdr!==hd){T.rows.hd.textContent=hd;T.hdr=hd;}if(T.rOrd!==ro){ro.split(',').forEach((id,i)=>{const R=T.rows.r[id];if(R)R.e.style.transform=`translateY(${(i+1)*13}px)`;});T.rOrd=ro;}for(const s of S.ord){const R=T.rows.r[s.id],t=rv(s.id).toFixed(1),c=(s.id===rlid?'ld ':'')+(hl?(s.id===hl?'on':'dim'):'');if(R.t!==t){R.v.textContent=t;R.t=t;}if(R.c!==c){R.e.classList.toggle('ld',s.id===rlid);R.e.classList.toggle('on',!!hl&&s.id===hl);R.e.classList.toggle('dim',!!hl&&s.id!==hl);R.c=c;}}}
  if(T.chips&&PH){const ord=S.ord.map(s=>s.id);if(!playing)ord.sort((a,b)=>rv(b)-rv(a));const os=ord.join();if(os!==T.cOrd){const cs=document.getElementById('tlchips');for(const id of ord)cs.appendChild(T.chips[id].e);T.cOrd=os;}
-  for(const id of ord){const C=T.chips[id],t=Math.round(rv(id))+'%',c=(id===rlid?'ld ':'')+(hl===id?'on':'');if(C.t!==t){C.v.textContent=t;C.t=t;}if(C.c!==c){C.e.classList.toggle('ld',id===rlid);C.e.classList.toggle('on',hl===id);C.c=c;}}
+  const IC={};for(const id of ord){const n=Math.round(rv(id));IC[n]=(IC[n]||0)+1;} /* r6: two chips with the same integer -> both show one decimal */
+  for(const id of ord){const C=T.chips[id],vv=rv(id),n=Math.round(vv),t=(IC[n]>1?vv.toFixed(1):n)+'%',c=(id===rlid?'ld ':'')+(hl===id?'on':'');if(C.t!==t){C.v.textContent=t;C.t=t;}if(C.c!==c){C.e.classList.toggle('ld',id===rlid);C.e.classList.toggle('on',hl===id);C.c=c;}}
   const ld=document.getElementById('tlrld'),lt=`${byId[rlid].n} ≈${Math.round(rv(rlid))}%`;if(ld&&T.ld!==lt){ld.textContent=lt;T.ld=lt;}}
- const wk=`<b>${isoW(day)}</b> · week of ${fmt(day-(day%7))}`+(window.NOWM&&NOWM.ok?NOWM.tag():'');if(wk!==T.wk){document.getElementById('week').innerHTML=wk;T.wk=wk;}
+ const wk=PH?`<b>${isoW(day)}</b>`:`<b>${isoW(day)}</b> · week of ${fmt(day-(day%7))}`+(window.NOWM&&NOWM.ok?NOWM.tag():''); /* r6: phone header = one line (provenance stays on desktop + in the cards) */if(wk!==T.wk){document.getElementById('week').innerHTML=wk;T.wk=wk;}
  const mo=(T.hl||T.rl||T.pin)||null;if(window.TLHO!==mo){window.TLHO=mo;kick(400);}
  const dt=performance.now()-t0;(stat?T.msS:T.ms).push(+dt.toFixed(3));if(T.ms.length>600)T.ms.splice(0,300);}
 function tlrHov(e){const T=TLR,G=T&&T.G,S=T&&T.S;if(!G)return false;const r=tlc.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(y<G.top-1||x>G.cw+4||x<G.x0-6){tlrOff();return false;}
@@ -4849,7 +4856,7 @@ void main(){float s=vK<.5?uS.x:uS.y;if(vM<.01||s<.001)discard;vec3 c=vK<.5?uC0:u
      B.hint=()=>({on:!!document.getElementById('b4hint')&&!h.classList.contains('off'),box:(()=>{const r=h.getBoundingClientRect();return [r.left,r.top,r.width,r.height].map(Math.round);})()});}}}
   T(document.querySelector('#lenspop .ph'),'WEIGHT THE ROADS','WEIGHT THE SCENARIO FAMILIES');
   if(typeof PAGES!=='undefined'){const m0=PAGES.method,t0=PAGES.traj;
-   if(m0)PAGES.method=(...a)=>m0(...a).replace('<li><b>Trunk width = road share.</b> Each branch = road share × split; the branches into one site merge into one vein = that site\'s share.</li>','<li><b>NOW is a point</b> placed by this week\'s ending shares: map centre + Σ (share − 1/13) × (ending\'s position − map centre), at true scale; the two cliff endings are left out. The gold ground cloud shows the uncertainty, the dotted trail shows past weeks, and a soft mist strand links the NOW label to the leading ending\'s icon (hover it: “Leading: ending, share”).</li><li><b>Cliff endings</b> (Reversion, Self-destruction) are not a direction on the axes: the Reversion cliff and the crater wall glow, stronger with share, and both shares sit under the NOW label.</li><li><b>Scenario families (R1–R6)</b> are the calculation layer, hidden on the map: hover or click a row in the left list to show one.</li>').replace('</h1>','</h1><div class="sub" style="margin:8px 0 14px"><b>How the numbers are computed:</b> six editorial scenario families (R1–R6), our synthesis of the literature. They are a calculation layer, not the map. <a href="#" onclick="openPage(\'traj\');return false">Open the scenario families (R1–R6) →</a></div>').replace('site gauges and road widths show it.','the share rings on each ending\'s icon show it.').replace('A site\'s % and its share ring use the colour of the roads that feed it; the main colour is the biggest feeder.','An ending\'s ring colour = the scenario family that feeds it most (open the left list to see the families).');
+   if(m0)PAGES.method=(...a)=>m0(...a).replace('<li><b>Trunk width = road share.</b> Each branch = road share × split; the branches into one site merge into one vein = that site\'s share.</li>',(window.TLR?'<li><b>Bottom chart</b>: one line per ending = its weekly share (the right-hand list gives the values, ranked by the latest week, or by the week under the cursor). The <b>gold</b> line follows the leading ending; it is <b>dashed</b> where the lead is within uncertainty (the leader’s range overlaps the runner-up’s), not where data is missing. The dotted line is “None of these”; the two cliff endings have their own colours.</li>':'')+'<li><b>NOW is a point</b> placed by this week\'s ending shares: map centre + Σ (share − 1/13) × (ending\'s position − map centre), at true scale; the two cliff endings are left out. The gold ground cloud shows the uncertainty, the dotted trail shows past weeks, and a soft mist strand links the NOW label to the leading ending\'s icon (hover it: “Leading: ending, share”).</li><li><b>Cliff endings</b> (Reversion, Self-destruction) are not a direction on the axes: the Reversion cliff and the crater wall glow, stronger with share, and both shares sit under the NOW label.</li><li><b>Scenario families (R1–R6)</b> are the calculation layer, hidden on the map: hover or click a row in the left list to show one.</li>').replace('</h1>','</h1><div class="sub" style="margin:8px 0 14px"><b>How the numbers are computed:</b> six editorial scenario families (R1–R6), our synthesis of the literature. They are a calculation layer, not the map. <a href="#" onclick="openPage(\'traj\');return false">Open the scenario families (R1–R6) →</a></div>').replace('site gauges and road widths show it.','the share rings on each ending\'s icon show it.').replace('A site\'s % and its share ring use the colour of the roads that feed it; the main colour is the biggest feeder.','An ending\'s ring colour = the scenario family that feeds it most (open the left list to see the families).');
    if(t0)PAGES.traj=(...a)=>t0(...a).replace(/<h1>Roads<\/h1>/,'<h1>Scenario families (R1–R6)</h1><p class="small">How the numbers are computed: six editorial scenario families, our synthesis of the literature. The map shows endings; these families stay backstage (called “roads” below).</p>');}});
  return B;})();
 // ======================= PAGES =======================
