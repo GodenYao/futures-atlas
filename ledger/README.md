@@ -1,7 +1,7 @@
 # Evidence ledger (public)
 
 The ledger is the public record the map is computed from. Anyone can read it, check it and
-recompute the numbers. Ledger text is CC BY 4.0; code is Apache-2.0.
+recompute the numbers. Ledger text is CC BY 4.0; code is Apache-2.0. (LICENSE-DATA)
 
 ```
 ledger/

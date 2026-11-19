@@ -159,6 +159,6 @@ List and meanings: [LABELS.md](LABELS.md). Code of conduct: [CODE_OF_CONDUCT.md]
 ## Licence
 
 By contributing you agree that code is licensed Apache-2.0 and ledger text, summaries and
-figures CC BY 4.0 (see [LICENSE](LICENSE)). Embedded videos belong to their creators.
+figures CC BY 4.0 (see [LICENSE](LICENSE) and [LICENSE-DATA](LICENSE-DATA)). Embedded videos belong to their creators.
 
 Personal project, not affiliated with or endorsed by any employer.

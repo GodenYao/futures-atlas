@@ -1,0 +1,31 @@
+Futures Atlas — data licence
+
+Copyright 2026 the Futures Atlas contributors.
+
+Unless a file says otherwise, the DATA in this repository is licensed under the Creative Commons
+Attribution 4.0 International licence (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/legalcode
+
+"Data" means:
+  - the evidence ledger: everything under ledger/ (items, indicators.json, backfill/, review/), including
+    item summaries, quotes and notes written for this project;
+  - the weekly snapshots and other numbers produced by the engine (share estimates, ranges, road and
+    ending shares), and the exported map data;
+  - figures, rendered map images and Open Graph cards in og/ and elsewhere that this project made;
+  - the written text of the site (ending summaries, method pages).
+
+The CODE (engine/, js/, tools/, the site's HTML/JS/CSS and build scripts) is licensed under Apache-2.0;
+see LICENSE.
+
+Attribution. When you reuse the data, credit "Futures Atlas contributors", link
+https://github.com/GodenYao/futures-atlas and the licence, and say if you changed anything. Example:
+  "Data: Futures Atlas contributors, CC BY 4.0, https://github.com/GodenYao/futures-atlas (modified)."
+
+Not covered by this licence:
+  - the sources that ledger items cite: quoted passages stay with their authors and are used here as
+    short quotations for commentary; follow the link for the source's own terms;
+  - embedded or linked videos (Visions panel), which belong to their creators;
+  - fonts bundled in the site (their own licences: SIL Open Font License 1.1) and three.js (MIT);
+  - third-party assets, each credited in pilot/ASSETS.md (or next to the asset) under its own CC0 / CC BY terms.
+
+The numbers are estimates built from an editorial method. They come with no warranty of any kind
+(CC BY 4.0, section 5).

@@ -49,4 +49,4 @@ Videos in the "Visions" panel are embedded from YouTube and belong to their crea
 
 Personal project, not affiliated with or endorsed by any employer.
 
-Code: Apache-2.0. Ledger, summaries and figures: CC BY 4.0.
+Code: Apache-2.0. Ledger, summaries and figures: CC BY 4.0. See LICENSE-DATA.
