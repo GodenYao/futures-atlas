@@ -165,6 +165,13 @@ body.axanim .axi.wy{transition:left .3s ease-out,top .3s ease-out,transform .3s 
 #play:hover{color:var(--acc);border-color:var(--accD)}
 #rstop{width:20px;height:20px;border:1px solid var(--pline);background:transparent;cursor:pointer;flex:none;color:var(--t2);padding:0;display:inline-flex;align-items:center;justify-content:center;margin-left:-8px}#rstop[hidden]{display:none}#rstop i{width:7px;height:7px;background:currentColor;display:block}#rstop:hover{color:var(--acc);border-color:var(--accD)}#rstop:focus-visible,#play:focus-visible{outline:2px solid var(--acc);outline-offset:2px} /* r3 owner: Stop replay (square), shown only during a replay session */
 body.tls #tlwrap{height:200px} /* r3 owner: '&tl=stack' only - taller plot (~172 px) so the 13 bands read */
+#tip.tlst{max-width:none;padding:4px 8px 5px;font:400 11px/14px var(--f2)} /* r4 compact stack tooltip (~130 px tall, 2 columns) */
+#tip.tlst .th{display:flex;justify-content:space-between;gap:12px;color:var(--t1);font-weight:600;padding-bottom:2px;margin-bottom:2px;border-bottom:1px solid var(--pline)}
+#tip.tlst .tg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-flow:column;column-gap:14px}
+#tip.tlst .tr{display:flex;gap:5px;align-items:center;min-width:0;white-space:nowrap}
+#tip.tlst .tr i{display:inline-block;width:7px;height:7px;flex:0 0 7px}
+#tip.tlst .tr .tn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#tip.tlst .tr.on{color:#F2EEE4;font-weight:600}
 #tlh .sp{flex:1}
 #week{flex:none;text-align:right;white-space:nowrap;color:var(--t2);font:400 11px var(--f2);letter-spacing:.06em}
 #week b{color:var(--acc);font-weight:500}
@@ -304,7 +311,7 @@ body.m3p #card[data-s="0"]{-webkit-mask-image:linear-gradient(to bottom,#000 cal
  body.m3 #tlh{gap:6px 10px;margin-bottom:4px;flex-wrap:wrap}body.m3 #tlh .lg,body.m3 #tlh .sp{display:none}
 body.m3 #week{flex:1 1 0;min-width:0;white-space:normal;text-align:left;line-height:1.4}
  body.m3 #play{width:40px;height:40px;font-size:12px}
- body.m3 #tlwrap{height:130px}body.m3.tls #tlwrap{height:160px}body.m3 #rstop{width:40px;height:40px;margin-left:-4px}body.m3 #rstop i{width:11px;height:11px}body.m3 #tlc{touch-action:none}
+ body.m3 #tlwrap{height:130px}body.m3.tls #tlwrap{height:172px}body.m3 #tip.tlst{font-size:10px;line-height:13px;column-gap:10px}body.m3 #rstop{width:40px;height:40px;margin-left:-4px}body.m3 #rstop i{width:11px;height:11px}body.m3 #tlc{touch-action:none}
  body.m3 .mevh{font:500 11px var(--f2);letter-spacing:.14em;color:var(--t2);text-transform:uppercase;margin:2px 0 8px}
  body.m3 .mevr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}body.m3 .mevr .btn{min-height:34px;min-width:44px}
  body.m3 .mevi{border-top:1px solid var(--pline);padding:7px 0;display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:18px;color:var(--t2)}
@@ -3663,7 +3670,11 @@ window.TLEN=TLEN;
    tall over the label's width, else a right-side legend list in visual band order. Hover / tap a week = tooltip with every share that week
    (sorted) + the band under the pointer highlighted (others dimmed). Same frame, x axis, pins and cursor as the default; y = 0-100 %. */
 const TLS=new URLSearchParams(location.search).get('tl')==='stack'?{ws:null,lz:null,ser:null,W:null,hov:null,hk:-1,lab:[],chk:null,tt:0}:null;if(TLS)document.body.classList.add('tls'); /* r3 owner: taller panel in stack mode only (CSS body.tls) */
-const TLSC=['#8DA6CC','#C9AE84','#A68FCB','#7FA0A6','#C795A4','#9DA3B3','#B5895F','#6E86B0','#D3C3A0','#8E7AA6','#A9B7C6'];
+/* r4 palette: hue AND lightness alternate band to band (no road hues, no extra red/green); adjacent-band CIE76 deltaE >= 32 over #0B0F14 at the .86 fill */
+const TLSC=['#6F8FE0','#E0B66A','#9A6FD0','#74C7D9','#C77BA8','#D8D0B8','#4F6FA8','#E39A6A','#A9A2E6','#8C6A4E','#B58BC9'];
+/* r4: label text colour by WCAG contrast against the band as drawn (fill alpha over the dark panel) */
+function tlsLum(hex,a){const b=[11,15,20],c=[1,3,5].map((j,i)=>{const v=(a*parseInt(hex.slice(j,j+2),16)+(1-a)*b[i])/255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);});return .2126*c[0]+.7152*c[1]+.0722*c[2];}
+function tlsInk(hex,a){const L=tlsLum(hex,a),cl=(tlsLum('#F6F2E8',1)+.05)/(L+.05),cd=(L+.05)/(tlsLum('#0A0D12',1)+.05);return cd>=cl?{c:'#0A0D12',halo:0,cr:+cd.toFixed(1)}:{c:'#F6F2E8',halo:1,cr:+cl.toFixed(1)};}
 function tlsSer(){const T=TLS;if(T.ser&&T.ws===WS&&T.lz===LCUR)return T.ser;
  const L=pulls(NDAYS,LCUR).p,by=(a,b)=>(L[b]||0)-(L[a]||0),cl=O.filter(o=>o.cliff).map(o=>o.id).sort(by),rest=O.map(o=>o.id).filter(id=>!cl.includes(id)).sort(by),CC={reversion:'#7FC98B',selfdestruct:'#E3705F'};
  T.ser=rest.map((id,i)=>({id,c:TLSC[i%TLSC.length],n:byId[id].n,a:.86})).concat([{id:'none',c:'#4E555F',n:'None of these',a:.7,res:1}]).concat(cl.map(id=>({id,c:CC[id]||'#8A8F96',n:byId[id].n,a:.5,cliff:1})));
@@ -3671,16 +3682,16 @@ function tlsSer(){const T=TLS;if(T.ser&&T.ws===WS&&T.lz===LCUR)return T.ser;
  T.W=[];for(let d=0;d<=NDAYS;d+=7)T.W.push(row(d));T.W.push(row(NDAYS));
  {const S=[],seen=new Set();for(let d=0;d<=NDAYS;d++){const i=bfIdx(d);if(seen.has(i))continue;seen.add(i);const r=row(d);S.push([BFR.weeks[i],+r._s.toFixed(3),+r._s13.toFixed(3)]);}
   const v=S.map(s=>s[1]);T.chk={n:S.length,w0:S[0][0],w1:S[S.length-1][0],min:Math.min(...v),max:Math.max(...v),ok:v.every(x=>Math.abs(x-100)<=.5),s13:[Math.min(...S.map(s=>s[2])),Math.max(...S.map(s=>s[2]))],bad:S.filter(s=>Math.abs(s[1]-100)>.5)};}
- T.ws=WS;T.lz=LCUR;const lg=document.querySelector('#tlh .lg');if(lg)lg.textContent='Bands = weekly share of all 13 endings + None of these (100 %)';return T.ser;}
+ T.ws=WS;T.lz=LCUR;const lg=document.querySelector('#tlh .lg');if(lg)lg.textContent=`Bands = weekly share of all 13 endings + None of these (100 %) · labels = latest week (${isoW(NDAYS).replace(/^\d{4}-/,'')})`;return T.ser;}
 function tlsFit(g,t,mx){if(g.measureText(t).width<=mx)return t;while(t.length>3&&g.measureText(t+'…').width>mx)t=t.slice(0,-1);return t+'…';}
 function tlsDraw(g,w,h){const T=TLS,SR=tlsSer(),W=T.W,K=W.length-1,PH=w<600,fs=PH?9:11,pit=PH?10:11.5,F=`500 ${fs}px "FA Plex",ui-monospace,monospace`,x0=34,top=12,bot=h-16,ch=bot-top,Y=v=>bot-v/100*ch;
  // cumulative band edges per week column (bottom -> top)
  const E=W.map(r=>{let c=0;return SR.map(s=>{const lo=c;c+=r[s.id]||0;return[lo,c];});});
- g.font=F;const txt=s=>`${s.n} ${(W[K][s.id]||0).toFixed(1)}%`;let gut=12,cw=0,ins=[],leg=[],cols=1,colW=0;
+ g.font=F;const txt=s=>`${s.n} ${(W[K][s.id]||0).toFixed(1)}%`,LH=`latest week (${isoW(NDAYS).replace(/^\d{4}-/,'')})`;let gut=12,cw=0,ins=[],leg=[],cols=1,colW=0;
  for(let it=0;it<4;it++){cw=w-gut;const X=d=>x0+d/NDAYS*(cw-x0);ins=[];leg=[];
   SR.forEach((s,i)=>{const t=txt(s),tw=g.measureText(t).width,xa=cw-6-tw-4;let mn=1e9;for(let k=0;k<=K;k++){const x=X(Math.min(NDAYS,k*7));if(x>=xa-8)mn=Math.min(mn,(E[k][i][1]-E[k][i][0])/100*ch);}
    if(mn>=11&&tw<(cw-x0)*.5)ins.push({s,i,t,tw});else leg.push({s,i});});
-  const rpc=Math.max(1,Math.floor((h-4)/pit));cols=Math.max(1,Math.ceil(leg.length/rpc));colW=0;const cap=PH?112:176;
+  const rpc=Math.max(1,Math.floor((h-4)/pit)-1);cols=Math.max(1,Math.ceil(leg.length/rpc));colW=leg.length?g.measureText(LH).width+2:0;const cap=PH?112:176; /* r4: one row reserved for the legend header */
   for(const l of leg){l.t=tlsFit(g,l.s.n,cap)+' '+(W[K][l.s.id]||0).toFixed(1)+'%';colW=Math.max(colW,g.measureText(l.t).width+14);}
   const ng=leg.length?Math.ceil(12+cols*(colW+8)):12;if(ng===gut)break;gut=ng;}
  const X=d=>x0+d/NDAYS*(cw-x0),xd=X(day),hv=T.hov;
@@ -3701,20 +3712,29 @@ function tlsDraw(g,w,h){const T=TLS,SR=tlsSer(),W=T.W,K=W.length-1,PH=w<600,fs=P
   tlc._bf=[];for(const wk in BW){const n=BW[wk].length,x=Math.round(X(Math.min(NDAYS,wk*7+3)))+.5;g.fillStyle=wk*7<=day?'rgba(201,164,92,.9)':'rgba(201,164,92,.38)';g.fillRect(x-1,top-10,2,Math.min(9,3+2*n));tlc._bf.push({x,wk:+wk,items:BW[wk]});}}
  // labels: inside the band at the right end, else the legend list (visual top -> bottom = band order reversed)
  T.lab=[];g.font=F;g.textBaseline='middle';
- for(const l of ins){const m=(E[K][l.i][0]+E[K][l.i][1])/2,y=Y(m),x=cw-6-l.tw;g.fillStyle=l.s.a>.7?'#0B0F14':'#EDE8DC';g.globalAlpha=hv&&hv!==l.s.id?.6:1;g.fillText(l.t,x,y+.5);g.globalAlpha=1;T.lab.push({id:l.s.id,k:'in',t:l.t,x,y:y-fs*.6,w:l.tw,h:fs*1.2});}
- const LG=[...leg].sort((a,b)=>b.i-a.i),rpc=Math.max(1,Math.floor((h-4)/pit)),pit2=Math.min(pit+2,(h-4)/Math.max(1,Math.min(rpc,LG.length)));
- LG.forEach((l,j)=>{const c=Math.floor(j/rpc),r=j%rpc,x=cw+12+c*(colW+8),y=2+pit2*(r+.5);g.globalAlpha=hv&&hv!==l.s.id?.45:1;g.fillStyle=l.s.c;g.fillRect(x,y-4,8,8);g.fillStyle=hv===l.s.id?'#F2EEE4':'#BDB8AC';g.fillText(l.t,x+12,y+.5);g.globalAlpha=1;
+ /* r4: hovered week = thin vertical cursor line under the labels (its week chip is drawn last) */
+ const hx=T.hk>=0?Math.round(X(Math.min(NDAYS,T.hk*7)))+.5:null;if(hx!=null){g.fillStyle='rgba(242,238,228,.78)';g.fillRect(hx-.5,top,1,bot-top);}
+ /* r4: inline label ink picked for contrast against its band (dark ink on light bands; light ink + small dark halo on dark bands) */
+ for(const l of ins){const m=(E[K][l.i][0]+E[K][l.i][1])/2,y=Y(m),x=cw-6-l.tw,ink=tlsInk(l.s.c,l.s.a);g.globalAlpha=hv&&hv!==l.s.id?.6:1;if(ink.halo){g.lineJoin='round';g.lineWidth=2.6;g.strokeStyle='rgba(6,9,13,.82)';g.strokeText(l.t,x,y+.5);}g.fillStyle=ink.c;g.fillText(l.t,x,y+.5);g.globalAlpha=1;T.lab.push({id:l.s.id,k:'in',t:l.t,x,y:y-fs*.6,w:l.tw,h:fs*1.2,ink:ink.c,cr:ink.cr});}
+ const LG=[...leg].sort((a,b)=>b.i-a.i),rpc=Math.max(1,Math.floor((h-4)/pit)-1),pit2=Math.min(pit+2,(h-4)/(Math.max(1,Math.min(rpc,LG.length))+1));
+ if(LG.length){const y=2+pit2*.5,x=cw+12;g.fillStyle='#8F8B80';g.fillText(LH,x,y+.5);T.lab.push({id:'_hdr',k:'hdr',t:LH,x,y:y-fs*.6,w:g.measureText(LH).width,h:fs*1.2});}
+ LG.forEach((l,j)=>{const c=Math.floor(j/rpc),r=j%rpc+1,x=cw+12+c*(colW+8),y=2+pit2*(r+.5);g.globalAlpha=hv&&hv!==l.s.id?.45:1;g.fillStyle=l.s.c;g.fillRect(x,y-4,8,8);g.fillStyle=hv===l.s.id?'#F2EEE4':'#BDB8AC';g.fillText(l.t,x+12,y+.5);g.globalAlpha=1;
   const tw=g.measureText(l.t).width;T.lab.push({id:l.s.id,k:'leg',t:l.t,x,y:y-fs*.6,w:tw+12,h:fs*1.2});});
  g.textBaseline='alphabetic';
  const cx=Math.round(xd)+.5;g.fillStyle='#C9A45C';g.fillRect(cx-.5,top-10,1,bot-top+10);
+ if(hx!=null){const wl=isoW(Math.min(NDAYS,T.hk*7)).replace(/^\d{4}-/,'');g.font=`600 ${fs}px "FA Plex",ui-monospace,monospace`;const ww=g.measureText(wl).width+8,lx=hx+3+ww<=cw-2?hx+3:hx-3-ww;g.fillStyle='rgba(8,11,16,.88)';g.fillRect(lx,top+1,ww,fs+5);g.fillStyle='#F2EEE4';g.fillText(wl,lx+4,top+fs+2);T.cur={x:hx,lx,w:ww,wl};}else T.cur=null; /* r4 cursor week chip */
  document.getElementById('week').innerHTML=`<b>${isoW(day)}</b> · week of ${fmt(day-(day%7))}`+(window.NOWM&&NOWM.ok?NOWM.tag():'');tlc._x0=x0;tlc._cw=cw;T.geo={x0,cw,top,bot,ch,K,E,w,h,PH};}
 /* hover (mouse) / tap (touch): week under the pointer -> tooltip with every share that week, sorted; band under the pointer highlighted */
 function tlsHov(e){const T=TLS,G=T&&T.geo;if(!G)return false;const r=tlc.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(y<G.top-2)return false;
  let k,id=null;const lb=T.lab.find(b=>x>=b.x-2&&x<=b.x+b.w+2&&y>=b.y-1&&y<=b.y+b.h+1);
  if(lb&&lb.k==='leg'){k=G.K;id=lb.id;}else{if(x>G.cw+6)return false;k=Math.max(0,Math.min(G.K,Math.round((x-G.x0)/(G.cw-G.x0)*NDAYS/7)));const v=(G.bot-y)/G.ch*100,SR=T.ser;for(let i=0;i<SR.length;i++){const[a,b]=G.E[k][i];if(v>=a&&v<b){id=SR[i].id;break;}}if(id==null&&v>=100)id=SR[SR.length-1].id;}
  const ch=id!==T.hov||k!==T.hk;T.hov=id;T.hk=k;if(ch)drawTL();
- const R=T.W[k],d=Math.min(NDAYS,k*7),rows=T.ser.map(s=>({s,v:R[s.id]||0})).sort((a,b)=>b.v-a.v);
- showTip(e,`<span class="mono small">${isoW(d)} · share of each ending</span>`+rows.map(o=>`<div class="mono small" style="display:flex;gap:7px;align-items:center;${o.s.id===id?'color:#F2EEE4;font-weight:600':''}"><i style="display:inline-block;width:8px;height:8px;flex:0 0 8px;background:${o.s.c};opacity:${o.s.a}"></i><span style="flex:1">${escH(o.s.n)}${o.s.cliff?' (cliff)':''}</span><span>${o.v.toFixed(1)}%</span></div>`).join('')+`<span class="s">Sum ${R._s.toFixed(1)} %</span>`);return true;}
+ const R=T.W[k],d=Math.min(NDAYS,k*7),rows=T.ser.map(s=>({s,v:R[s.id]||0})).sort((a,b)=>b.v-a.v),nr=Math.ceil(rows.length/2);
+ /* r4 compact tooltip: 'week Wxx' header + sum, two columns, kept inside the timeline canvas (never over the header line) beside the cursor on the side away from the labels */
+ showTip(e,`<div class="th"><span>week ${isoW(d).replace(/^\d{4}-/,'')}</span><span>sum ${R._s.toFixed(1)} %</span></div><div class="tg" style="grid-template-rows:repeat(${nr},auto)">`+rows.map(o=>`<div class="tr${o.s.id===id?' on':''}"><i style="background:${o.s.c};opacity:${o.s.a}"></i><span class="tn">${escH(o.s.n)}</span><span>${o.v.toFixed(1)}%</span></div>`).join('')+`</div>`);TIP.className='tlst';tlsTipPos(e,k);return true;}
+function tlsTipPos(e,k){const T=TLS,G=T.geo,r=tlc.getBoundingClientRect();TIP.style.width=Math.min(G.PH?370:384,r.width-4)+'px';const tw=TIP.offsetWidth,th=TIP.offsetHeight,cx=r.left+G.x0+Math.min(NDAYS,k*7)/NDAYS*(G.cw-G.x0);
+ const ins=T.lab.filter(b=>b.k==='in'),lz=r.left+(ins.length?Math.min(...ins.map(b=>b.x)):G.cw),lo=r.left+2,hi=r.right-tw-2;let L=Math.min(cx,lz)-tw-12;if(L<lo)L=cx+(T.cur?T.cur.w+6:12);L=Math.max(lo,Math.min(hi,L));
+ const t0=r.top+G.top,t1=r.top+G.bot-th-1;let Y=e.clientY-th/2;Y=Math.max(t0,Math.min(t1,Y));if(t1<t0)Y=t0;TIP.style.left=L+'px';TIP.style.top=Y+'px';}
 function tlsOff(){if(TLS&&(TLS.hov||TLS.hk>=0)){TLS.hov=null;TLS.hk=-1;drawTL();}}
 window.TLS=TLS;
 // v4.3 timeline (S7): near-transparent strip, hairline grid, six 1.5 px road lines (future part at 35 %), event pins = 1 px ticks,
@@ -3781,12 +3801,12 @@ function drawTLV42(){const r=tlc.getBoundingClientRect();if(!r.width)return;tlc.
 function apply(){curP=pulls(day,LCUR);LANIM=null;if(!TER_BUILT){TER_BUILT=1;setValleys(pulls(day,'pooled').p);O.forEach(o=>o.gy=hAt(o.X,o.Z));rebuildTerrain();O.forEach(o=>o.gy=hMesh(o.X,o.Z));placeProps();g1Build();}else if(!(window.RPL&&RPL.on))setRoadWidths(curP);updPlaqueText();updateHUD();drawTL();if(sel)select(sel);else if(selR)openRoad(selR);if(LOD.grp)lodRefresh();kick();}
 function setDay(d){d=Math.max(0,Math.min(NDAYS,Math.round(d)));d=Math.min(NDAYS,d-(d%7)+(d===NDAYS?d%7:0));if(d===day)return;const d0=day;day=d;if(window.RPL)RPL.pre(d0,d);apply();if(window.RPL)RPL.step(d0,d);if(window.NOWM&&NOWM.ok)NOWM.step();}
 let tdrag=false;
-tlc.addEventListener('pointerdown',e=>{tdrag=true;stop();scrub(e);if(TLS&&e.pointerType!=='mouse'){tlsHov(e);clearTimeout(TLS.tt);TLS.tt=setTimeout(()=>{hideTip();tlsOff();},5000);}}); /* r3 stack: tap = week tooltip + band highlight (auto-hides after 5 s) */addEventListener('pointerup',()=>tdrag=false);
+tlc.addEventListener('pointerdown',e=>{const G=TLS&&TLS.geo,inLeg=!!(G&&e.clientX-tlc.getBoundingClientRect().left>G.cw+6);if(!inLeg){tdrag=true;stop();scrub(e);} /* r4: a press on the stack legend never moves the week cursor */if(TLS&&e.pointerType!=='mouse'){tlsHov(e);clearTimeout(TLS.tt);TLS.tt=setTimeout(()=>{hideTip();tlsOff();},5000);}}); /* r3 stack: tap = week tooltip + band highlight (auto-hides after 5 s) */addEventListener('pointerup',()=>tdrag=false);
 addEventListener('pointermove',e=>{if(tdrag)scrub(e);else tlHover(e);tlPeekCheck(e);});
 function scrub(e){const r=tlc.getBoundingClientRect();setDay((e.clientX-r.left-tlc._x0)/(tlc._cw-tlc._x0)*NDAYS);}
 const TIP=document.getElementById('tip');
 function moveTip(e){TIP.style.left=Math.min(innerWidth-TIP.offsetWidth-10,e.clientX+16)+'px';let y=e.clientY-TIP.offsetHeight-14;if(y<8)y=e.clientY+20;TIP.style.top=y+'px';}
-function showTip(e,html){TIP.className='';TIP.style.display='block';if(html!=null)TIP.innerHTML=html;moveTip(e);}
+function showTip(e,html){TIP.className='';TIP.style.width='';TIP.style.display='block';if(html!=null)TIP.innerHTML=html;moveTip(e);}
 function hideTip(){TIP.style.display='none';}
 function tlHover(e){if(e.target!==tlc){if(TLS&&TLS.hov!=null){tlsOff();hideTip();}if(e.target===cv&&!HOV)hideTip();return;}if(TLS&&tlsHov(e))return;const r=tlc.getBoundingClientRect(),x=e.clientX-r.left;const i=pinX.findIndex(p=>Math.abs(p-x)<9);
  if(i>=0){const ev=EVT[i],d=dayOf(ev.d),a=weights(Math.max(0,d-7),LCUR)[ev.r],b=weights(Math.min(NDAYS,d+21),LCUR)[ev.r],dv=b-a;showTip(e,`<span class="mono small">${ev.d} · ${ev.e}</span><div class="h">${ev.t}</div><span class="s">Effect on the map: road <b style="color:${RCOL[ev.r]}">${ev.r} ${RDI[ev.r].sh}</b> ${dv>=0?'+':'−'}${Math.abs(dv).toFixed(1)} pp over the following three weeks.</span>`);}else{const bw=(tlc._bf||[]).find(t=>Math.abs(t.x-x)<5); // r10 U36: backfill tick tooltip (bloc labels in the chip text)
@@ -4692,7 +4712,7 @@ void main(){float s=vK<.5?uS.x:uS.y;if(vM<.01||s<.001)discard;vec3 c=vK<.5?uC0:u
      the lens / compare controls in the header never toggle it. Phones (M3) dock the list in the sheet, unchanged. ?legopen=1 starts open. */
   {const LG=document.getElementById('legend'),hd=LG&&LG.querySelector('.hd');if(LG&&hd){document.body.classList.add('b4lc');if(Q.get('legopen')==='1')LG.classList.add('open');
     hd.title='Scenario families R1–R6: how the numbers are computed (click to show)';
-    const st=document.createElement('style');st.textContent='@media (min-width:901px){body.b4lc:not(.m3) #legend .hd{cursor:pointer;user-select:none;margin-bottom:0}body.b4lc:not(.m3) #legend .hd>span:first-child::after{content:" ▸";color:var(--t2)}body.b4lc:not(.m3) #legend.open .hd{margin-bottom:6px}body.b4lc:not(.m3) #legend.open .hd>span:first-child::after{content:" ▾"}body.b4lc:not(.m3) #legend:not(.open)>*:not(.hd){display:none}body.b4lc:not(.m3) #legend:not(.open){width:auto;padding:5px 10px 5px 8px}body.b4lc:not(.m3) #legend.open{width:auto;min-width:324px;max-width:min(440px,42vw)}body.b4lc:not(.m3) #legend .hd,body.b4lc:not(.m3) #legend .lgr,body.b4lc:not(.m3) #legend .lgr *{white-space:nowrap}}'+
+    const st=document.createElement('style');st.textContent='@media (min-width:901px){body.b4lc:not(.m3) #legend .hd{cursor:pointer;user-select:none;margin-bottom:0;min-height:20px;display:flex;align-items:center}body.b4lc:not(.m3) #legend .hd>span:first-child::after{content:" ▸";color:var(--t2)}body.b4lc:not(.m3) #legend.open .hd{margin-bottom:0}body.b4lc:not(.m3) #legend.open .hd+*{margin-top:6px}body.b4lc:not(.m3) #legend.open .hd>span:first-child::after{content:" ▾"}body.b4lc:not(.m3) #legend:not(.open)>*:not(.hd){display:none}body.b4lc:not(.m3) #legend{padding:6px 10px 6px 8px}body.b4lc:not(.m3) #legend:not(.open){width:auto}body.b4lc:not(.m3) #legend.open{width:auto;min-width:324px;max-width:min(440px,42vw)}body.b4lc:not(.m3) #legend .hd,body.b4lc:not(.m3) #legend .lgr,body.b4lc:not(.m3) #legend .lgr *{white-space:nowrap}}'+
      /* D-4: the phone HUD shows the range + 'contested' (was the point value only) */'body.m3 #hud .hl .rg{display:inline!important;font-size:11px;margin-left:6px}body.m3 #hud .hl .pt{display:none}body.m3 #hud .hl em{display:inline!important;font-size:8.5px;letter-spacing:.08em;margin-left:6px}body.m3 #hud .hl .lb0{font-size:0!important;margin-right:5px}body.m3 #hud .hl .lb0::after{content:"LEADING";font-size:9px;letter-spacing:.1em}body.m3 #hud .hl b{font-size:12px!important;margin-right:4px!important}body.m3 #hud .hl .rg{margin-left:2px!important}body.m3 #card .nowx{display:none}';document.head.appendChild(st);}}
   /* launch-fix 11-19 (owner D-3): first-visit hint under the tagline, once (localStorage), dismissible; never inside the NOW hub */
   {let seen=true; /* owner 11-19: first-visit hint removed ('意义不大'); ?hint=1 still shows it for testing */if(Q.get('hint')==='1')seen=false;
