@@ -332,7 +332,8 @@ function loadLedger(siteDir) {
         direction: EV_DIR[e.direction] || 'neutral', source_url: e.source_url, source_tier: e.source_tier, confidence: e.confidence || 'med', review: e.review });
     }
   }
-  const resolutions = rul.resolutions || {};
+  // value/date/note feed the replay (and the snapshots); 'rationale' is documentation only (ledger/adjudications.md)
+  const resolutions = {}; for (const [k, v] of Object.entries(rul.resolutions || {})) { const { rationale, ...r } = v; resolutions[k] = r; }
   // single phase -> plain date string (unchanged snapshot format); several -> { phase: date }
   const approved = phases.length === 1 ? approvedBy[phases[0]] : approvedBy;
   return { byInd, excluded, resolutions, approved, phases, skipped, nReviewed };
