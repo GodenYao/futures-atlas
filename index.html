@@ -286,6 +286,7 @@ body.m3 #mnf a{flex:none;color:#E9E4D8;text-decoration:none;border-bottom:1px so
  body.m3 #msheet{display:flex;flex-direction:column;position:fixed;left:0;right:0;bottom:0;height:62px;z-index:24;background:rgba(10,14,19,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-top:1px solid var(--pline);transition:height .28s cubic-bezier(.2,.7,.2,1);padding-bottom:env(safe-area-inset-bottom);overscroll-behavior:contain}
  body.m3l.m3card #msheet{display:none}
  body.m3p.m3card #msheet{z-index:27} /* M3b portrait: the main sheet stays under the card sheet (card stacks above it, never overlapping) */
+body.m3p #card[data-s="0"]{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent)} /* r3: peek state fades its last line instead of slicing it */
  body.m3 #msheet.drag,body.m3 #card.drag{transition:none!important}
  body.m3 #msheet .grab,body.m3 #card .cgrab{height:20px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab}
  body.m3 #msheet .grab i,body.m3 #card .cgrab i{display:block;width:40px;height:4px;border-radius:2px;background:#56606c}
@@ -3524,7 +3525,7 @@ function openRoad(rid){const r=RDI[rid],st=curP,w=st.w[rid];sel=null;selR=rid;co
  const fresh=!CARD.want;CARD.want=true;if(fresh)flyTo(null,700);cardShow(h);applyFocus();kick();} // r6 U: card offset eases in (700 ms), card fades in after ~60 %
 function openNow(){sel=null;selR=null;const st=curP;let h;
  if(window.B4ON){/* launch-fix 11-19 (owner M1): ending-first NOW card; R1-R6 folded under 'How the numbers are computed' */const rows=siteState(st),en=rows.filter(r=>r.o.b!=='C'),cl=rows.filter(r=>r.o.b==='C'),un=100-RD6.reduce((a,r)=>a+st.w[r.id],0);
-  const row=(r,i)=>`<div class="feed cl${i>=5?' nmore':''}"${i>=5?' style="display:none"':''} onclick="enterO(byId['${r.o.id}'])"><span>${siteName(r.o,GPX)}${r.lead?` <span class="small" style="color:#ffe2a8">${r.contested?'leading, contested':'leading'}</span>`:''}</span><b class="mono">${rstr(r.rg)}</b></div>`;
+  const row=(r,i)=>`<div class="feed cl${i>=5?' nmore':''}" style="grid-template-columns:minmax(0,1fr) auto;${i>=5?'display:none':''}" onclick="enterO(byId['${r.o.id}'])"><span>${siteName(r.o,GPX)}${r.lead?` <span class="small" style="color:#ffe2a8">${r.contested?'leading, contested':'leading'}</span>`:''}</span><b class="mono">${rstr(r.rg)}</b></div>`;
   h=`<span class="x" onclick="closeCard()">×</span><span class="tag mono">WHERE WE STAND</span><h2>NOW · ${isoW(day)}</h2>
  <div class="small nowx">Where the evidence puts us this week: a point pulled toward each ending by its share. The gold cloud is the likely range (80 %); the dotted trail shows past weeks.</div>
  <div class="sub"><b>Endings</b> <span class="small">(share range · ${lensTag()})</span>`+en.map(row).join('')+(en.length>5?`<div class="small" style="margin-top:4px"><a href="#" onclick="this.closest('.sub').querySelectorAll('.nmore').forEach(e=>e.style.display='');this.parentNode.remove();return false">Show all ${en.length} →</a></div>`:'')+`</div>
@@ -3557,10 +3558,20 @@ function closeCard(){sel=null;selR=null;CARD.want=false;CARD.pend=false;clearTim
 window.closeCard=closeCard;
 
 // ======================= HUD: headline, what moved, lens chips =======================
+// launch-fix r2 (task 2): phone HUD 'LEADING <ending> <range> CONTESTED' - the ending name is never ellipsised. hlFit() steps through
+// f1 (smaller type) -> f2 (+ tighter title) -> f3 (+ range hidden) -> f4 (+ CONTESTED hidden) until the name and the row fit; desktop untouched.
+// One prefix only: '::before' = LEADING, the D-4 '::after' copy is switched off (both were set, pseudo text is invisible to innerText tests).
+{const st=document.createElement('style');st.textContent='body.m3 #hud .hl .lb0::after{content:none!important}body.m3 #hud .hl .lb0::before{content:"LEADING";font-size:9px;letter-spacing:.1em;color:#A8A498}body.m3 #hud .hl b{flex:0 0 auto!important;overflow:visible!important}'
+ +'body.m3 #hud .hl.f1 b{font-size:11px!important;margin-right:3px!important}body.m3 #hud .hl.f1 .rg{font-size:10px!important}body.m3 #hud .hl.f1 em{font-size:7.5px!important;letter-spacing:.04em!important;margin-left:4px!important}body.m3 #hud .hl.f1 .lb0::before{font-size:8px;letter-spacing:.05em}body.m3 #hud .hl.f1 .lb0{margin-right:4px!important}'
+ +'body.m3 #hud.f2 .t1{font-size:9.5px!important;letter-spacing:.04em!important}body.m3 #hud .hl.f3 .rg{display:none!important}body.m3 #hud .hl.f4 em{display:none!important}';document.head.appendChild(st);}
+function hlFit(){const hl=document.getElementById('headline'),hud=document.getElementById('hud');if(!hl||!hud)return;const L=['f1','f2','f3','f4'];hl.classList.remove(...L);hud.classList.remove('f2');
+ if(!document.body.classList.contains('m3')||!hl.offsetWidth)return;const b=hl.querySelector('b');const ok=()=>b&&b.scrollWidth<=b.clientWidth+.5&&hl.scrollWidth<=hl.clientWidth+.5&&b.getBoundingClientRect().right<=hl.getBoundingClientRect().right+.5;
+ for(let i=0;i<L.length&&!ok();i++){for(let j=0;j<=i;j++)hl.classList.add(L[j]);if(i>=1)hud.classList.add('f2');}hl.dataset.fit=hl.className.replace(/[^f0-9 ]/g,'').trim()||'0';}
+window.hlFit=hlFit;addEventListener('resize',()=>setTimeout(hlFit,60));if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>hlFit());
 function updateHUD(){document.getElementById('hudWeek').textContent=isoW(day);
  const S=LANIM?LANIM.B:curP; // during a lens animation, describe the target lens, not the in-between frame
  const rows=siteState(S),L=rows[0],lz=LCUR!=='pooled',PP=lz?poolSt():null;
- document.getElementById('headline').innerHTML=`<span class="lb0">LEADING ENDING</span><b>${L.o.n}</b><span class="rg">${rstr(L.rg)}</span><span class="pt">≈${L.c.toFixed(0)}%</span>${lz?dlt(L.c-(PP.p[L.o.id]||0)):''}${L.contested?'<em>CONTESTED</em>':''}`;
+ document.getElementById('headline').innerHTML=`<span class="lb0">LEADING ENDING</span><b>${L.o.n}</b><span class="rg">${rstr(L.rg)}</span><span class="pt">≈${L.c.toFixed(0)}%</span>${lz?dlt(L.c-(PP.p[L.o.id]||0)):''}${L.contested?'<em>CONTESTED</em>':''}`;hlFit();
  const lc=document.getElementById('lenscard');lc.style.display='none';
  const P0=pulls(Math.max(0,day-7),LCUR).w,P1=S.w;let br=null,bd=0;for(const r of RD6){const d=P1[r.id]-P0[r.id];if(Math.abs(d)>Math.abs(bd)){bd=d;br=r;}}
  const ev=br&&!BFR?EVT.filter(e=>e.r===br.id&&dayOf(e.d)<=day).slice(-1)[0]:null,nIt=BFR?(BFR.items[bfIdx(day)]||[]).length:0; // G1 r7: with the engine export the driver line = this week's entering backfill items
@@ -3630,13 +3641,25 @@ function setLens(id){if(id===LCUR&&!LANIM)return;LANIM_END=()=>pulls(day,LCUR);c
 const tlc=document.getElementById('tlc'),tgx=tlc.getContext('2d');const gran=7;let playing=false,pinX=[];
 function fmt(d){const t=new Date(START.getTime()+d*864e5);return t.toISOString().slice(0,10);}
 let WS=null;
+/* launch-fix r2 D-6: '&tl=endings' comparison variant (default chart unchanged): top-5 endings by the LATEST week's share (current lens) + 'Others'
+   (sum of every other ending), same axes / grid / ticks / future dimming; colours = a low-chroma ending palette (no road, country or cliff red/green hues) */
+const TLEN=new URLSearchParams(location.search).get('tl')==='endings'?{WS:null,ws:null,lz:null,ser:null}:null;
+const TLEC=['#E2B96A','#86A9DA','#B89BE6','#E6D3AE','#9FB6C4'];
+function tleSer(){const TLE=TLEN;if(TLE.WS&&TLE.ws===WS&&TLE.lz===LCUR)return TLE.ser;const L=pulls(NDAYS,LCUR).p,ids=O.map(o=>o.id).sort((a,b)=>(L[b]||0)-(L[a]||0)),top=ids.slice(0,5);
+ TLE.ser=top.map((id,i)=>({id,c:TLEC[i],cl:TLEC[i],lab:byId[id].n})).concat([{id:'oth',c:'#7A808A',cl:'#9AA0A8',lab:'Others',dash:[4,3]}]);
+ const row=d=>{const p=pulls(d,LCUR).p,o={oth:0};for(const id of ids){if(top.includes(id))o[id]=p[id]||0;else o.oth+=p[id]||0;}return o;};
+ TLE.WS=[];for(let d=0;d<=NDAYS;d+=7)TLE.WS.push(row(d));TLE.WS.push(row(NDAYS));TLE.ws=WS;TLE.lz=LCUR;
+ const lg=document.querySelector('#tlh .lg');if(lg)lg.textContent='Lines = weekly share of the 5 leading endings + all others';return TLE.ser;}
+function tleGut(g,w,SR){g.font='500 11px "FA Plex",ui-monospace,monospace';const cap=w<600?150:190;let m=0;for(const s of SR){let t=s.lab;while(t.length>3&&g.measureText(t).width>cap-18)t=t.slice(0,-2)+'…';s.lb=t;m=Math.max(m,g.measureText(t).width);}return Math.ceil(m+18);}
+window.TLEN=TLEN;
 // v4.3 timeline (S7): near-transparent strip, hairline grid, six 1.5 px road lines (future part at 35 %), event pins = 1 px ticks,
 // captions only on hover (tooltip), cursor = 1 px brass line. The right-hand "share at cursor" block moved to the left-rail legend.
 function drawTL(){const r=tlc.getBoundingClientRect();if(!r.width)return;tlc.width=r.width*PIXR;tlc.height=r.height*PIXR;const g=tgx;g.setTransform(PIXR,0,0,PIXR,0,0);const w=r.width,h=r.height;g.clearRect(0,0,w,h);
  if(!WS){WS=[];for(let d=0;d<=NDAYS;d+=7)WS.push(weights(d,LCUR));WS.push(weights(NDAYS,LCUR));}
- let mx=0,mn=100;for(const s of WS)for(const R of RD6){mx=Math.max(mx,s[R.id]);mn=Math.min(mn,s[R.id]);} // v4.3 r2: auto-fit y-range (5 pp steps) so the six lines are not bunched
+ const SR=TLEN?tleSer():RD6,WD=TLEN?TLEN.WS:WS;
+ let mx=0,mn=100;for(const s of WD)for(const R of SR){mx=Math.max(mx,s[R.id]);mn=Math.min(mn,s[R.id]);} // v4.3 r2: auto-fit y-range (5 pp steps) so the six lines are not bunched
  const YMIN=Math.max(0,Math.floor((mn-2)/5)*5),YMAX=Math.max(YMIN+10,Math.ceil((mx+2)/5)*5),YS=(YMAX-YMIN)>15?10:5;
- const x0=34,cw=w-54,top=12,bot=h-16,ch=bot-top,X=d=>x0+d/NDAYS*(cw-x0),Y=v=>bot-(v-YMIN)/(YMAX-YMIN)*ch; // v4.3 r3: 50 px right gutter for the staggered two-column end-of-line R labels
+ const x0=34,cw=w-(TLEN?tleGut(g,w,SR):54),top=12,bot=h-16,ch=bot-top,X=d=>x0+d/NDAYS*(cw-x0),Y=v=>bot-(v-YMIN)/(YMAX-YMIN)*ch; // v4.3 r3: 50 px right gutter for the staggered two-column end-of-line R labels
  g.font='400 11px "FA Plex",ui-monospace,monospace';g.textAlign='right';for(let v=YMIN;v<=YMAX;v+=YS){const y=Math.round(Y(v))+.5;g.fillStyle='#161C23';g.fillRect(x0,y,cw-x0,1);g.fillStyle='#A8A498';g.fillText(v+'%',x0-6,y+4);}g.textAlign='left';
  // r9 U (task 3d): month/year axis follows the data range (START..NDAYS from the engine snapshots): <= ~15 months = month ticks
  // (JAN shows the year once the range spans two years); longer = quarter ticks with the year at January
@@ -3647,16 +3670,16 @@ function drawTL(){const r=tlc.getBoundingClientRect();if(!r.width)return;tlc.wid
  // r10 U36: backfill evidence ticks at their published ISO week (2 px brass; +2 px height per extra item that week; items dated before the strip start clamp to its first week)
  {const BW={};for(const b of BF){const d=Math.max(0,Math.min(NDAYS,dayOf(b.published))),wk=Math.floor(d/7);(BW[wk]=BW[wk]||[]).push(b);}
   tlc._bf=[];for(const wk in BW){const n=BW[wk].length,x=Math.round(X(Math.min(NDAYS,wk*7+3)))+.5;g.fillStyle=wk*7<=day?'rgba(201,164,92,.9)':'rgba(201,164,92,.38)';g.fillRect(x-1,top-10,2,Math.min(11,3+2*n));tlc._bf.push({x,wk:+wk,items:BW[wk]});}}
- const TF=(typeof focusRoads==='function'?focusRoads():[]),ordR=[...RD6].sort((a,b)=>(TF.includes(a.id)?1:0)-(TF.includes(b.id)?1:0)); // focused road drawn last, 2.5 px
+ const TF=TLEN?[]:(typeof focusRoads==='function'?focusRoads():[]),ordR=[...SR].sort((a,b)=>(TF.includes(a.id)?1:0)-(TF.includes(b.id)?1:0)); // focused road drawn last, 2.5 px
  for(const R of ordR){for(const fut of[0,1]){g.save();g.beginPath();if(fut)g.rect(X(day),0,w,h);else g.rect(0,0,X(day)+.5,h);g.clip();
-  g.beginPath();for(let k=0;k<WS.length;k++){const d=Math.min(NDAYS,k*7),y=Y(WS[k][R.id]);k?g.lineTo(X(d),y):g.moveTo(X(d),y);}
-  const lit=TF.length?TF.includes(R.id):null;g.strokeStyle=lit===false?'#3A4048':lit?R.cl:R.c;g.globalAlpha=(fut?.35:1)*(lit===false?.5:1);g.lineWidth=lit?3:1.5;g.stroke();g.restore();}
+  g.beginPath();for(let k=0;k<WD.length;k++){const d=Math.min(NDAYS,k*7),y=Y(WD[k][R.id]);k?g.lineTo(X(d),y):g.moveTo(X(d),y);}
+  const lit=TF.length?TF.includes(R.id):null;g.strokeStyle=lit===false?'#3A4048':lit?R.cl:R.c;g.globalAlpha=(fut?.35:1)*(lit===false?.5:1);g.lineWidth=lit?3:1.5;if(R.dash)g.setLineDash(R.dash);g.stroke();g.restore();}
   }
- {const wk=WS[Math.min(WS.length-1,Math.round(NDAYS/7))],L=RD6.map(R=>({R,y:Y(wk[R.id])})).sort((a,b)=>a.y-b.y);
+ {const wk=WD[Math.min(WD.length-1,Math.round(NDAYS/7))],L=SR.map(R=>({R,y:Y(wk[R.id])})).sort((a,b)=>a.y-b.y);
   // r3 (v4.4 item 3): ONE column at >= 12 px pitch with fanned leader ticks (two columns at 8 px read as a crowded zig-zag); falls back to 2 columns only if the panel is too short
   const avail=(bot+3)-(top-6),one=avail>=12*(L.length-1),SP=one?12:8;for(let i=1;i<L.length;i++)L[i].y=Math.max(L[i].y,L[i-1].y+SP);const ov_=L[L.length-1].y-(bot+3);if(ov_>0)for(const l of L)l.y-=ov_;const un=(top-6)-L[0].y;if(un>0)for(const l of L)l.y+=un;
   L.forEach((l,i)=>{l.x=cw+14+(one?0:(i%2)*20);});
-  g.font='500 11px "FA Plex",ui-monospace,monospace';g.textAlign='left';for(const l of L){const lit=TF.length?TF.includes(l.R.id):null;g.globalAlpha=lit===false?.55:1;g.fillStyle=lit===false?'#5A6068':lit?l.R.cl:l.R.c;g.fillText(l.R.id,l.x,l.y+4);g.globalAlpha*=.7;g.fillRect(cw+1,Y(wk[l.R.id])-.5,2,1);g.beginPath();g.moveTo(cw+2.5,Y(wk[l.R.id]));g.lineTo(l.x-1.5,l.y);g.strokeStyle=g.fillStyle;g.lineWidth=1;g.stroke();g.globalAlpha=1;}g.globalAlpha=1;} // end-of-line R labels + leader ticks to the line's end value
+  g.font='500 11px "FA Plex",ui-monospace,monospace';g.textAlign='left';for(const l of L){const lit=TF.length?TF.includes(l.R.id):null;g.globalAlpha=lit===false?.55:1;g.fillStyle=lit===false?'#5A6068':lit?l.R.cl:l.R.c;g.fillText(l.R.lb||l.R.id,l.x,l.y+4);g.globalAlpha*=.7;g.fillRect(cw+1,Y(wk[l.R.id])-.5,2,1);g.beginPath();g.moveTo(cw+2.5,Y(wk[l.R.id]));g.lineTo(l.x-1.5,l.y);g.strokeStyle=g.fillStyle;g.lineWidth=1;g.stroke();g.globalAlpha=1;}g.globalAlpha=1;} // end-of-line R labels + leader ticks to the line's end value
  g.globalAlpha=1;const cx=Math.round(X(day))+.5;g.fillStyle='#C9A45C';g.fillRect(cx-.5,top-10,1,bot-top+10);
  document.getElementById('week').innerHTML=`<b>${isoW(day)}</b> · week of ${fmt(day-(day%7))}`+(window.NOWM&&NOWM.ok?NOWM.tag():'');tlc._x0=x0;tlc._cw=cw;}
 function drawTLV42(){const r=tlc.getBoundingClientRect();if(!r.width)return;tlc.width=r.width*PIXR;tlc.height=r.height*PIXR;const g=tgx;g.setTransform(PIXR,0,0,PIXR,0,0);const w=r.width,h=r.height;g.clearRect(0,0,w,h);
@@ -4404,17 +4427,26 @@ const nlGlow=(v,on)=>{if(typeof NOWL==='undefined')return;const s=on>.01?`0 0 0 
  const TS={tb:-1,ax:-1e9,ay:0,bx:0,by:0,flip:1,RL:new Float32Array(49),RX:new Float32Array(49),RY:new Float32Array(49),S:new Float32Array(4*200),N:0,x0:0,y0:0,w:0,h:0,sc:1,ok:false},OC=document.createElement('canvas'),ox=OC.getContext('2d');
  const tdGeo=(o,W,tlT)=>{const m=o&&o._mw;if(!m||!m.ok||m.x<0||m.x>W||m.y<40||m.y>tlT)return null;if(typeof NOWL==='undefined'||NOWL.style.display==='none')return null;
   const nr=NOWL.getBoundingClientRect();if(!nr.width)return null;const LK=o._LK||1,ri=16*LK,cx=m.x,cy=m.y,a=[cx>=(nr.left+nr.right)/2?nr.right:nr.left,(nr.top+nr.bottom)/2];
+  /* launch-fix r2 (task 3): icon ABOVE the label and within its span (phone W19/W46) -> start from the label's TOP edge (the side away from the
+     cliff row below), so the strand never runs back across the label text; end caps otherwise (desktop default geometry unchanged) */
+  if(cy+ri<nr.top-4&&cx>nr.left-4&&cx<nr.right+4){a[0]=Math.max(nr.left+12,Math.min(nr.right-12,cx));a[1]=nr.top;}
   if(a[0]<0||a[0]>W||a[1]<0||a[1]>tlT)return null;let ux=a[0]-cx,uy=a[1]-cy;const L0=Math.hypot(ux,uy)||1;ux/=L0;uy/=L0;const b=[cx+ux*ri,cy+uy*ri],D=Math.hypot(b[0]-a[0],b[1]-a[1]);if(D<24)return null;
   if(typeof cardOpen==='function'&&cardOpen()){const ck=document.getElementById('card'),cr=ck&&ck.getBoundingClientRect();if(cr&&cr.width&&(inR(a,cr,4)||inR(b,cr,4)))return null;}
-  return{o,a,b,c:[cx,cy],ri,LK,nr,q:null,D,k:[(a[0]+b[0])/2,(a[1]+b[1])/2]};};
+  return{o,a,b,c:[cx,cy],ri,LK,nr,q:(()=>{const ce=NOWL.querySelector('.b4cr'),r=ce&&ce.getBoundingClientRect();return r&&r.width?r:null;})(),D,k:[(a[0]+b[0])/2,(a[1]+b[1])/2]};};
+ /* launch-fix r2 (task 3): count strand samples inside the cliff glyph row (padded) for a control point k (or the default sag sx) */
+ const tdRow=(G,k,sx)=>{const Q=G.q;if(!Q)return 0;const p=PH?5:7,mx=k?k[0]:(G.a[0]+G.b[0])/2,my=k?k[1]:(G.a[1]+G.b[1])/2+sx;let n=0;
+  for(let i=1;i<24;i++){const t=i/24,u=1-t,px=u*u*G.a[0]+2*t*u*mx+t*t*G.b[0],py=u*u*G.a[1]+2*t*u*my+t*t*G.b[1];if(px>Q.left-p&&px<Q.right+p&&py>Q.top-p&&py<Q.bottom+p)n++;}return n;};
+ const tdEl=G=>TS.el===1?[G.b[0],G.a[1]]:TS.el===2?[G.a[0]+(G.a[0]>=(G.nr.left+G.nr.right)/2?1:-1)*Math.max(40,.5*Math.abs(G.b[0]-G.a[0])),G.a[1]]:null;
  const tdPen=(G,sg)=>{const mx=(G.a[0]+G.b[0])/2,my=(G.a[1]+G.b[1])/2+sg;let pen=0,tb=null;const H=B.hit||[];if(H.length){tb=[1e9,1e9,-1e9,-1e9];for(const h of H){tb[0]=Math.min(tb[0],h.x);tb[1]=Math.min(tb[1],h.y);tb[2]=Math.max(tb[2],h.x);tb[3]=Math.max(tb[3],h.y);}}
   for(let i=1;i<10;i++){const t=i/10,u=1-t,px=u*u*G.a[0]+2*t*u*mx+t*t*G.b[0],py=u*u*G.a[1]+2*t*u*my+t*t*G.b[1];
    if(tb&&px>tb[0]-4&&px<tb[2]+4&&py>tb[1]-4&&py<tb[3]+4)pen+=1;for(const s of O){if(s===G.o)continue;const m=s._mw;if(m&&m.ok&&Math.hypot(px-m.x,py-m.y)<30)pen+=1;}}return pen;};
  // round i tunables (live-editable for harness A/B: B4.TP.body=... then the next 30 Hz rebuild picks it up)
  const TP=B.TP={uh:.24,uhP:.21,uhR:1.5,uhY:4,rm:24,reA:18,reB:28,rmP:15,reAP:11,reBP:18,body:.55,a0:1,bA:.06,bodyB:.25,wv:.38,dn:.5,fil:0,filB:.06,lg:.18,lgB:.18,lgR:1.2,ih:.14,ihB:.20,ihR:2.9,n0:.5,nL:.45,crA:.95,crR:.15}; // crest: owner 11-19 'travelling white swell too bright' (was 1.6 / .25)
  const tdBuild=(G,now)=>{const PHh=PH,Bv=bvAt(now),Bi=B.bvFix!=null?B.bvFix:RMOT?brF(now-.45):.6,S=Math.min(window.devicePixelRatio||1,1.5),D=G.D;
-  const sg0=Math.max(PHh?8:12,Math.min(PHh?18:34,.1*D));if(TS.tb<0||Math.abs(G.a[0]-TS.ax)+Math.abs(G.b[0]-TS.bx)>2){const p1=tdPen(G,2*sg0),p2=tdPen(G,-2*sg0);TS.flip=TS.flip>0?(p1>0&&p2<p1?-1:1):(p2>0&&p1<p2?1:-1);}
-  const sag=TS.flip*sg0*(1-.15*Bv),lift=RMOT?-3.5*Bv:-2,mx=(G.a[0]+G.b[0])/2,my=(G.a[1]+G.b[1])/2+2*sag; // control at 2x sag = midpoint drops by 'sag'
+  const sg0=Math.max(PHh?8:12,Math.min(PHh?18:34,.1*D));if(TS.tb<0||Math.abs(G.a[0]-TS.ax)+Math.abs(G.b[0]-TS.bx)>2){const p1=tdPen(G,2*sg0),p2=tdPen(G,-2*sg0);TS.flip=TS.flip>0?(p1>0&&p2<p1?-1:1):(p2>0&&p1<p2?1:-1);
+   /* r2: if that bend crosses the cliff row, try the other bend, then a horizontal-first elbow (leaves the label sideways, away from the row) */
+   TS.el=null;if(G.q&&tdRow(G,null,TS.flip*2*sg0)){if(!tdRow(G,null,-TS.flip*2*sg0))TS.flip=-TS.flip;else{const e1=[G.b[0],G.a[1]],e2=[G.a[0]+(G.a[0]>=(G.nr.left+G.nr.right)/2?1:-1)*Math.max(40,.5*Math.abs(G.b[0]-G.a[0])),G.a[1]];TS.el=!tdRow(G,e1,0)?1:!tdRow(G,e2,0)?2:1;}}}
+  const elK=tdEl(G),sag=TS.flip*sg0*(1-.15*Bv),lift=RMOT?-3.5*Bv:-2,mx=elK?elK[0]:(G.a[0]+G.b[0])/2,my=elK?elK[1]:(G.a[1]+G.b[1])/2+2*sag; // control at 2x sag = midpoint drops by 'sag'
   const RL=TS.RL,RX=TS.RX,RY=TS.RY;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
   for(let i=0;i<=48;i++){const t=i/48,u=1-t,x=u*u*G.a[0]+2*t*u*mx+t*t*G.b[0],y=u*u*G.a[1]+2*t*u*my+t*t*G.b[1]+lift*Math.sqrt(Math.sin(Math.PI*t));RX[i]=x;RY[i]=y;
    RL[i]=i?RL[i-1]+Math.hypot(x-RX[i-1],y-RY[i-1]):0;x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}
@@ -4424,7 +4456,7 @@ const nlGlow=(v,on)=>{if(typeof NOWL==='undefined')return;const s=on>.01?`0 0 0 
   while(s<=Lc&&N<200){while(j<48&&RL[j]<s)j++;const f=(s-RL[j-1])/((RL[j]-RL[j-1])||1);TS.S[4*N]=RX[j-1]+(RX[j]-RX[j-1])*f;TS.S[4*N+1]=RY[j-1]+(RY[j]-RY[j-1])*f;TS.S[4*N+2]=s/Lc;N++;s+=.42*rad(s/Lc);}
   const M=56;x0=Math.floor(x0-M);y0=Math.floor(y0-M);const w=Math.ceil(x1+M)-x0,h=Math.ceil(y1+M)-y0;if(OC.width<w*S)OC.width=Math.ceil(w*S);if(OC.height<h*S)OC.height=Math.ceil(h*S); // grow-only
   ox.setTransform(1,0,0,1,0,0);ox.globalCompositeOperation='source-over';ox.globalAlpha=1;ox.clearRect(0,0,Math.ceil(w*S)+1,Math.ceil(h*S)+1);ox.setTransform(S,0,0,S,-x0*S,-y0*S);
-  ox.save();ox.beginPath();ox.rect(x0,y0,w,h);ox.rect(r.left,r.top,r.width,r.height);ox.moveTo(G.c[0]+G.ri,G.c[1]);ox.arc(G.c[0],G.c[1],G.ri,0,6.2832);ox.clip('evenodd');
+  ox.save();ox.beginPath();ox.rect(x0,y0,w,h);ox.rect(r.left,r.top,r.width,r.height);if(G.q){const Q=G.q,p=PHh?2:3;ox.rect(Q.left-p,Q.top,Q.width+2*p,Q.height+p);} /* r2: no mist inside the cliff row */ox.moveTo(G.c[0]+G.ri,G.c[1]);ox.arc(G.c[0],G.c[1],G.ri,0,6.2832);ox.clip('evenodd');
   const nxv=-(G.b[1]-G.a[1])/D,nyv=(G.b[0]-G.a[0])/D,tc=RMOT&&B.bvFix==null?((now%TBR)-2.4)/2.6:-1,ce=tc>=0&&tc<=1?tc*tc*(3-2*tc):-9,cw=tc>=0&&tc<=1?Math.sqrt(Math.sin(Math.PI*tc)):0;
   const v1=PHh?10:18,v2=PHh?17:31,l1=PHh?35:55,l2=PHh?55:90,wd=PHh?2:3,tt=RMOT?now:0,bw=(1-TP.bodyB/2)+TP.bodyB*Bv; // bw = breathing width (inhale wide, exhale narrow)
   for(let i=0;i<N;i++){const s1=TS.S[4*i+2],sL=s1*Lc,dn=(1-TP.dn)+TP.dn*nz((sL-tt*v1)/l1)*nz((sL-tt*v2)/l2+40),lat=wd*(2*nz(sL/45-tt*.35+9)-1);
@@ -4434,6 +4466,7 @@ const nlGlow=(v,on)=>{if(typeof NOWL==='undefined')return;const s=on>.01?`0 0 0 
   // 1 dark under-halo (source-over, every 2nd stamp) - round i: composite ~.30-.38 at the strand centre (B4.lsInfo().uh)
   for(let i=0;i<N;i+=2){const R=RW(i)*TP.uhR;ox.globalAlpha=PHh?TP.uhP:TP.uh;ox.drawImage(TD,TS.S[4*i]-R,TS.S[4*i+1]-R+TP.uhY*(PHh?.6:1),2*R,2*R);} // offset a few px DOWN = soft drop shadow -> strand floats
   if(B.tdProbe){const q=24,px=Math.round((RX[q]-x0)*S),py=Math.round((RY[q]-y0)*S);try{TS.uh=+(ox.getImageData(px,py,1,1).data[3]/255).toFixed(3);}catch(e){}}
+  {let xr=0,xl=0;const Q=G.q;for(let i=0;i<=48;i++){if(Q&&RX[i]>Q.left&&RX[i]<Q.right&&RY[i]>Q.top&&RY[i]<Q.bottom)xr++;if(RX[i]>r.left+1&&RX[i]<r.right-1&&RY[i]>r.top+1&&RY[i]<r.bottom-1)xl++;}TS.xr=xr;TS.xl=xl;} /* r2: centre-line samples inside the cliff row / NOW label */
   ox.globalCompositeOperation='lighter';
   // 2 label glow: rounded-rect halo = soft stamps along the NOW pill's centre line (clip keeps it outside the box), in phase with the tether
   {const nL=Math.max(3,Math.ceil(r.width/(.4*r.height))),cy=r.top+r.height/2,R=lR*(.9+.2*Bv);ox.globalAlpha=Math.min(1,TP.lg+TP.lgB*Bv);
@@ -4456,14 +4489,15 @@ const nlGlow=(v,on)=>{if(typeof NOWL==='undefined')return;const s=on>.01?`0 0 0 
  const tdDraw=(g,W,H,tlT)=>{const T0=performance.now(),now=T0/1000,dt=Math.min(.1,LS.tl?now-LS.tl:0);LS.tl=now;B.ld=null;LS.vis=false;
   if(typeof LEAD==='undefined'||!LEAD||!LEAD.o||!TER_BUILT||view!=='world'||document.hidden){LS.G=null;nlGlow(0,0);return;}const id=LEAD.o.id;
   if(LS.id!==id){LS.f=Math.max(0,LS.f-dt*2.2);if(LS.f<=.02||LS.id==null){LS.id=id;LS.f=0;TS.tb=-1;}}else LS.f=Math.min(1,LS.f+dt*2.2);
-  const o=byId[LS.id]||LEAD.o,G=tdGeo(o,W,tlT);LS.G=G;if(!G){nlGlow(0,0);return;}const sg=TS.flip*Math.max(PH?8:12,Math.min(PH?18:34,.1*G.D));G.k=[G.k[0],G.k[1]+2*sg];
+  const o=byId[LS.id]||LEAD.o,G=tdGeo(o,W,tlT);LS.G=G;if(!G){nlGlow(0,0);return;}const sg=TS.flip*Math.max(PH?8:12,Math.min(PH?18:34,.1*G.D));G.k=TS.el?tdEl(G):[G.k[0],G.k[1]+2*sg];
   const P=[];for(let i=0;i<=28;i++){const p=qb(G,i/28);P.push([p[0],p[1],true]);}B.ld={id:LEAD.o.id,n:LEAD.o.n,c:LEAD.c,X:LEAD.o.X,Z:LEAD.o.Z,P};const al=LS.f;if(al<.01||B.lsOff){nlGlow(0,0);return;}LS.vis=true;
   const mv=Math.abs(G.a[0]-TS.ax)+Math.abs(G.a[1]-TS.ay)+Math.abs(G.b[0]-TS.bx)+Math.abs(G.b[1]-TS.by)>.5;let rb=0;if(mv||!TS.ok||((RMOT||B.bvFix!=null)&&now-TS.tb>=1/30)){tdBuild(G,now);rb=1;}
   const Bv=bvAt(now);nlGlow(al*Bv,al);g.save();g.globalCompositeOperation='source-over';g.globalAlpha=al;g.drawImage(OC,0,0,TS.w*TS.sc,TS.h*TS.sc,TS.x0,TS.y0,TS.w,TS.h);g.restore();
   LS.np=TS.N;LS.nd=TS.nd||0;LS.rc=TS.flip;LS.rs=rb;LS.ms.push(performance.now()-T0);if(LS.ms.length>120)LS.ms.shift();};
  B.lsInfo=()=>{const G=LS.G,ms=LS.ms.slice().sort((a,b)=>a-b),r1=v=>+v.toFixed(1);let dA=null,dB=null;
   if(G){const nr=NOWL.getBoundingClientRect(),ce=NOWL.querySelector('.b4cr'),q=ce&&ce.getBoundingClientRect();dA=r1(Math.min(eDist(G.a,nr),eDist(G.a,q)));dB=r1(Math.abs(Math.hypot(G.b[0]-G.c[0],G.b[1]-G.c[1])-G.ri));}
-  return{id:LS.id,lead:LEAD&&LEAD.o&&LEAD.o.id,f:+LS.f.toFixed(2),vis:LS.vis,a:G&&G.a.map(r1),b:G&&G.b.map(r1),icon:G&&[r1(G.c[0]),r1(G.c[1]),r1(G.ri)],dA,dB,mode:typeof NOWL!=='undefined'&&NOWL._m,
+  return{xr:TS.xr,xl:TS.xl,el:TS.el||0,q:G&&G.q?[G.q.left,G.q.top,G.q.right,G.q.bottom].map(v=>Math.round(v)):null,rowA:(()=>{try{const Q=G&&G.q;if(!Q||!TS.ok)return null;const sx=Math.max(0,Math.ceil((Q.left+1-TS.x0)*TS.sc)),sy=Math.max(0,Math.ceil((Q.top+1-TS.y0)*TS.sc)),w=Math.floor((Q.width-2)*TS.sc),h=Math.floor((Q.height-2)*TS.sc);if(w<1||h<1)return null;const d=ox.getImageData(sx,sy,w,h).data;let m=0;for(let i=3;i<d.length;i+=4)m=Math.max(m,d[i]);return +(m/255).toFixed(3);}catch(e){return 'err';}})(),
+   id:LS.id,lead:LEAD&&LEAD.o&&LEAD.o.id,f:+LS.f.toFixed(2),vis:LS.vis,a:G&&G.a.map(r1),b:G&&G.b.map(r1),icon:G&&[r1(G.c[0]),r1(G.c[1]),r1(G.ri)],dA,dB,mode:typeof NOWL!=='undefined'&&NOWL._m,
    nd:LS.nd||0,np:LS.np||0,rc:LS.rc,rs:LS.rs,bs:LS.bs?1:0,mid:TS.mid,uh:TS.uh,ms:ms.length?{avg:+(ms.reduce((s,v)=>s+v,0)/ms.length).toFixed(3),p95:+ms[Math.floor(ms.length*.95)].toFixed(3),n:ms.length}:null,wk:BFR.weeks[Math.max(0,NOWM.idx)]};};
  const dSeg=(x,y,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],l=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/l));return Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy);};
  B.ldHit=(x,y,R)=>{const L=B.ld;if(!L)return false;const P=L.P;if(P[0][2]&&Math.hypot(x-P[0][0],y-P[0][1])<R+6)return true;for(let i=1;i<P.length;i++)if(P[i][2]&&P[i-1][2]&&dSeg(x,y,P[i-1],P[i])<R)return true;return false;};
@@ -4584,10 +4618,10 @@ void main(){float s=vK<.5?uS.x:uS.y;if(vM<.01||s<.001)discard;vec3 c=vK<.5?uC0:u
      the lens / compare controls in the header never toggle it. Phones (M3) dock the list in the sheet, unchanged. ?legopen=1 starts open. */
   {const LG=document.getElementById('legend'),hd=LG&&LG.querySelector('.hd');if(LG&&hd){document.body.classList.add('b4lc');if(Q.get('legopen')==='1')LG.classList.add('open');
     hd.title='Scenario families R1–R6: how the numbers are computed (click to show)';
-    const st=document.createElement('style');st.textContent='@media (min-width:901px){body.b4lc:not(.m3) #legend .hd{cursor:pointer;user-select:none;margin-bottom:0}body.b4lc:not(.m3) #legend .hd>span:first-child::after{content:" ▸";color:var(--t2)}body.b4lc:not(.m3) #legend.open .hd{margin-bottom:6px}body.b4lc:not(.m3) #legend.open .hd>span:first-child::after{content:" ▾"}body.b4lc:not(.m3) #legend:not(.open)>*:not(.hd){display:none}body.b4lc:not(.m3) #legend:not(.open){width:auto;padding:5px 10px 5px 8px}}'+
+    const st=document.createElement('style');st.textContent='@media (min-width:901px){body.b4lc:not(.m3) #legend .hd{cursor:pointer;user-select:none;margin-bottom:0}body.b4lc:not(.m3) #legend .hd>span:first-child::after{content:" ▸";color:var(--t2)}body.b4lc:not(.m3) #legend.open .hd{margin-bottom:6px}body.b4lc:not(.m3) #legend.open .hd>span:first-child::after{content:" ▾"}body.b4lc:not(.m3) #legend:not(.open)>*:not(.hd){display:none}body.b4lc:not(.m3) #legend:not(.open){width:auto;padding:5px 10px 5px 8px}body.b4lc:not(.m3) #legend.open{width:auto;min-width:324px;max-width:min(440px,42vw)}body.b4lc:not(.m3) #legend .hd,body.b4lc:not(.m3) #legend .lgr,body.b4lc:not(.m3) #legend .lgr *{white-space:nowrap}}'+
      /* D-4: the phone HUD shows the range + 'contested' (was the point value only) */'body.m3 #hud .hl .rg{display:inline!important;font-size:11px;margin-left:6px}body.m3 #hud .hl .pt{display:none}body.m3 #hud .hl em{display:inline!important;font-size:8.5px;letter-spacing:.08em;margin-left:6px}body.m3 #hud .hl .lb0{font-size:0!important;margin-right:5px}body.m3 #hud .hl .lb0::after{content:"LEADING";font-size:9px;letter-spacing:.1em}body.m3 #hud .hl b{font-size:12px!important;margin-right:4px!important}body.m3 #hud .hl .rg{margin-left:2px!important}body.m3 #card .nowx{display:none}';document.head.appendChild(st);}}
   /* launch-fix 11-19 (owner D-3): first-visit hint under the tagline, once (localStorage), dismissible; never inside the NOW hub */
-  {let seen=false;try{seen=localStorage.getItem('fa_hint1')==='1';}catch(e){}if(Q.get('hint')==='1')seen=false;
+  {let seen=true; /* owner 11-19: first-visit hint removed ('意义不大'); ?hint=1 still shows it for testing */if(Q.get('hint')==='1')seen=false;
    if(!seen&&Q.get('og')!=='1'){const ph=!!(window.M3&&M3.on),tg=document.getElementById(ph?'mnf':'nfl');if(tg){const h=document.createElement('div');h.id='b4hint';h.setAttribute('role','note');
      h.innerHTML='<span>NOW is pulled toward each ending by its share; the strand points to the current leader.</span><button type="button" aria-label="Dismiss hint">×</button>';
      const s2=document.createElement('style');s2.textContent='#b4hint{position:fixed;z-index:31;display:flex;gap:8px;align-items:center;max-width:min(560px,calc(100vw - 24px));padding:4px 6px 4px 10px;background:rgba(10,14,19,.82);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);border-left:1px solid #C9A45C;font:400 12px/1.35 "FA Barlow",system-ui,sans-serif;color:#E9E4D8;transition:opacity .4s}#b4hint button{background:none;border:none;color:#A8A498;font:500 15px/1 system-ui;cursor:pointer;padding:2px 6px}#b4hint button:hover{color:#EBCB8B}#b4hint.off{opacity:0;pointer-events:none}@media (max-width:600px){#b4hint{font-size:11px}}';document.head.appendChild(s2);document.body.appendChild(h);
@@ -4761,7 +4795,13 @@ M3.build=function(){if(M3.built)return;M3.built=true;
  // M3b: the card sheet stacks ON TOP of the main sheet in portrait (main sheet stays reachable: pulling up Timeline collapses the card to its
  // compact snap and pushes it up, never over it). Compact snap first (title + first lines), the city stays visible behind the glass.
  const shH=()=>(M3.por&&C.style.display==='block'&&getComputedStyle(S).display!=='none')?(S.classList.contains('drag')?S.offsetHeight:snaps()[M3.snap])||62:0;M3.shH=shH; /* target height, not offsetHeight (mid-transition) */
- const csnaps=()=>{const b=shH(),top=H()-Math.round(M3.ftop())-6-b;return M3.por?[Math.min(top,Math.round(clamp(H()*.26,150,240))),Math.min(top,Math.round(H()*.48)),top]:[96,Math.round(H()*.7),H()-58];};
+ /* launch-fix r2 (task 1): the portrait card PEEK snap is moved to a whole-row boundary, so no row (NOW-card ending rows, headings,
+    short lines) is sliced by the sheet edge: grow by <= 30 px to include a cut row, else shrink to just above it (min 120 px) */
+ const rowFit=(h,top)=>{const c=document.getElementById('card');if(!c||c.style.display!=='block'||!c.offsetHeight)return h;const cb=c.getBoundingClientRect(),R=[];
+  for(const e of c.querySelectorAll('*')){if(e.classList.contains('cgrab')||e.closest('.cgrab'))continue;const r=e.getBoundingClientRect();if(r.height>0&&r.height<=64&&r.width>0)R.push([r.top-cb.top+c.scrollTop,r.bottom-cb.top+c.scrollTop]);}
+  let e=h-2;for(let it=0;it<6;it++){const cut=R.filter(q=>q[0]<e-1&&q[1]>e+1);if(!cut.length)break;const g=Math.max(...cut.map(q=>q[1]))+3,s=Math.min(...cut.map(q=>q[0]))-1;e=(g-(h-2)<=30&&g+2<=top)?g:s;}
+  M3.peekFit=[h,Math.max(120,Math.round(e+2))];return M3.peekFit[1];};
+ const csnaps=()=>{const b=shH(),top=H()-Math.round(M3.ftop())-6-b;return M3.por?[rowFit(Math.min(top,Math.round(clamp(H()*.26,150,240))),top),Math.min(top,Math.round(H()*.48)),top]:[96,Math.round(H()*.7),H()-58];};
  const stack=()=>{if(!M3.on)return;const b=shH(),bb=b?b+'px':'';if(C.style.bottom!==bb)C.style.bottom=bb;if(C.style.display==='block'){const s=csnaps(),h=Math.max(56,Math.min(s[2],s[M3.csnap]))+'px';if(!C.classList.contains('drag')&&C.style.height!==h)C.style.height=h;}};M3.stack=stack;
  M3.setSnap=(k,anim)=>{M3.snap=Math.max(0,Math.min(2,k));S.style.height=snaps()[M3.snap]+'px';S.dataset.s=M3.snap;if(M3.snap>0&&M3.csnap>0&&C.style.display==='block')M3.csnap=0;stack();afterMove();};
  M3.setCSnap=k=>{M3.csnap=Math.max(0,Math.min(2,k));if(M3.csnap>0&&M3.snap>0&&M3.por){M3.snap=0;S.style.height=snaps()[0]+'px';S.dataset.s=0;}const c=$('card');c.style.height=csnaps()[M3.csnap]+'px';c.dataset.s=M3.csnap;stack();afterMove();};
@@ -4785,8 +4825,8 @@ M3.build=function(){if(M3.built)return;M3.built=true;
   if(close){const i=ORD.indexOf(focusO),p=ORD[(i+ORD.length-1)%ORD.length],n=ORD[(i+1)%ORD.length];const k=p.id+n.id;if(pn._k!==k){pn._k=k;pn.innerHTML=`<button data-k="p" aria-label="Previous ending">‹ ${esc(nm(p))}</button><button data-k="n" aria-label="Next ending">${esc(nm(n))} ›</button>`;}if(cg.nextSibling!==pn)C.insertBefore(pn,cg.nextSibling);}
   else if(pn.parentNode)pn.remove();
   const V=window.VIS&&VIS.el;if(V){if(close){const h2=C.querySelector('h2');const at=h2?h2.nextSibling:null;if(V.parentNode!==C||(h2&&V.previousSibling!==h2))C.insertBefore(V,at);}else if(V.parentNode===C)B.appendChild(V);}};
- M3.fix=fix;new MutationObserver(fix).observe(C,{childList:true});
- let cOpen=false;new MutationObserver(()=>{if(!M3.on){cOpen=false;return;}const o=C.style.display==='block';B.classList.toggle('m3card',o);if(o&&!cOpen)M3.setCSnap(0);else if(o)stack();cOpen=o;afterMove();}).observe(C,{attributes:true,attributeFilter:['style','class']});
+ M3.fix=fix;new MutationObserver(()=>{fix();if(M3.on&&M3.csnap===0&&C.style.display==='block')stack();}).observe(C,{childList:true}); /* r2: re-fit the peek height when the card content changes */
+ let cOpen=false;new MutationObserver(()=>{if(!M3.on){cOpen=false;return;}const o=C.style.display==='block';B.classList.toggle('m3card',o);if(o&&!cOpen){M3.setCSnap(0);[450,950].forEach(t=>setTimeout(()=>{if(M3.on&&M3.csnap===0&&C.style.display==='block')M3.setCSnap(0);},t));/* r3: re-fit peek after the open animation settles */}else if(o)stack();cOpen=o;afterMove();}).observe(C,{attributes:true,attributeFilter:['style','class']});
  // top-N labels (whisper titles on the world view): the 4 largest shares + the selected site; the others show their name on tap
  M3.topUpd=()=>{try{const st=curP;const r=O.map(o=>[o.id,st.p[o.id]||0]).sort((a,b)=>b[1]-a[1]);M3.top=new Set(r.slice(0,4).map(x=>x[0]));if(sel)M3.top.add(sel);}catch(e){}};
  // camera: free area = top bar .. sheet top (a pulled-up sheet stops pushing the scene at mid screen)
