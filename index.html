@@ -4091,9 +4091,14 @@ var B4=(()=>{const Q=URLQ,B={on:Q.get('b4')==='1'&&!!BFR};if(!B.on)return B;wind
  //   one ending at 100 % puts NOW at city_e - G0, i.e. on the city up to the small constant G0 (B4.art().G0 reports it).
  //   The cloud is unchanged: still the road-share covariance, scaled by &b4k (default 2 / phone 3).
  const PK=Math.max(.05,+(Q.get('b4pk')||1));
+ // Round e (owner 11-18): the two CLIFF endings (Reversion, Self-destruction) are EXCLUDED from the NOW position, like 'None of these':
+ //   NOW(t) = plaza + kp * sum_{e not cliff} (p_e(t) - 1/13) * (city_e - plaza)
+ // their share term AND their 1/13 baseline term both drop out (no renormalisation: the cliff shares simply pull nowhere). Cliff risk is
+ // shown instead by the animated cliff-edge highlights + the 'Cliff risk' line under the NOW label (below).
+ const CLF=new Set(O.filter(o=>o.cliff).map(o=>o.id));B.excl=[...CLF];
  const epos=lid=>{const L=bfL(lid),n=L.s.length,ne=O.length,b=1/ne,R=[];for(let i=0;i<n;i++){const S=L.s[i];let x=0,z=0;const p={};
-   BFR.sites.forEach((id,j)=>{const o=byId[id];if(!o)return;const v=+S[j]||0;p[id]=v;const q=v-b;x+=q*(o.X-NOW.X);z+=q*(o.Z-NOW.Z);});
-   for(const o of O)if(!(o.id in p)){x-=b*(o.X-NOW.X);z-=b*(o.Z-NOW.Z);} R.push({X:NOW.X+PK*x,Z:NOW.Z+PK*z,p});}return R;};
+   BFR.sites.forEach((id,j)=>{const o=byId[id];if(!o)return;const v=+S[j]||0;p[id]=v;if(CLF.has(id))return;const q=v-b;x+=q*(o.X-NOW.X);z+=q*(o.Z-NOW.Z);});
+   for(const o of O)if(!(o.id in p)&&!CLF.has(o.id)){x-=b*(o.X-NOW.X);z-=b*(o.Z-NOW.Z);} R.push({X:NOW.X+PK*x,Z:NOW.Z+PK*z,p});}return R;};
  // TEST ONLY (&b4sim=<year>): simulated weekly history from <year>-W48 up to the week before the first real week. It re-uses the real weekly
  // steps (reversed, rotated a little per year) so the density on screen matches what real 2022-2025 snapshots would give. Never data.
  const mkSim=()=>{B.sim=[];if(!(SIMY>=2000)||!NOWM.path.length)return;const P=NOWM.path,n=P.length,[y0,w0]=WK[0];const L=[];let y=y0,w=w0;
@@ -4110,14 +4115,14 @@ var B4=(()=>{const Q=URLQ,B={on:Q.get('b4')==='1'&&!!BFR};if(!B.on)return B;wind
  // averaging-artifact report: per real week, distance from the plaza, nearest city footprint (SCN reserve radius; twins = both halves)
  // and whether that city is one of the endings actually pulling NOW (top-2 contributors along the displacement, share above 1/13)
  const FP=[];O.forEach((o,i)=>{const s=SCN[i]||{};if(o.twin){const r=Math.max(6,(o.w||.06)*100*.85);FP.push([o.X-TWIN,o.Z,r,o.id],[o.X+TWIN,o.Z,r,o.id]);}else if(s.r>0)FP.push([o.X,o.Z,s.r,o.id]);});
- B.art=(near)=>{near=near||6;const E=B.E||[],b=1/O.length,P=NOWM.path;let G=[0,0];for(const o of O){G[0]+=b*(o.X-NOW.X);G[1]+=b*(o.Z-NOW.Z);}
+ B.art=(near)=>{near=near||6;const E=B.E||[],b=1/O.length,P=NOWM.path;let G=[0,0];for(const o of O){if(CLF.has(o.id))continue;G[0]+=b*(o.X-NOW.X);G[1]+=b*(o.Z-NOW.Z);}
   const nc=FP.map(f=>({id:f[3],c:+Math.hypot(f[0]-NOW.X,f[1]-NOW.Z).toFixed(1),e:+(Math.hypot(f[0]-NOW.X,f[1]-NOW.Z)-f[2]).toFixed(1)})).sort((x,y)=>x.e-y.e);
   let md=0,mw='',mc=1e9,mcw='';const fl=[];
   E.forEach((q,i)=>{const p=P[i],dx=p.X-NOW.X,dz=p.Z-NOW.Z,d=Math.hypot(dx,dz);if(d>md){md=d;mw=BFR.weeks[i];}
    let best=null;for(const f of FP){const cl=Math.hypot(p.X-f[0],p.Z-f[1])-f[2];if(!best||cl<best.cl)best={id:f[3],cl};}if(best.cl<mc){mc=best.cl;mcw=BFR.weeks[i];}
    const ct=O.map(o=>{const v=((q.p[o.id]||0)-b);return{id:o.id,v,a:d>1e-6?(v*((o.X-NOW.X)*dx+(o.Z-NOW.Z)*dz))/d:0};}).sort((x,y)=>y.a-x.a),top=ct.slice(0,2).filter(c=>c.v>0).map(c=>c.id);
    if(best.cl<near)fl.push({wk:BFR.weeks[i],city:best.id,clear:+best.cl.toFixed(2),pulling:top.includes(best.id),top});});
-  return{formula:'plaza + '+PK+' * sum_e (p_e - 1/13)(city_e - plaza)',G0:+Math.hypot(G[0],G[1]).toFixed(2),maxDist:+md.toFixed(2),maxDistWeek:mw,
+  return{formula:'plaza + '+PK+' * sum_{e not cliff} (p_e - 1/13)(city_e - plaza)',excluded:[...CLF],G0:+Math.hypot(G[0],G[1]).toFixed(2),maxDist:+md.toFixed(2),maxDistWeek:mw,
    minClear:+mc.toFixed(2),minClearWeek:mcw,nearestCities:nc.slice(0,4),near:fl,artifacts:fl.filter(f=>!f.pulling).map(f=>f.wk),
    last:P.length?[+(P[P.length-1].X-NOW.X).toFixed(2),+(P[P.length-1].Z-NOW.Z).toFixed(2)]:null,range:NOWM.range&&{w:+(NOWM.range.x1-NOWM.range.x0).toFixed(2),h:+(NOWM.range.z1-NOWM.range.z0).toFixed(2)}};};
  B.build0=build0;
@@ -4173,16 +4178,28 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
   for(const r of RD6){const row=LEGR[r.id];if(!row)continue;row.onmouseenter=row.onmouseleave=null;row.title='Hover to show this road on the map · click to pin';
    row.addEventListener('pointerenter',e=>{if(e.pointerType==='touch')return;B.hov=r.id;updR();});
    row.addEventListener('pointerleave',e=>{if(e.pointerType==='touch')return;B.hov=null;updR();});
-   row.onclick=e=>{e.stopPropagation();B.pin=B.pin===r.id?null:r.id;updR();};}
-  addEventListener('keydown',e=>{if(e.key==='Escape'&&B.pin){B.pin=null;updR();}});
-  // click / tap on EMPTY map unpins and does not fly the camera (markers and trail dots keep their own clicks)
+   row.onclick=e=>{e.stopPropagation();pinCard(B.pin===r.id?null:r.id);};}
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&B.pin)pinCard(null);});
+  // click / tap on EMPTY map unpins (and closes the road card) and does not fly the camera (markers and trail dots keep their own clicks)
   addEventListener('pointerup',e=>{if(!B.pin||e.target!==cv)return;if(B.hit.some(h=>Math.hypot(e.clientX-h.x,e.clientY-h.y)<(e.pointerType==='touch'?20:12)))return;
-   if(e.pointerType==='touch'){setTimeout(()=>{if(TCH.tap&&B.pin){clearTimeout(TCH.tm);TCH.tap=null;B.pin=null;updR();}},0);return;}
-   if(drag&&!drag.m&&!HOV){drag.m=true;B.pin=null;updR();}},true);}
+   if(e.pointerType==='touch'){setTimeout(()=>{if(TCH.tap&&B.pin){clearTimeout(TCH.tm);TCH.tap=null;pinCard(null);}},0);return;}
+   if(drag&&!drag.m&&!HOV){drag.m=true;pinCard(null);}},true);
+  // pin <-> card stay in sync: anything that replaces or closes the road card (x button, a city / NOW card, closeCard) drops the pin;
+  // a road opened from inside the card (feed rows) moves the pin with it
+  ANIM.push(()=>{if(B.pin&&selR!==B.pin){if(selR&&RDI[selR]){B.pin=selR;updR();}else{B.pin=null;updR();}}});}
+ // Round e (owner 11-18): row click = pin the road on the map AND open its road card on the right (as before round d); click the same row
+ // again / Esc / empty map / closing the card closes both; another row switches pin + card. Hover still only previews (no card).
+ function pinCard(id){B.pin=id||null;updR();if(id){if(typeof openRoad==='function')openRoad(id);}else if(selR&&typeof closeCard==='function')closeCard();}
+ B.pinCard=pinCard;
  const nmOf=id=>{const o=O.find(q=>q.id===id);return o?o.n:id;};
- const rdDraw=(g,W,H,tlT)=>{B.rl=[];const id=B.road;if(!id||!(view==='world'||view==='basin'))return;const rv=ROADV.find(v=>v.r.id===id);if(!rv)return;
+ const rdDraw=(g,W,H,tlT)=>{B.rl=[];B.rlb=[];const id=B.road;if(!id||!(view==='world'||view==='basin'))return;const rv=ROADV.find(v=>v.r.id===id);if(!rv)return;
   // numbers = the TRUE current state (curP); V.st can carry the replay's amplified widths (×2.5), so it only decides which legs are drawn
   const stt=curP,w=stt.w[id]||0,M3on=!!(window.M3&&M3.on),LB=LBX().slice(),PL=[];
+  // Round e: labels keep clear of the open road card (desktop right card / phone sheet) and of the NOW label + its drop stem
+  {const cd=document.getElementById('card');if(cd&&cd.style.display==='block'){const r=cd.getBoundingClientRect();if(r.width>0)LB.push([r.left-6,r.top-6,r.right+6,r.bottom+6]);}
+   if(typeof NOWL!=='undefined'&&NOWL.style.display!=='none'){const r=NOWL.getBoundingClientRect(),gq=proj(NOWD.X,hMesh(NOWD.X,NOWD.Z),NOWD.Z);LB.push([r.left-6,r.top-6,r.right+6,r.bottom+6]);
+    if(gq[2]){const sx=gq[0];LB.push([Math.min(sx,r.left+r.width/2)-10,r.bottom-2,Math.max(sx,r.left+r.width/2)+10,gq[1]+10]);}}}
+  B.legP=[];
   const pr=p=>{const c=proj(p[0],hMesh(p[0],p[1])+.2,p[1]);return[c[0],c[1],c[2]&&c[1]<=tlT];};
   g.save();g.lineCap='round';g.lineJoin='round';
   const legs=rv.spurs.filter(S=>S.vasc?S.vasc.dw>0:S.rib&&S.rib.w>0).map(S=>({S,v:((stt.src[S.site]||{})[id])||0})).sort((a,b)=>b.v-a.v);
@@ -4194,12 +4211,18 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
   const put=(s,C,f)=>{g.font=f;const tw=g.measureText(s).width,th=14;for(const c of C){if(!c[2])continue;for(const[dx,dy]of[[9,-11],[9,11],[-9-tw,-11],[-9-tw,11]]){const x=c[0]+dx,y=c[1]+dy,bx=[x-6,y-th/2,x+tw+4,y+th/2];
      if(bx[0]<4||bx[2]>W-4||bx[1]<4||bx[3]>tlT-2||ovB(bx,LB)||ovB(bx,PL))continue;
      g.fillStyle='rgba(10,14,19,.8)';g.fillRect(bx[0],bx[1],bx[2]-bx[0],bx[3]-bx[1]);g.fillStyle=rv.r.c;g.fillRect(bx[0],bx[1],2,bx[3]-bx[1]);
-     g.fillStyle='#EEE7D8';g.textAlign='left';g.textBaseline='middle';g.fillText(s,x,y+.5);PL.push(bx);B.rl.push(s);return true;}}return false;};
+     g.fillStyle='#EEE7D8';g.textAlign='left';g.textBaseline='middle';g.fillText(s,x,y+.5);PL.push(bx);B.rl.push(s);(B.rlb=B.rlb||[]).push(bx.map(v=>+v.toFixed(1)));return true;}}return false;};
   const tp=rv.tp,at=t=>pr(tp[Math.min(tp.length-1,Math.round(t*(tp.length-1)))]);
-  put(`${id} ${w.toFixed(0)}%`,[.55,.4,.7,.25,.85].map(at),F);
-  for(const l of legs){const P=l.S.pts,Lp=l.S.vasc?l.S.vasc.path.length:P.length,ix=f=>pr(P[Math.min(P.length-1,Math.max(0,Math.round(f)))]);
-   const sp=w>0?l.v/w*100:0;put(`${nmOf(l.S.site)} ${sp.toFixed(0)}% of road = ${l.v.toFixed(1)}%`,[Lp-1,Lp*.85,Lp*.7,P.length-1,Lp*.55].map(ix),F);}
+  put(`${id} ${w.toFixed(0)}%`,[.55,.4,.7,.25,.85,.32,.62].map(at),F);
+  // Round e: desktop shows only the 4 largest legs' labels; the others appear while the mouse is over that leg (B.legHov)
+  legs.forEach((l,li)=>{const P=l.S.pts,Lp=l.S.vasc?l.S.vasc.path.length:P.length,ix=f=>pr(P[Math.min(P.length-1,Math.max(0,Math.round(f)))]);
+   B.legP.push({site:l.S.site,P:P.map(pr)});if(!M3on&&li>=4&&B.legHov!==l.S.site)return;
+   const sp=w>0?l.v/w*100:0;put(`${nmOf(l.S.site)} ${sp.toFixed(0)}% of road = ${l.v.toFixed(1)}%`,[Lp-1,Lp*.85,Lp*.7,P.length-1,Lp*.55].map(ix),F);});
   g.restore();};
+ B.legHov=null;
+ addEventListener('pointermove',e=>{if(e.pointerType==='touch'||!B.road||!B.legP)return;let h=null;
+  for(const L of B.legP){const P=L.P;for(let i=1;i<P.length;i++)if(P[i][2]&&P[i-1][2]&&dSeg(e.clientX,e.clientY,P[i-1],P[i])<7){h=L.site;break;}if(h)break;}
+  if(h!==B.legHov){B.legHov=h;kick(300);}},true);
  B.roadInfo=()=>({road:B.road,pin:B.pin,hov:B.hov,labels:B.rl.slice(),mats:B.road?mOf(B.road).length:0,visMats:[...roadMats()].filter(m=>m.visible).length,
   shared:RD6.map(r=>r.id).filter(a=>RD6.some(b=>b.id!==a&&mOf(a).some(m=>mOf(b.id).includes(m))))});
  // softer / smaller warm hub glow (the plaza light pool, fa4_build GLOWS o:null) so NOW, its label and the cloud core read separately
@@ -4332,7 +4355,52 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
  B.ldInfo=()=>B.ld&&{id:B.ld.id,lead:LEAD&&LEAD.o&&LEAD.o.id,c:+B.ld.c.toFixed(2),end:[+B.ld.X.toFixed(2),+B.ld.Z.toFixed(2)],city:[LEAD.o.X,LEAD.o.Z],from:[+NOWD.X.toFixed(2),+NOWD.Z.toFixed(2)],wk:BFR.weeks[Math.max(0,NOWM.idx)],tip:B.ldTxt()};
  addEventListener('pointermove',e=>{if(e.pointerType==='touch'||drag&&drag.m||!okT(e.target)||near(e)||(HOV&&HOV.o))return;
   if(B.ldHit(e.clientX,e.clientY,6)){const ev={clientX:e.clientX,clientY:e.clientY},h=B.ldTxt();setTimeout(()=>{showTip(ev,h);},0);B.ldOn=1;}else if(B.ldOn){B.ldOn=0;hideTip();}},true);
- B.diag=()=>({weeks:BFR.weeks.length,zeroEvidenceWeeks:(BFR.items||[]).map((a,i)=>a&&a.length?null:BFR.weeks[i]).filter(Boolean),drawn:B.n,hits:B.hit.length,
+ // ---------- Round e (owner 11-18): CLIFF RISK. Cliffs no longer pull NOW (epos); instead each cliff edge carries an animated highlight in its
+ // own colour (owner allows these two hues HERE ONLY: Reversion green = return to nature, Self-destruction red = destruction) and a small
+ // 'Cliff risk' line sits under the NOW label. Intensity + speed scale with that cliff's CURRENT share (active lens + replay week, engine
+ // snapshot); subtle at low share, capped (peak alpha <= .62, <= 3 px core, normal blending on the 2D overlay = outside bloom, 0 draw calls).
+ const CFC={reversion:[118,196,128],selfdestruct:[226,98,84]},CFH={reversion:'#7FC98B',selfdestruct:'#E3705F'};
+ const cfSh=()=>{const L=bfL(LCUR),S=L&&L.s[bfIdx(day)],r={};for(const id of CLF){const j=BFR.sites.indexOf(id);r[id]=S&&j>=0?(+S[j]||0)*100:0;}return r;};
+ B.cfE=null;
+ const cfEdges=()=>{const E={};const sm3=P=>P.map((p,i)=>{let x=0,z=0,n=0;for(let k=-2;k<=2;k++){const q=P[i+k];if(q){x+=q[0];z+=q[1];n++;}}return[x/n,z/n];});
+  // Reversion: west cliff - per row Z, the steepest westward drop between X = -AXX+12 and -AXX-8 (lip = upper side)
+  {const P=[];for(let Z=RVZ-28;Z<=RVZ+28;Z+=1){let b=0,bx=null;for(let X=-AXX+12;X>=-AXX-8;X-=.5){const d=hMesh(X,Z)-hMesh(X-1,Z);if(d>b){b=d;bx=X;}}if(bx!=null&&b>.45)P.push([bx,Z]);else if(P.length&&P[P.length-1]!==null)P.push(null);}
+   E.reversion=P;}
+  // Self-destruction: crater rim, north half (the side facing the plaza / camera) - per bearing, the radius with the steepest inward drop
+  {const P=[];for(let a=-176;a<=-4;a+=4){const ca=Math.cos(a*Math.PI/180),sa=Math.sin(a*Math.PI/180);let b=0,br=null;
+    for(let r=5;r<=26;r+=.5){const d=hMesh(CRX+r*ca,CRZ+r*sa)-hMesh(CRX+(r-1)*ca,CRZ+(r-1)*sa);if(d>b){b=d;br=r;}}
+    if(br!=null&&b>.3)P.push([CRX+br*ca,CRZ+br*sa]);else if(P.length&&P[P.length-1]!==null)P.push(null);}
+   E.selfdestruct=P;}
+  // split at gaps, keep the longest run, smooth, lift onto the lip
+  for(const id in E){const runs=[];let c=[];for(const p of E[id]){if(!p){if(c.length)runs.push(c);c=[];}else c.push(p);}if(c.length)runs.push(c);
+   const R=runs.sort((a,b)=>b.length-a.length)[0]||[];E[id]=sm3(R).map(([x,z])=>[x,z,hMesh(x,z)+.25]);}
+  return E;};
+ const cfDraw=(g,W,H,tlT)=>{B.cf=null;if(!TER_BUILT||!(view==='world'||view==='basin'))return;if(!B.cfE)B.cfE=cfEdges();const sh=cfSh(),t=performance.now()/1000,inf={};
+  g.save();g.lineCap='round';g.lineJoin='round';
+  for(const id in B.cfE){const P=B.cfE[id];if(P.length<3)continue;const v=sh[id]||0,s=clamp(Math.sqrt(v/12),0,1),c=CFC[id],S=P.map(p=>{const q=proj(p[0],p[2],p[1]);return[q[0],q[1],q[2]&&q[1]<=tlT,fogA(p[0],p[1])];});
+   const seg=(f,lw,cs)=>{g.lineWidth=lw;for(let i=1;i<S.length;i++){const a=S[i-1],b=S[i];if(!a[2]||!b[2])continue;const al=f(i)*Math.min(a[3],b[3]);if(al<.004)continue;g.strokeStyle=cs(al);g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();}};
+   const base=.18+.2*s;seg(()=>base*.6,5,a=>`rgba(8,12,22,${a.toFixed(3)})`);seg(()=>base,1.8,a=>`rgba(${c},${a.toFixed(3)})`);
+   // runner: a soft bright band travelling along the edge; speed 0.035 -> 0.13 of the edge per s, length 14 -> 26 %, peak alpha .34 -> .74
+   let pk=0;if(RMOT){const n=S.length,u=((t*(.035+.095*s)+(id==='reversion'?.37:0))%1)*(n-1),L=n*(.14+.12*s),A=.34+.40*s;pk=A;
+    const f=i=>{const d=i-u;return A*Math.exp(-(d*d)/(L*L*.18));}; // no wrap-around (it lit both ends at once)
+    seg(i=>f(i)*.22,6,a=>`rgba(${c},${a.toFixed(3)})`);seg(f,2+1.4*s,a=>`rgba(${c},${a.toFixed(3)})`);}
+   else{seg(()=>.3+.3*s,2+1*s,a=>`rgba(${c},${a.toFixed(3)})`);pk=.3+.3*s;}
+   const V=S.filter(q=>q[2]&&q[0]>=0&&q[0]<=W&&q[1]>=0&&q[1]<=H);
+   inf[id]={share:+v.toFixed(2),s:+s.toFixed(3),peak:+pk.toFixed(3),pts:S.length,inView:V.length,fog:+Math.min(...S.map(q=>q[3])).toFixed(2),
+    bbox:V.length?[Math.min(...V.map(q=>q[0])),Math.min(...V.map(q=>q[1])),Math.max(...V.map(q=>q[0])),Math.max(...V.map(q=>q[1]))].map(Math.round):null,
+    w0:P[0].map(v=>+v.toFixed(1)),w1:P[P.length-1].map(v=>+v.toFixed(1))};}
+  g.restore();B.cf=inf;B.cfT=t;};
+ const cfLine=()=>{if(typeof NOWL==='undefined')return;const sh=cfSh(),f=v=>v.toFixed(1)+'%';let d=NOWL.querySelector('.b4cr');if(!d){d=document.createElement('div');d.className='b4cr';NOWL.appendChild(d);}
+  d.innerHTML=`Cliff risk: <b style="color:${CFH.selfdestruct}">Self-destruction ${f(sh.selfdestruct)}</b> · <b style="color:${CFH.reversion}">Reversion ${f(sh.reversion)}</b>`;B.cfTxt=d.textContent;NOWL._w=0;};
+ {const st=document.createElement('style');st.textContent='.nowl .b4cr{font:600 10.5px/14px \"FA Plex\",ui-monospace,monospace;letter-spacing:.02em;color:#CFC8B8;text-align:center;margin-top:1px;text-shadow:0 0 3px rgba(8,12,22,.9)}.nowl .b4cr b{font-weight:600;margin:0}@media (max-width:600px){.nowl .b4cr{font-size:9.5px;line-height:12px;white-space:normal;max-width:210px;margin:1px auto 0}}';document.head.appendChild(st);}
+ if(typeof updPlaqueText==='function'){const u0=updPlaqueText;updPlaqueText=function(){const r=u0.apply(this,arguments);try{cfLine();}catch(e){B.err='cf '+String(e);}return r;};}
+ try{cfLine();}catch(e){}
+ {const d1=NOWM.draw;NOWM.draw=(g,W,H,tlT)=>{try{cfDraw(g,W,H,tlT);}catch(e){B.err='cf '+String(e);}return d1(g,W,H,tlT);};}
+ B.cliff=()=>({shares:cfSh(),text:B.cfTxt,draw:B.cf,week:BFR.weeks[bfIdx(day)],lens:LCUR,engine:(()=>{const L=bfL(LCUR),i=bfIdx(day),o={};for(const id of CLF)o[id]=+(L.s[i][BFR.sites.indexOf(id)]*100).toFixed(3);return o;})()});
+ // NOW formula check (diag): recompute NOW for the current week independently, once with and once without the cliffs
+ B.nowChk=()=>{const L=bfL(LCUR),i=bfIdx(day),S=L.s[i],b=1/O.length;const f=ex=>{let x=0,z=0;for(const o of O){if(ex&&o.cliff)continue;const j=BFR.sites.indexOf(o.id),v=j>=0?+S[j]||0:0;x+=(v-b)*(o.X-NOW.X);z+=(v-b)*(o.Z-NOW.Z);}return[+(NOW.X+PK*x).toFixed(3),+(NOW.Z+PK*z).toFixed(3)];};
+  const p=NOWM.path[i];return{week:BFR.weeks[i],path:[+p.X.toFixed(3),+p.Z.toFixed(3)],exclCliffs:f(1),inclCliffs:f(0),excluded:[...CLF]};};
+ B.diag=()=>({weeks:BFR.weeks.length,zeroEvidenceWeeks:(BFR.items||[]).map((a,i)=>a&&a.length?null:BFR.weeks[i]).filter(Boolean),drawn:B.n,hits:B.hit.length,nowExcl:[...CLF],
   stacked:B.hit.filter((h,j)=>B.hit.some((q,k)=>k!==j&&Math.hypot(q.x-h.x,q.y-h.y)<4)).length,wkN:B.wkN,wkSp:B.wkSp,labels:B.lbl.slice(),sim:B.sim.length,roads:RM||'on',err:B.err||null});
  B.info=()=>{const i=Math.max(0,NOWM.idx),s=B.st[i];return{k:K,s:SS,roads:RM||'on',roadMats:rmN,lens:B.lens,idx:i,week:BFR.weeks[i],X:+NOWD.X.toFixed(2),Z:+NOWD.Z.toFixed(2),
   s80:s?[+(s.s1*R80).toFixed(2),+(s.s2*R80).toFixed(2),+(s.th*57.3).toFixed(0)]:null,cur:B.cur&&[+B.cur.s1.toFixed(2),+B.cur.s2.toFixed(2)],range:NOWM.range&&Object.fromEntries(Object.entries(NOWM.range).map(([q,v])=>[q,+v.toFixed(2)])),
