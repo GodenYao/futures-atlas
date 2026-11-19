@@ -45,6 +45,26 @@ writes before you open the PR. You are responsible for the submission.
    [Correction form](https://github.com/GodenYao/futures-atlas/issues/new?template=correction.yml).
    Items in open or closed-unmerged PRs never move the map.
 
+### What "counts from the next weekly build" means
+
+Every Monday at 01:00 UTC the [Weekly build](.github/workflows/weekly-build.yml) workflow runs
+(the maintainer can also start it by hand):
+
+1. it runs the engine's unit check (`node engine/recompute --check`) and the ledger schema check;
+2. it moves every merged `ledger/inbox/EV-*.json` that names an indicator into
+   `ledger/reviewed/<year>/<indicator>.json` (items without an indicator stay in the inbox and
+   do not count);
+3. it recomputes every week from the start of the reviewed history up to the week that just
+   ended (Monday 00:00 UTC freeze), from all reviewed backfill phases plus `ledger/reviewed/`;
+4. if the map data changed, it opens a pull request titled **"Weekly build Wxx"**. Nothing is
+   pushed to `main` directly.
+
+The new numbers go live when the maintainer merges that pull request, normally the same day.
+Your item then sits in the week of its own publication date, and past weeks are recomputed
+(git history shows what changed). Backfill phases count only once their review record
+`ledger/backfill/review/approved_<phase>.json` exists; unreviewed phases (today: 2025) never
+move the numbers. Run it yourself: `node tools/weekly_build.mjs` (see [engine/README.md](engine/README.md)).
+
 Reviews prioritise the newest evidence (the last 4 weeks). History back to 2022-11-30 is
 welcome and is reviewed after that. Ledger layout and the full life of an item:
 [ledger/README.md](ledger/README.md).

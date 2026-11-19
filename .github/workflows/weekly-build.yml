@@ -1,0 +1,76 @@
+name: Weekly build
+
+# Every Monday 01:00 UTC (after the Monday 00:00 UTC freeze) and on demand:
+#   engine --check, file merged inbox items into ledger/reviewed/, recompute the replay up to the week
+#   that just ended, export the map data and update index.html - only if the inputs changed.
+# The result is a pull request "Weekly build Wxx" for the maintainer to merge; nothing is pushed to main.
+# Needs the repository setting "Allow GitHub Actions to create and approve pull requests".
+on:
+  schedule:
+    - cron: "0 1 * * 1"
+  workflow_dispatch:
+    inputs:
+      today:
+        description: "Run as if today were YYYY-MM-DD (empty = real date)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: weekly-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate the whole ledger first
+        run: node tools/validate_evidence.mjs --ledger
+
+      - name: Weekly build (check, file, recompute, export, splice)
+        id: wb
+        env:
+          FA_TODAY: ${{ github.event.inputs.today }}
+        run: |
+          if [ -n "$FA_TODAY" ]; then node tools/weekly_build.mjs --today "$FA_TODAY"; else unset FA_TODAY; node tools/weekly_build.mjs; fi
+
+      - name: Re-validate after filing
+        run: node tools/validate_evidence.mjs --ledger
+
+      - name: Open a pull request
+        if: steps.wb.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WEEK: ${{ steps.wb.outputs.week }}
+          FILED: ${{ steps.wb.outputs.filed }}
+        run: |
+          W="W${WEEK##*-W}"
+          BR="weekly-build/${WEEK}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BR"
+          git add index.html ledger/inbox ledger/reviewed
+          git commit -m "Weekly build ${W} (${WEEK})"
+          git push --force origin "$BR"
+          if gh pr view "$BR" --json number >/dev/null 2>&1; then echo "PR for $BR already open (updated)"; exit 0; fi
+          gh pr create --base main --head "$BR" --title "Weekly build ${W}" --body "Automated weekly build for ${WEEK} (Monday 00:00 UTC freeze).
+
+          - engine \`--check\` passed; ledger schema check passed
+          - accepted inbox items filed into \`ledger/reviewed/\`: ${FILED}
+          - \`index.html\` map data recomputed from every reviewed backfill phase + \`ledger/reviewed/\`
+
+          Merging this PR publishes the new numbers. Each item still counts only in the week of its own publication date."
+
+      - name: Nothing changed
+        if: steps.wb.outputs.changed != 'true'
+        run: echo "Inputs unchanged for ${{ steps.wb.outputs.week }} - no pull request."

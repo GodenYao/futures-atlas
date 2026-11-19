@@ -10,11 +10,12 @@ ledger/
 ├── inbox/                          evidence items arrive here by PR, one item per file;
 │   │                               a file on the main branch = merged = accepted
 │   └── _examples/                     example items, never counted
-├── reviewed/<year>/<indicator>.json   accepted items after the weekly build files them
-├── backfill/<phase>/<indicator>.json  maintainer history backfill (replay material)
-├── review/approved_<phase>.json       per-phase review record: pass/hold, wording overrides
-├── review/rulings.json                maintainer rulings the engine reads (MET dates, merges)
-└── adjudications.md                rulings on indicator status (MET / NOT YET MET / ...)
+├── reviewed/<year>/<indicator>.json   accepted items, filed there by the weekly build (counted)
+├── backfill/<phase>/<indicator>.json  maintainer history backfill (replay material; a phase
+│                                      counts only once backfill/review/approved_<phase>.json exists)
+├── backfill/review/approved_<phase>.json  per-phase review record: pass/hold, wording overrides
+├── backfill/review/rulings.json       maintainer rulings the engine reads (MET dates, merges)
+└── adjudications.md                rulings on indicator status, with reasons and how to challenge them
 ```
 
 ## Life of an item
@@ -28,7 +29,7 @@ PR adds ledger/inbox/EV-....json
        - anyone can comment in the PR
   └─ maintainer merges after review (earlier than 7 days if review is done and no objection
      is open; no auto-merge)  -> label: accepted      or closed -> label: rejected + reason
-  └─ merge = accepted. Next weekly build (Monday freeze):
+  └─ merge = accepted. Next weekly build (workflow every Monday 01:00 UTC, after the 00:00 freeze):
        - files the item under reviewed/<year>/<indicator>.json with reviewer fields
          (kind, source_tier, confidence, review: {pr, merged})
        - counts it in the week of its OWN `published` date; past weekly snapshots are

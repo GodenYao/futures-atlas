@@ -38,8 +38,9 @@ The map is recomputable from a public evidence ledger in [`ledger/`](ledger/). T
   ([rules](docs/VISIONS.md)). Votes reflect online opinion only and never change the map.
 
 Every item is reviewed against its source while its pull request is open (public comment
-window, at most 7 days); once merged it counts from the next weekly build, in the week of its
-own publication date. During bootstrap the maintainer is the sole reviewer. Rules:
+window, at most 7 days); once merged it counts from the next weekly build (a Monday pull
+request "Weekly build Wxx" that the maintainer merges; [what that means](CONTRIBUTING.md#what-counts-from-the-next-weekly-build-means)),
+in the week of its own publication date. During bootstrap the maintainer is the sole reviewer. Rules:
 [CONTRIBUTING.md](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md).
 
 Submitting works best on a computer; the map itself works on phones.
