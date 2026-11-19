@@ -12,7 +12,9 @@ editorial scenario families (R1–R6).
 - **An evidence-weighted map of scenarios.** Ending shares start from editorial weights set
   by the maintainer and move each week with reviewed public evidence in [`ledger/`](ledger/).
 - **Recomputable.** [`engine/`](engine/) replays the ledger and reproduces every share on the
-  map (`node engine/recompute`, no dependencies).
+  map (`node engine/recompute`, no dependencies). How the numbers are made, with every
+  parameter, its range and its rationale: **[METHODS.md](METHODS.md)**; how much the result
+  depends on each of them: [docs/sensitivity.md](docs/sensitivity.md).
 - **Neutral.** No ending is rated good or bad. Rival powers are unnamed (Bloc A, Bloc B), with
   no flags or national colours.
 
