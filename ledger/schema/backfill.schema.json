@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GodenYao/futures-atlas/ledger/schema/backfill.schema.json",
+  "title": "Futures Atlas backfill bundle (one indicator, one phase)",
+  "description": "Format of ledger/backfill/<phase>/<indicator>.json: maintainer history backfill, replay material. Checked in CI by `node tools/validate_evidence.mjs --ledger`. Items count only once the phase has a review record ledger/backfill/review/approved_<phase>.json.",
+  "type": "object",
+  "required": ["indicator", "phase", "statement", "items"],
+  "properties": {
+    "indicator": { "type": "string", "pattern": "^I-[A-Z0-9]+-\\d\\d$" },
+    "phase": { "type": "string", "pattern": "^\\d{4}(-\\d\\d)?$" },
+    "phase_window": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "string", "format": "date" } },
+    "statement": { "type": "string", "minLength": 10 },
+    "generated": { "type": "string", "format": "date" },
+    "status_at_phase_end": { "type": "string" },
+    "merged_with": { "type": "string" },
+    "counting_note": { "type": "string" },
+    "items": { "type": "array", "items": { "$ref": "#/$defs/item" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "indicator", "kind", "published", "summary", "direction", "source_url", "source_tier", "confidence"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^BF-\\d{4}(-\\d\\d)?-I-[A-Z0-9]+-\\d\\d-\\d{3}$" },
+        "indicator": { "type": "string", "pattern": "^I-[A-Z0-9]+-\\d\\d$" },
+        "kind": { "enum": ["event", "data-series", "forecast", "treaty-law", "data-gap"] },
+        "published": { "type": "string", "format": "date" },
+        "summary": { "type": "string", "minLength": 10, "maxLength": 1200 },
+        "detail": { "type": "string", "maxLength": 2000 },
+        "value": { "type": ["string", "null"], "maxLength": 300 },
+        "direction": { "enum": ["toward YES", "toward NO", "neutral"] },
+        "source_url": { "type": "string", "format": "uri" },
+        "archive_url": { "type": "string", "format": "uri" },
+        "source_tier": { "enum": [1, 2, 3] },
+        "confidence": { "enum": ["high", "med", "low"] },
+        "backfilled": { "const": true },
+        "duplicate_of": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

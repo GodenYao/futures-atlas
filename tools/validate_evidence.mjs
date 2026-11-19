@@ -3,6 +3,8 @@
 //
 // Usage:
 //   node tools/validate_evidence.mjs --all                 # every item under ledger/inbox/ (incl. _examples/)
+//   node tools/validate_evidence.mjs --ledger              # --all + every ledger/backfill/** bundle (backfill.schema.json),
+//                                                          #   ledger/reviewed/** and the review records (what CI runs)
 //   node tools/validate_evidence.mjs ledger/inbox/EV-....json [more files]
 //   node tools/validate_evidence.mjs --root <repo> <files>  # repo root if not run from the repo
 //
@@ -33,18 +35,19 @@ const GH = !!process.env.GITHUB_ACTIONS;
 // ---------- CLI ----------
 const argv = process.argv.slice(2);
 let root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-let all = false;
+let all = false, ledgerMode = false;
 const files = [];
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
   if (a === '--all') all = true;
+  else if (a === '--ledger') { all = true; ledgerMode = true; }
   else if (a === '--root') root = path.resolve(argv[++i] || '.');
   else if (a === '-h' || a === '--help') { usage(0); }
   else if (a.startsWith('--')) { console.error('unknown option ' + a); usage(2); }
   else files.push(path.resolve(a));
 }
 function usage(code) {
-  console.log('usage: node tools/validate_evidence.mjs [--root DIR] (--all | FILE...)');
+  console.log('usage: node tools/validate_evidence.mjs [--root DIR] (--all | --ledger | FILE...)\n  --all     every inbox item\n  --ledger  every inbox item + every ledger/backfill/** bundle + ledger/reviewed/** + review records (CI)');
   process.exit(code);
 }
 
@@ -108,9 +111,10 @@ function typeOf(v) {
   if (typeof v === 'number') return Number.isInteger(v) ? 'integer' : 'number';
   return typeof v;
 }
+let curRoot = null; // schema whose $defs a $ref resolves against (backfill checks swap it)
 function resolveRef(ref) {
   if (!ref.startsWith('#/')) throw new Error('only local $ref supported: ' + ref);
-  return ref.slice(2).split('/').reduce((o, k) => o[k], schema);
+  return ref.slice(2).split('/').reduce((o, k) => o[k], curRoot || schema);
 }
 function isDate(s) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
@@ -285,4 +289,88 @@ for (const file of [...new Set(files)]) {
 }
 
 console.log(`\n${files.length} file(s) checked: ${nErr} error(s), ${nWarn} warning(s) -> ${nErr ? 'FAIL' : 'PASS'}`);
+if (ledgerMode) checkLedger();
 process.exit(nErr ? 1 : 0);
+
+// ---------- --ledger: every bundled backfill item, every reviewed item, review records ----------
+// Errors: schema (ledger/schema/backfill.schema.json), duplicate ids, id/indicator/phase mismatch, bad or future dates,
+// unknown indicators, overrides or rulings pointing at nothing. Warnings: country names in summaries, duplicate_of
+// targets that do not exist. Reviewed items: evidence schema (reviewer fields allowed) + the same date/indicator rules.
+function checkLedger() {
+  const e0 = nErr, w0 = nWarn; let nFiles = 0, nItems = 0;
+  const bfDir = path.join(P.ledger, 'backfill'), rvDir = path.join(P.ledger, 'reviewed'), rdDir = path.join(bfDir, 'review');
+  const bfSchema = readJSON(path.join(P.ledger, 'schema', 'backfill.schema.json'));
+  const allIds = new Map(); const dupRefs = [];
+  const dateRules = (E, it, at) => {
+    if (typeof it.published === 'string' && isDate(it.published)) {
+      if (it.published < MIN_DATE) E(`${at}: published ${it.published} is before the ledger start ${MIN_DATE}`);
+      if (it.published > today) E(`${at}: published ${it.published} is in the future`);
+    }
+  };
+  const neutral = (W, it, at) => { for (const f of ['summary']) if (typeof it[f] === 'string') { const text = it[f].replace(BLOC_OK, ' '); for (const [t, rx] of countryRx) if (rx.test(text)) W(`${at}: neutrality: "${f}" names a country ("${t}")`); } };
+  const phases = fs.existsSync(bfDir) ? fs.readdirSync(bfDir, { withFileTypes: true }).filter(d => d.isDirectory() && d.name !== 'review').map(d => d.name).sort() : [];
+  for (const ph of phases) for (const f of fs.readdirSync(path.join(bfDir, ph)).sort()) {
+    const file = path.join(bfDir, ph, f); const E = m => report('error', file, m), W = m => report('warning', file, m);
+    if (!f.endsWith('.json')) { E('only .json bundles belong in ledger/backfill/<phase>/'); continue; }
+    nFiles++;
+    let j; try { j = readJSON(file); } catch (e) { E('invalid JSON: ' + e.message); continue; }
+    const errs = []; curRoot = bfSchema; validate(j, bfSchema, '$', errs); curRoot = null; errs.forEach(E);
+    if (typeOf(j) !== 'object') continue;
+    if (j.indicator && f !== j.indicator + '.json') E(`file name must be "${j.indicator}.json"`);
+    if (j.indicator && !indicatorIds.has(j.indicator)) E(`unknown indicator "${j.indicator}"`);
+    if (j.phase && j.phase !== ph) E(`phase "${j.phase}" does not match folder "${ph}"`);
+    (Array.isArray(j.items) ? j.items : []).forEach((it, i) => {
+      if (typeOf(it) !== 'object') return; nItems++; const at = `items[${i}] ${it.id || ''}`.trim();
+      if (it.indicator !== j.indicator) E(`${at}: indicator "${it.indicator}" differs from the bundle's "${j.indicator}"`);
+      if (typeof it.id === 'string') {
+        if (!it.id.startsWith(`BF-${ph}-${j.indicator}-`)) E(`${at}: id must start with BF-${ph}-${j.indicator}-`);
+        if (allIds.has(it.id)) E(`${at}: duplicate id, also in ${allIds.get(it.id)}`); else allIds.set(it.id, path.relative(root, file));
+      }
+      if (it.duplicate_of) dupRefs.push([file, at, it.duplicate_of]);
+      dateRules(E, it, at); neutral(W, it, at);
+    });
+  }
+  // accepted contributor items (filed by tools/weekly_build.mjs)
+  const REVIEWER = ['kind', 'source_tier', 'confidence', 'review'];
+  for (const file of walk(rvDir).sort()) {
+    const E = m => report('error', file, m), W = m => report('warning', file, m);
+    if (!file.endsWith('.json')) { E('only .json bundles belong in ledger/reviewed/<year>/'); continue; }
+    nFiles++;
+    let j; try { j = readJSON(file); } catch (e) { E('invalid JSON: ' + e.message); continue; }
+    if (!Array.isArray(j.items)) { E('expected { indicator, items: [...] }'); continue; }
+    const yr = path.basename(path.dirname(file));
+    j.items.forEach((it, i) => {
+      nItems++; const at = `items[${i}] ${it.id || ''}`.trim();
+      const core = Object.fromEntries(Object.entries(it).filter(([k]) => !REVIEWER.includes(k)));
+      const errs = []; validate(core, schema, at, errs); errs.forEach(E);
+      if (it.kind != null && !bfSchema.$defs.item.properties.kind.enum.includes(it.kind)) E(`${at}: kind must be one of ${bfSchema.$defs.item.properties.kind.enum.join(' | ')}`);
+      if (it.source_tier != null && ![1, 2, 3].includes(it.source_tier)) E(`${at}: source_tier must be 1 | 2 | 3`);
+      if (it.confidence != null && !['high', 'med', 'low'].includes(it.confidence)) E(`${at}: confidence must be high | med | low`);
+      if (it.indicator !== j.indicator) E(`${at}: indicator "${it.indicator}" differs from the bundle's "${j.indicator}"`);
+      if (typeof it.published === 'string' && it.published.slice(0, 4) !== yr) E(`${at}: published ${it.published} is not in folder ${yr}/`);
+      if (allIds.has(it.id)) E(`${at}: duplicate id, also in ${allIds.get(it.id)}`); else allIds.set(it.id, path.relative(root, file));
+      dateRules(E, it, at); neutral(W, it, at);
+    });
+  }
+  for (const [file, at, ref] of dupRefs) if (!allIds.has(ref)) report('warning', file, `${at}: duplicate_of "${ref}" is not an id in the ledger`);
+  // review records: approved_<phase>.json + rulings.json
+  if (fs.existsSync(rdDir)) for (const f of fs.readdirSync(rdDir).filter(f => f.endsWith('.json')).sort()) {
+    const file = path.join(rdDir, f); const E = m => report('error', file, m);
+    nFiles++;
+    let j; try { j = readJSON(file); } catch (e) { E('invalid JSON: ' + e.message); continue; }
+    const m = /^approved_(.+)\.json$/.exec(f);
+    if (m) {
+      if (!phases.includes(m[1])) E(`review record for phase "${m[1]}" but there is no ledger/backfill/${m[1]}/`);
+      if (j.approved != null && !isDate(j.approved)) E('"approved" must be a YYYY-MM-DD date');
+      for (const id of Object.keys(j.wording_overrides || {})) if (!allIds.has(id)) E(`wording override for unknown item "${id}"`);
+      for (const id of (j.counting && j.counting.hold) || []) if (!indicatorIds.has(id)) E(`hold lists unknown indicator "${id}"`);
+    } else if (f === 'rulings.json') {
+      for (const [id, r] of Object.entries(j.resolutions || {})) {
+        if (!indicatorIds.has(id)) E(`resolution for unknown indicator "${id}"`);
+        if (![0, 1].includes(r.value) || !isDate(r.date || '')) E(`resolution ${id}: needs value 0|1 and a YYYY-MM-DD date`);
+      }
+      for (const [id, r] of Object.entries(j.merges || {})) if (!indicatorIds.has(id) || !indicatorIds.has(r.into)) E(`merge ${id} -> ${r.into}: unknown indicator`);
+    } else E('unexpected file in ledger/backfill/review/ (expected approved_<phase>.json or rulings.json)');
+  }
+  console.log(`ledger: ${nFiles} file(s), ${nItems} item(s) checked: ${nErr - e0} error(s), ${nWarn - w0} warning(s) -> ${nErr ? 'FAIL' : 'PASS'}`);
+}

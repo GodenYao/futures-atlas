@@ -1,25 +1,25 @@
 name: Validate evidence
 
-# Runs on every pull request that touches the evidence inbox (or the rules that check it).
+# Runs on every pull request and every push to main (no path filter, so the required check
+# "validate" always reports). It is the ledger's automated test: every inbox item, every backfill
+# bundle under ledger/backfill/**, every accepted item under ledger/reviewed/** and the review
+# records are schema-checked, plus the engine unit check.
 # Read-only: no secrets, no write token, safe for pull requests from forks.
 on:
   pull_request:
-    paths:
-      - "ledger/inbox/**"
-      - "ledger/schema/**"
-      - "ledger/indicators.json"
-      - "tools/validate_evidence.mjs"
-      - "tools/neutrality/**"
+  push:
+    branches: [main]
 
 permissions:
   contents: read
 
 concurrency:
-  group: validate-evidence-${{ github.event.pull_request.number }}
+  group: validate-evidence-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   validate:
+    name: validate
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -33,6 +33,7 @@ jobs:
 
       - name: List changed inbox files
         id: changed
+        if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
@@ -48,14 +49,17 @@ jobs:
           while read -r f; do [ -n "$f" ] && echo "::warning file=$f::This PR deletes an inbox item."; done < deleted.txt
 
       - name: Validate changed items
-        if: steps.changed.outputs.count != '0'
+        if: github.event_name == 'pull_request' && steps.changed.outputs.count != '0'
         run: xargs -a changed.txt -d '\n' node tools/validate_evidence.mjs
 
-      - name: Re-validate the whole inbox (catches rule or schema changes)
-        run: node tools/validate_evidence.mjs --all
+      - name: Validate the whole ledger (inbox + backfill/** + reviewed/** + review records)
+        run: node tools/validate_evidence.mjs --ledger
 
       - name: Check JSON files parse
         run: |
-          for f in ledger/schema/evidence.schema.json ledger/indicators.json; do
+          for f in ledger/schema/evidence.schema.json ledger/schema/backfill.schema.json ledger/indicators.json; do
             node -e 'JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))' "$f" || { echo "::error file=$f::invalid JSON"; exit 1; }
           done
+
+      - name: Engine unit check (worked example)
+        run: node engine/recompute --check
