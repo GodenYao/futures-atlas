@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-19 — method 4.3.0
+- Source de-duplication: items citing the same source share one unit of weight per week.
+- Methods published in `METHODS.md` (every parameter with value, range and rationale); one-at-a-time sensitivity test in `docs/sensitivity.md`.
+
 ## 2026-11-19 — new map view (B4)
 - NOW is placed by the 13 ending shares at true scale (cliff endings Reversion and Self-destruction excluded); ground cloud, weekly trail, misty link from NOW to the leading ending.
 - Scenario families (R1-R6) are a backstage calculation layer: hidden on the map by default, preview/pin from the side panel. R6 renamed "Gradual adoption" (was Plateau).

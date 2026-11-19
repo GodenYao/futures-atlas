@@ -44,6 +44,11 @@ Each run prints which phases counted and which were skipped.
   reports 90 days, other announcements 180 days. Laws and treaties in force do not fade.
   For data series and forecasts the latest reading replaces earlier ones.
 - Caps: 0.7 per event cluster, 1.5 per indicator (log-odds); forecasts ±0.5 per source.
+- Correlated evidence: items that cite the same source page (URL compared without scheme,
+  `www.`, query, fragment or trailing slash) are not independent. Each week a source page carries
+  one unit of weight, split evenly over the items that cite it and that move the numbers that
+  week, across all indicators (`srcDedup`, `srcDedupScope` in `defaultParams`; an optional
+  per-indicator cap per source is `srcCapIndicator`, off by default).
 - Each item enters at the first weekly snapshot on or after its own published date.
 - Road shares = editorial priors × evidence, with 3% kept as "none of these".
   Site shares = Σ road share × editorial split. Ranges = p10–p90 of Monte Carlo draws that

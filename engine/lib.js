@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const METHOD_VERSION = '4.2.0-backfill';
+const METHOD_VERSION = '4.3.0';
 const ROADS = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6'];
 const NONE = 'None';
 
@@ -90,6 +90,12 @@ function defaultParams() {
     btos: { base: 17.4, baseDate: '2025-12-15', resDate: '2027-11-15', sdPerYear: 4.0, // P6 BTOS numeric state
       thr: { 'I-R2-02': [34.9, 'ge'], 'I-R6-04': [26.1, 'lt'] }, exclFrom: { 'I-R2-02': '2026-10-19', 'I-R6-04': '2026-10-19' } },
     strengthScale: 1.0,
+    // Correlated evidence (maintainer decision 2026-11-19, audit M-02): items that cite the same canonical source URL are not
+    // independent. They share ONE unit of weight, split evenly over the items that use it (across all indicators they feed).
+    // scope 'contributing' = items that move the numbers this week (latest state reading, latest forecast, every non-neutral
+    // event/law); 'live' = every counted non-neutral item published before the freeze. srcCapIndicator (logit, null = off) caps
+    // the summed event/law shift one source can give a single indicator.
+    srcDedup: true, srcDedupScope: 'contributing', srcCapIndicator: null,
     mc: { draws: 4000, strength: [0.5, 1.5], rhoF: [0.3, 0.7], priorSigma: 0.40 },
   };
 }
@@ -116,6 +122,12 @@ function gauss(rng) { let u = 0; while (u === 0) u = rng(); return Math.sqrt(-2 
 const dayMs = 864e5;
 const dnum = s => Date.parse(s + 'T00:00:00Z') / dayMs;
 const dstr = n => new Date(n * dayMs).toISOString().slice(0, 10);
+// canonical source URL: drop scheme, 'www.', query and fragment, trailing slashes; host lower-cased (path case kept)
+function canonUrl(u) {
+  if (!u) return null; let s = String(u).trim().replace(/^[a-z][a-z0-9+.-]*:\/\//i, '').split('#')[0].split('?')[0];
+  const i = s.indexOf('/'); const host = (i < 0 ? s : s.slice(0, i)).toLowerCase().replace(/^www\./, ''); const p = (i < 0 ? '' : s.slice(i)).replace(/\/+$/, '');
+  return host ? host + p : null;
+}
 function quantile(arr, q) { const a = Float64Array.from(arr).sort(); const i = (a.length - 1) * q; const lo = Math.floor(i), hi = Math.ceil(i); return a[lo] + (a[hi] - a[lo]) * (i - lo); }
 
 // ---------- §3.4 indicator nowcast providers ----------
@@ -132,7 +144,9 @@ function sgnOf(dir) { return dir === 'toward YES' ? 1 : dir === 'toward NO' ? -1
 function parsePct(v) { if (v == null) return null; const s = String(v); if (/original wording/i.test(s)) return null; const m = s.match(/(-?\d+(?:\.\d+)?)\s*%/); return m ? parseFloat(m[1]) : null; }
 
 // Build a provider for an indicator from ledger items as of `asOf` (strict: published < asOf, i.e. by the Sunday before the Monday freeze).
-function ledgerProvider(id, items, asOf, P, resolution, famForEvent) {
+// SW (optional): item id -> source weight in (0, 1], filled by buildProviders after all providers exist (read lazily at evaluation).
+function ledgerProvider(id, items, asOf, P, resolution, famForEvent, SW) {
+  const wt = it => (SW && SW[it.id] != null ? SW[it.id] : 1);
   const asN = dnum(asOf);
   const live = items.filter(it => dnum(it.published) < asN);
   if (resolution && dnum(resolution.date) < asN) return { prov: provResolution(resolution.value), used: [{ id: 'RESOLUTION', kind: 'resolution', value: resolution.value, date: resolution.date }] };
@@ -168,30 +182,40 @@ function ledgerProvider(id, items, asOf, P, resolution, famForEvent) {
       const slope = (btosIt.x - P.btos.base) / yrs; const xhat = btosIt.x + slope * rem;
       const s = P.btos.sdPerYear * Math.sqrt(rem);
       base = clip(Phi(op === 'ge' ? (xhat - thr) / s : (thr - xhat) / s), P.rClip[0], P.rClip[1]);
+      const sw = wt(btosIt); if (sw !== 1) base = clip(sigm(logit(pbar) + sw * (logit(base) - logit(pbar))), P.rClip[0], P.rClip[1]);
       stRho = P.tierRho[btosIt.source_tier]; stW = Math.abs(logit(base) - logit(pbar));
-      parts.push({ id: btosIt.id, kind: 'state-numeric', x: btosIt.x, xhat: +xhat.toFixed(2), s: +s.toFixed(2), thr, r: +base.toFixed(4) });
+      parts.push({ id: btosIt.id, kind: 'state-numeric', x: btosIt.x, xhat: +xhat.toFixed(2), s: +s.toFixed(2), thr, r: +base.toFixed(4), ...(sw !== 1 ? { src_w: +sw.toFixed(4) } : {}) });
     } else if (stateIt) {
-      const z = probit(clip(pbar, 1e-6, 1 - 1e-6)) + sgnOf(stateIt.direction) * P.stateShift[stateIt.confidence] / P.stateSpread;
+      const sw = wt(stateIt);
+      const z = probit(clip(pbar, 1e-6, 1 - 1e-6)) + sw * sgnOf(stateIt.direction) * P.stateShift[stateIt.confidence] / P.stateSpread;
       base = clip(Phi(z), P.rClip[0], P.rClip[1]);
       stRho = P.tierRho[stateIt.source_tier]; stW = Math.abs(logit(base) - logit(pbar));
-      parts.push({ id: stateIt.id, kind: 'state', r: +base.toFixed(4) });
+      parts.push({ id: stateIt.id, kind: 'state', r: +base.toFixed(4), ...(sw !== 1 ? { src_w: +sw.toFixed(4) } : {}) });
     }
-    let ev = 0; const evw = [];
+    let ev = 0; const evw = []; const evd = [];
     for (const e of events) {
-      let d;
-      if (e.kind === 'treaty-law') d = sgnOf(e.direction) * P.instrDelta[e.confidence];
+      let d; const sw = wt(e);
+      if (e.kind === 'treaty-law') d = sw * sgnOf(e.direction) * P.instrDelta[e.confidence];
       else {
         const h = P.halfLife[familyOfEvent(famForEvent, e.source_tier)] * P.halfLifeScale;
         const age = dnum(asOf) - dnum(e.published);
         const sub = familyOfEvent(famForEvent, e.source_tier);
         const mag = P.eventDeltaByKind ? P.eventDeltaByKind[sub] * P.confMult[e.confidence] : P.eventDelta[e.confidence];
-        d = clip(sgnOf(e.direction) * mag, -P.deltaCapCluster, P.deltaCapCluster) * Math.pow(2, -age / h);
+        d = sw * clip(sgnOf(e.direction) * mag, -P.deltaCapCluster, P.deltaCapCluster) * Math.pow(2, -age / h);
       }
-      ev += d; evw.push([Math.abs(d), P.tierRho[e.source_tier]]); parts.push({ id: e.id, kind: e.kind === 'treaty-law' ? 'instrument' : 'event', shift: +d.toFixed(4) });
+      evd.push([e, d, sw]);
+    }
+    // optional per-source cap inside one indicator (summed shift of all events/laws citing one canonical URL)
+    if (P.srcCapIndicator != null) {
+      const g = {}; for (const x of evd) { const u = canonUrl(x[0].source_url) || x[0].id; g[u] = (g[u] || 0) + x[1]; }
+      for (const x of evd) { const u = canonUrl(x[0].source_url) || x[0].id; if (Math.abs(g[u]) > P.srcCapIndicator) x[1] *= P.srcCapIndicator / Math.abs(g[u]); }
+    }
+    for (const [e, d, sw] of evd) {
+      ev += d; evw.push([Math.abs(d), P.tierRho[e.source_tier]]); parts.push({ id: e.id, kind: e.kind === 'treaty-law' ? 'instrument' : 'event', shift: +d.toFixed(4), ...(sw !== 1 ? { src_w: +sw.toFixed(4) } : {}) });
     }
     ev = clip(ev, -P.deltaCapIndicator, P.deltaCapIndicator);
     let fc = 0, fcRho = 1;
-    if (fcIt) { fc = clip(sgnOf(fcIt.direction) * P.fcShift[fcIt.confidence], -P.fcCapSource, P.fcCapSource); fcRho = P.tierRho[fcIt.source_tier]; parts.push({ id: fcIt.id, kind: 'forecast', shift: fc }); }
+    if (fcIt) { fc = clip(wt(fcIt) * sgnOf(fcIt.direction) * P.fcShift[fcIt.confidence], -P.fcCapSource, P.fcCapSource); fcRho = P.tierRho[fcIt.source_tier]; parts.push({ id: fcIt.id, kind: 'forecast', shift: fc }); }
     const r = clip(sigm(logit(base) + ev + fc), P.rClip[0], P.rClip[1]);
     // reliability: |logit|-weighted mean of input tier rho (P7)
     let W = stW, RW = stW * stRho;
@@ -340,15 +364,33 @@ function loadLedger(siteDir) {
 }
 
 function buildProviders(ledger, asOf, P, drop) {
-  const road = {}, lane = {}, hold = {}, used = {};
+  const road = {}, lane = {}, hold = {}, used = {}; const SW = {};
   for (const id of Object.keys(IND)) {
     if (drop && drop.has(id)) continue;
-    const { prov, used: u } = ledgerProvider(id, ledger.byInd[id] || [], asOf, P, ledger.resolutions[id], IND[id].fam);
+    const { prov, used: u } = ledgerProvider(id, ledger.byInd[id] || [], asOf, P, ledger.resolutions[id], IND[id].fam, SW);
     road[id] = prov; used[id] = u;
   }
-  for (const id of Object.keys(LANE)) { if (drop && drop.has(id)) continue; const { prov, used: u } = ledgerProvider(id, ledger.byInd[id] || [], asOf, P, null, 'distribution'); lane[id] = prov; used[id] = u; }
-  for (const id of Object.keys(HOLD)) { if (drop && drop.has(id)) continue; const { prov, used: u } = ledgerProvider(id, ledger.byInd[id] || [], asOf, P, null, 'holders'); hold[id] = prov; used[id] = used[id] || u; }
-  return { road, lane, hold, used };
+  for (const id of Object.keys(LANE)) { if (drop && drop.has(id)) continue; const { prov, used: u } = ledgerProvider(id, ledger.byInd[id] || [], asOf, P, null, 'distribution', SW); lane[id] = prov; used[id] = u; }
+  for (const id of Object.keys(HOLD)) { if (drop && drop.has(id)) continue; const { prov, used: u } = ledgerProvider(id, ledger.byInd[id] || [], asOf, P, null, 'holders', SW); hold[id] = prov; used[id] = used[id] || u; }
+  const dedup = P.srcDedup ? sourceWeights(ledger, used, asOf, P, SW, drop) : null;
+  return { road, lane, hold, used, dedup };
+}
+
+// Correlated-evidence rule (M-02): every canonical source URL carries ONE unit of weight per week, split evenly over the
+// distinct items that cite it (an item feeding two places, e.g. I-N-01 road row + holders attribute, is one item).
+// Fills SW[itemId] = 1 / n; returns counts for the snapshot/report.
+function sourceWeights(ledger, used, asOf, P, SW, drop) {
+  const byId = {}; for (const id in ledger.byInd) for (const it of ledger.byInd[id]) byId[it.id] = it;
+  const ids = new Set();
+  if (P.srcDedupScope === 'live') {
+    const asN = dnum(asOf); const inModel = new Set(Object.keys(IND).concat(Object.keys(LANE), Object.keys(HOLD)));
+    for (const id in ledger.byInd) { if (!inModel.has(id) || (drop && drop.has(id)) || (ledger.resolutions[id] && dnum(ledger.resolutions[id].date) < asN)) continue;
+      for (const it of ledger.byInd[id]) if (dnum(it.published) < asN && sgnOf(it.direction) !== 0 && it.kind !== 'data-gap') ids.add(it.id); }
+  } else for (const id in used) for (const u of used[id]) if (byId[u.id]) ids.add(u.id);
+  const g = {}; for (const id of ids) { const k = canonUrl(byId[id].source_url) || ('item:' + id); (g[k] = g[k] || []).push(id); }
+  let shared = 0, onShared = 0;
+  for (const k in g) { const n = g[k].length; if (n > 1) { shared++; onShared += n; } for (const id of g[k]) SW[id] = 1 / n; }
+  return { scope: P.srcDedupScope, items: ids.size, sources: Object.keys(g).length, shared_sources: shared, items_on_shared: onShared };
 }
 
 // central pooled (and per-lens) result for one week
@@ -393,5 +435,5 @@ function isoWeekMonday(year, w) { const jan4 = Date.UTC(year, 0, 4); const dow =
 function isoWeekOf(n) { const d = new Date(n * dayMs); const dow = (d.getUTCDay() + 6) % 7; const th = n - dow + 3; const y = new Date(th * dayMs).getUTCFullYear(); const w = Math.floor((th - isoWeekMonday(y, 1)) / 7) + 1; return [y, w]; }
 
 module.exports = { METHOD_VERSION, ROADS, NONE, IND, LANE, HOLD, HOLD_K, LENSES, ATTR_PRIOR, SPLITS, SITES, defaultParams, logit, sigm, Phi, probit, mulberry32, quantile,
-  provFixedState, provResolution, evalRoads, evalLane, evalHolders, sitesOf, centralSplits, drawSplits, perturbPrior, loadLedger, buildProviders, centralWeek, mcWeek,
+  provFixedState, provResolution, evalRoads, evalLane, evalHolders, sitesOf, centralSplits, drawSplits, perturbPrior, loadLedger, buildProviders, sourceWeights, canonUrl, centralWeek, mcWeek,
   isoWeekMonday, isoWeekOf, dnum, dstr, jeffrey };
