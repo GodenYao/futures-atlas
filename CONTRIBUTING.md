@@ -1,8 +1,8 @@
 # Contributing to Futures Atlas
 
-Futures Atlas is an open map of where AI may be heading over the next ten years. Six roads
-(R1–R6) leave NOW and fan out into thirteen endings. Road widths and site shares are
-recomputed every week from a **public evidence ledger** (`ledger/`), so the most useful
+Futures Atlas is an open map of where AI may be heading over the next ten years. The map
+shows thirteen endings; their shares are computed through six scenario families (R1–R6)
+and move every week with a **public evidence ledger** (`ledger/`), so the most useful
 contribution is **one checked, public fact**.
 
 Submitting works best on a computer. On a phone you can browse the map and share links.

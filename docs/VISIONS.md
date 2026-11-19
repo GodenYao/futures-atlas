@@ -3,8 +3,8 @@
 Each ending on the map has a **Visions** strip: up to three videos (or articles) that show what
 that ending could look like. The order is set by community votes in GitHub Discussions.
 
-> **Votes reflect online opinion only. They never change the map.** Road widths and site
-> shares come from the evidence ledger and the published method, never from votes, views or
+> **Votes reflect online opinion only. They never change the map.** Ending shares come
+> from editorial weights moved by the reviewed evidence ledger and the published method, never from votes, views or
 > reactions. A popular video says nothing about how likely an ending is.
 
 ## Layout

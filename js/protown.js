@@ -34,7 +34,7 @@ const SP=s=>s.split(' ');
 const PRESETS={
  normaltech:{layout:'grid',lit:.62,em:1.8,walls:SP('concrete0 concrete1 brick0 brick1'),roofs:SP('roof0 roof1'),roof:'mix',storeys:[2,4],density:.8,blockMin:3.3,
   streetW:.62,jitter:.4,green:.25,props:1,cars:36,moving:8,lamps:1,lampStep:2.6,trees:40,out:0,fray:.7,fields:12,farms:5,pz:[4,3],nf:.55,nf0:3.0,nfc:[-1.3,2.0],special:SP('square regulator substation pylons datacenter nearfuture')},   // r5 C: near-future core (nf) + sky/rail layer, moving 4 -> 8 (autonomous traffic)
- o1984:{layout:'strict',lit:.3,em:1.05,alb:.7,walls:SP('#7E8186 #8A8D92'),roofs:SP('#55585E'),roof:'flat',storeys:[9,12],density:1,blockMin:4,   // S2 (review 11-18 'cosy warm downtown'): cool grey concrete + grey roofs (were concrete0/1 cream + roof0), window light ~-60 % (lit .45 -> .3, em 1.7 -> 1.05)
+ o1984:{layout:'strict',lit:.2,em:1.05,alb:.7,walls:SP('#7E8186 #8A8D92'),roofs:SP('#55585E'),roof:'flat',storeys:[9,12],density:1,blockMin:4,   // S2 (review 11-18 'cosy warm downtown'): cool grey concrete + grey roofs (were concrete0/1 cream + roof0), window light ~-60 % (lit .45 -> .3, em 1.7 -> 1.05)
   streetW:.8,jitter:0,green:0,props:.6,cars:5,moving:0,lamps:1,lampStep:4,trees:0,out:0,fray:.8,fields:0,farms:0,pz:[12,2],under:0,special:SP('camPoles checkpoints ministry searchlights')},
  protector:{layout:'organic',lit:.7,em:1.9,walls:SP('timber timberL stone'),roofs:SP('roof1 roof0'),roof:'pitched',storeys:[2,3],density:.92,blockMin:3,
   streetW:.54,jitter:.6,green:.9,props:1,cars:8,moving:2,lamps:1,lampStep:2.4,trees:130,out:0,fray:.8,fields:10,farms:5,pz:[4,3],midWin:.75,midWinK:2,midWinY:.62,special:SP('dome anomaly')},

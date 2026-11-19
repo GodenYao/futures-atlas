@@ -1,14 +1,15 @@
 # Futures Atlas
 
-An open, interactive 3D map of possible AI futures over the next ten years. Six roads lead
-from NOW to thirteen endings: Max Tegmark's twelve *Life 3.0* aftermath scenarios plus
-"Normal technology" (Narayanan & Kapoor).
+An open, interactive 3D map of 13 possible AI endings over the next ten years (Max Tegmark's
+twelve *Life 3.0* aftermath scenarios plus "Normal technology", Narayanan & Kapoor). A NOW
+point shows where this week's public evidence puts us; shares are computed through six
+editorial scenario families (R1–R6).
 
 - Live map: https://godenyao.github.io/futures-atlas/
 
 ## What it is
 
-- **An evidence-weighted map of scenarios.** Road widths start from editorial weights set
+- **An evidence-weighted map of scenarios.** Ending shares start from editorial weights set
   by the maintainer and move each week with reviewed public evidence in [`ledger/`](ledger/).
 - **Recomputable.** [`engine/`](engine/) replays the ledger and reproduces every share on the
   map (`node engine/recompute`, no dependencies).

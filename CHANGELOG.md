@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-19 — new map view (B4)
+- NOW is placed by the 13 ending shares at true scale (cliff endings Reversion and Self-destruction excluded); ground cloud, weekly trail, misty link from NOW to the leading ending.
+- Scenario families (R1-R6) are a backstage calculation layer: hidden on the map by default, preview/pin from the side panel. R6 renamed "Gradual adoption" (was Plateau).
+- Cliff endings shown as glowing cliff faces + a "cliffs" row under NOW.
+- Tagline: "An evidence-weighted map of possible futures for AI and humanity". Header reads "Leading ending". Text view of endings at `#/text`.
+- Old road-first view kept at `?b4=0`. Engine numbers and replay unchanged.
+
 ## 2026-11-18 — contribution pipeline
 - Public evidence ledger (`ledger/`): schema, indicators, inbox, history backfill (2025–2026, bloc labels only).
 - Evidence via pull request (one JSON file per item); CI validator `tools/validate_evidence.mjs`.

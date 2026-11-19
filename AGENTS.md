@@ -61,9 +61,10 @@ Example: [`ledger/inbox/_examples/`](ledger/inbox/_examples/).
 | `coi` | optional category if the person has a conflict of interest; never an employer name |
 | `licence` | `CC-BY-4.0` |
 
-Road names: R1 Rival blocs with obedient AI · R2 Gradual disempowerment ·
+Scenario-family ("road") names: R1 Rival blocs with obedient AI · R2 Gradual disempowerment ·
 R3 Incident → coordinated restraint · R4 Race → loss of control · R5 Broad diffusion ·
-R6 Normal technology / plateau. Ending names must match the schema enum exactly.
+R6 Gradual adoption (ids unchanged; family names never reuse an ending name such as
+"Normal technology"). Ending names must match the schema enum exactly.
 
 Do **not** add `kind`, `source_tier`, `confidence`, `review` or any other field: they are
 reviewer-only and CI rejects them. Strength is set by reviewers, never by the submitter.

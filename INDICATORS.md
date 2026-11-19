@@ -54,7 +54,7 @@ Each indicator is a dated, checkable statement. Evidence items name the indicato
 | `I-R5-04` | R5 | Price of inference at fixed capability falls >= 10x from 2026 to 2027 (Epoch / AI Index price series; 2027 annual) |
 | `I-R5-05` | R5 | No top-3 compute jurisdiction bans or licenses open-weight release at the frontier tier (official gazettes; by 2028-06-30) |
 
-## R6 · Normal technology / plateau
+## R6 · Gradual adoption
 
 | Id | Road | Statement |
 |---|---|---|

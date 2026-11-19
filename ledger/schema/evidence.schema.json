@@ -182,7 +182,7 @@
   "$defs": {
     "road": {
       "enum": ["R1", "R2", "R3", "R4", "R5", "R6"],
-      "description": "R1 Rival blocs with obedient AI; R2 Gradual disempowerment; R3 Incident -> coordinated restraint; R4 Race -> loss of control; R5 Broad diffusion; R6 Normal technology / plateau."
+      "description": "R1 Rival blocs with obedient AI; R2 Gradual disempowerment; R3 Incident -> coordinated restraint; R4 Race -> loss of control; R5 Broad diffusion; R6 Gradual adoption (AI as an ordinary technology, adopted slowly)."
     },
     "ending": {
       "enum": [
