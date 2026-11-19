@@ -163,6 +163,8 @@ body.axanim .axi.wy{transition:left .3s ease-out,top .3s ease-out,transform .3s 
 #tlh .lg{display:none}
 #play{width:20px;height:20px;border:1px solid var(--pline);background:transparent;cursor:pointer;font-size:9px;flex:none;color:var(--t2);padding:0}
 #play:hover{color:var(--acc);border-color:var(--accD)}
+#rstop{width:20px;height:20px;border:1px solid var(--pline);background:transparent;cursor:pointer;flex:none;color:var(--t2);padding:0;display:inline-flex;align-items:center;justify-content:center;margin-left:-8px}#rstop[hidden]{display:none}#rstop i{width:7px;height:7px;background:currentColor;display:block}#rstop:hover{color:var(--acc);border-color:var(--accD)}#rstop:focus-visible,#play:focus-visible{outline:2px solid var(--acc);outline-offset:2px} /* r3 owner: Stop replay (square), shown only during a replay session */
+body.tls #tlwrap{height:200px} /* r3 owner: '&tl=stack' only - taller plot (~172 px) so the 13 bands read */
 #tlh .sp{flex:1}
 #week{flex:none;text-align:right;white-space:nowrap;color:var(--t2);font:400 11px var(--f2);letter-spacing:.06em}
 #week b{color:var(--acc);font-weight:500}
@@ -302,7 +304,7 @@ body.m3p #card[data-s="0"]{-webkit-mask-image:linear-gradient(to bottom,#000 cal
  body.m3 #tlh{gap:6px 10px;margin-bottom:4px;flex-wrap:wrap}body.m3 #tlh .lg,body.m3 #tlh .sp{display:none}
 body.m3 #week{flex:1 1 0;min-width:0;white-space:normal;text-align:left;line-height:1.4}
  body.m3 #play{width:40px;height:40px;font-size:12px}
- body.m3 #tlwrap{height:130px}body.m3 #tlc{touch-action:none}
+ body.m3 #tlwrap{height:130px}body.m3.tls #tlwrap{height:160px}body.m3 #rstop{width:40px;height:40px;margin-left:-4px}body.m3 #rstop i{width:11px;height:11px}body.m3 #tlc{touch-action:none}
  body.m3 .mevh{font:500 11px var(--f2);letter-spacing:.14em;color:var(--t2);text-transform:uppercase;margin:2px 0 8px}
  body.m3 .mevr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}body.m3 .mevr .btn{min-height:34px;min-width:44px}
  body.m3 .mevi{border-top:1px solid var(--pline);padding:7px 0;display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:18px;color:var(--t2)}
@@ -386,6 +388,7 @@ body.m3 #week{flex:1 1 0;min-width:0;white-space:normal;text-align:left;line-hei
 <div id="tl">
   <div id="tlh">
     <button id="play" title="Play history">▶</button>
+    <button id="rstop" title="Stop replay" aria-label="Stop replay" hidden><i></i></button>
     <span class="lg">Lines = weekly share of each road</span>
     <span class="sp"></span>
     <span id="week" class="mono"></span>
@@ -3652,10 +3655,73 @@ function tleSer(){const TLE=TLEN;if(TLE.WS&&TLE.ws===WS&&TLE.lz===LCUR)return TL
  const lg=document.querySelector('#tlh .lg');if(lg)lg.textContent='Lines = weekly share of the 5 leading endings + all others';return TLE.ser;}
 function tleGut(g,w,SR){g.font='500 11px "FA Plex",ui-monospace,monospace';const cap=w<600?150:190;let m=0;for(const s of SR){let t=s.lab;while(t.length>3&&g.measureText(t).width>cap-18)t=t.slice(0,-2)+'…';s.lb=t;m=Math.max(m,g.measureText(t).width);}return Math.ceil(m+18);}
 window.TLEN=TLEN;
+/* launch-fix r3: '&tl=stack' variant (default + '&tl=endings' unchanged): 100 % stacked area of all 13 ending shares per week = the same
+   snapshot site shares the HUD shows (pulls().p). The 13 endings sum to ~97 %; the remaining ~3 % is the six roads' 'None of these'
+   (100 - sum of RD6 road shares, an independent number), drawn as a thin neutral band so each week sums to 100 (checked: TLS.chk).
+   Band order (bottom -> top): leading ending (latest week), then by latest share descending, 'None of these', then the two cliff endings
+   at the very top in their own colours (dimmed fill). Labels: name + latest % inside the band at its right end when the band is >= 11 px
+   tall over the label's width, else a right-side legend list in visual band order. Hover / tap a week = tooltip with every share that week
+   (sorted) + the band under the pointer highlighted (others dimmed). Same frame, x axis, pins and cursor as the default; y = 0-100 %. */
+const TLS=new URLSearchParams(location.search).get('tl')==='stack'?{ws:null,lz:null,ser:null,W:null,hov:null,hk:-1,lab:[],chk:null,tt:0}:null;if(TLS)document.body.classList.add('tls'); /* r3 owner: taller panel in stack mode only (CSS body.tls) */
+const TLSC=['#8DA6CC','#C9AE84','#A68FCB','#7FA0A6','#C795A4','#9DA3B3','#B5895F','#6E86B0','#D3C3A0','#8E7AA6','#A9B7C6'];
+function tlsSer(){const T=TLS;if(T.ser&&T.ws===WS&&T.lz===LCUR)return T.ser;
+ const L=pulls(NDAYS,LCUR).p,by=(a,b)=>(L[b]||0)-(L[a]||0),cl=O.filter(o=>o.cliff).map(o=>o.id).sort(by),rest=O.map(o=>o.id).filter(id=>!cl.includes(id)).sort(by),CC={reversion:'#7FC98B',selfdestruct:'#E3705F'};
+ T.ser=rest.map((id,i)=>({id,c:TLSC[i%TLSC.length],n:byId[id].n,a:.86})).concat([{id:'none',c:'#4E555F',n:'None of these',a:.7,res:1}]).concat(cl.map(id=>({id,c:CC[id]||'#8A8F96',n:byId[id].n,a:.5,cliff:1})));
+ const row=d=>{const P=pulls(d,LCUR),o={};let s13=0,sr=0;for(const id of rest.concat(cl)){o[id]=P.p[id]||0;s13+=o[id];}for(const R of RD6)sr+=P.w[R.id]||0;o.none=Math.max(0,100-sr);o._s13=s13;o._s=s13+o.none;return o;};
+ T.W=[];for(let d=0;d<=NDAYS;d+=7)T.W.push(row(d));T.W.push(row(NDAYS));
+ {const S=[],seen=new Set();for(let d=0;d<=NDAYS;d++){const i=bfIdx(d);if(seen.has(i))continue;seen.add(i);const r=row(d);S.push([BFR.weeks[i],+r._s.toFixed(3),+r._s13.toFixed(3)]);}
+  const v=S.map(s=>s[1]);T.chk={n:S.length,w0:S[0][0],w1:S[S.length-1][0],min:Math.min(...v),max:Math.max(...v),ok:v.every(x=>Math.abs(x-100)<=.5),s13:[Math.min(...S.map(s=>s[2])),Math.max(...S.map(s=>s[2]))],bad:S.filter(s=>Math.abs(s[1]-100)>.5)};}
+ T.ws=WS;T.lz=LCUR;const lg=document.querySelector('#tlh .lg');if(lg)lg.textContent='Bands = weekly share of all 13 endings + None of these (100 %)';return T.ser;}
+function tlsFit(g,t,mx){if(g.measureText(t).width<=mx)return t;while(t.length>3&&g.measureText(t+'…').width>mx)t=t.slice(0,-1);return t+'…';}
+function tlsDraw(g,w,h){const T=TLS,SR=tlsSer(),W=T.W,K=W.length-1,PH=w<600,fs=PH?9:11,pit=PH?10:11.5,F=`500 ${fs}px "FA Plex",ui-monospace,monospace`,x0=34,top=12,bot=h-16,ch=bot-top,Y=v=>bot-v/100*ch;
+ // cumulative band edges per week column (bottom -> top)
+ const E=W.map(r=>{let c=0;return SR.map(s=>{const lo=c;c+=r[s.id]||0;return[lo,c];});});
+ g.font=F;const txt=s=>`${s.n} ${(W[K][s.id]||0).toFixed(1)}%`;let gut=12,cw=0,ins=[],leg=[],cols=1,colW=0;
+ for(let it=0;it<4;it++){cw=w-gut;const X=d=>x0+d/NDAYS*(cw-x0);ins=[];leg=[];
+  SR.forEach((s,i)=>{const t=txt(s),tw=g.measureText(t).width,xa=cw-6-tw-4;let mn=1e9;for(let k=0;k<=K;k++){const x=X(Math.min(NDAYS,k*7));if(x>=xa-8)mn=Math.min(mn,(E[k][i][1]-E[k][i][0])/100*ch);}
+   if(mn>=11&&tw<(cw-x0)*.5)ins.push({s,i,t,tw});else leg.push({s,i});});
+  const rpc=Math.max(1,Math.floor((h-4)/pit));cols=Math.max(1,Math.ceil(leg.length/rpc));colW=0;const cap=PH?112:176;
+  for(const l of leg){l.t=tlsFit(g,l.s.n,cap)+' '+(W[K][l.s.id]||0).toFixed(1)+'%';colW=Math.max(colW,g.measureText(l.t).width+14);}
+  const ng=leg.length?Math.ceil(12+cols*(colW+8)):12;if(ng===gut)break;gut=ng;}
+ const X=d=>x0+d/NDAYS*(cw-x0),xd=X(day),hv=T.hov;
+ // bands: past full, future part at 40 % (same convention as the line charts)
+ for(const fut of[0,1]){g.save();g.beginPath();if(fut)g.rect(xd,0,w,h);else g.rect(0,0,xd+.5,h);g.clip();
+  SR.forEach((s,i)=>{g.beginPath();for(let k=0;k<=K;k++){const x=X(Math.min(NDAYS,k*7)),y=Y(E[k][i][1]);k?g.lineTo(x,y):g.moveTo(x,y);}for(let k=K;k>=0;k--)g.lineTo(X(Math.min(NDAYS,k*7)),Y(E[k][i][0]));g.closePath();
+   g.fillStyle=s.c;g.globalAlpha=(hv?(hv===s.id?Math.min(1,s.a+.12):s.a*.42):s.a)*(fut?.4:1);g.fill();});
+  g.globalAlpha=1;g.strokeStyle='rgba(8,11,16,.92)';g.lineWidth=1;SR.forEach((s,i)=>{if(i===SR.length-1)return;g.beginPath();for(let k=0;k<=K;k++){const x=X(Math.min(NDAYS,k*7)),y=Y(E[k][i][1]);k?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}); /* thin dark separators */
+  if(hv){const i=SR.findIndex(s=>s.id===hv);if(i>=0){g.beginPath();for(let k=0;k<=K;k++){const x=X(Math.min(NDAYS,k*7)),y=Y(E[k][i][1]);k?g.lineTo(x,y):g.moveTo(x,y);}for(let k=K;k>=0;k--)g.lineTo(X(Math.min(NDAYS,k*7)),Y(E[k][i][0]));g.closePath();g.strokeStyle='rgba(233,228,216,.85)';g.lineWidth=1.2;g.stroke();}}
+  g.restore();}
+ // y axis 0-100 %
+ g.font='400 11px "FA Plex",ui-monospace,monospace';g.textAlign='right';for(let v=0;v<=100;v+=25){const y=Math.round(Y(v))+.5;g.fillStyle='#161C23';if(v===0||v===100)g.fillRect(x0,y,cw-x0,1);g.fillStyle='#A8A498';g.fillText(v+'%',x0-6,y+4);}g.textAlign='left';
+ // month axis (same rule as the default chart)
+ const MN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];{const s0=new Date(START.getTime()),y0=s0.getUTCFullYear(),m0=s0.getUTCMonth(),lng=NDAYS>460,multi=new Date(START.getTime()+NDAYS*864e5).getUTCFullYear()>y0;
+  for(let k=0;k<400;k++){const y=y0+Math.floor((m0+k)/12),m=(m0+k)%12,d=Math.round((Date.UTC(y,m,1)-START.getTime())/864e5);if(d>NDAYS)break;if(d<0||(lng&&m%3))continue;g.fillStyle='#222A33';g.fillRect(X(d)|0,bot,1,4);g.fillStyle='#A8A498';g.fillText(m===0&&(lng||multi)?String(y):MN[m],X(d)+4,h-2);}}
+ pinX=EVT.map(ev=>X(dayOf(ev.d)));EVT.forEach((ev,i)=>{const x=Math.round(pinX[i])+.5;g.fillStyle=dayOf(ev.d)<=day?'#A8A498':'#474A4F';g.fillRect(x-.5,top-10,1,8);});
+ {const BW={};for(const b of BF){const d=Math.max(0,Math.min(NDAYS,dayOf(b.published))),wk=Math.floor(d/7);(BW[wk]=BW[wk]||[]).push(b);}
+  tlc._bf=[];for(const wk in BW){const n=BW[wk].length,x=Math.round(X(Math.min(NDAYS,wk*7+3)))+.5;g.fillStyle=wk*7<=day?'rgba(201,164,92,.9)':'rgba(201,164,92,.38)';g.fillRect(x-1,top-10,2,Math.min(9,3+2*n));tlc._bf.push({x,wk:+wk,items:BW[wk]});}}
+ // labels: inside the band at the right end, else the legend list (visual top -> bottom = band order reversed)
+ T.lab=[];g.font=F;g.textBaseline='middle';
+ for(const l of ins){const m=(E[K][l.i][0]+E[K][l.i][1])/2,y=Y(m),x=cw-6-l.tw;g.fillStyle=l.s.a>.7?'#0B0F14':'#EDE8DC';g.globalAlpha=hv&&hv!==l.s.id?.6:1;g.fillText(l.t,x,y+.5);g.globalAlpha=1;T.lab.push({id:l.s.id,k:'in',t:l.t,x,y:y-fs*.6,w:l.tw,h:fs*1.2});}
+ const LG=[...leg].sort((a,b)=>b.i-a.i),rpc=Math.max(1,Math.floor((h-4)/pit)),pit2=Math.min(pit+2,(h-4)/Math.max(1,Math.min(rpc,LG.length)));
+ LG.forEach((l,j)=>{const c=Math.floor(j/rpc),r=j%rpc,x=cw+12+c*(colW+8),y=2+pit2*(r+.5);g.globalAlpha=hv&&hv!==l.s.id?.45:1;g.fillStyle=l.s.c;g.fillRect(x,y-4,8,8);g.fillStyle=hv===l.s.id?'#F2EEE4':'#BDB8AC';g.fillText(l.t,x+12,y+.5);g.globalAlpha=1;
+  const tw=g.measureText(l.t).width;T.lab.push({id:l.s.id,k:'leg',t:l.t,x,y:y-fs*.6,w:tw+12,h:fs*1.2});});
+ g.textBaseline='alphabetic';
+ const cx=Math.round(xd)+.5;g.fillStyle='#C9A45C';g.fillRect(cx-.5,top-10,1,bot-top+10);
+ document.getElementById('week').innerHTML=`<b>${isoW(day)}</b> · week of ${fmt(day-(day%7))}`+(window.NOWM&&NOWM.ok?NOWM.tag():'');tlc._x0=x0;tlc._cw=cw;T.geo={x0,cw,top,bot,ch,K,E,w,h,PH};}
+/* hover (mouse) / tap (touch): week under the pointer -> tooltip with every share that week, sorted; band under the pointer highlighted */
+function tlsHov(e){const T=TLS,G=T&&T.geo;if(!G)return false;const r=tlc.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(y<G.top-2)return false;
+ let k,id=null;const lb=T.lab.find(b=>x>=b.x-2&&x<=b.x+b.w+2&&y>=b.y-1&&y<=b.y+b.h+1);
+ if(lb&&lb.k==='leg'){k=G.K;id=lb.id;}else{if(x>G.cw+6)return false;k=Math.max(0,Math.min(G.K,Math.round((x-G.x0)/(G.cw-G.x0)*NDAYS/7)));const v=(G.bot-y)/G.ch*100,SR=T.ser;for(let i=0;i<SR.length;i++){const[a,b]=G.E[k][i];if(v>=a&&v<b){id=SR[i].id;break;}}if(id==null&&v>=100)id=SR[SR.length-1].id;}
+ const ch=id!==T.hov||k!==T.hk;T.hov=id;T.hk=k;if(ch)drawTL();
+ const R=T.W[k],d=Math.min(NDAYS,k*7),rows=T.ser.map(s=>({s,v:R[s.id]||0})).sort((a,b)=>b.v-a.v);
+ showTip(e,`<span class="mono small">${isoW(d)} · share of each ending</span>`+rows.map(o=>`<div class="mono small" style="display:flex;gap:7px;align-items:center;${o.s.id===id?'color:#F2EEE4;font-weight:600':''}"><i style="display:inline-block;width:8px;height:8px;flex:0 0 8px;background:${o.s.c};opacity:${o.s.a}"></i><span style="flex:1">${escH(o.s.n)}${o.s.cliff?' (cliff)':''}</span><span>${o.v.toFixed(1)}%</span></div>`).join('')+`<span class="s">Sum ${R._s.toFixed(1)} %</span>`);return true;}
+function tlsOff(){if(TLS&&(TLS.hov||TLS.hk>=0)){TLS.hov=null;TLS.hk=-1;drawTL();}}
+window.TLS=TLS;
 // v4.3 timeline (S7): near-transparent strip, hairline grid, six 1.5 px road lines (future part at 35 %), event pins = 1 px ticks,
 // captions only on hover (tooltip), cursor = 1 px brass line. The right-hand "share at cursor" block moved to the left-rail legend.
 function drawTL(){const r=tlc.getBoundingClientRect();if(!r.width)return;tlc.width=r.width*PIXR;tlc.height=r.height*PIXR;const g=tgx;g.setTransform(PIXR,0,0,PIXR,0,0);const w=r.width,h=r.height;g.clearRect(0,0,w,h);
  if(!WS){WS=[];for(let d=0;d<=NDAYS;d+=7)WS.push(weights(d,LCUR));WS.push(weights(NDAYS,LCUR));}
+ if(TLS){tlsDraw(g,w,h);return;} /* r3 '&tl=stack' */
  const SR=TLEN?tleSer():RD6,WD=TLEN?TLEN.WS:WS;
  let mx=0,mn=100;for(const s of WD)for(const R of SR){mx=Math.max(mx,s[R.id]);mn=Math.min(mn,s[R.id]);} // v4.3 r2: auto-fit y-range (5 pp steps) so the six lines are not bunched
  const YMIN=Math.max(0,Math.floor((mn-2)/5)*5),YMAX=Math.max(YMIN+10,Math.ceil((mx+2)/5)*5),YS=(YMAX-YMIN)>15?10:5;
@@ -3715,28 +3781,35 @@ function drawTLV42(){const r=tlc.getBoundingClientRect();if(!r.width)return;tlc.
 function apply(){curP=pulls(day,LCUR);LANIM=null;if(!TER_BUILT){TER_BUILT=1;setValleys(pulls(day,'pooled').p);O.forEach(o=>o.gy=hAt(o.X,o.Z));rebuildTerrain();O.forEach(o=>o.gy=hMesh(o.X,o.Z));placeProps();g1Build();}else if(!(window.RPL&&RPL.on))setRoadWidths(curP);updPlaqueText();updateHUD();drawTL();if(sel)select(sel);else if(selR)openRoad(selR);if(LOD.grp)lodRefresh();kick();}
 function setDay(d){d=Math.max(0,Math.min(NDAYS,Math.round(d)));d=Math.min(NDAYS,d-(d%7)+(d===NDAYS?d%7:0));if(d===day)return;const d0=day;day=d;if(window.RPL)RPL.pre(d0,d);apply();if(window.RPL)RPL.step(d0,d);if(window.NOWM&&NOWM.ok)NOWM.step();}
 let tdrag=false;
-tlc.addEventListener('pointerdown',e=>{tdrag=true;stop();scrub(e);});addEventListener('pointerup',()=>tdrag=false);
+tlc.addEventListener('pointerdown',e=>{tdrag=true;stop();scrub(e);if(TLS&&e.pointerType!=='mouse'){tlsHov(e);clearTimeout(TLS.tt);TLS.tt=setTimeout(()=>{hideTip();tlsOff();},5000);}}); /* r3 stack: tap = week tooltip + band highlight (auto-hides after 5 s) */addEventListener('pointerup',()=>tdrag=false);
 addEventListener('pointermove',e=>{if(tdrag)scrub(e);else tlHover(e);tlPeekCheck(e);});
 function scrub(e){const r=tlc.getBoundingClientRect();setDay((e.clientX-r.left-tlc._x0)/(tlc._cw-tlc._x0)*NDAYS);}
 const TIP=document.getElementById('tip');
 function moveTip(e){TIP.style.left=Math.min(innerWidth-TIP.offsetWidth-10,e.clientX+16)+'px';let y=e.clientY-TIP.offsetHeight-14;if(y<8)y=e.clientY+20;TIP.style.top=y+'px';}
 function showTip(e,html){TIP.className='';TIP.style.display='block';if(html!=null)TIP.innerHTML=html;moveTip(e);}
 function hideTip(){TIP.style.display='none';}
-function tlHover(e){if(e.target!==tlc){if(e.target===cv&&!HOV)hideTip();return;}const r=tlc.getBoundingClientRect(),x=e.clientX-r.left;const i=pinX.findIndex(p=>Math.abs(p-x)<9);
+function tlHover(e){if(e.target!==tlc){if(TLS&&TLS.hov!=null){tlsOff();hideTip();}if(e.target===cv&&!HOV)hideTip();return;}if(TLS&&tlsHov(e))return;const r=tlc.getBoundingClientRect(),x=e.clientX-r.left;const i=pinX.findIndex(p=>Math.abs(p-x)<9);
  if(i>=0){const ev=EVT[i],d=dayOf(ev.d),a=weights(Math.max(0,d-7),LCUR)[ev.r],b=weights(Math.min(NDAYS,d+21),LCUR)[ev.r],dv=b-a;showTip(e,`<span class="mono small">${ev.d} · ${ev.e}</span><div class="h">${ev.t}</div><span class="s">Effect on the map: road <b style="color:${RCOL[ev.r]}">${ev.r} ${RDI[ev.r].sh}</b> ${dv>=0?'+':'−'}${Math.abs(dv).toFixed(1)} pp over the following three weeks.</span>`);}else{const bw=(tlc._bf||[]).find(t=>Math.abs(t.x-x)<5); // r10 U36: backfill tick tooltip (bloc labels in the chip text)
   if(bw)showTip(e,`<span class="mono small">${isoW(bw.wk*7)} · ${bw.items.length} evidence item${bw.items.length>1?'s':''} · ${[...new Set(bw.items.map(b=>bfStat(b)))].join(' / ')}</span>`+bw.items.slice(0,4).map(b=>`<div class="h" style="margin-top:4px">${escH(blocTxt(b.summary)).slice(0,150)}${b.summary.length>150?'…':''}</div><span class="s">${b.published} · ${b.indicator} ${escH(indOf(b.indicator).n)} · confidence ${escH(b.confidence)}</span>`).join(''));else hideTip();}}
 const playBtn=document.getElementById('play');let pt=null;
+/* r3 owner: Stop replay (all timeline modes). A replay session starts with Play and ends when it reaches the latest week or Stop is
+   pressed; the square button is visible (keyboard reachable) only during a session, incl. paused. Stop = pause + jump to the latest week
+   + RPL.end() (drops pulses / pills / caption / amplified widths at once), so map, NOW, trail, HUD and chart match a fresh load. */
+const stopBtn=document.getElementById('rstop');let rplS=false;const rsUpd=()=>{if(stopBtn)stopBtn.hidden=!rplS;};
+function rplDone(){rplS=false;rsUpd();}
+if(stopBtn)stopBtn.onclick=()=>{stop();rplDone();setDay(NDAYS);if(window.RPL&&RPL.end)RPL.end();if(TLS)tlsOff();drawTL();kick(800);playBtn.focus();};
+window.rplStop=()=>stopBtn&&stopBtn.onclick();
 function stop(){playing=false;playBtn.textContent='▶';clearInterval(pt);clearTimeout(pt);}
 // G1 r6 U (D7): weeks with evidence hold ~1.15 s (pulse 1.2 s from NOW + milestone + width morph + pp pill + NOW lean);
 // empty weeks fast-forward at 0.34 s (<= 3 Hz). Reduced motion: the old 0.42 s cadence, static map changes only.
 // r10 C (owner): Play from a close-up / region view first flies back to the world map through the shared eased fly (world(): the card
 // fades out first, 140 ms head start); the replay starts when that fly has passed ~60 % (?rplplay goes through this same path).
-playBtn.onclick=()=>{if(playing){stop();return;}playing=true;playBtn.textContent='❚❚';kick();
+playBtn.onclick=()=>{if(playing){stop();return;}playing=true;rplS=true;rsUpd();playBtn.textContent='❚❚';kick();
  if(typeof view!=='undefined'&&view!=='world'&&typeof world==='function'){world();const t0=performance.now(),w8=()=>{if(!playing)return;
    if((typeof FLY!=='undefined'&&FLY.on&&FLY.k<.6)||performance.now()-t0<200&&!(FLY&&FLY.on)){pt=setTimeout(w8,50);return;}playGo();};pt=setTimeout(w8,50);return;}
  playGo();};
 function playGo(){if(!playing)return;if(day>=NDAYS)setDay(0);
- const tick=()=>{if(!playing)return;const nd=day+gran;if(nd>NDAYS&&day>=NDAYS){stop();return;}setDay(Math.min(nd,NDAYS));if(day>=NDAYS){stop();return;}
+ const tick=()=>{if(!playing)return;const nd=day+gran;if(nd>NDAYS&&day>=NDAYS){stop();rplDone();return;}setDay(Math.min(nd,NDAYS));if(day>=NDAYS){stop();rplDone();return;}
   pt=setTimeout(tick,!RMOT?420:RPL.has(Math.floor(Math.min(NDAYS,day+gran)/7))?1150:340);};
  pt=setTimeout(tick,RMOT?600:420);};
 // ======================= G1 r6 U · D7 TIMELINE REPLAY: show NOW stepping toward the endings =======================
@@ -3794,6 +3867,7 @@ var RPL=(()=>{const R={on:false,amp:2.5,mk:[],byWk:{},pul:[],pill:{},lean:null,m
   if(R.on&&!playing&&!tdrag&&now-R.lastT>2500){R.on=false;cap(null);if(RMOT){R.mA=R.cur||curP;R.mB={w:{...curP.w},src:curP.src};R.mt0=now;kick(1100);}else setRoadWidths(curP);}});
  const ss=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};
  R.leanOff=()=>null; // G1 r7: lean removed (Q20 replaces it with real NOW movement)
+ R.end=()=>{R.on=false;R.pul.length=0;R.pill={};R.mA=null;R.mB=null;R.cur=null;cap(null);for(const m of R.mk)m.a=m.wk*7<=day?1:0;setRoadWidths(curP);kick(900);}; /* r3 Stop replay: settle at once (no 2.5 s morph-back) */
  const hexA=(h,a)=>{const n=parseInt(h.slice(1),16);return`rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
  const WXZ=(X,Z)=>window.NOWW?NOWW.xz(X,Z):[X,Z]; // r9 U: same warp as the road vertex shader (NOWW below)
  R.draw=(g,W,H,tlT)=>{const now=performance.now(),closeup=view!=='world'&&focusO;R.hit=[];let busy=false;
