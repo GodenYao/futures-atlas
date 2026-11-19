@@ -499,7 +499,7 @@ const RD6=[
  {id:'R5',n:'Broad diffusion',sh:'Broad diffusion',c:'#3FA9FF',fx:.03,fz:-.22,
   d:'Capability spreads to many actors through open weights, cheap compute and many labs. Power stays plural, with both the benefits and the misuse risks that brings.',
   f:{libertarian:[.30,.15,.45],normaltech:[.25,.10,.40],egalitarian:[.20,.10,.35],selfdestruct:[.15,.05,.25],descendants:[.10,.03,.20]}},
- {id:'R6',n:'Plateau',sh:'Plateau',c:'#C8D2E2',fx:-.12,fz:-.10,
+ {id:'R6',n:'Gradual adoption',sh:'Gradual adoption',c:'#C8D2E2',fx:-.12,fz:-.10,
   d:'Capability keeps improving but returns diminish. Diffusion is slow, AI behaves like past general-purpose technologies and institutions adapt.',
   f:{normaltech:[.70,.50,.85],egalitarian:[.10,.03,.20],libertarian:[.10,.03,.20],enslaved:[.05,.02,.10],reversion:[.05,.01,.10]}},
 ];
@@ -3733,7 +3733,7 @@ var RPL=(()=>{const R={on:false,amp:2.5,mk:[],byWk:{},pul:[],pill:{},lean:null,m
  R.has=wk=>!!R.byWk[wk];
  R.pre=(d0,d1)=>{if(!RMOT)return;R.on=true;R.lastT=performance.now();};
  R.step=(d0,d1)=>{const now=performance.now();if(!RMOT){for(const m of R.mk)m.a=m.wk*7<=day?1:0;kick(400);return;}
-  morph(amped(curP));cap(`Replay · ${isoW(day)} · ${BFR?BFR.label+' · ':''}width change ×${R.amp}${window.NOWM&&NOWM.ok?` · NOW's drift drawn ×${NOWM.kStr()}`:''} · pulse = evidence item`);
+  morph(amped(curP));cap(`Replay · ${isoW(day)} · ${BFR?BFR.label+' · ':''}width change ×${R.amp}${window.NOWM&&NOWM.ok?(window.B4ON?' · NOW at true scale':` · NOW's drift drawn ×${NOWM.kStr()}`):''} · pulse = evidence item`);
   if(d1<=d0){kick(1200);return;}
   const w0=Math.floor(d0/7)+1,w1=Math.floor(d1/7),fire=w1-w0>1?[w1]:[];if(w1-w0<=1)for(let w=w0;w<=w1;w++)fire.push(w);
   for(const m of R.mk)if(m.wk<=w1&&!fire.includes(m.wk))m.tp=Math.min(m.tp||now,now); // jumped-over weeks: plant without a pulse
@@ -3805,7 +3805,7 @@ var NOWM=(()=>{const M={ok:!!BFR,k:1,lens:null,path:[],span:0,from:{X:NOW.X,Z:NO
   let a=1e9,b=-1e9,c=1e9,e=-1e9;for(const p of M.path){a=Math.min(a,p.X);b=Math.max(b,p.X);c=Math.min(c,p.Z);e=Math.max(e,p.Z);}M.range={x0:a,x1:b,z0:c,z1:e,wPct:(b-a)/(2*AXX)*100,hPct:(e-c)/(2*AXX)*100};};
  M.kStr=()=>M.k>=10?String(Math.round(M.k)):M.k.toFixed(1);
  M.kWord=()=>M.k>=1?'drawn':'scaled'; // k < 1 (a lens whose real path already exceeds 15 % of the width) is shown as 'scaled', never as 'drawn ×k' with k < 1
- M.tag=()=>` · <span class="nowk">${escH(BFR.label)} · NOW's drift drawn ×${M.kStr()}</span>`;
+ M.tag=()=>` · <span class="nowk">${escH(BFR.label)} · ${window.B4ON?'NOW at true scale':`NOW's drift drawn ×${M.kStr()}`}</span>`;
  const ss=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};
  // screen safe zones (HUD, legend): if the projected point falls inside one, slide it back toward the plaza
  const safe=p=>{const now=performance.now();if(now-M.szT>500){M.szT=now;M.SZ=['legend','hud'].map(id=>{const e=document.getElementById(id);if(!e)return null;const b=e.getBoundingClientRect();return b.width?[b.left-14,b.top-14,b.right+14,b.bottom+14]:null;}).filter(Boolean);}
@@ -4059,7 +4059,7 @@ function tlPeekCheck(e){return;} // v4.3 r3 O4: no hover peek - only the HIDE/SH
 // adaptive density + multi-year level of detail, a tooltip for EVERY dot (12 px mouse / 20 px touch, nearest dot wins, click/tap on a dot
 // no longer zooms the map). Test only: &b4sim=<year> prepends SIMULATED weekly history from <year>-W48 to show multi-year density.
 // Params: ?b4=1 on · &b4k=<k> (2) · &b4s=<cloud scale> (1) · &b4roads=on|dim|off (off) · &b4trail=0 hides the trail · &b4sim=2022 (test).
-var B4=(()=>{const Q=URLQ,B={on:Q.get('b4')==='1'&&!!BFR};if(!B.on)return B;window.B4ON=true;
+var B4=(()=>{const Q=URLQ,B={on:Q.get('b4')!=='0'&&!!BFR};/* owner 11-19 (round f): B4 is the DEFAULT view; ?b4=0 = the old road-first view (rollback / compare) */if(!B.on)return B;window.B4ON=true;
  // phone portrait (<= 600 px wide) defaults to k=3 so the last weeks spread enough to read at default zoom; the caption says 'drawn ×3'
  const PH=Math.min(innerWidth,innerHeight)<=600&&innerHeight>innerWidth;
  const K=Math.max(.2,+(Q.get('b4k')||(PH?3:2))),SS=Math.max(.2,+(Q.get('b4s')||1)),RM0=Q.get('b4roads')||'off',RM=RM0==='on'?'':RM0,TRL=Q.get('b4trail')!=='0';
@@ -4198,6 +4198,7 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
   // Round e: labels keep clear of the open road card (desktop right card / phone sheet) and of the NOW label + its drop stem
   {const cd=document.getElementById('card');if(cd&&cd.style.display==='block'){const r=cd.getBoundingClientRect();if(r.width>0)LB.push([r.left-6,r.top-6,r.right+6,r.bottom+6]);}
    if(typeof NOWL!=='undefined'&&NOWL.style.display!=='none'){const r=NOWL.getBoundingClientRect(),gq=proj(NOWD.X,hMesh(NOWD.X,NOWD.Z),NOWD.Z);LB.push([r.left-6,r.top-6,r.right+6,r.bottom+6]);
+    {const cr=NOWL.querySelector('.b4cr');if(cr){const q=cr.getBoundingClientRect();if(q.width)LB.push([q.left-6,q.top-6,q.right+6,q.bottom+6]);}} /* round f: the cliff icon line hangs below NOWL */
     if(gq[2]){const sx=gq[0];LB.push([Math.min(sx,r.left+r.width/2)-10,r.bottom-2,Math.max(sx,r.left+r.width/2)+10,gq[1]+10]);}}}
   B.legP=[];
   const pr=p=>{const c=proj(p[0],hMesh(p[0],p[1])+.2,p[1]);return[c[0],c[1],c[2]&&c[1]<=tlT];};
@@ -4345,10 +4346,40 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
  // ---------- Round d (F): a very faint thin ground line NOW -> the leading ending's city (LEAD = header 'leading site', active lens + replay week) ----------
  // no text on the map; hovering the line (or NOW) shows 'Leading: <ending> <share>%'. Drawn first in the overlay = behind trail and labels.
  B.ld=null;
- const ldDraw=(g,W,H,tlT)=>{B.ld=null;if(typeof LEAD==='undefined'||!LEAD||!LEAD.o||!TER_BUILT||!(view==='world'||view==='basin'))return;const o=LEAD.o,P=[];
-  for(let i=0;i<=28;i++){const t=i/28,X=NOWD.X+(o.X-NOWD.X)*t,Z=NOWD.Z+(o.Z-NOWD.Z)*t,c=proj(X,hMesh(X,Z)+.2,Z);P.push([c[0],c[1],c[2]&&c[1]<=tlT]);}
-  g.save();g.strokeStyle='rgba(236,222,190,.2)';g.lineWidth=1;g.beginPath();let on=false;for(const p of P){if(!p[2]){on=false;continue;}if(on)g.lineTo(p[0],p[1]);else{g.moveTo(p[0],p[1]);on=true;}}g.stroke();g.restore();
+ // Round f (owner 11-19): the faint 1 px leading line is GONE. A breathing particle STREAM (3D Points, 1 draw call, depth-tested) flows
+ // from NOW to the leading ending's city along a gentle quadratic arc that clears the terrain (control height solved from 25 samples).
+ // Brass/NOW gold, normal blending (no additive white), breathing 3.6 s; leader change = fade out -> new arc -> fade in (~0.5 s);
+ // reduced motion = static dotted arc. ldDraw keeps only the hover hit-test (projected arc) - nothing is drawn on the overlay.
+ const LS={id:null,f:0,A:null};
+ const lsArc=(o)=>{const x0=NOWD.X,z0=NOWD.Z,x2=o.X,z2=o.Z,dx=x2-x0,dz=z2-z0,D=Math.hypot(dx,dz)||1,nx=-dz/D,nz=dx/D,b=.12*D,xc=(x0+x2)/2+nx*b,zc=(z0+z2)/2+nz*b,
+   y0=hMesh(x0,z0)+.7,y2=hMesh(x2,z2)+1.6;let yc=(y0+y2)/2+.07*D;
+  const q=(a,c,e,t)=>(1-t)*(1-t)*a+2*t*(1-t)*c+t*t*e;
+  for(let i=1;i<25;i++){const t=i/25,X=q(x0,xc,x2,t),Z=q(z0,zc,z2,t),need=hMesh(X,Z)+1.3,w=2*t*(1-t);const r=(need-(1-t)*(1-t)*y0-t*t*y2)/w;if(r>yc)yc=r;}
+  return{p0:[x0,y0,z0],pc:[xc,yc,zc],p2:[x2,y2,z2],D,at:t=>[q(x0,xc,x2,t),q(y0,yc,y2,t),q(z0,zc,z2,t)]};};
+ const ldDraw=(g,W,H,tlT)=>{B.ld=null;if(typeof LEAD==='undefined'||!LEAD||!LEAD.o||!TER_BUILT||!(view==='world'||view==='basin'))return;const o=LEAD.o,P=[],A=lsArc(o);
+  for(let i=0;i<=28;i++){const p=A.at(i/28),c=proj(p[0],p[1],p[2]);P.push([c[0],c[1],c[2]&&c[1]<=tlT]);}
   B.ld={id:o.id,n:o.n,c:LEAD.c,X:o.X,Z:o.Z,P};};
+ {const N=96,pa=new Float32Array(N*3),sd=new Float32Array(N*2);for(let i=0;i<N;i++){const h=Math.sin(i*127.1+3.7)*43758.5453;sd[i*2]=i/N;sd[i*2+1]=h-Math.floor(h);}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pa,3));g.setAttribute('aS',new THREE.BufferAttribute(sd,2));
+  const LU={uP0:{value:new THREE.Vector3()},uPC:{value:new THREE.Vector3()},uP2:{value:new THREE.Vector3()},uN:{value:new THREE.Vector3(1,0,0)},uT:{value:0},uM:{value:1},uF:{value:0},
+   uPx:{value:1},uFN:{value:1e4},uFF:{value:2e4},uCol:{value:new THREE.Vector3(232/255,204/255,140/255)}};
+  const VSL=`attribute vec2 aS;uniform vec3 uP0,uPC,uP2,uN;uniform float uT,uM,uPx,uFN,uFF;varying float vA;
+void main(){float t=uM>.5?fract(aS.x+aS.y*.013+uT*(.05+.025*aS.y)):aS.x;float u=1.-t;vec3 p=u*u*uP0+2.*t*u*uPC+t*t*uP2;
+ float j=(aS.y-.5)*2.;p+=uN*(j*.32*sin(3.14159*t))+vec3(0.,.18*sin(aS.y*40.+uT*1.3)*uM,0.);
+ float br=.5+.5*sin(uT*6.2832/3.6-t*2.2);float dens=uM>.5?smoothstep(.15,.75,fract(aS.y*7.3+floor(uT/3.6)*.37)*.6+br*.7):1.;
+ float ends=smoothstep(0.,.06,t)*smoothstep(1.,.975,t);vec4 mv=viewMatrix*vec4(p,1.);float fog=1.-.5*smoothstep(uFN,uFF,-mv.z);
+ vA=ends*fog*(uM>.5?(.45+.55*br)*dens:.75);gl_PointSize=clamp(uPx*(3.2+2.2*br*uM)*240./max(1.,-mv.z),2.6*uPx,8.*uPx);gl_Position=projectionMatrix*mv;}`;
+   const FSL=`uniform vec3 uCol;uniform float uF;varying float vA;void main(){vec2 d=gl_PointCoord-.5;float r=dot(d,d)*4.;if(r>1.)discard;float a=vA*uF*(1.-r)*.95;if(a<.01)discard;gl_FragColor=vec4(uCol*(.92+.12*(1.-r)),a);}`;
+  const m=new THREE.ShaderMaterial({uniforms:LU,vertexShader:VSL,fragmentShader:FSL,transparent:true,depthWrite:false,depthTest:true});
+  const pts=new THREE.Points(g,m);pts.frustumCulled=false;pts.renderOrder=4;pts.name='b4lead';pts.visible=false;SC.add(pts);B.lsM=pts;
+  ANIM.push(()=>{if(!TER_BUILT||typeof LEAD==='undefined'||!LEAD||!LEAD.o){pts.visible=false;return;}const wv=view==='world'||view==='basin',id=LEAD.o.id,dt=.06;
+   if(LS.id!==id){LS.f=Math.max(0,LS.f-dt*1.8);if(LS.f<=.02||LS.id==null){LS.id=id;LS.f=0;}}else LS.f=Math.min(1,LS.f+dt*1.8);
+   const o=byId[LS.id]||LEAD.o,A=lsArc(o);LS.A=A;LU.uP0.value.set(...A.p0);LU.uPC.value.set(...A.pc);LU.uP2.value.set(...A.p2);
+   const dx=A.p2[0]-A.p0[0],dz=A.p2[2]-A.p0[2],D=Math.hypot(dx,dz)||1;LU.uN.value.set(-dz/D,0,dx/D);
+   LU.uT.value=RMOT?performance.now()/1000:0;LU.uM.value=RMOT?1:0;LU.uF.value=wv?LS.f:0;LU.uPx.value=(RD.getPixelRatio?RD.getPixelRatio():1)*(PH?.85:1);
+   if(SC.fog){LU.uFN.value=SC.fog.near;LU.uFF.value=SC.fog.far;}pts.visible=wv&&LS.f>.005;if(LS.id!==id||LS.f<1)kick(120);});
+  B.lsInfo=()=>({id:LS.id,lead:LEAD&&LEAD.o&&LEAD.o.id,f:+LS.f.toFixed(2),vis:pts.visible,end:LS.A&&[+LS.A.p2[0].toFixed(2),+LS.A.p2[2].toFixed(2)],city:LEAD&&LEAD.o&&[+LEAD.o.X.toFixed(2),+LEAD.o.Z.toFixed(2)],
+   from:LS.A&&[+LS.A.p0[0].toFixed(2),+LS.A.p0[2].toFixed(2)],now:[+NOWD.X.toFixed(2),+NOWD.Z.toFixed(2)],wk:BFR.weeks[Math.max(0,NOWM.idx)],arcY:LS.A&&+LS.A.pc[1].toFixed(2)});}
  const dSeg=(x,y,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],l=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/l));return Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy);};
  B.ldHit=(x,y,R)=>{const L=B.ld;if(!L)return false;const P=L.P;if(P[0][2]&&Math.hypot(x-P[0][0],y-P[0][1])<R+6)return true;for(let i=1;i<P.length;i++)if(P[i][2]&&P[i-1][2]&&dSeg(x,y,P[i-1],P[i])<R)return true;return false;};
  B.ldTxt=()=>B.ld?`<div class="h">Leading: ${escH(B.ld.n)} ${B.ld.c.toFixed(0)}%</div>`:'';
@@ -4375,6 +4406,45 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
   for(const id in E){const runs=[];let c=[];for(const p of E[id]){if(!p){if(c.length)runs.push(c);c=[];}else c.push(p);}if(c.length)runs.push(c);
    const R=runs.sort((a,b)=>b.length-a.length)[0]||[];E[id]=sm3(R).map(([x,z])=>[x,z,hMesh(x,z)+.25]);}
   return E;};
+ // ---------- Round f (owner 11-19): the WHOLE cliff face glows in 3D (replaces the round-e 2D lip line, cfDraw below is no longer called).
+ // One draped mesh for both cliffs (1 draw call): Reversion west cliff face (steep ground within ~12 u of the lip run from cfEdges) and the
+ // Self-destruction crater wall (steep ground r < ~9.5 u). Depth-tested (cities / ridges occlude it), normal alpha blending (no additive
+ // white), colour = the two allowed hues. Strength k = .45 + .55*sqrt(share/12 %) (clearly visible at ~2 %, capped); slow upward-flowing
+ // light bands + a soft shimmer; reduced motion = static glow. Fog fades it only half-way so the far west cliff still reads at world zoom.
+ const CGU={uT:{value:0},uS:{value:new THREE.Vector2(0,0)},uA:{value:1},uM:{value:1},uFN:{value:1e4},uFF:{value:2e4},
+  uC0:{value:new THREE.Vector3(127/255,201/255,139/255)},uC1:{value:new THREE.Vector3(227/255,112/255,95/255)}};
+ const CGV='attribute float aK,aM;varying float vK,vM,vD,vY;varying vec2 vW;void main(){vec4 wp=modelMatrix*vec4(position,1.);vW=wp.xz;vY=wp.y;vK=aK;vM=aM;vec4 mv=viewMatrix*wp;vD=-mv.z;gl_Position=projectionMatrix*mv;}';
+ const CGF=`uniform float uT,uA,uM,uFN,uFF;uniform vec2 uS;uniform vec3 uC0,uC1;varying float vK,vM,vD,vY;varying vec2 vW;
+void main(){float s=vK<.5?uS.x:uS.y;if(vM<.01||s<.001)discard;vec3 c=vK<.5?uC0:uC1;
+ float ph=vY*.62+.5*sin(vW.x*.31+vW.y*.23)+.3*sin(vW.x*.9-vW.y*.7)-uT*(.16+.2*s);
+ float b=pow(.5+.5*sin(ph*6.2832),3.);float sh=.5+.5*sin(vW.x*1.7+vW.y*1.3+uT*.9)*sin(vW.x*.8-vW.y*1.9-uT*.6);
+ float k=mix(.42,b*.75+sh*.25,uM);float fog=1.-.5*smoothstep(uFN,uFF,vD);
+ float a=vM*s*(.34+.5*k)*fog*uA;if(a<.004)discard;gl_FragColor=vec4(c*(.82+.28*k),min(a,.8));}`;
+ const CGM=new THREE.ShaderMaterial({uniforms:CGU,vertexShader:CGV,fragmentShader:CGF,transparent:true,depthWrite:false,depthTest:true,
+  polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
+ let cgMesh=null;B.cgS={reversion:0,selfdestruct:0};
+ const cgBuild=()=>{if(!B.cfE)B.cfE=cfEdges();const Pp=[],Kk=[],Mm=[],I=[],grd=(X,Z)=>{const e=.5;return Math.hypot(hMesh(X+e,Z)-hMesh(X-e,Z),hMesh(X,Z+e)-hMesh(X,Z-e))/(2*e);};
+  const sm=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+  const grid=(x0,x1,z0,z1,st,k,mf)=>{const nx=Math.round((x1-x0)/st),nz=Math.round((z1-z0)/st),b0=Pp.length/3,M=[];
+   for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const X=x0+(x1-x0)*i/nx,Z=z0+(z1-z0)*j/nz,m=mf(X,Z,grd(X,Z));Pp.push(X,hMesh(X,Z)+.2,Z);Kk.push(k);Mm.push(m);M.push(m);}
+   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,c=a+nx+1,d=c+1;if(Math.max(M[a],M[b],M[c],M[d])>.01)I.push(b0+a,b0+c,b0+b,b0+b,b0+c,b0+d);}};
+  const E=B.cfE.reversion||[];
+  if(E.length>2){const zs=E.map(p=>p[1]),xs=E.map(p=>p[0]);
+   grid(Math.min(...xs)-14,Math.max(...xs)+4,Math.min(...zs)-4,Math.max(...zs)+4,.5,0,(X,Z,g)=>{let d=1e9;for(const p of E){const q=Math.hypot(X-p[0],Z-p[1]);if(q<d)d=q;}
+    const face=sm(.22,.85,g),near=1-sm(9,14,d),lip=.45*(1-sm(.8,3.5,d));return clamp(Math.max(face,lip)*near,0,1);});}
+  grid(CRX-11,CRX+11,CRZ-11,CRZ+11,.35,1,(X,Z,g)=>{const r=Math.hypot(X-CRX,Z-CRZ),face=sm(.18,.7,g),rim=.5*Math.exp(-Math.pow((r-6.6*CRK)/(1.4*CRK),2));return clamp(Math.max(face,rim)*(1-sm(8*CRK+1.5,10.5,r)),0,1);});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(Pp),3));g.setAttribute('aK',new THREE.BufferAttribute(new Float32Array(Kk),1));
+  g.setAttribute('aM',new THREE.BufferAttribute(new Float32Array(Mm),1));g.setIndex(I);g.computeBoundingSphere();
+  cgMesh=new THREE.Mesh(g,CGM);cgMesh.renderOrder=2;cgMesh.name='b4cliffglow';SC.add(cgMesh);B.cgMesh=cgMesh;
+  B.cgGeo={verts:Pp.length/3,tris:I.length/3,pts:Pp.filter((v,i)=>i%3===0).length};B.cgPts=[];for(let i=0;i<Mm.length;i++)if(Mm[i]>.45&&i%3===0)B.cgPts.push([Pp[i*3],Pp[i*3+1],Pp[i*3+2],Kk[i]]);};
+ ANIM.push(()=>{if(!TER_BUILT)return;if(!cgMesh)cgBuild();const sh=cfSh(),wv=view==='world'||view==='basin';
+  for(const id of CLF){const v=sh[id]||0,k=v>.05?.45+.55*clamp(Math.sqrt(v/12),0,1):0;B.cgS[id]+=(k-B.cgS[id])*(RMOT?.12:1);}
+  CGU.uS.value.set(B.cgS.reversion||0,B.cgS.selfdestruct||0);CGU.uT.value=RMOT?performance.now()/1000:0;CGU.uM.value=RMOT?1:0;CGU.uA.value=wv?1:.35;
+  if(SC.fog){CGU.uFN.value=SC.fog.near;CGU.uFF.value=SC.fog.far;}cgMesh.visible=!B.cgOff;
+  B.cf={reversion:{share:+(sh.reversion||0).toFixed(2),k:+B.cgS.reversion.toFixed(3)},selfdestruct:{share:+(sh.selfdestruct||0).toFixed(2),k:+B.cgS.selfdestruct.toFixed(3)},geo:B.cgGeo};B.cfT=performance.now()/1000;});
+ // screen bbox of each cliff's glowing face (mask > .45 vertices, in view) - for the luminance test
+ B.cgBox=()=>{const W=innerWidth,H=innerHeight,R={};for(const k of[0,1]){const V=(B.cgPts||[]).filter(p=>p[3]===k).map(p=>proj(p[0],p[1],p[2])).filter(q=>q[2]&&q[0]>=0&&q[0]<=W&&q[1]>=0&&q[1]<=H);
+  R[k?'selfdestruct':'reversion']=V.length?{n:V.length,box:[Math.min(...V.map(q=>q[0])),Math.min(...V.map(q=>q[1])),Math.max(...V.map(q=>q[0])),Math.max(...V.map(q=>q[1]))].map(Math.round)}:null;}return R;};
  const cfDraw=(g,W,H,tlT)=>{B.cf=null;if(!TER_BUILT||!(view==='world'||view==='basin'))return;if(!B.cfE)B.cfE=cfEdges();const sh=cfSh(),t=performance.now()/1000,inf={};
   g.save();g.lineCap='round';g.lineJoin='round';
   for(const id in B.cfE){const P=B.cfE[id];if(P.length<3)continue;const v=sh[id]||0,s=clamp(Math.sqrt(v/12),0,1),c=CFC[id],S=P.map(p=>{const q=proj(p[0],p[2],p[1]);return[q[0],q[1],q[2]&&q[1]<=tlT,fogA(p[0],p[1])];});
@@ -4390,12 +4460,25 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
     bbox:V.length?[Math.min(...V.map(q=>q[0])),Math.min(...V.map(q=>q[1])),Math.max(...V.map(q=>q[0])),Math.max(...V.map(q=>q[1]))].map(Math.round):null,
     w0:P[0].map(v=>+v.toFixed(1)),w1:P[P.length-1].map(v=>+v.toFixed(1))};}
   g.restore();B.cf=inf;B.cfT=t;};
+ // Round f (owner 11-19): icons instead of words - each cliff ending's own glyph in its colour + its share, centred under the NOW label
+ // (absolute child: does not widen NOWL, so the NOW slot logic is unchanged). Hover / focus / tap on an icon = tooltip with the full name.
+ const cfTip=id=>`<div class="h">${glyphSVG(id,16)}${escH(byId[id].n)} ${(cfSh()[id]||0).toFixed(1)}%</div><div>Cliff ending: its ${id==='reversion'?'west cliff':'crater wall'} glows on the map. Not part of the NOW position.</div>`;
  const cfLine=()=>{if(typeof NOWL==='undefined')return;const sh=cfSh(),f=v=>v.toFixed(1)+'%';let d=NOWL.querySelector('.b4cr');if(!d){d=document.createElement('div');d.className='b4cr';NOWL.appendChild(d);}
-  d.innerHTML=`Cliff risk: <b style="color:${CFH.selfdestruct}">Self-destruction ${f(sh.selfdestruct)}</b> · <b style="color:${CFH.reversion}">Reversion ${f(sh.reversion)}</b>`;B.cfTxt=d.textContent;NOWL._w=0;};
- {const st=document.createElement('style');st.textContent='.nowl .b4cr{font:600 10.5px/14px \"FA Plex\",ui-monospace,monospace;letter-spacing:.02em;color:#CFC8B8;text-align:center;margin-top:1px;text-shadow:0 0 3px rgba(8,12,22,.9)}.nowl .b4cr b{font-weight:600;margin:0}@media (max-width:600px){.nowl .b4cr{font-size:9.5px;line-height:12px;white-space:normal;max-width:210px;margin:1px auto 0}}';document.head.appendChild(st);}
+  const it=id=>`<span class="ci" data-id="${id}" tabindex="0" role="img" aria-label="${escH(byId[id].n)} ${f(sh[id]||0)}" style="color:${CFH[id]}">${glyphSVG(id,PH?12:14)}<b>${f(sh[id]||0)}</b></span>`;
+  d.innerHTML=it('selfdestruct')+it('reversion');B.cfTxt=CLF.size?['selfdestruct','reversion'].map(id=>byId[id].n+' '+f(sh[id]||0)).join(' | '):'';NOWL._w=0;};
+ {const st=document.createElement('style');st.textContent='.nowl .b4cr{position:absolute;left:50%;top:100%;transform:translateX(calc(-50% - .1em));margin-top:2px;display:flex;gap:9px;align-items:center;white-space:nowrap;font:600 11px/15px \"FA Plex\",ui-monospace,monospace;letter-spacing:.02em;padding:1px 6px;border-radius:3px;background:rgba(8,11,16,.42);text-shadow:0 0 3px rgba(8,12,22,.9)}.nowl .b4cr .ci{display:inline-flex;align-items:center;gap:3px;cursor:help;outline:none}.nowl .b4cr .ci svg{display:block;flex:none}.nowl .b4cr b{font-weight:600;margin:0}@media (max-width:600px){.nowl .b4cr{font-size:9.5px;line-height:13px;gap:7px;padding:1px 4px}}';document.head.appendChild(st);}
+ {const ci=e=>e.target&&e.target.closest&&e.target.closest('.b4cr .ci');let tT=0;
+  const show=(el,touch)=>{const r=el.getBoundingClientRect();showTip({clientX:r.left+r.width/2,clientY:r.bottom+4},cfTip(el.dataset.id));B.cfTipOn=el.dataset.id;clearTimeout(tT);if(touch)tT=setTimeout(()=>{hideTip();B.cfTipOn=null;},4000);};
+  NOWL.addEventListener('pointerover',e=>{const el=ci(e);if(el&&e.pointerType!=='touch')show(el,false);});
+  NOWL.addEventListener('pointerout',e=>{const el=ci(e);if(el&&e.pointerType!=='touch'){hideTip();B.cfTipOn=null;}});
+  NOWL.addEventListener('focusin',e=>{const el=ci(e);if(el)show(el,false);});NOWL.addEventListener('focusout',e=>{if(ci(e)){hideTip();B.cfTipOn=null;}});
+  NOWL.addEventListener('click',e=>{const el=ci(e);if(!el)return;e.stopPropagation();e.preventDefault();show(el,true);},true);
+  B.cfTipShow=id=>{const el=NOWL.querySelector(`.b4cr .ci[data-id="${id}"]`);if(el)show(el,true);return B.cfTipOn;};}
  if(typeof updPlaqueText==='function'){const u0=updPlaqueText;updPlaqueText=function(){const r=u0.apply(this,arguments);try{cfLine();}catch(e){B.err='cf '+String(e);}return r;};}
  try{cfLine();}catch(e){}
- {const d1=NOWM.draw;NOWM.draw=(g,W,H,tlT)=>{try{cfDraw(g,W,H,tlT);}catch(e){B.err='cf '+String(e);}return d1(g,W,H,tlT);};}
+ // centring check: risk-line centre vs NOW drop line (screen x) and vs the NOW label box centre
+ B.crInfo=()=>{const d=NOWL.querySelector('.b4cr');if(!d||NOWL.style.display==='none')return null;const r=d.getBoundingClientRect(),l=NOWL.getBoundingClientRect(),g=proj(NOWD.X,hMesh(NOWD.X,NOWD.Z),NOWD.Z),cx=r.left+r.width/2;
+  return{mode:NOWL._m||'c',cx:+cx.toFixed(1),stemX:+g[0].toFixed(1),dxStem:+(cx-g[0]).toFixed(1),dxLabel:+(cx-(l.left+l.width/2)).toFixed(1),w:Math.round(r.width),h:Math.round(r.height),lines:Math.round(r.height/(PH?13:15)),icons:d.querySelectorAll('svg').length,txt:d.textContent};};
  B.cliff=()=>({shares:cfSh(),text:B.cfTxt,draw:B.cf,week:BFR.weeks[bfIdx(day)],lens:LCUR,engine:(()=>{const L=bfL(LCUR),i=bfIdx(day),o={};for(const id of CLF)o[id]=+(L.s[i][BFR.sites.indexOf(id)]*100).toFixed(3);return o;})()});
  // NOW formula check (diag): recompute NOW for the current week independently, once with and once without the cliffs
  B.nowChk=()=>{const L=bfL(LCUR),i=bfIdx(day),S=L.s[i],b=1/O.length;const f=ex=>{let x=0,z=0;for(const o of O){if(ex&&o.cliff)continue;const j=BFR.sites.indexOf(o.id),v=j>=0?+S[j]||0:0;x+=(v-b)*(o.X-NOW.X);z+=(v-b)*(o.Z-NOW.Z);}return[+(NOW.X+PK*x).toFixed(3),+(NOW.Z+PK*z).toFixed(3)];};
@@ -4414,7 +4497,7 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
   T(document.querySelector('#legend .hd'),'ROADS','SCENARIO FAMILIES · HOW THE NUMBERS ARE COMPUTED');
   T(document.querySelector('#lenspop .ph'),'WEIGHT THE ROADS','WEIGHT THE SCENARIO FAMILIES');
   if(typeof PAGES!=='undefined'){const m0=PAGES.method,t0=PAGES.traj;
-   if(m0)PAGES.method=(...a)=>m0(...a).replace('</h1>','</h1><div class="sub" style="margin:8px 0 14px"><b>How the numbers are computed:</b> six editorial scenario families (R1–R6), our synthesis of the literature. They are a calculation layer, not the map. <a href="#" onclick="openPage(\'traj\');return false">Open the scenario families (R1–R6) →</a></div>');
+   if(m0)PAGES.method=(...a)=>m0(...a).replace('<li><b>Trunk width = road share.</b> Each branch = road share × split; the branches into one site merge into one vein = that site\'s share.</li>','<li><b>NOW is a point</b> placed by this week\'s ending shares: plaza + Σ (share − 1/13) × (city − plaza), at true scale; the two cliff endings are left out. The gold ground cloud shows the uncertainty, the dotted trail shows past weeks, and a gold particle stream links NOW to the leading ending.</li><li><b>Cliff endings</b> (Reversion, Self-destruction) are not a direction on the axes: the Reversion cliff and the crater wall glow, stronger with share, and both shares sit under the NOW label.</li><li><b>Scenario families (R1–R6)</b> are the calculation layer, hidden on the map: hover or click a row in the left list to show one.</li>').replace('</h1>','</h1><div class="sub" style="margin:8px 0 14px"><b>How the numbers are computed:</b> six editorial scenario families (R1–R6), our synthesis of the literature. They are a calculation layer, not the map. <a href="#" onclick="openPage(\'traj\');return false">Open the scenario families (R1–R6) →</a></div>');
    if(t0)PAGES.traj=(...a)=>t0(...a).replace(/<h1>Roads<\/h1>/,'<h1>Scenario families (R1–R6)</h1><p class="small">How the numbers are computed: six editorial scenario families, our synthesis of the literature. The map shows endings; these families stay backstage (called “roads” below).</p>');}});
  return B;})();
 // ======================= PAGES =======================
@@ -4465,7 +4548,7 @@ data:()=>`<h1>Data sources</h1><p class="lead">Evidence comes from public source
 <div class="glass"><h4><span class="tier t3">TIER 3</span> Other</h4><div class="small">Blogs, aggregators and similar. Used with care; reports from these sources fade fastest. Reliability 0.70.</div></div></div>
 <h3>Most-used sources so far</h3><p>Epoch AI, national statistics agencies, official gazettes, METR, lab system cards and company filings. The full list is in the <a href="#evidence">Evidence ledger</a>. There is no automatic data pull: every item is added by hand.</p>`,
 method:()=>`<h1>How it works</h1><p class="lead">The formula, parameters and ledger are public: anyone can recompute the map from the ledger with the engine in the repository (engine/) or fork it. The method version is listed under About.</p>
-<h3>The model: NOW → 6 roads → 13 sites</h3><p>We stand at the <b>NOW</b> crossroads. Six roads leave it: R1 Rival blocs with obedient AI, R2 Gradual disempowerment, R3 Incident → coordinated restraint, R4 Race → loss of control, R5 Broad diffusion, R6 Plateau. A road's <b>share</b> is how much of where things are heading it carries this week. Each road splits early into branches toward the sites it can end in, by <b>editorial ranges</b>. A site's number = Σ road share × split.</p>
+<h3>The model: NOW → 6 roads → 13 sites</h3><p>We stand at the <b>NOW</b> crossroads. Six roads leave it: R1 Rival blocs with obedient AI, R2 Gradual disempowerment, R3 Incident → coordinated restraint, R4 Race → loss of control, R5 Broad diffusion, R6 Gradual adoption. A road's <b>share</b> is how much of where things are heading it carries this week. Each road splits early into branches toward the sites it can end in, by <b>editorial ranges</b>. A site's number = Σ road share × split.</p>
 <h3>Visual rules</h3><ul><li><b>Trunk width = road share.</b> Each branch = road share × split; the branches into one site merge into one vein = that site's share.</li><li><b>Site light is uniform</b>: every site is lit the same; architecture describes the world, it is not a rating.</li><li><b>Terrain is static</b>: valley depth does not change with share; site gauges and road widths show it.</li><li>A site's % and its share ring use the colour of the roads that feed it; the main colour is the biggest feeder.</li><li>Site labels and cards show <b>rounded ranges</b> (to 5 pp). If the leading site's range overlaps the runner-up's, it reads <b>Leading, contested</b>.</li></ul>
 <h3>The ground: two axes</h3><p><b>West → East = who decides?</b> Humans ↔ AI. <b>North → South = how many powers?</b> Many ↔ One. Four basins: Human-led · many powers; Human-led · one or few powers; AI-led · one power; AI-led · many powers. Placement of endings is our interpretation of Tegmark's scenarios (<i>Life 3.0</i>), plus "Normal technology" (Narayanan &amp; Kapoor, 2025; not from the book).</p>
 <h3>Lenses</h3><p>Pooled (default) is an equal-weight pool of four seed lenses: Baseline, Slow diffusion, Loss of control, Many powers. Non-baseline lenses are seed lenses whose parameters were set by the maintainer, not by the thinkers they are named after.</p>
