@@ -281,30 +281,61 @@ function drawSplits(rng) { const o = {}; for (const T of ROADS) { o[T] = {}; let
 function perturbPrior(prior, rng, sigma) { const o = { None: prior.None }; let t = 0; for (const T of ROADS) { o[T] = prior[T] * Math.exp(sigma * gauss(rng)); t += o[T]; } for (const T of ROADS) o[T] *= (1 - prior.None) / t; return o; }
 
 // ---------- ledger ----------
+// Year-agnostic. Reads
+//   backfill/<phase>/*.json   every phase folder (2026, 2025, 2024, 2022-11, ...); a phase COUNTS only when
+//                             backfill/review/approved_<phase>.json exists with an "approved" date (review passed).
+//                             Unreviewed phases are skipped (shown on the site as unreviewed, never counted).
+//   reviewed/<year>/*.json    accepted contributor items (merged PRs, filed by the weekly build); always count.
+//   backfill/review/rulings.json  maintainer rulings (MET/NOT MET resolutions, merges).
+// Layouts: public repo <repo>/ledger/{backfill,reviewed}; private site layout <site>/{backfill,reviewed}.
+function ledgerDirs(siteDir) {
+  const led = fs.existsSync(path.join(siteDir, 'ledger', 'backfill')) ? path.join(siteDir, 'ledger') : siteDir;
+  return { bf: path.join(led, 'backfill'), rev: path.join(led, 'reviewed') };
+}
+const EV_DIR = { raises: 'toward YES', lowers: 'toward NO', 'toward YES': 'toward YES', 'toward NO': 'toward NO' };
 function loadLedger(siteDir) {
-  // public repo layout: <repo>/ledger/backfill/{2026/*.json, review/approved_2026.json}; older private layout: <site>/backfill/...
-  const bf = fs.existsSync(path.join(siteDir, 'ledger', 'backfill')) ? path.join(siteDir, 'ledger', 'backfill') : path.join(siteDir, 'backfill');
-  const appr = JSON.parse(fs.readFileSync(path.join(bf, 'review', 'approved_2026.json'), 'utf8'));
-  const ov = appr.wording_overrides || {};
-  const hold = new Set((appr.counting && appr.counting.hold) || []);
-  // maintainer rulings on single indicators (MET/NOT MET resolutions, merges): review/rulings.json
-  const rulF = path.join(bf, 'review', 'rulings.json');
+  const { bf, rev } = ledgerDirs(siteDir);
+  const rd = path.join(bf, 'review');
+  const rulF = path.join(rd, 'rulings.json');
   const rul = fs.existsSync(rulF) ? JSON.parse(fs.readFileSync(rulF, 'utf8')) : {};
   const merges = rul.merges || {};
-  const byInd = {}; const excluded = [];
-  for (const f of fs.readdirSync(path.join(bf, '2026')).filter(f => f.endsWith('.json')).sort()) {
-    const j = JSON.parse(fs.readFileSync(path.join(bf, '2026', f), 'utf8'));
-    const id = j.indicator;
-    for (const it0 of j.items) {
-      const it = Object.assign({}, it0, ov[it0.id] || {});
-      if (merges[id]) { excluded.push({ id: it.id, why: merges[id].why || ('merged into ' + merges[id].into) }); continue; }
-      if (hold.has(id)) { excluded.push({ id: it.id, why: 'indicator on hold' }); continue; }
-      if (it.kind === 'data-gap') { excluded.push({ id: it.id, why: 'data-gap: displayed, not counted (§3.2)' }); continue; }
-      (byInd[id] = byInd[id] || []).push(it);
+  const byInd = {}; const excluded = []; const phases = []; const skipped = []; const approvedBy = {};
+  const add = (id, it, hold) => {
+    if (merges[id]) { excluded.push({ id: it.id, why: merges[id].why || ('merged into ' + merges[id].into) }); return; }
+    if (hold && hold.has(id)) { excluded.push({ id: it.id, why: 'indicator on hold' }); return; }
+    if (it.kind === 'data-gap') { excluded.push({ id: it.id, why: 'data-gap: displayed, not counted (§3.2)' }); return; }
+    (byInd[id] = byInd[id] || []).push(it);
+  };
+  // newest phase first (2026, 2025, ...) = the order the single-phase engine used
+  const dirs = fs.existsSync(bf) ? fs.readdirSync(bf, { withFileTypes: true }).filter(d => d.isDirectory() && d.name !== 'review').map(d => d.name).sort().reverse() : [];
+  for (const ph of dirs) {
+    const aF = path.join(rd, `approved_${ph}.json`);
+    const appr = fs.existsSync(aF) ? JSON.parse(fs.readFileSync(aF, 'utf8')) : null;
+    if (!appr || !appr.approved) { skipped.push(ph); continue; }
+    phases.push(ph); approvedBy[ph] = appr.approved;
+    const ov = appr.wording_overrides || {};
+    const hold = new Set((appr.counting && appr.counting.hold) || []);
+    for (const f of fs.readdirSync(path.join(bf, ph)).filter(f => f.endsWith('.json')).sort()) {
+      const j = JSON.parse(fs.readFileSync(path.join(bf, ph, f), 'utf8'));
+      for (const it0 of j.items) add(j.indicator, Object.assign({}, it0, ov[it0.id] || {}), hold);
+    }
+  }
+  // accepted contributor items: reviewed/<year>/<indicator>.json = { indicator, items: [EV item + reviewer fields] }
+  let nReviewed = 0;
+  const years = fs.existsSync(rev) ? fs.readdirSync(rev, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name).sort() : [];
+  for (const y of years) for (const f of fs.readdirSync(path.join(rev, y)).filter(f => f.endsWith('.json')).sort()) {
+    const j = JSON.parse(fs.readFileSync(path.join(rev, y, f), 'utf8'));
+    for (const e of (j.items || [j])) {
+      const id = e.indicator || j.indicator; if (!id) continue;
+      nReviewed++;
+      add(id, { id: e.id, indicator: id, kind: e.kind || 'event', published: e.published, summary: e.summary, detail: e.detail, value: e.value,
+        direction: EV_DIR[e.direction] || 'neutral', source_url: e.source_url, source_tier: e.source_tier, confidence: e.confidence || 'med', review: e.review });
     }
   }
   const resolutions = rul.resolutions || {};
-  return { byInd, excluded, resolutions, approved: appr.approved };
+  // single phase -> plain date string (unchanged snapshot format); several -> { phase: date }
+  const approved = phases.length === 1 ? approvedBy[phases[0]] : approvedBy;
+  return { byInd, excluded, resolutions, approved, phases, skipped, nReviewed };
 }
 
 function buildProviders(ledger, asOf, P, drop) {
