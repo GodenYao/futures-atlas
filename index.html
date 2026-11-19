@@ -3026,7 +3026,7 @@ function layoutLabels(){const W=innerWidth,H=innerHeight;og.setTransform(PIXR,0,
  const AXR=[];if(M3on&&!big)document.querySelectorAll('.axi').forEach(e=>{if(e.offsetWidth&&getComputedStyle(e).opacity>.05){const r=e.getBoundingClientRect();AXR.push([r.left-4,r.top-4,r.right+4,r.bottom+4]);}});for(const r of AXR)placed.push(r); /* M3c: phone labels never sit on the edge axis tabs */
  if(nvis){placed.push([nx0-10,hy-nh-12,nx0+nw+10,hy+8]);
   const g0=proj(NOWD.X,ny,NOWD.Z);og.save();og.lineCap='round';
-  og.strokeStyle='rgba(8,12,22,.85)';og.lineWidth=3.5;og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke();og.strokeStyle='rgba(244,239,227,.95)';og.lineWidth=1.4;og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke(); // r3 O5: thin drop line with a dark casing (overlay, reads over any road)
+  og.strokeStyle='rgba(8,12,22,.85)';og.lineWidth=3.5;og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke();{const b4d=!!(window.B4&&B4.on);og.strokeStyle=b4d?'rgba(232,226,212,.6)':'rgba(244,239,227,.95)';og.lineWidth=b4d?1.2:1.4;} /* B4 round h: drop line slightly dimmed so the stream leads */og.beginPath();og.moveTo(hx,hy+1);og.lineTo(g0[0],g0[1]);og.stroke(); // r3 O5: thin drop line with a dark casing (overlay, reads over any road)
   og.fillStyle='#F4EFE3';og.beginPath();og.arc(g0[0],g0[1],3.6,0,6.2832);og.fill();og.strokeStyle='rgba(8,12,22,.9)';og.lineWidth=1.5;og.stroke();og.restore();placed.push([g0[0]-6,g0[1]-6,g0[0]+6,g0[1]+6],[Math.min(hx,g0[0])-5,hy,Math.max(hx,g0[0])+5,g0[1]]);}for(const m of MKB)placed.push([m[0]-17,m[1]-17,m[0]+17,m[1]+17]); // r4 (item 8): R-tags also keep clear of site icons
  const ovl=(a)=>placed.some(b=>a[0]-10<b[2]&&a[2]+10>b[0]&&a[1]-7<b[3]&&a[3]+7>b[1]); // r3: 8/6 px clearance between tags and from the NOW text (r4: 10/7 px)
  const PRJ=big?null:ROADV.map(rv=>rv.tp.filter((_,i)=>i%2===0).map(p=>proj(p[0],hMesh(p[0],p[1])+.2,p[1])));
@@ -3937,7 +3937,7 @@ var LEADFX=(()=>{const L={a:{},t:performance.now(),n:0};const sm=x=>{x=clamp(x,0
  L.tick=()=>{const now=performance.now(),dt=Math.min(.1,(now-L.t)/1000);L.t=now;const lid=LEAD&&LEAD.o&&LEAD.o.id;
   for(const o of O){const t=o.id===lid?1:0,c=L.a[o.id]||0;if(c!==t)L.a[o.id]=Math.abs(t-c)<=dt/.4?t:c+Math.sign(t-c)*dt/.4;}};
  const RM=()=>RMOT&&!/[?&]leadrm=1/.test(location.search); // r13 L test hook: ?leadrm=1 = LEADFX reduced-motion path only
- L.ph=()=>RM()?.5-.5*Math.cos(performance.now()/1000*6.2832/2.8):.5;
+ L.ph=()=>RM()?(window.B4&&B4.on&&B4.brth?B4.brth(.45):.5-.5*Math.cos(performance.now()/1000*6.2832/2.8)):.5; /* B4 round h: leader ring breath = the tether breath (T 6 s, 2.4 s in / 3.6 s out) lagged .45 s; flag off = old 2.8 s */
  // r12 P (owner override of 'no glow', leader only): soft glow ring in the leader's dominant feeder-road colour (breathing 2.8 s) + a sparse
  // field of 18 additive motes (1.5-3 px, alpha <= .85, feeder colour mixed toward white) orbiting the pin / rising from the city to the pin,
  // each twinkling at its own 0.6-1.5 Hz. Cross-fades with L.a (0.4 s). Reduced motion: static ring + 5 static dots. World + region only for motes.
@@ -4254,7 +4254,7 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
   return{L:O2,Ycur};};
  B.hit=[];B.lbl=[];window.B4AV=[];
  // the Q20 brass ground arrow is not drawn under B4 (the trail ends in its own small arrowhead); aA is restored for the other readers
- const d0=NOWM.draw;NOWM.draw=(g,W,H,tlT)=>{try{ldDraw(g,W,H,tlT);}catch(e){B.err='ld '+String(e);}try{draw(g,W,H,tlT);}catch(e){B.err=String(e);}try{rdDraw(g,W,H,tlT);}catch(e){B.err='rd '+String(e);}const aA=NOWM.aA;NOWM.aA=0;try{return d0(g,W,H,tlT);}finally{NOWM.aA=aA;}};
+ const d0=NOWM.draw;NOWM.draw=(g,W,H,tlT)=>{try{tdDraw(g,W,H,tlT);}catch(e){B.err='ld '+String(e);}try{draw(g,W,H,tlT);}catch(e){B.err=String(e);}try{rdDraw(g,W,H,tlT);}catch(e){B.err='rd '+String(e);}const aA=NOWM.aA;NOWM.aA=0;try{return d0(g,W,H,tlT);}finally{NOWM.aA=aA;}};
  const txt=(g,s,x,y,al,f,col)=>{g.font=f;g.lineWidth=3;g.strokeStyle=`rgba(8,12,22,${(al*.72).toFixed(3)})`;g.strokeText(s,x,y);g.fillStyle=`rgba(${col||'240,226,192'},${al.toFixed(3)})`;g.fillText(s,x,y);};
  const draw=(g,W,H,tlT)=>{B.hit=[];B.lbl=[];if(!TER_BUILT||!B.cur)return;const ci=Math.max(0,NOWM.idx),fade=view==='world'||view==='basin'?1:.3;g.save();
   // cities under the cloud: a faint warm lift on their ground (subtle; density-weighted, never white)
@@ -4346,66 +4346,101 @@ void main(){vec2 d=vW-uC;vec2 q=vec2(dot(uR.xy,d),dot(uR.zw,d))/uBr;float m2=dot
  // ---------- Round d (F): a very faint thin ground line NOW -> the leading ending's city (LEAD = header 'leading site', active lens + replay week) ----------
  // no text on the map; hovering the line (or NOW) shows 'Leading: <ending> <share>%'. Drawn first in the overlay = behind trail and labels.
  B.ld=null;
- // Round g (owner 11-19): the leading STREAM lives in SCREEN space on the 2D overlay (0 draw calls; the round-f 3D Points ground arc
- // 'b4lead' is removed). It flows from the floating NOW LABEL (exit point of the label box - or its cliff-icon row - on the ray toward
- // the icon) to the leading city's ICON (its ring edge, 16*LK px, nearest the label), recomputed every overlay frame, as a gentle arc
- // bowed upward. Fine misty look: many tiny gaussian sprites (0.7-3 px sprites, sub-px..1.5 px visible core, varied alpha) + a faint
- // haze band of large soft sprites with slow width/turbulence. Breathing in sync, one 3.6 s clock: the NOW label glow peaks at phase 0,
- // a brightness crest travels label -> icon and arrives at phase .55 when the icon glow peaks (glows = soft sprites behind label/icon,
- // no size change). Reduced motion = static faint haze, no particles, no pulse. Hidden when the label is hidden, the icon is not drawn
- // or off-screen, an endpoint is under the open card, or outside world view. Hover on the arc = 'Leading: <ending> <share>%'.
+ // Leading link (rounds g-i): lives in SCREEN space on the 2D overlay (0 draw calls) from the floating NOW LABEL to the leading city's
+ // ICON; the live implementation is the round-h/i mist tether below (tdGeo/tdBuild/tdDraw). The round-g ribbon (ldDraw/lsGeo) and the
+ // round-h puff sprites were removed in round i. Hover on the strand = 'Leading: <ending> <share>%'.
  const LS={id:null,f:0,tl:0,ms:[],vis:false,G:null};
- const SPR=(()=>{const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d'),R=x.createRadialGradient(16,16,0,16,16,16);
-  R.addColorStop(0,'rgba(238,214,156,1)');R.addColorStop(.2,'rgba(236,210,150,.66)');R.addColorStop(.45,'rgba(232,204,140,.22)');R.addColorStop(.72,'rgba(232,204,140,.05)');R.addColorStop(1,'rgba(232,204,140,0)');
-  x.fillStyle=R;x.fillRect(0,0,32,32);return c;})();
  const hs=(i,k)=>{const h=Math.sin(i*127.1+k*311.7+3.7)*43758.5453;return h-Math.floor(h);};
- const BP=3.6,ARR=.55,sst=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
- const pulse=(ph,c)=>{let d=Math.abs(ph-c);d=Math.min(d,1-d);return Math.exp(-(d*d)/(2*.085*.085));};
- const brAt=(t,ph)=>{const c=ph/ARR;if(c>1.3)return .42;const d=t-c;return .42+.58*Math.exp(-d*d/(2*.15*.15));};
+ const sst=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
  const inR=(p,r,pd)=>r&&p[0]>=r.left-pd&&p[0]<=r.right+pd&&p[1]>=r.top-pd&&p[1]<=r.bottom+pd;
- const exitPt=(b,tx,ty)=>{const cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2,dx=tx-cx,dy=ty-cy,hw=(b[2]-b[0])/2,hh=(b[3]-b[1])/2;const s=Math.min(dx?hw/Math.abs(dx):1e9,dy?hh/Math.abs(dy):1e9);return[cx+dx*s,cy+dy*s];};
  const eDist=(p,r)=>{if(!r||!r.width)return 1e9;const ins=p[0]>=r.left&&p[0]<=r.right&&p[1]>=r.top&&p[1]<=r.bottom;if(ins)return Math.min(p[0]-r.left,r.right-p[0],p[1]-r.top,r.bottom-p[1]);
   return Math.hypot(Math.max(r.left-p[0],0,p[0]-r.right),Math.max(r.top-p[1],0,p[1]-r.bottom));};
- const lsGeo=(o,W,tlT)=>{const m=o&&o._mw;if(!m||!m.ok||m.x<0||m.x>W||m.y<40||m.y>tlT)return null;if(typeof NOWL==='undefined'||NOWL.style.display==='none')return null;
-  const nr=NOWL.getBoundingClientRect();if(!nr.width)return null;const LK=o._LK||1,ri=16*LK,cx=m.x,cy=m.y;let a=exitPt([nr.left,nr.top,nr.right,nr.bottom],cx,cy);
-  const ce=NOWL.querySelector('.b4cr'),q=ce&&ce.getBoundingClientRect();if(q&&q.width&&a[1]>=nr.bottom-.5&&a[0]>=q.left&&a[0]<=q.right)a=exitPt([q.left,q.top,q.right,q.bottom],cx,cy);
-  if(a[0]<0||a[0]>W||a[1]<0||a[1]>tlT)return null;let ux=a[0]-cx,uy=a[1]-cy;const L0=Math.hypot(ux,uy)||1;ux/=L0;uy/=L0;const b=[cx+ux*(ri+1),cy+uy*(ri+1)];
-  const D=Math.hypot(b[0]-a[0],b[1]-a[1]);if(D<24)return null;
-  if(typeof cardOpen==='function'&&cardOpen()){const ck=document.getElementById('card'),cr=ck&&ck.getBoundingClientRect();if(cr&&cr.width&&(inR(a,cr,4)||inR(b,cr,4)))return null;}
-  let nx=-(b[1]-a[1])/D,ny=(b[0]-a[0])/D;if(ny>0){nx=-nx;ny=-ny;}const bow=Math.min(110,.22*D);let k=[(a[0]+b[0])/2+nx*bow,(a[1]+b[1])/2+ny*bow];if(k[1]<8)k[1]=8;
-  return{o,a,b,k,c:[cx,cy],ri,LK,nr,q,D};};
  const qb=(G,t)=>{const u=1-t;return[u*u*G.a[0]+2*t*u*G.k[0]+t*t*G.b[0],u*u*G.a[1]+2*t*u*G.k[1]+t*t*G.b[1]];};
- const qn=(G,t)=>{const dx=2*(1-t)*(G.k[0]-G.a[0])+2*t*(G.b[0]-G.k[0]),dy=2*(1-t)*(G.k[1]-G.a[1])+2*t*(G.b[1]-G.k[1]),l=Math.hypot(dx,dy)||1;return[-dy/l,dx/l];};
- const ldDraw=(g,W,H,tlT)=>{const T0=performance.now(),now=T0/1000,dt=Math.min(.1,LS.tl?now-LS.tl:0);LS.tl=now;B.ld=null;LS.vis=false;
-  if(typeof LEAD==='undefined'||!LEAD||!LEAD.o||!TER_BUILT||view!=='world'){LS.G=null;return;}const id=LEAD.o.id;
-  if(LS.id!==id){LS.f=Math.max(0,LS.f-dt*2.2);if(LS.f<=.02||LS.id==null){LS.id=id;LS.f=0;}}else LS.f=Math.min(1,LS.f+dt*2.2);
-  const o=byId[LS.id]||LEAD.o,G=lsGeo(o,W,tlT);LS.G=G;if(!G)return;const P=[];for(let i=0;i<=28;i++){const p=qb(G,i/28);P.push([p[0],p[1],true]);}
-  B.ld={id:LEAD.o.id,n:LEAD.o.n,c:LEAD.c,X:LEAD.o.X,Z:LEAD.o.Z,P};const al=LS.f;if(al<.01)return;LS.vis=true;
-  const ph=RMOT?(now%BP)/BP:0,sc=PH?.85:1,LB=(window.LBLBOX||[]);g.save();g.globalCompositeOperation='source-over';
-  // synced glows behind the NOW label and the leading icon (drawn before markers; label is DOM on top) - alpha only, no size change
-  {const gL=RMOT?pulse(ph,0):0,gI=RMOT?pulse(ph,ARR):0,r=G.nr,bw=r.width+80,bh=r.height+56;
-   g.globalAlpha=al*(.07+.24*gL);g.drawImage(SPR,r.left+r.width/2-bw/2,r.top+r.height/2-bh/2,bw,bh);
-   const rr=G.ri*2.1;g.globalAlpha=al*(.05+.2*gI);g.drawImage(SPR,G.c[0]-rr,G.c[1]-rr,2*rr,2*rr);}
-  // misty ribbon: two soft round-capped strokes along a slowly turbulent copy of the arc (continuous from label edge to icon ring)
-  {const RB=[];for(let i=0;i<=24;i++){const t=i/24,p=qb(G,t),n=qn(G,t),w=Math.sin(Math.PI*t)*(RMOT?1.6*Math.sin(now*.5+i*.9):0);RB.push([p[0]+n[0]*w,p[1]+n[1]*w]);}
-   g.lineCap='round';g.lineJoin='round';g.strokeStyle='rgb(232,204,140)';const bm=RMOT?.75+.25*brAt(.5,ph):.8;
-   for(const[lw,aa]of[[10*sc,.035],[4.5*sc,.05],[1.6*sc,.06]]){g.lineWidth=lw;g.globalAlpha=al*aa*bm;g.beginPath();g.moveTo(RB[0][0],RB[0][1]);for(let i=1;i<RB.length;i++)g.lineTo(RB[i][0],RB[i][1]);g.stroke();}}
-  // haze band on top: large soft sprites, slow width variation + turbulence, brightness crest label -> icon
-  const M=PH?24:38;for(let j=0;j<M;j++){let t=(j+.5)/M+(RMOT?.012*Math.sin(now*.4+j):0);t=Math.max(0,Math.min(1,t));const p=qb(G,t),n=qn(G,t),
-   off=(hs(j,1)-.5)*4+(RMOT?2.2*Math.sin(now*.55+j*1.7):0),e=.55+.45*Math.sin(Math.PI*t),
-   rad=(8+5*hs(j,2))*e*sc*(1+(RMOT?.14*Math.sin(now*.3+j*2.3):0)),ends=sst(0,.02,t)*sst(1,.98,t);
-   g.globalAlpha=al*(.07+.04*hs(j,3))*(RMOT?brAt(t,ph)*1.2:.75)*ends;if(g.globalAlpha<.003)continue;g.drawImage(SPR,p[0]+n[0]*off-rad,p[1]+n[1]*off-rad,2*rad,2*rad);}
-  // fine light dust: stateless hashed particles (none under reduced motion)
-  let nd=0;if(RMOT){const N=PH?160:340;for(let i=0;i<N;i++){const h=hs(i,5),t=(hs(i,4)+now*(.04+.035*hs(i,6)))%1,ends=sst(0,.02,t)*sst(1,.98,t);if(ends<.02)continue;
-    const p=qb(G,t),n=qn(G,t),lat=(h-.5)*2*(6.5*Math.sin(Math.PI*t)+1.2)*sc+1.5*Math.sin(now*(.5+h)+i),x=p[0]+n[0]*lat,y=p[1]+n[1]*lat;
-    let hid=false;if(t>.12&&t<.88)for(const bx of LB){if(x>bx[0]&&x<bx[2]&&y>bx[1]&&y<bx[3]){hid=true;break;}}if(hid)continue;
-    const s7=hs(i,7),d=(.7+2.3*s7*s7)*sc,a=al*(.22+.6*hs(i,8))*brAt(t,ph)*ends*(.78+.22*Math.sin(now*(1.1+h*1.4)+i*2.1));if(a<.01)continue;
-    g.globalAlpha=Math.min(1,a);g.drawImage(SPR,x-d/2,y-d/2,d,d);nd++;}}
-  g.restore();LS.nd=nd;LS.ms.push(performance.now()-T0);if(LS.ms.length>120)LS.ms.shift();};
+// NOW label panel: soft lilac-white outer halo (box-shadow, no layout change) breathing in phase with the tether; written only on change.
+// Round i: ~2x stronger + wider so the halo is perceptible on the hazy dusk (round h vision: 'label glow not perceptible').
+const nlGlow=(v,on)=>{if(typeof NOWL==='undefined')return;const s=on>.01?`0 0 0 1px rgba(228,220,255,${(.20*on+.38*v).toFixed(2)}),0 0 ${(22+18*v).toFixed(0)}px ${(3+5*v).toFixed(0)}px rgba(228,220,255,${(.17*on+.15*v).toFixed(2)})`:'';if(s!==LS.bs){LS.bs=s;NOWL.style.boxShadow=s;}};
+ // ===== Round h FINAL (owner-approved 'Shared breath', spec review/fable_link_review_20261119_0958.md §2-5): a slack MIST TETHER ======
+ // Nearly straight strand from the label END CAP (never the bottom edge = cliff chips) to the icon ring point facing it, sagging slightly
+ // (control point displaced straight DOWN the screen; flips to an equal lift when the sag would cross the trail box or another icon).
+ // Whole strand lifts on the inhale. Continuous mist body (sprite stamps at equal arc length, flared ends, two-layer drifting noise
+ // density), one wandering hairline filament, a few motes, warm crest once per breath. Cool lilac-white (gold stays the trail's colour).
+ // Dark under-halo source-over, then mist 'lighter'. Rendered into an offscreen layer (DPR cap 1.5) at 30 Hz (or at once when an endpoint
+ // moves > .5 px), even-odd clipped behind the label box and the icon disc, then blitted with one drawImage. Breath: T 6 s (2.4 in /
+ // 3.6 out); label glow in phase; icon ring (LEADFX) lags .45 s via B.brth(.45). No shadowBlur / filter / per-frame gradients.
+ const TBR=6,brF=t=>{const f=((t%TBR)+TBR)%TBR/TBR,w=f<.4?f/.8:.5+(f-.4)/1.2;return .5-.5*Math.cos(6.2832*w);};B.bvFix=null;B.lsOff=0;
+ B.brth=lag=>B.bvFix!=null?B.bvFix:brF(performance.now()/1000-(lag||0)); /* round i test hooks: B4.bvFix = 0..1 freezes the breath (metric shots), B4.lsOff = 1 hides the tether */
+ const bvAt=t=>B.bvFix!=null?B.bvFix:RMOT?brF(t):.6;
+ const mkS=(sz,rgb,st)=>{const c=document.createElement('canvas');c.width=c.height=sz;const x=c.getContext('2d'),R=x.createRadialGradient(sz/2,sz/2,0,sz/2,sz/2,sz/2);
+  for(const[o,a]of(st||[[0,1],[.2,.82],[.4,.45],[.6,.17],[.8,.04],[1,0]]))R.addColorStop(o,`rgba(${rgb},${a})`);x.fillStyle=R;x.fillRect(0,0,sz,sz);
+  const d=x.getImageData(0,0,sz,sz),p=d.data;for(let i=3;i<p.length;i+=4)if(p[i]>0&&p[i]<255)p[i]=Math.max(1,Math.min(254,p[i]+((hs(i,3)*3|0)-1)));x.putImageData(d,0,0);return c;}; // +-1 LSB dither
+ // round i: mist body = whiter #E4DCFF with a long soft tail (wider falloff); under-halo sprite keeps the tighter profile
+ const SOFT=[[0,1],[.14,.88],[.3,.62],[.46,.36],[.62,.17],[.78,.06],[.9,.015],[1,0]];
+ const TL=mkS(64,'228,220,255',SOFT),TW=mkS(64,'255,235,194',SOFT),TD=mkS(64,'11,7,32'),TM=mkS(16,'255,255,255');
+ const NZ=new Float32Array(256);for(let i=0;i<256;i++)NZ[i]=hs(i,41);const n1=x=>{const i=Math.floor(x),f=x-i,u=f*f*(3-2*f);return NZ[i&255]*(1-u)+NZ[(i+1)&255]*u;},nz=x=>.67*n1(x)+.33*n1(x*2.03+17.1);
+ const TS={tb:-1,ax:-1e9,ay:0,bx:0,by:0,flip:1,RL:new Float32Array(49),RX:new Float32Array(49),RY:new Float32Array(49),S:new Float32Array(4*200),N:0,x0:0,y0:0,w:0,h:0,sc:1,ok:false},OC=document.createElement('canvas'),ox=OC.getContext('2d');
+ const tdGeo=(o,W,tlT)=>{const m=o&&o._mw;if(!m||!m.ok||m.x<0||m.x>W||m.y<40||m.y>tlT)return null;if(typeof NOWL==='undefined'||NOWL.style.display==='none')return null;
+  const nr=NOWL.getBoundingClientRect();if(!nr.width)return null;const LK=o._LK||1,ri=16*LK,cx=m.x,cy=m.y,a=[cx>=(nr.left+nr.right)/2?nr.right:nr.left,(nr.top+nr.bottom)/2];
+  if(a[0]<0||a[0]>W||a[1]<0||a[1]>tlT)return null;let ux=a[0]-cx,uy=a[1]-cy;const L0=Math.hypot(ux,uy)||1;ux/=L0;uy/=L0;const b=[cx+ux*ri,cy+uy*ri],D=Math.hypot(b[0]-a[0],b[1]-a[1]);if(D<24)return null;
+  if(typeof cardOpen==='function'&&cardOpen()){const ck=document.getElementById('card'),cr=ck&&ck.getBoundingClientRect();if(cr&&cr.width&&(inR(a,cr,4)||inR(b,cr,4)))return null;}
+  return{o,a,b,c:[cx,cy],ri,LK,nr,q:null,D,k:[(a[0]+b[0])/2,(a[1]+b[1])/2]};};
+ const tdPen=(G,sg)=>{const mx=(G.a[0]+G.b[0])/2,my=(G.a[1]+G.b[1])/2+sg;let pen=0,tb=null;const H=B.hit||[];if(H.length){tb=[1e9,1e9,-1e9,-1e9];for(const h of H){tb[0]=Math.min(tb[0],h.x);tb[1]=Math.min(tb[1],h.y);tb[2]=Math.max(tb[2],h.x);tb[3]=Math.max(tb[3],h.y);}}
+  for(let i=1;i<10;i++){const t=i/10,u=1-t,px=u*u*G.a[0]+2*t*u*mx+t*t*G.b[0],py=u*u*G.a[1]+2*t*u*my+t*t*G.b[1];
+   if(tb&&px>tb[0]-4&&px<tb[2]+4&&py>tb[1]-4&&py<tb[3]+4)pen+=1;for(const s of O){if(s===G.o)continue;const m=s._mw;if(m&&m.ok&&Math.hypot(px-m.x,py-m.y)<30)pen+=1;}}return pen;};
+ // round i tunables (live-editable for harness A/B: B4.TP.body=... then the next 30 Hz rebuild picks it up)
+ const TP=B.TP={uh:.24,uhP:.21,uhR:1.5,uhY:4,rm:24,reA:18,reB:28,rmP:15,reAP:11,reBP:18,body:.55,a0:1,bA:.06,bodyB:.25,wv:.38,dn:.5,fil:0,filB:.06,lg:.18,lgB:.18,lgR:1.2,ih:.14,ihB:.20,ihR:2.9,n0:.5,nL:.45};
+ const tdBuild=(G,now)=>{const PHh=PH,Bv=bvAt(now),Bi=B.bvFix!=null?B.bvFix:RMOT?brF(now-.45):.6,S=Math.min(window.devicePixelRatio||1,1.5),D=G.D;
+  const sg0=Math.max(PHh?8:12,Math.min(PHh?18:34,.1*D));if(TS.tb<0||Math.abs(G.a[0]-TS.ax)+Math.abs(G.b[0]-TS.bx)>2){const p1=tdPen(G,2*sg0),p2=tdPen(G,-2*sg0);TS.flip=TS.flip>0?(p1>0&&p2<p1?-1:1):(p2>0&&p1<p2?1:-1);}
+  const sag=TS.flip*sg0*(1-.15*Bv),lift=RMOT?-3.5*Bv:-2,mx=(G.a[0]+G.b[0])/2,my=(G.a[1]+G.b[1])/2+2*sag; // control at 2x sag = midpoint drops by 'sag'
+  const RL=TS.RL,RX=TS.RX,RY=TS.RY;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(let i=0;i<=48;i++){const t=i/48,u=1-t,x=u*u*G.a[0]+2*t*u*mx+t*t*G.b[0],y=u*u*G.a[1]+2*t*u*my+t*t*G.b[1]+lift*Math.sqrt(Math.sin(Math.PI*t));RX[i]=x;RY[i]=y;
+   RL[i]=i?RL[i-1]+Math.hypot(x-RX[i-1],y-RY[i-1]):0;x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}
+  const r=G.nr,lR=r.height*TP.lgR,gx=r.left-lR*.7,gy=r.top+r.height/2-lR,gw=r.width+lR*1.4,gh=2*lR,ir=G.ri*TP.ihR; // label glow (rounded-rect halo) + icon halo boxes widen the layer
+  x0=Math.min(x0,gx,G.c[0]-ir);y0=Math.min(y0,gy,G.c[1]-ir);x1=Math.max(x1,gx+gw,G.c[0]+ir);y1=Math.max(y1,gy+gh,G.c[1]+ir);
+  const Lc=RL[48],rm=PHh?TP.rmP:TP.rm,reA=PHh?TP.reAP:TP.reA,reB=PHh?TP.reBP:TP.reB,rad=s=>rm+((s<.5?reA:reB)-rm)*sst(.22,0,Math.min(s,1-s));let N=0,j=1,s=0; // pinched where it leaves the label, gently flared into the icon halo
+  while(s<=Lc&&N<200){while(j<48&&RL[j]<s)j++;const f=(s-RL[j-1])/((RL[j]-RL[j-1])||1);TS.S[4*N]=RX[j-1]+(RX[j]-RX[j-1])*f;TS.S[4*N+1]=RY[j-1]+(RY[j]-RY[j-1])*f;TS.S[4*N+2]=s/Lc;N++;s+=.42*rad(s/Lc);}
+  const M=56;x0=Math.floor(x0-M);y0=Math.floor(y0-M);const w=Math.ceil(x1+M)-x0,h=Math.ceil(y1+M)-y0;if(OC.width<w*S)OC.width=Math.ceil(w*S);if(OC.height<h*S)OC.height=Math.ceil(h*S); // grow-only
+  ox.setTransform(1,0,0,1,0,0);ox.globalCompositeOperation='source-over';ox.globalAlpha=1;ox.clearRect(0,0,Math.ceil(w*S)+1,Math.ceil(h*S)+1);ox.setTransform(S,0,0,S,-x0*S,-y0*S);
+  ox.save();ox.beginPath();ox.rect(x0,y0,w,h);ox.rect(r.left,r.top,r.width,r.height);ox.moveTo(G.c[0]+G.ri,G.c[1]);ox.arc(G.c[0],G.c[1],G.ri,0,6.2832);ox.clip('evenodd');
+  const nxv=-(G.b[1]-G.a[1])/D,nyv=(G.b[0]-G.a[0])/D,tc=RMOT&&B.bvFix==null?((now%TBR)-2.4)/2.6:-1,ce=tc>=0&&tc<=1?tc*tc*(3-2*tc):-9,cw=tc>=0&&tc<=1?Math.sqrt(Math.sin(Math.PI*tc)):0;
+  const v1=PHh?10:18,v2=PHh?17:31,l1=PHh?35:55,l2=PHh?55:90,wd=PHh?2:3,tt=RMOT?now:0,bw=(1-TP.bodyB/2)+TP.bodyB*Bv; // bw = breathing width (inhale wide, exhale narrow)
+  for(let i=0;i<N;i++){const s1=TS.S[4*i+2],sL=s1*Lc,dn=(1-TP.dn)+TP.dn*nz((sL-tt*v1)/l1)*nz((sL-tt*v2)/l2+40),lat=wd*(2*nz(sL/45-tt*.35+9)-1);
+   TS.S[4*i]+=nxv*lat;TS.S[4*i+1]+=nyv*lat;TS.S[4*i+3]=dn;}
+  // per-stamp width: flared ends x breathing x slow travelling swell (visible width variation along the strand)
+  const RW=i=>{const s1=TS.S[4*i+2];return rad(s1)*bw*((1-TP.wv/2)+TP.wv*nz(s1*Lc/70-tt*.12+3));};
+  // 1 dark under-halo (source-over, every 2nd stamp) - round i: composite ~.30-.38 at the strand centre (B4.lsInfo().uh)
+  for(let i=0;i<N;i+=2){const R=RW(i)*TP.uhR;ox.globalAlpha=PHh?TP.uhP:TP.uh;ox.drawImage(TD,TS.S[4*i]-R,TS.S[4*i+1]-R+TP.uhY*(PHh?.6:1),2*R,2*R);} // offset a few px DOWN = soft drop shadow -> strand floats
+  if(B.tdProbe){const q=24,px=Math.round((RX[q]-x0)*S),py=Math.round((RY[q]-y0)*S);try{TS.uh=+(ox.getImageData(px,py,1,1).data[3]/255).toFixed(3);}catch(e){}}
+  ox.globalCompositeOperation='lighter';
+  // 2 label glow: rounded-rect halo = soft stamps along the NOW pill's centre line (clip keeps it outside the box), in phase with the tether
+  {const nL=Math.max(3,Math.ceil(r.width/(.4*r.height))),cy=r.top+r.height/2,R=lR*(.9+.2*Bv);ox.globalAlpha=Math.min(1,TP.lg+TP.lgB*Bv);
+   for(let i=0;i<=nL;i++){const x=r.left+r.width*i/nL;ox.drawImage(TL,x-R,cy-R,2*R,2*R);}}
+  // 2b icon halo around the leading icon's ring, on the LEADFX clock (.45 s lag), so the ring breath reads clearly
+  ox.globalAlpha=Math.min(1,TP.ih+TP.ihB*Bi);ox.drawImage(TL,G.c[0]-ir,G.c[1]-ir,2*ir,2*ir);
+  // 3 mist body (+ warm crest stamps)
+  for(let i=0;i<N;i++){const s1=TS.S[4*i+2],x=TS.S[4*i],y=TS.S[4*i+1],dn=TS.S[4*i+3],cr=cw*Math.exp(-(((s1-ce)/.16)**2)),fl=sst(.22,0,Math.min(s1,1-s1)),R=RW(i)*(1+.25*cr);
+   const nr=TP.n0+(1-TP.n0)*Math.min(1,s1/TP.nL); // owner 11-19: dimmer near NOW, full strength from nL along
+   const a=TP.body*dn*nr*(TP.a0+TP.bA*Bv)*(1+(s1<.5?0:.1)*fl)*(RMOT?1:(.20+.16*s1)/.28);ox.globalAlpha=Math.min(1,a);ox.drawImage(TL,x-R,y-R,2*R,2*R);
+   if(cr>.05){ox.globalAlpha=Math.min(1,a*.6*cr*1.6);ox.drawImage(TW,x-R,y-R,2*R,2*R);}}
+  // 4 one faint wandering hairline filament (round i: alpha .12-.18, 1 px; TP.fil = 0 drops it)
+  if(TP.fil>0){const FS=PHh?16:24,fw=PHh?1.5:2.5;ox.beginPath();for(let i=0;i<=FS;i++){const q=Math.min(48,Math.round(i/FS*48)),t=i/FS,ww=fw*(2*nz(i*.35+tt*.22+5)-1)*Math.sqrt(Math.sin(Math.PI*t)),x=RX[q]+nxv*ww,y=RY[q]+nyv*ww;i?ox.lineTo(x,y):ox.moveTo(x,y);}
+   ox.lineWidth=1;ox.lineCap='round';ox.lineJoin='round';ox.strokeStyle='#F6F1FF';ox.globalAlpha=TP.fil+TP.filB*Bv;ox.stroke();}
+  // 5 motes (none under reduced motion): +-30 % speed, noise lateral offset, sine life-alpha
+  let nd=0;if(RMOT){const NM=PHh?8:16;for(let i=0;i<NM;i++){const h1=hs(i,5),v=(v1/Lc)*(1+.3*(2*hs(i,6)-1)),s1=(hs(i,4)+now*v)%1,q=Math.min(48,Math.round(s1*48)),lat=10*(2*nz(i*3.1+now*.3)-1),
+    life=Math.sin(Math.PI*((now*(.12+.08*h1)+hs(i,7))%1)),d=(PHh?1+.5*hs(i,8):1.2+.6*hs(i,8))*1.6,a=(.18+.3*hs(i,9))*life;if(a<.02)continue;ox.globalAlpha=a;ox.drawImage(TM,RX[q]+nxv*lat-d,RY[q]+nyv*lat-d,2*d,2*d);nd++;}}
+  ox.restore();ox.globalCompositeOperation='source-over';ox.globalAlpha=1;
+  Object.assign(TS,{tb:now,ax:G.a[0],ay:G.a[1],bx:G.b[0],by:G.b[1],N,x0,y0,w,h,sc:S,ok:true,nd,Bv,mid:[+RX[24].toFixed(1),+RY[24].toFixed(1)]});};
+ const tdDraw=(g,W,H,tlT)=>{const T0=performance.now(),now=T0/1000,dt=Math.min(.1,LS.tl?now-LS.tl:0);LS.tl=now;B.ld=null;LS.vis=false;
+  if(typeof LEAD==='undefined'||!LEAD||!LEAD.o||!TER_BUILT||view!=='world'||document.hidden){LS.G=null;nlGlow(0,0);return;}const id=LEAD.o.id;
+  if(LS.id!==id){LS.f=Math.max(0,LS.f-dt*2.2);if(LS.f<=.02||LS.id==null){LS.id=id;LS.f=0;TS.tb=-1;}}else LS.f=Math.min(1,LS.f+dt*2.2);
+  const o=byId[LS.id]||LEAD.o,G=tdGeo(o,W,tlT);LS.G=G;if(!G){nlGlow(0,0);return;}const sg=TS.flip*Math.max(PH?8:12,Math.min(PH?18:34,.1*G.D));G.k=[G.k[0],G.k[1]+2*sg];
+  const P=[];for(let i=0;i<=28;i++){const p=qb(G,i/28);P.push([p[0],p[1],true]);}B.ld={id:LEAD.o.id,n:LEAD.o.n,c:LEAD.c,X:LEAD.o.X,Z:LEAD.o.Z,P};const al=LS.f;if(al<.01||B.lsOff){nlGlow(0,0);return;}LS.vis=true;
+  const mv=Math.abs(G.a[0]-TS.ax)+Math.abs(G.a[1]-TS.ay)+Math.abs(G.b[0]-TS.bx)+Math.abs(G.b[1]-TS.by)>.5;let rb=0;if(mv||!TS.ok||((RMOT||B.bvFix!=null)&&now-TS.tb>=1/30)){tdBuild(G,now);rb=1;}
+  const Bv=bvAt(now);nlGlow(al*Bv,al);g.save();g.globalCompositeOperation='source-over';g.globalAlpha=al;g.drawImage(OC,0,0,TS.w*TS.sc,TS.h*TS.sc,TS.x0,TS.y0,TS.w,TS.h);g.restore();
+  LS.np=TS.N;LS.nd=TS.nd||0;LS.rc=TS.flip;LS.rs=rb;LS.ms.push(performance.now()-T0);if(LS.ms.length>120)LS.ms.shift();};
  B.lsInfo=()=>{const G=LS.G,ms=LS.ms.slice().sort((a,b)=>a-b),r1=v=>+v.toFixed(1);let dA=null,dB=null;
   if(G){const nr=NOWL.getBoundingClientRect(),ce=NOWL.querySelector('.b4cr'),q=ce&&ce.getBoundingClientRect();dA=r1(Math.min(eDist(G.a,nr),eDist(G.a,q)));dB=r1(Math.abs(Math.hypot(G.b[0]-G.c[0],G.b[1]-G.c[1])-G.ri));}
   return{id:LS.id,lead:LEAD&&LEAD.o&&LEAD.o.id,f:+LS.f.toFixed(2),vis:LS.vis,a:G&&G.a.map(r1),b:G&&G.b.map(r1),icon:G&&[r1(G.c[0]),r1(G.c[1]),r1(G.ri)],dA,dB,mode:typeof NOWL!=='undefined'&&NOWL._m,
-   nd:LS.nd||0,ms:ms.length?{avg:+(ms.reduce((s,v)=>s+v,0)/ms.length).toFixed(3),p95:+ms[Math.floor(ms.length*.95)].toFixed(3),n:ms.length}:null,wk:BFR.weeks[Math.max(0,NOWM.idx)]};};
+   nd:LS.nd||0,np:LS.np||0,rc:LS.rc,rs:LS.rs,bs:LS.bs?1:0,mid:TS.mid,uh:TS.uh,ms:ms.length?{avg:+(ms.reduce((s,v)=>s+v,0)/ms.length).toFixed(3),p95:+ms[Math.floor(ms.length*.95)].toFixed(3),n:ms.length}:null,wk:BFR.weeks[Math.max(0,NOWM.idx)]};};
  const dSeg=(x,y,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],l=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/l));return Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy);};
  B.ldHit=(x,y,R)=>{const L=B.ld;if(!L)return false;const P=L.P;if(P[0][2]&&Math.hypot(x-P[0][0],y-P[0][1])<R+6)return true;for(let i=1;i<P.length;i++)if(P[i][2]&&P[i-1][2]&&dSeg(x,y,P[i-1],P[i])<R)return true;return false;};
  B.ldTxt=()=>B.ld?`<div class="h">Leading: ${escH(B.ld.n)} ${B.ld.c.toFixed(0)}%</div>`:'';
