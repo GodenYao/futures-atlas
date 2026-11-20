@@ -42,15 +42,14 @@
       "indicator": "I-R1-05",
       "kind": "data-series",
       "published": "2025-05-01",
-      "summary": "Q1 2025 combined purchases of property and equipment of the four largest spenders: ~$71.9B, roughly flat vs Q4 2024 but +62% year on year.",
-      "detail": "Microsoft 16.7 (FY25Q3), Alphabet 17.2, Amazon 25.0, Meta 12.9 ($B), from 10-Q cash-flow statements (compiled by ai-industry-reviews.com / coolpowerindex.com from SEC XBRL). Filing dates late Apr-early May 2025 (approximate).",
+      "summary": "Q1 2025 combined purchases of property and equipment of the four largest spenders: ~$71.9B, roughly flat vs Q4 2024 (~$72.3B) but +62% year on year.",
+      "detail": "Purchases of property and equipment, three months (Microsoft: additions to property and equipment), $B: Microsoft 16.7, Alphabet 17.2, Amazon 25.0, Meta 12.9; total 71.9 (year earlier 44.3). Read from each company's quarterly earnings release (investor-relations copy; same cash-flow line as the 10-Q): https://investor.atmeta.com/investor-news/press-release-details/2025/Meta-Reports-First-Quarter-2025-Results/default.aspx, https://ir.aboutamazon.com/news-release/news-release-details/2025/Amazon-com-Announces-First-Quarter-Results/default.aspx, https://s206.q4cdn.com/479360582/files/doc_financials/2025/q1/2025q1-alphabet-earnings-release.pdf, https://www.microsoft.com/en-us/investor/earnings/FY-2025-Q3/cash-flows. Combined value public on 2025-05-01 (last of the four releases). Q4 2024 (same releases a quarter earlier): Microsoft 15.8, Alphabet 14.3, Amazon 27.8, Meta 14.4 = 72.3 (-0.6% q/q).",
       "value": "$71.9B (Q1 2025, 4 firms)",
       "direction": "toward YES",
-      "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
-      "source_tier": 3,
+      "source_url": "https://ir.aboutamazon.com/news-release/news-release-details/2025/Amazon-com-Announces-First-Quarter-Results/default.aspx",
+      "source_tier": 2,
       "confidence": "med",
-      "backfilled": true,
-      "hold": true
+      "backfilled": true
     },
     {
       "id": "BF-2025-I-R1-05-004",
@@ -58,14 +57,13 @@
       "kind": "data-series",
       "published": "2025-07-31",
       "summary": "Q2 2025 combined purchases of P&E of the four: ~$88.2B (+67% y/y); one firm raised full-year guidance to ~$85B.",
-      "detail": "Microsoft 17.1, Alphabet 22.4, Amazon 32.2, Meta 16.5 ($B). Alphabet raised 2025 guidance from $75B to $85B in July. Same compiled SEC-filing source; dates approximate.",
+      "detail": "Purchases of property and equipment, three months (Microsoft: additions to property and equipment), $B: Microsoft 17.1, Alphabet 22.4, Amazon 32.2, Meta 16.5; total 88.2 (year earlier 52.9). Read from each company's quarterly earnings release (investor-relations copy; same cash-flow line as the 10-Q): https://investor.atmeta.com/investor-news/press-release-details/2025/Meta-Reports-Second-Quarter-2025-Results/default.aspx, https://ir.aboutamazon.com/news-release/news-release-details/2025/Amazon-com-Announces-Second-Quarter-Results/default.aspx, https://s206.q4cdn.com/479360582/files/doc_financials/2025/q2/2025q2-alphabet-earnings-release.pdf, https://www.microsoft.com/en-us/investor/earnings/FY-2025-Q4/cash-flows. Combined value public on 2025-07-31 (last of the four releases). Alphabet Q2 2025 release (2025-07-23): \"we are increasing our investment in capital expenditures in 2025 to approximately $85 billion\"; earnings call the same day: \"up from a previous estimate of $75 billion\".",
       "value": "$88.2B (Q2 2025, 4 firms)",
       "direction": "toward YES",
-      "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
-      "source_tier": 3,
+      "source_url": "https://ir.aboutamazon.com/news-release/news-release-details/2025/Amazon-com-Announces-Second-Quarter-Results/default.aspx",
+      "source_tier": 2,
       "confidence": "med",
-      "backfilled": true,
-      "hold": true
+      "backfilled": true
     },
     {
       "id": "BF-2025-I-R1-05-005",

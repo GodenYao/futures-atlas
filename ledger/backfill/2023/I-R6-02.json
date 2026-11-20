@@ -13,16 +13,15 @@
       "id": "BF-2023-I-R6-02-001",
       "indicator": "I-R6-02",
       "kind": "data-series",
-      "published": "2023-10-27",
-      "summary": "Combined quarterly capex (purchases of property and equipment) of the four largest cloud/AI spenders was lower than a year earlier in three consecutive quarters of 2023: about $33.9 bn vs $35.5 bn (Q1), $33.4 bn vs $37.0 bn (Q2) and $36.9 bn vs $39.3 bn (Q3).",
-      "detail": "Figures summed from Alphabet, Amazon, Meta and Microsoft 10-Q/10-K cash-flow lines (SEC XBRL), as compiled by ChartedFacts 'Capital expenditure of Microsoft, Alphabet, Amazon and Meta by quarter' (verified via web_extract this run). The compilation is a later (2026) presentation using latest-filed values; the underlying 2023 Q3 10-Qs were all filed by 2023-10-27 (published date set to the last Q3 filing day, approximate). Fifth-largest spender not included. Not within the 2026-2028 resolution window: base-rate evidence.",
-      "value": "Q1 -4.5%, Q2 -9.7%, Q3 -6.1% y/y (4-firm combined)",
+      "published": "2023-10-26",
+      "summary": "Combined quarterly capex (purchases of property and equipment) of the four largest cloud/AI spenders was lower than a year earlier in three consecutive quarters of 2023: about $33.9 bn vs $35.5 bn (Q1), $33.5 bn vs $37.0 bn (Q2) and $37.0 bn vs $39.3 bn (Q3).",
+      "detail": "2023Q1: Microsoft 6.6/5.3, Alphabet 6.3/9.8, Amazon 14.2/15.0, Meta 6.8/5.4 ($B, 2023/2022). 2023Q2: Microsoft 8.9/6.9, Alphabet 6.9/6.8, Amazon 11.5/15.7, Meta 6.2/7.6 ($B, 2023/2022). 2023Q3: Microsoft 9.9/6.3, Alphabet 8.1/7.3, Amazon 12.5/16.4, Meta 6.5/9.4 ($B, 2023/2022). Read from each company's quarterly earnings release (investor-relations copies; same cash-flow line as the 10-Qs), current-year and prior-year columns of the same release. Dated at the last Q3 2023 release (2023-10-26), when the three-quarter pattern became observable; kept as one item. Fifth-largest spender not included. Not within the 2026-2028 resolution window: base-rate evidence.",
+      "value": "Q1 -4.4%, Q2 -9.4%, Q3 -5.9% y/y (4-firm combined)",
       "direction": "toward YES",
-      "source_url": "https://chartedfacts.com/charts/big-tech-capex-by-quarter",
+      "source_url": "https://ir.aboutamazon.com/news-release/news-release-details/2023/Amazon-com-Announces-Third-Quarter-Results/default.aspx",
       "source_tier": 2,
-      "confidence": "med",
-      "backfilled": true,
-      "hold": true
+      "confidence": "low",
+      "backfilled": true
     },
     {
       "id": "BF-2023-I-R6-02-002",

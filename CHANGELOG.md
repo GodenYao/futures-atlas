@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-20 — evidence corrections (capex items re-sourced, method 4.5.0 unchanged)
+- Seven quarterly capex items that were on `hold` (2023 Q1-Q3, 2025 Q1-Q2, 2026 Q1-Q2; four-firm totals) were re-read from the companies' own quarterly earnings releases (investor-relations copies, same cash-flow line as the 10-Q) and now count again. They replace third-party compilations and a blog published after the items' dates.
+- Corrections from the re-read: 2023 y/y changes -4.4 / -9.4 / -5.9 % (were -4.5 / -9.7 / -6.1 %), dates moved to the last of the four releases (2023-10-26, 2026-04-29, 2026-07-30), source tier 2 (company releases), the 2023 item marked low confidence, one unverifiable guidance clause dropped, and the two 2025 Road-6 copies marked `duplicate_of` their Road-1 counterparts.
+- Effect on week 2026-W46 (Pooled): none at two decimals (Enslaved God 17.99 %, Conquerors 17.39 %).
+
 ## 2026-11-20 — method 4.5.0 (backfill phases 2022-11..2025 approved; replay from 2022-11-30)
 - The four remaining history phases (2022-11, 2023, 2024, 2025; 107 + 113 + 154 + 212 items) passed review (auto-review, maintainer rulings, source re-reads) and now count, each item in the week of its own published date. All five phases are in `ledger/backfill/` (the three missing 2025 files added).
 - The replay starts in the week of 2022-11-30 (2022-W48) instead of 2026-W01: `approved_2022-11.json` sets `history_from`, which the engine uses as the first week (207 weekly snapshots).
