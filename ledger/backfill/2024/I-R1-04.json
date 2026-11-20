@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R1-04",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "No agreement between the two leading compute jurisdictions sets verifiable limits on training compute or capabilities (official readouts, treaty texts; by 2028-06-30)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Condition held throughout 2024. 2024 was the high point of bilateral AI engagement so far: the first intergovernmental AI dialogue (Geneva, May), two UN General Assembly AI resolutions each backed by both blocs (March, July), and a leaders' affirmation (Lima, Nov) that humans, not AI, should control nuclear-use decisions. None of these set limits on training compute or capabilities, and none had verification. Multilateral safety commitments (Bloc H, May) were voluntary and company-level; a regional AI treaty (Sept) was signed by Bloc A but not Bloc B and contains no compute limits.",
+  "items": [
+    {
+      "id": "BF-2024-I-R1-04-001",
+      "indicator": "I-R1-04",
+      "kind": "treaty-law",
+      "published": "2024-03-21",
+      "summary": "The UN General Assembly adopted by consensus a Bloc A-led, non-binding resolution on 'safe, secure and trustworthy' AI for sustainable development, co-sponsored by Bloc B. No compute or capability limits; no verification.",
+      "detail": "UNGA resolution A/RES/78/265, adopted 2024-03-21 (Bloc A-led, >120 co-sponsors including Bloc B). Not verified via web_extract this run.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://digitallibrary.un.org/record/4043244",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-04-002",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2024-05-15",
+      "summary": "The two leading compute jurisdictions held their first intergovernmental dialogue on AI risk and safety; both readouts describe an exchange of views only. Bloc A raised misuse concerns; Bloc B protested Bloc A's AI-related restrictions. No agreement, no follow-on limits.",
+      "detail": "Bloc A-Bloc B talks on AI risk and safety, Geneva, 2024-05-14. NSC statement (Bloc A Mission Geneva, 2024-05-15) and gov.cn/CGTN readout (2024-05-16), verified via search snippets.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://geneva.usmission.gov/2024/05/15/statement-from-nsc-spokesperson-adrienne-watson-on-the-us-prc-talks-on-ai-risk-and-safety/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-04-003",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2024-05-21",
+      "summary": "At a multilateral AI summit, 16 developers including a Bloc B firm signed voluntary frontier-safety commitments (publish risk thresholds, possibly not deploy beyond them). Company-level and self-defined; not an intergovernmental limit.",
+      "detail": "AI Bloc H Summit, 2024-05-21/22: 'Frontier AI Safety Commitments' (Bloc G DSIT), signatories incl. Zhipu AI. Not verified via web_extract this run.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gov.uk/government/publications/frontier-ai-safety-commitments-ai-seoul-summit-2024",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-04-004",
+      "indicator": "I-R1-04",
+      "kind": "treaty-law",
+      "published": "2024-07-01",
+      "summary": "The UN General Assembly adopted by consensus a Bloc B-led resolution on international cooperation for AI capacity-building, supported by Bloc A. Development-focused; no limits.",
+      "detail": "UNGA resolution A/RES/78/311 'Enhancing international cooperation on capacity-building of artificial intelligence', adopted 2024-07-01. Not verified via web_extract this run.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://press.un.org/en/2024/ga12612.doc.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-04-005",
+      "indicator": "I-R1-04",
+      "kind": "treaty-law",
+      "published": "2024-09-05",
+      "summary": "The first binding international AI treaty (human rights, democracy, rule of law) opened for signature and was signed by Bloc A and others, but not Bloc B; it regulates use-risk management and contains no compute or capability limits.",
+      "detail": "Council of Europe Framework Convention on AI (CETS No. 225), opened for signature in Vilnius 2024-09-05; signed by Bloc A, Bloc G, Bloc C, others. Not verified via web_extract this run.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.coe.int/en/web/artificial-intelligence/the-framework-convention-on-artificial-intelligence",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-04-006",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2024-11-16",
+      "summary": "Leaders of the two blocs affirmed the need to maintain human control over decisions to use nuclear weapons and to develop military AI 'prudently' - the first bilateral AI-related commitment, but a political statement with no capability limits or verification.",
+      "detail": "White House readout of the Biden-Xi meeting, Lima, 2024-11-16 (Bloc A Embassy Lima copy, verified via snippet); Reuters 2024-11-16.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://pe.usembassy.gov/readout-of-president-joe-bidens-meeting-with-president-xi-jinping-of-the-peoples-republic-of-china/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

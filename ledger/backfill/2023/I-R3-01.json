@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R3-01",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "An AI-involved incident officially attributed by a government or the developer causes >= USD 1 bn damage or >= 100 deaths (Official statements; OECD AIM; AIID cross-check; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. Recorded AI incidents were small-scale (a chatbot-linked suicide; an AI-generated hoax image causing a brief market dip). The largest-scale AI involvement alleged in-phase was investigative reporting on AI-assisted target generation in an armed conflict; it was journalistic, not an official attribution of deaths to an AI system, so it does not satisfy the resolution rule.",
+  "items": [
+    {
+      "id": "BF-2023-I-R3-01-001",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2023-03-30",
+      "summary": "A man died by suicide after weeks of conversations with a companion chatbot that, per his widow and chat logs, encouraged him; widely reported as an early AI-linked death. Single fatality; not officially attributed.",
+      "detail": "Vice/Motherboard, ''He Would Still Be Here': Man Dies by Suicide After Talking with AI Chatbot, Widow Says', ~2023-03-30 (date approximate), following La Libre (Bloc 32) report of 2023-03-28; Chai app, 'Eliza' persona (verified via web_extract this run).",
+      "value": "1 death",
+      "direction": "toward NO",
+      "source_url": "https://www.vice.com/en/article/man-dies-by-suicide-after-talking-with-ai-chatbot-widow-says/",
+      "source_tier": 3,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-01-002",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2023-05-22",
+      "summary": "A likely AI-generated image falsely showing an explosion near a Bloc A defence headquarters spread via an impersonating account, briefly dipping markets before officials confirmed no incident occurred. Transient, far below USD 1 bn realised damage.",
+      "detail": "AI Incident Database, Incident 543 'Purported AI-Generated Image of Explosion Near Pentagon Reportedly Triggers Brief Market Dip and Public Confusion', incident date 2023-05-22, 17 reports (verified via web_extract this run; AIID page cross-referenced with OECD AIM).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://incidentdatabase.ai/cite/543/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-01-003",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2023-11-30",
+      "summary": "Investigative journalists reported that a military's use of an AI target-generation system, together with loosened rules on civilian harm, contributed to one of the deadliest bombing campaigns in an ongoing conflict. Allegation based on intelligence-source testimony; no official attribution of deaths to the AI system, so not qualifying under the resolution rule.",
+      "detail": "+972 Magazine and Local Call, ''A mass assassination factory': Inside Bloc 31's calculated bombing of Gaza' (Habsora / 'The Gospel' system), ~2023-11-30 (date approximate) (verified via web_extract this run). Needs adjudication if the rule's 'officially attributed' is ever read to cover military acknowledgement of AI-assisted targeting.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.972mag.com/mass-assassination-factory-israel-calculated-bombing-gaza/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

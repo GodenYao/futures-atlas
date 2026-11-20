@@ -1,0 +1,97 @@
+{
+  "indicator": "I-N-01",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": ">= 15 distinct organisations have a training run >= 1e26 FLOP (Epoch AI, snapshot 2027-12-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Count at end-2024 = 0 on public estimates. The largest known runs were ~4-5e25 FLOP (Gemini 1.0 Ultra ~5e25; Llama 3.1-405B 3.8e25, largest open-weight). A Bloc A regulator's draft reporting rule (Sept 2024) said its 1e26 threshold 'exceeds all or virtually all models in use' and that 0-15 domestic firms exceeded its model or cluster thresholds. 100k-GPU clusters able to run 1e26-scale training came online in H2 2024 but no such run was public by year-end. Compute tracker trend: 4-5x/year growth; 2e29 FLOP feasible by 2030.",
+  "items": [
+    {
+      "id": "BF-2024-I-N-01-001",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2024-05-28",
+      "summary": "Compute tracker: training compute of notable and frontier models grew 4-5x per year (2010-May 2024); the largest known runs were ~2e25 and ~5e25 FLOP, i.e. no run yet at 1e26. Organisation count 0.",
+      "detail": "Epoch AI, Sevilla & Roldán, 'Training compute of frontier AI models grows by 4-5x per year', 2024-05-28 (verified via search snippet): GPT-4 2e25, Gemini Ultra 5e25 FLOP.",
+      "value": "max ~5e25 FLOP; 0 organisations",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-N-01-002",
+      "indicator": "I-N-01",
+      "kind": "event",
+      "published": "2024-07-23",
+      "summary": "A Bloc A platform company released the largest open-weight model to date, trained with ~3.8e25 FLOP (about 2.6x below 1e26).",
+      "detail": "Meta Llama 3.1-405B, released 2024-07-23; 'The Llama 3 Herd of Models' reports 3.8e25 FLOP on up to 16k H100s. Value well known; paper not re-extracted this run. arXiv v1 dated 2024-07-31.",
+      "value": "3.8e25 FLOP",
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2407.21783",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-N-01-003",
+      "indicator": "I-N-01",
+      "kind": "forecast",
+      "published": "2024-08-20",
+      "summary": "Compute tracker analysis: on power, chip, data and latency constraints, training runs of ~2e29 FLOP will likely be feasible by 2030; the largest runs to date were of order 5e25 FLOP. Implies many 1e26+ runs within a few years if the trend continues, though not how many organisations.",
+      "detail": "Epoch AI, 'Can AI scaling continue through 2030?', August 2024 (verified via search; Epoch thread dated ~2024-08-20).",
+      "value": "2e29 FLOP feasible by 2030",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/publications/can-ai-scaling-continue-through-2030",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-N-01-004",
+      "indicator": "I-N-01",
+      "kind": "event",
+      "published": "2024-10-28",
+      "summary": "A Bloc A developer announced a 100,000-GPU training cluster brought online in ~4 months, with plans to double it; such a cluster can in principle run a 1e26 FLOP training within a few months.",
+      "detail": "xAI 'Colossus' (Memphis, 100k H100), announced by Elon Musk on X ~2024-09-02/03. Verified via web_extract against the NVIDIA press release 'NVIDIA Ethernet Networking Accelerates World's Largest AI Supercomputer, Built by xAI' (2024-10-28): 100,000 Hopper GPUs, built in 122 days, being doubled to 200,000; feasibility note is our arithmetic (1e5 x ~1e15 FLOP/s x 40% x 30 days ~ 1e26).",
+      "value": "100k GPUs",
+      "direction": "toward YES",
+      "source_url": "https://nvidianews.nvidia.com/news/spectrum-x-ethernet-networking-xai-colossus",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-N-01-005",
+      "indicator": "I-N-01",
+      "kind": "treaty-law",
+      "published": "2024-09-11",
+      "summary": "A Bloc A regulator proposed quarterly reporting for training runs above 1e26 operations and clusters above 1e20 OP/s; it assessed that 0-15 domestic companies exceeded its model or cluster thresholds and that the 1e26 threshold 'exceeds all or virtually all models in use'.",
+      "detail": "Bloc A BIS proposed rule 'Establishment of Reporting Requirements for the Development of Advanced AI Models and Computing Clusters', 89 FR (2024-09-11; announced 2024-09-09), verified via Federal Register snippet. Implements EO 14110 s.4.2.",
+      "value": "0-15 firms above model/cluster thresholds",
+      "direction": "neutral",
+      "source_url": "https://www.federalregister.gov/documents/2024/09/11/2024-20529/establishment-of-reporting-requirements-for-the-development-of-advanced-artificial-intelligence",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-N-01-006",
+      "indicator": "I-N-01",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No public compute estimate at or above 1e26 FLOP existed by end-2024, but several late-2024 flagships had undisclosed compute, so the count of 0 is a floor based on public estimates.",
+      "detail": "E.g. OpenAI o1 (2024-12-05), Gemini 2.0 (2024-12-11) had no disclosed compute. Epoch's later database entries are not used here (strict as-of).",
+      "value": "0 organisations (floor)",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/data/large-scale-ai-models",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

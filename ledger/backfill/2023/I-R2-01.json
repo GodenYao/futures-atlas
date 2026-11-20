@@ -1,0 +1,41 @@
+{
+  "indicator": "I-R2-01",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Relative employment index of ages 22-25 in the most AI-exposed occupation quintile falls >= 5 pts from its 2026 level (Stanford Digital Economy Lab 'Canaries' series; last 2027 release)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Series did not exist in 2023 (the Canaries index was first published in 2025). In-phase, the occupational AI-exposure measures that later underpin such quintiles were first published (Mar 2023), but no age-by-exposure employment index was available.",
+  "items": [
+    {
+      "id": "BF-2023-I-R2-01-001",
+      "indicator": "I-R2-01",
+      "kind": "data-gap",
+      "published": "2023-12-31",
+      "summary": "No age-by-AI-exposure employment index existed during 2023; the indicator's source series begins later.",
+      "detail": "Stanford Digital Economy Lab 'Canaries in the Coal Mine' series first released in 2025 (outside phase). Data-gap recorded as of phase end. Context source below is the in-phase exposure measure.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2303.10130",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R2-01-002",
+      "indicator": "I-R2-01",
+      "kind": "event",
+      "published": "2023-03-17",
+      "summary": "A working paper by a frontier developer's researchers and academics published occupation-level exposure scores to large language models, an early look at labour-market impact potential (exposure, not observed employment change).",
+      "detail": "Eloundou, Manning, Mishkin, Rock, 'GPTs are GPTs: An Early Look at the Labor Market Impact Potential of Large Language Models', arXiv:2303.10130, v1 2023-03-17, v5 2023-08-21 (verified via web_extract this run; abstract text not captured, so only title/dates relied on).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2303.10130",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

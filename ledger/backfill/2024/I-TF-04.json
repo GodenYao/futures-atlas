@@ -1,0 +1,69 @@
+{
+  "indicator": "I-TF-04",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "A top-3 compute jurisdiction legislates guaranteed public access to frontier AI, or an AI dividend or sovereign fund paid to citizens (official gazette, by 2028-12-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not met in 2024 and no bill pending. Bloc A launched a pilot shared compute/model resource for researchers and educators (not the general public, not statutory). Bloc B's government work report introduced an 'AI+' action focused on industrial adoption, with no access right or dividend. The main dividend-related evidence was a large privately funded unconditional-cash RCT (backed by a frontier-lab CEO) reporting results; a research input, not policy.",
+  "items": [
+    {
+      "id": "BF-2024-I-TF-04-001",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2024-01-24",
+      "summary": "Bloc A's science agency, with 10 other agencies and 25 private/non-profit partners, launched a pilot national AI research resource giving researchers and educators access to compute, datasets and models. Research access only, not a statutory public-access guarantee.",
+      "detail": "Bloc A NSF, 'Democratizing the future of AI R&D: NSF to launch National AI Research Resource pilot', 2024-01-24 (verified via search snippet). Pilot under EO 14110; the authorising CREATE AI Act was not passed in 2024.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.nsf.gov/news/democratizing-future-ai-rd-nsf-launch-national-ai-research",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-04-002",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2024-03-05",
+      "summary": "Bloc B's annual government work report first announced an 'AI+' action to deepen AI R&D and application and build a national integrated compute system. Industrial policy; no public-access right or citizen dividend.",
+      "detail": "Bloc B, 2024 Government Work Report (Premier Li Qiang, NPC 2024-03-05): '开展“人工智能+”行动' (gov.cn / Xinhua, verified via search snippet).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gov.cn/yaowen/liebiao/202403/content_6939153.htm",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-04-003",
+      "indicator": "I-TF-04",
+      "kind": "data-series",
+      "published": "2024-07-22",
+      "summary": "A privately funded randomised trial (3,000 low-income adults; $1,000/month for 3 years vs $50 control), backed by a frontier-lab chief executive, reported results: spending up ~$310/month, total non-transfer income down ~$1,900/year, labour participation down ~4 pp. Evidence input for AI-dividend debates, not policy.",
+      "detail": "OpenResearch Unconditional Income Study (Illinois and Texas, funded in part by Sam Altman); NBER Working Papers w32719 (Vivalt et al.) and w32784, July 2024. Release day approximate (results widely reported 2024-07-22).",
+      "value": "-2.0 pp",
+      "direction": "neutral",
+      "source_url": "https://nber.org/system/files/working_papers/w32719/w32719.pdf",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-04-004",
+      "indicator": "I-TF-04",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No bill to guarantee public access to frontier AI or create an AI dividend / sovereign fund paid to citizens was found in any top-3 compute jurisdiction during 2024.",
+      "detail": "Light search of Bloc A Congress, Bloc B NPC and Bloc C legislative records; none found. Not exhaustive.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.congress.gov/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

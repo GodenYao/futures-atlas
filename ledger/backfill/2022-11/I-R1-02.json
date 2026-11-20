@@ -1,0 +1,41 @@
+{
+  "indicator": "I-R1-02",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A government in a top-3 compute jurisdiction takes equity, a golden share or a formal priority-access security partnership with a top-5 frontier developer (Official gazette, securities filing or official release; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met at the timeline start: no equity, golden share or formal priority-access security partnership between a top-3 compute jurisdiction government and a top-5 frontier developer was found published in the window. A pre-window baseline shows Bloc B already used ~1% 'special management share' arrangements with data-rich platform firms, but not with frontier AI developers. No qualifying event found in the window (search result, not counted).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R1-02-001",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2021-12-16",
+      "summary": "Pre-window baseline (wire report, named-source anonymous): Bloc B's government had been expanding its practice of taking ~1% special-management ('golden') stakes, with board seats or veto rights, from online news/content firms to data-rich platform companies; none of the named firms was a frontier AI developer.",
+      "detail": "Reuters exclusive, 'Fretting about data security, Bloc B's government expands its use of golden shares', 2021-12-16 (verified via web_extract this run): Full Truck Alliance (via CAC-backed Bloc B Internet Investment Fund), ByteDance subsidiary, talks with Didi and Ximalaya. Mechanism-precedent only; does not satisfy the indicator.",
+      "value": "~1% stakes",
+      "direction": "neutral",
+      "source_url": "https://www.reuters.com/markets/deals/exclusive-fretting-about-data-security-chinas-government-expands-its-use-golden-2021-12-15/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-02-002",
+      "indicator": "I-R1-02",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No government equity stake, golden share or formal priority-access security partnership with a top-5 frontier developer was located as published between 2022-11-30 and 2022-12-31; the leading frontier developer launched its chat product in this window as a privately held company with a commercial cloud partner.",
+      "detail": "Searched this run for in-window gazette/filing/official releases; none found. Reference page opened: OpenAI 'Introducing ChatGPT' (2022-11-30, verified via web_extract; trained on Azure). Later Bloc B golden-share disclosures for large platform subsidiaries (January 2023) fall outside the window and are excluded under the as-of rule.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

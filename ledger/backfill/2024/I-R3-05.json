@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R3-05",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "A mandatory registry of large training clusters (or chip-location tracking) operates in >= 2 of the top-3 jurisdictions (official gazettes; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "0 of 3 operating at end-2024 under a strict reading; at most a partial 1 of 3. Bloc A collected cluster information through a one-off mandatory survey (Jan 2024) and proposed (not finalised) a standing quarterly reporting duty for clusters above 1e20 OP/s (Sept) and know-your-customer/reporting duties for cloud providers serving foreign AI training customers (Jan). Chip-location tracking existed only as a think-tank proposal. No Bloc B cluster registry or chip-tracking rule was found in this run (searched lightly).",
+  "items": [
+    {
+      "id": "BF-2024-I-R3-05-001",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2024-01-29",
+      "summary": "Bloc A proposed rules requiring cloud (IaaS) providers to verify foreign customers' identity and report when a foreign person trains a large AI model with potential malicious-cyber capabilities. A customer-reporting duty, not a cluster registry; proposed only.",
+      "detail": "Bloc A BIS NPRM, 89 FR 5698 (FR Doc. 2024-01580), comments due 2024-04-29; implements EO 13984 and EO 14110 s.4.2(c).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.federalregister.gov/documents/2024/01/29/2024-01580/taking-additional-steps-to-address-the-national-emergency-with-respect-to-significant-malicious-cyber-enabled-activities",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-05-002",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2024-09-11",
+      "summary": "Bloc A proposed a standing quarterly notification duty for anyone acquiring, developing or possessing large-scale computing clusters (>300 Gbit/s networking and >1e20 OP/s theoretical peak for AI training), building on a mandatory survey issued 2024-01-26. Closest thing to a cluster registry in 2024, but proposed, not operating.",
+      "detail": "Bloc A BIS proposed rule 89 FR 73612 (FR Doc. 2024-20529), 2024-09-11; definitions verified this run.",
+      "value": "1e20 OP/s cluster threshold",
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2024/09/11/2024-20529/establishment-of-reporting-requirements-for-the-development-of-advanced-artificial-intelligence-models-and-computing-clusters",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-05-003",
+      "indicator": "I-R3-05",
+      "kind": "forecast",
+      "published": "2024-01-08",
+      "summary": "A Bloc A policy think tank proposed 'on-chip governance mechanisms' (secure hardware features that could enforce or verify export-control policies on AI chips), citing chip smuggling. Policy proposal only; signals the chip-tracking idea entering mainstream debate.",
+      "detail": "CNAS, 'Secure, Governable Chips: Using On-Chip Mechanisms to Manage National Security Risks from AI & Advanced Computing', 2024-01-08.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.cnas.org/publications/reports/secure-governable-chips",
+      "source_tier": 3,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

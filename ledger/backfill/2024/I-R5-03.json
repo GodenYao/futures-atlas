@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R5-03",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": ">= 20% of announced >100 MW AI data-centre capacity is outside the two leading jurisdictions (Epoch data-centre tracker; IEA; 2027)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "No direct measurement in 2024: no public tracker of announced >100 MW AI data-centre capacity by jurisdiction existed (data-gap). Proxies: the IEA's first data-centre electricity analysis (Jan) and a Bloc A national-lab report (Dec) showing fast domestic growth (data centres ~4.4% of Bloc A electricity in 2023, 6.7-12% projected by 2028), consistent with heavy concentration in the two leading jurisdictions. The main sign of diffusion was Bloc A cloud capital entering a Gulf AI firm under an intergovernmental security assurance (Apr) - diffusion under Bloc A control rather than independent capacity.",
+  "items": [
+    {
+      "id": "BF-2024-I-R5-03-001",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2024-01-24",
+      "summary": "The IEA's annual electricity report included its first in-depth analysis of the data-centre sector's impact on electricity consumption, with forecasts to 2026. Global/regional consumption totals, not a breakdown of announced >100 MW AI sites.",
+      "detail": "IEA, 'Electricity 2024: Analysis and forecast to 2026', 2024-01-24 (CC BY 4.0). Report page verified; specific data-centre figures (e.g. 2022 baseline and 2026 range) not re-read this run, so not quoted.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/electricity-2024",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-03-002",
+      "indicator": "I-R5-03",
+      "kind": "event",
+      "published": "2024-04-15",
+      "summary": "A top-5 Bloc A cloud provider took a USD 1.5 bn minority stake in a Gulf AI company to deliver AI infrastructure across the Middle East, Central Asia and Africa, under a binding intergovernmental assurance agreement. Capacity outside the two leading jurisdictions, but tied to Bloc A security conditions.",
+      "detail": "Microsoft blog, 'Microsoft and G42 partner to accelerate AI innovation in Bloc K and beyond', 2024-04-15 (joint release dated 2024-04-16 in Bloc K).",
+      "value": "USD 1.5 bn",
+      "direction": "toward YES",
+      "source_url": "https://blogs.microsoft.com/blog/2024/04/15/microsoft-and-g42-partner-to-accelerate-ai-innovation-in-uae-and-beyond/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-03-003",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2024-12-20",
+      "summary": "A Bloc A national lab estimated domestic data centres used ~4.4% of national electricity in 2023 and projected 6.7-12% by 2028, with load growth tripled over the past decade and expected to double or triple by 2028. Signals concentration of new capacity in a leading jurisdiction.",
+      "detail": "LBNL, '2024 Report on Bloc A. Data Center Energy Use', announced by Bloc A DOE 2024-12-20 (LBNL news page dated 2025-01-15 adapts the 2024-12-20 DOE release; figures as of the 2024-12-20 release).",
+      "value": "4.4% (2023) -> 6.7-12% (2028) of national electricity",
+      "direction": "toward NO",
+      "source_url": "https://eta.lbl.gov/publications/2024-lbnl-data-center-energy-usage-report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-03-004",
+      "indicator": "I-R5-03",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No public series of announced >100 MW AI data-centre capacity by jurisdiction existed in 2024, so the 20% share cannot be computed for this phase.",
+      "detail": "The Epoch data-centre tracker named in the indicator was not yet public in 2024 (per this project's 2025-phase notes). No source to cite beyond the proxies above.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/electricity-2024",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

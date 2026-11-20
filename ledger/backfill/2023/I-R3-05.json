@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R3-05",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "A mandatory registry of large training clusters (or chip-location tracking) operates in >= 2 of the top-3 jurisdictions (official gazettes; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. Bloc A ordered (but had not yet operationalised) mandatory reporting of large computing clusters' existence and location; no verified equivalent cluster registry existed in Bloc B or the third jurisdiction. Bloc A's export-control updates tightened chip controls but did not create location tracking.",
+  "items": [
+    {
+      "id": "BF-2023-I-R3-05-001",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "Bloc A executive order directs that entities acquiring, developing or possessing a potential large-scale computing cluster report its existence, location and total computing power; interim threshold: co-located clusters linked at >100 Gbit/s with a theoretical maximum of 1e20 operations per second for AI training. First jurisdiction with a cluster-reporting mandate (implementation pending in-phase).",
+      "detail": "Bloc A EO 14110, sec. 4.2(a)(ii) and 4.2(b)(ii), 88 FR 75191, published 2023-11-01 (signed 2023-10-30). Commerce to implement via Defense Production Act authority.",
+      "value": "1e20 ops/s cluster threshold",
+      "direction": "toward YES",
+      "source_url": "https://www.govinfo.gov/content/pkg/FR-2023-11-01/html/2023-24283.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-05-002",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2023-10-17",
+      "summary": "Bloc A updated its advanced-computing chip and chip-tool export controls toward Bloc B and arms-embargoed destinations and added entities to its restricted list; controls on exports, not a cluster registry or chip-location tracking.",
+      "detail": "Bloc A Commerce BIS press release, 'Commerce Strengthens Restrictions on Advanced Computing Semiconductors, Semiconductor Manufacturing Equipment, and Supercomputing Items to Countries of Concern', 2023-10-17 (updating the 2022-10-07 rules).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.bis.gov/press-release/commerce-strengthens-restrictions-advanced-computing-semiconductors-semiconductor-manufacturing-equipment",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-05-003",
+      "indicator": "I-R3-05",
+      "kind": "data-gap",
+      "published": "2023-12-31",
+      "summary": "No verified source found of a mandatory training-cluster registry or chip-location tracking in force in Bloc B or the third major jurisdiction during 2023; Bloc B's generative-AI measures regulate public services, not compute infrastructure.",
+      "detail": "Checked: Bloc B CAC 《生成式人工智能服务管理暂行办法》 (2023-07-13) - service-level rules, no cluster registration provision found in extracted text. Bloc C AI Act only at provisional-deal stage (Dec 2023). Absence-of-evidence item; reviewer may wish to check Bloc B's computing-power infrastructure plans (e.g. Oct 2023 MIIT action plan) in a later pass.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

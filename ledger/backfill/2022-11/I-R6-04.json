@@ -1,0 +1,56 @@
+{
+  "indicator": "I-R6-04",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "BTOS AI-use share in 2027Q4 is < 1.5x its 2025 average (Bloc A Census BTOS; 2027Q4)",
+  "generated": "2026-11-20",
+  "status_at_phase_end": "Data gap. The source survey (BTOS) had only just started (biweekly collection from mid-July 2022, first data release 2022-10-13) and had published no AI-use estimate. The only official firm-level AI-adoption measure was the 2018 Annual Business Survey technology module, which found advanced-technology (incl. AI) adoption rare and concentrated in large, older firms.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R6-04-001",
+      "indicator": "I-R6-04",
+      "kind": "data-gap",
+      "published": "2022-06-23",
+      "summary": "Bloc A's statistics agency announced the new biweekly business survey (successor to its pandemic small-business pulse survey), with data collection scheduled to begin mid-July 2022 and release via the experimental data products site; the announcement describes business-conditions topics, not AI use.",
+      "detail": "Bloc A Census Bureau Bloc A Counts story, 'Business Trends and Outlook Survey: New Light on Business Health' (page title 'BTOS Expands Small Business Pulse Survey, Will Conduct Continuous Data Collection'), 2022-06-23 (verified via web_extract this run). Federal Register notice seeking comment 2021-11-09.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/library/stories/2022/06/btos-new-light-on-business-health.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2022-11-I-R2-02-001"
+    },
+    {
+      "id": "BF-2022-11-I-R6-04-002",
+      "indicator": "I-R6-04",
+      "kind": "data-gap",
+      "published": "2022-10-13",
+      "summary": "The survey's first data release was 2022-10-13; at phase end it had about two and a half months of published data and no AI-use estimate (the first AI-use story listed on the survey's data page is dated well after the window).",
+      "detail": "Census BTOS data page (verified via web_extract this run): 'Initial Release Date October 13, 2022'; stories list shows 'How Many Bloc A. Businesses Use Artificial Intelligence?' dated 2023-11-28 as the earliest AI item. Current page version (post-dates phase) used only for the static release date and to confirm absence of an as-of AI series.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/data/experimental-data-products/business-trends-and-outlook-survey.html",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-04-003",
+      "indicator": "I-R6-04",
+      "kind": "data-series",
+      "published": "2020-12-31",
+      "summary": "The only official firm-level AI-adoption baseline then available (2018 Annual Business Survey, >850,000 firms) found digitisation widespread but advanced-technology adoption including AI rare and skewed toward larger, older firms, so worker exposure exceeded firm-level adoption.",
+      "detail": "Zolas et al., 'Advanced Technologies Adoption and Use by Bloc A. Firms: Evidence from the Annual Business Survey', NBER Working Paper 28290, issue date December 2020 (verified via web_extract this run; abstract only, AI share number not read). Day of month not shown; set to 2020-12-01. (month-only date)",
+      "value": "AI adoption 'rare' (2018 ABS; exact share not read)",
+      "direction": "neutral",
+      "source_url": "https://www.nber.org/papers/w28290",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

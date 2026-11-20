@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R3-03",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "A top-3 compute jurisdiction has licensing or pre-approval of frontier training above a compute threshold in force (official gazette; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. Bloc A adopted compute-threshold REPORTING (not licensing) for models >1e26 operations; Bloc B's generative-AI measures regulate public-facing services and expressly exclude non-public R&D, so they are not training pre-approval; the third major jurisdiction reached only a provisional political deal on its AI Act.",
+  "items": [
+    {
+      "id": "BF-2023-I-R3-03-001",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "Bloc A executive order requires developers to report to the government on dual-use foundation models trained with more than 1e26 operations (1e23 for primarily biological-sequence models), including red-team results; a reporting duty, not a licence or pre-approval.",
+      "detail": "Bloc A Executive Order 14110 of October 30, 2023, sec. 4.2(a)-(b), 88 FR 75191 (published 2023-11-01). Interim technical threshold: 'greater than 10^26 integer or floating-point operations'.",
+      "value": "1e26 operations (reporting threshold)",
+      "direction": "toward NO",
+      "source_url": "https://www.govinfo.gov/content/pkg/FR-2023-11-01/html/2023-24283.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-03-002",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2023-07-13",
+      "summary": "Bloc B interim measures for generative AI services took effect 2023-08-15; they govern services offered to the public and explicitly do not apply to research and development not provided to the public, so they impose no compute-threshold training pre-approval.",
+      "detail": "Bloc B CAC et al., 《生成式人工智能服务管理暂行办法》 (Order No. 15), promulgated 2023-07-10, published 2023-07-13, effective 2023-08-15; Art. 2 para 3 excludes non-public R&D.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-03-003",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2023-12-09",
+      "summary": "The third major jurisdiction's legislators and council reached a provisional political agreement on a comprehensive AI act; not in force in 2023 and not a training licence regime.",
+      "detail": "Bloc C Parliament press release 20231206IPR15699, 'Artificial Intelligence Act: deal on comprehensive rules for trustworthy AI'. Extraction returned the title only; date 2023-12-09 from the release ID/known date (approximate).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.europarl.europa.eu/news/en/press-room/20231206IPR15699/artificial-intelligence-act-deal-on-comprehensive-rules-for-trustworthy-ai",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-03-004",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2023-07-21",
+      "summary": "Bloc A's government secured voluntary safety commitments from seven leading developers (security testing before release, etc.); voluntary, with no licensing element.",
+      "detail": "White House fact sheet, 2023-07-21: Amazon, Anthropic, Google, Inflection, Meta, Microsoft, OpenAI.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2023/07/21/fact-sheet-biden-harris-administration-secures-voluntary-commitments-from-leading-artificial-intelligence-companies-to-manage-the-risks-posed-by-ai/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

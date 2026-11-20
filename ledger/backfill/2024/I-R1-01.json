@@ -1,0 +1,112 @@
+{
+  "indicator": "I-R1-01",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": ">= 90% of training compute of the 10 largest known 2027 training runs belongs to organisations headquartered in the two leading jurisdictions (Epoch AI; snapshot 2028-03-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Resolves on 2027 runs; 2024 shows the base rate. Throughout 2024 the largest known run remained ~5e25 FLOP (a Bloc A developer's model from Dec 2023); 2024's largest disclosed runs (~2-4e25) were all from Bloc A organisations, with the first Bloc B models estimated above 1e25 appearing (estimates speculative). Epoch's April 2024 large-scale dataset: over half of >1e23 models from Bloc A, a quarter from Bloc B and growing; frontier compute growing 4-5x/yr. Only one other-bloc developer (a Bloc C lab) had a run near the top tier. Concentration in the two leading jurisdictions was near-total, with Bloc A dominant at the very top.",
+  "items": [
+    {
+      "id": "BF-2024-I-R1-01-001",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2024-04-05",
+      "summary": "Epoch AI launched a large-scale model dataset (>1e23 FLOP): 81 confirmed models from 18 jurisdictions; over half from Bloc A, about a quarter from Bloc B (share growing); downloadable-weight models trained with less compute than the largest proprietary ones.",
+      "detail": "Epoch AI 'Tracking large-scale AI models' (Rahman, Owen, You), verified via web_extract; publication date April 2024 (day approximate).",
+      "value": ">50% Bloc A / ~25% Bloc B of >1e23 models",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/publications/tracking-large-scale-ai-models",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-01-002",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2024-05-28",
+      "summary": "Epoch: frontier training compute (running top-10) grew ~5x per year 2010-May 2024; the largest known runs were ~2e25 and ~5e25 FLOP, both by Bloc A developers. Each of the three largest Bloc A labs scaled at roughly the field rate.",
+      "detail": "Epoch AI 'Training compute of frontier AI models grows by 4-5x per year' (May 2024; day approximate). Largest: GPT-4 ~2e25, Gemini 1.0 Ultra ~5e25. Frontier models 5.3x/yr (90% CI 4.9-5.7).",
+      "value": "~5e25 FLOP (largest known run)",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/publications/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-01-003",
+      "indicator": "I-R1-01",
+      "kind": "event",
+      "published": "2024-07-23",
+      "summary": "A Bloc A developer published the largest fully documented run of 2024 (~3.8e25 FLOP on ~16k accelerators), with open weights.",
+      "detail": "Meta Llama 3.1 405B, 'The Llama 3 Herd of Models' (2024-07-23): 3.8e25 FLOP reported by the developer; 16,384 H100s.",
+      "value": "3.8e25 FLOP",
+      "direction": "toward YES",
+      "source_url": "https://ai.meta.com/research/publications/the-llama-3-herd-of-models/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-01-004",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2024-12-31",
+      "summary": "2024's other top-tier runs (estimated 1.6e25-3.8e25 FLOP) were all from Bloc A organisations; one other-jurisdiction developer had a run of ~1-2e25; Bloc B models were estimated at up to ~2.5-3.6e25 but with speculative or unknown confidence.",
+      "detail": "Epoch large-scale models table (current vintage; 2024 entries): GPT-4o ~3.8e25 (speculative), Grok-2 ~3.0e25, Claude 3.5 Sonnet ~2.7e25, Gemini 1.5 Pro ~1.6e25, Nemotron-4 340B 1.8e25; Mistral Large 2 ~2.1e25 (Bloc E); GLM-4-Plus ~3.6e25 (unknown confidence), Doubao-pro ~2.5e25 (speculative), GLM-4 ~1.2e25 (Bloc B). As-of caveat: estimates are from later dataset vintages; 2024-vintage values may differ.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/data-insights/models-over-1e25-flop",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true,
+      "hold": true
+    },
+    {
+      "id": "BF-2024-I-R1-01-005",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2024-10-23",
+      "summary": "Epoch: training cluster sizes grew >20x since 2016; the largest disclosed 2024 cluster (~16k accelerators) belongs to a Bloc A developer, and an earlier Bloc A run used ~57k accelerators.",
+      "detail": "Epoch Data Insight 'AI training cluster sizes increased by more than 20x since 2016' (Rahman, 2024-10-23).",
+      "value": "16,384 GPUs (largest disclosed 2024 run)",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/data-insights/training-cluster-size",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-01-006",
+      "indicator": "I-R1-01",
+      "kind": "event",
+      "published": "2024-12-26",
+      "summary": "A Bloc B lab released an open-weight frontier-competitive model trained on ~2k export-compliant accelerators (~3.4e24 FLOP), showing near-frontier capability at about a tenth of top-tier compute - relevant to whether compute share tracks capability, not to the compute-share count itself.",
+      "detail": "DeepSeek-V3 technical report (released 2024-12-26; Epoch lists 2024-12-24): 2,048 H800 GPUs, ~2.79M GPU-hours.",
+      "value": "~3.4e24 FLOP",
+      "direction": "neutral",
+      "source_url": "https://github.com/deepseek-ai/DeepSeek-V3",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-01-007",
+      "indicator": "I-R1-01",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "Most 2024 frontier developers did not disclose training compute; several top entries (and most Bloc B entries) are benchmark- or cost-imputed estimates with ~10-30x uncertainty.",
+      "detail": "Epoch confidence labels: 'Speculative' for GPT-4o, Claude 3.5 Sonnet, Doubao-pro; 'Unknown' for GLM-4-Plus; o1 no estimate. Database consulted at current vintage; 2024 state inferred.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/data/notable-ai-models",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

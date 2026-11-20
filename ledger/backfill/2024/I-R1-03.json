@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R1-03",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": ">= 2 of the top-3 compute jurisdictions publish new or expanded controls on AI chips, chip tools or model weights (official gazettes; calendar 2027)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Resolves on calendar 2027; 2024 shows the base rate. Both leading jurisdictions published new or expanded controls in 2024: Bloc A corrected and clarified its Oct-2023 chip rules (April), added chip-tool and quantum controls (Sept) and issued a major December package (new foreign-direct-product rules for chip tools, first controls on high-bandwidth memory, ~140 entity listings). Bloc B adopted a unified dual-use export-control regulation (Oct, in force Dec 1) and, the day after Bloc A's December package, banned exports of chip-relevant minerals to Bloc A. Model-weight controls were not yet in force anywhere. Pattern: tit-for-tat escalation, no pauses.",
+  "items": [
+    {
+      "id": "BF-2024-I-R1-03-001",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2024-04-04",
+      "summary": "Bloc A published corrections and clarifications to its 2023 advanced-computing and chip-tool export rules, tightening some definitions and license requirements.",
+      "detail": "BIS interim final rule 'Implementation of Additional Export Controls: Certain Advanced Computing Items; Supercomputer and Semiconductor End Use; Updates and Corrections' (89 FR, 2024-04-04). Not verified via web_extract this run.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2024/04/04/2024-07004/implementation-of-additional-export-controls-certain-advanced-computing-items-supercomputer-and-semiconductor",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-03-002",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2024-09-06",
+      "summary": "Bloc A added export controls on certain semiconductor-manufacturing equipment, gate-all-around transistor technology and quantum items, coordinated with like-minded producers.",
+      "detail": "BIS IFR 'Commerce Control List Additions and Revisions; Implementation of Controls on Advanced Technologies Consistent with Controls Implemented by Multilateral Export Control Regimes', FR 2024-19633 (2024-09-06), cited by Mayer Brown. The Bloc 29 expanded licensing for some lithography tools the same day.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.govinfo.gov/content/pkg/FR-2024-09-06/pdf/2024-19633.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-03-003",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2024-10-19",
+      "summary": "Bloc B's cabinet issued unified regulations on export control of dual-use items (in force 2024-12-01), including extraterritorial provisions on items containing its controlled inputs.",
+      "detail": "State Council Decree No. 792, Regulations on Export Control of Dual-Use Items (published on gov.cn 2024-10, signed 2024-09-30; effective 2024-12-01). Framework law; not chip-specific.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.gov.cn/zhengce/content/202410/content_6981399.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-03-004",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2024-12-05",
+      "summary": "Bloc A published a major package (announced 2 Dec): two new foreign-direct-product rules covering chip-making equipment, new controls on 24 types of chip tools and 3 software tools, first export controls on high-bandwidth memory used in AI accelerators, and additions to its entity list.",
+      "detail": "BIS IFR 'Foreign-Produced Direct Product Rule Additions, and Refinements to Controls for Advanced Computing and Semiconductor Manufacturing Items', 89 FR 96790, FR 2024-28270 (2024-12-05), verified via govinfo/federalregister snippets; companion Entity List rule (~140 entities).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2024/12/05/2024-28270/foreign-produced-direct-product-rule-additions-and-refinements-to-controls-for-advanced-computing",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-03-005",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2024-12-03",
+      "summary": "One day after Bloc A's December package, Bloc B banned in principle exports to Bloc A of gallium, germanium, antimony and superhard materials (inputs to chip manufacturing), and prohibited dual-use exports to Bloc A military users, effective immediately.",
+      "detail": "MOFCOM Announcement 2024 No. 46 (2024-12-03); CSET translation verified via search snippet. Earlier: antimony controls (Announcement 2024 No. 33, Aug 2024).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://cset.georgetown.edu/publication/china-rare-earth-export-ban",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-03-006",
+      "indicator": "I-R1-03",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No jurisdiction had model-weight export controls in force by end-2024, and the identity of the third top-3 compute jurisdiction is not fixed by the indicator (candidates: a Bloc C bloc, a Gulf state, or an East Asian chip producer).",
+      "detail": "First model-weight control came in Bloc A's Jan-2025 diffusion rule (outside phase). Third-jurisdiction choice should follow Epoch GPU-cluster shares at resolution.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/data/gpu-clusters",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

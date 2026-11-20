@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R4-04",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Largest known training run >= 5e27 FLOP (Epoch AI; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Far from met. The largest publicly documented run at the timeline start was a Bloc A developer's 540B-parameter model at ~2.5e24 FLOP (April 2022) - about 2,000x below the threshold. The chat model launched 2022-11-30 disclosed no compute. Epoch's trend work put large-scale-model compute doubling at roughly 10 months.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R4-04-001",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2022-04-05",
+      "summary": "Compute analyst estimate: the final training run of a Bloc A developer's 540B-parameter model used ~2.56e24 FLOP (~64 days on 6144 TPU v4 chips), about 10x the 2020 GPT-3 run (3.1e23) and the largest known run.",
+      "detail": "Lennart Heim, 'Estimating PaLM's training cost', 2022-04-05, updated 2022-06-05 (verified via web_extract this run); table: GPT-3 3.1e23, Gopher 6.3e23, Chinchilla 5.8e23, PaLM 2.5e24 FLOP.",
+      "value": "2.56e24 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://blog.heim.xyz/palm-training-cost",
+      "source_tier": 3,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-04-002",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2022-04-05",
+      "summary": "The developer's own paper for the 540B-parameter model reports training on 6144 TPU v4 chips across multiple pods and state-of-the-art few-shot results; primary source for the largest known run.",
+      "detail": "Chowdhery et al., 'PaLM: Scaling Language Modeling with Pathways', arXiv:2204.02311, v1 2022-04-05, v5 2022-10-05 (both pre-phase; verified via web_extract this run).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://arxiv.org/abs/2204.02311",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-04-003",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2022-02-16",
+      "summary": "Epoch AI trend analysis: milestone-model training compute grew ~10-billion-fold since 2010 (doubling ~5-6 months overall); context for how far a 5e27 run lay beyond the 2022 frontier.",
+      "detail": "Epoch AI, 'Compute trends across three eras of machine learning' (verified via web_extract this run; page now at epoch.ai/publications/compute-trends). At ~2.5e24 a 2,000x gap needs ~11 doublings.",
+      "value": "doubling ~5-6 months (2010-2022)",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/blog/compute-trends",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-04-004",
+      "indicator": "I-R4-04",
+      "kind": "data-gap",
+      "published": "2022-11-30",
+      "summary": "The frontier chat model released in the window was fine-tuned from a model series that finished training in early 2022; no training-compute figure was disclosed.",
+      "detail": "OpenAI, 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

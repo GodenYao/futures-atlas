@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R5-05",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "No top-3 compute jurisdiction bans or licenses open-weight release at the frontier tier (Official gazettes; by 2028-06-30)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Holding (toward YES) at end-2023: no top-3 compute jurisdiction banned or licensed open-weight release. Bloc A's executive order only opened a consultation on widely available model weights; Bloc B's generative-AI measures regulate public-facing services and exclude non-public R&D; large open-weight models were released throughout the year.",
+  "items": [
+    {
+      "id": "BF-2023-I-R5-05-001",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2023-07-18",
+      "summary": "A top-5 developer in Bloc A released the next generation of its large language model family as open weights, free for research and commercial use, with a major cloud provider as preferred partner.",
+      "detail": "Meta, 'Meta and Microsoft Introduce the Next Generation of Llama' (Llama 2, up to 70B parameters), 2023-07-18 (verified via web_extract this run). Licence carries usage restrictions (not OSI open source), but weights are downloadable.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://ai.meta.com/blog/llama-2/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-05-002",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2023-07-13",
+      "summary": "Bloc B published interim measures on generative AI services (in force 2023-08-15): they apply to services offered to the domestic public, require security assessment and algorithm filing for services with public-opinion attributes, and explicitly exclude R&D and applications not offered to the public; no provision bans or licenses open-weight model release.",
+      "detail": "Bloc B CAC et al., Order No. 15, 'Interim Measures for the Management of Generative AI Services' (生成式人工智能服务管理暂行办法), adopted 2023-07-10, published on cac.gov.cn 2023-07-13 (verified via web_extract this run; Art. 2 scope exclusion, Art. 17 assessment/filing, Art. 23 licence only where other laws require).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-05-003",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2023-09-27",
+      "summary": "An independent developer released a 7.3B-parameter model under a permissive licence ('can be used without restrictions'), reporting it outperforms the best open 13B model on all benchmarks.",
+      "detail": "Mistral AI, 'Mistral 7B', 2023-09-27 (verified via web_extract this run). Bloc E-headquartered developer; trained partly on EuroHPC resources.",
+      "value": "7.3B parameters, Apache 2.0",
+      "direction": "toward YES",
+      "source_url": "https://mistral.ai/news/announcing-mistral-7b/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-05-004",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "Bloc A's executive order on AI (signed 2023-10-30) included a section on dual-use foundation models with widely available weights that recognises both innovation benefits and security risks (e.g. safeguard removal) and solicits input; it imposes no ban or licence on open release.",
+      "detail": "Executive Order 14110, 88 FR 75191, Federal Register 2023-11-01, s.4.6 'Soliciting Input on Dual-Use Foundation Models with Widely Available Model Weights' (verified via web_extract this run; extracted text truncated mid-section, so the report deadline is not quoted here).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.federalregister.gov/documents/2023/11/01/2023-24283/safe-secure-and-trustworthy-development-and-use-of-artificial-intelligence",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-05-005",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2023-12-11",
+      "summary": "An independent developer released an Apache-licensed open-weight mixture-of-experts model it reports matches or beats the leading closed chat-class model on most benchmarks, described as the strongest permissively licensed open-weight model.",
+      "detail": "Mistral AI, 'Mixtral of experts', 2023-12-11 (verified via web_extract this run). Released from Bloc E, outside the two leading blocs.",
+      "value": "46.7B total / 12.9B active parameters",
+      "direction": "toward YES",
+      "source_url": "https://mistral.ai/news/mixtral-of-experts/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

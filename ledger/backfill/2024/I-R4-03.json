@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R4-03",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "A top-5 developer weakens or withdraws a published safety-framework commitment, documented by a text diff (framework documents; calendar 2027)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Resolution window is 2027; 2024 items are base-rate context only. 2024 mostly added frameworks: a second top-5 developer published its first frontier safety framework (May), 16 developers committed to publish frameworks (May; text expressly allows approaches to 'evolve' with public explanation), and one developer substantially rewrote its scaling policy toward a 'more flexible' approach (Oct). The clearest retreat was organisational, not a framework text diff: a top-5 developer dissolved its long-term-risk team less than a year after pledging 20% of its compute to it (May). No text-diff-documented weakening was verified in this run.",
+  "items": [
+    {
+      "id": "BF-2024-I-R4-03-001",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2024-05-17",
+      "summary": "A top-5 developer dissolved its team focused on long-term AI risks less than a year after announcing it with a pledge of 20% of its computing power over four years, days after both team leads departed. Retreat from a public safety commitment, but not a safety-framework text change.",
+      "detail": "CNBC, 'OpenAI dissolves team focused on long-term AI risks, less than one year after announcing it', 2024-05-17 (Superalignment team; Sutskever and Leike departures). Single-source press report with confirmation from a person familiar.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.cnbc.com/2024/05/17/openai-superalignment-sutskever-leike.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R4-03-002",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2024-05-17",
+      "summary": "A top-5 developer introduced its first frontier safety framework (critical capability levels, early-warning evaluations, mitigations). Adds a new baseline document whose future revisions can be diffed.",
+      "detail": "Google DeepMind, 'Introducing the Frontier Safety Framework', 2024-05-17 (FSF v1.0 technical report).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://deepmind.google/discover/blog/introducing-the-frontier-safety-framework/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R4-03-003",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2024-05-21",
+      "summary": "16 developers committed to publish severe-risk safety frameworks by the next summit; the text states their approaches 'may evolve in the future', with transparency and reasons via public updates - pre-authorising later revisions.",
+      "detail": "Frontier AI Safety Commitments, AI Bloc H Summit 2024 (Bloc G DSIT / RoK).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gov.uk/government/publications/frontier-ai-safety-commitments-ai-seoul-summit-2024/frontier-ai-safety-commitments-ai-seoul-summit-2024",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R4-03-004",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2024-10-15",
+      "summary": "A top-5 developer replaced its first scaling policy with a 'significantly updated', 'more flexible and nuanced' version (capability thresholds instead of fixed evaluations), keeping its core commitment not to train or deploy without adequate safeguards. Whether any element is a weakening requires a v1-v2 text diff, not done in this run.",
+      "detail": "Anthropic RSP v2.0, effective 2024-10-15 (version listed on anthropic.com/responsible-scaling-policy; announcement verified this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.anthropic.com/news/announcing-our-updated-responsible-scaling-policy",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const METHOD_VERSION = '4.4.0';
+const METHOD_VERSION = '4.5.0';
 const ROADS = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6'];
 const NONE = 'None';
 
@@ -323,7 +323,7 @@ function loadLedger(siteDir) {
   const rulF = path.join(rd, 'rulings.json');
   const rul = fs.existsSync(rulF) ? JSON.parse(fs.readFileSync(rulF, 'utf8')) : {};
   const merges = rul.merges || {};
-  const byInd = {}; const excluded = []; const phases = []; const skipped = []; const approvedBy = {};
+  const byInd = {}; const excluded = []; const phases = []; const skipped = []; const approvedBy = {}; const historyFrom = {};
   const add = (id, it, hold) => {
     // item-level hold (owner rulings A17/D2, 2026-11-20): the item stays on the page (flag hold:true) but is not scored.
     // duplicate_of is a display/annotation mark only; same-source down-weighting (srcDedup) is unchanged.
@@ -340,6 +340,8 @@ function loadLedger(siteDir) {
     const appr = fs.existsSync(aF) ? JSON.parse(fs.readFileSync(aF, 'utf8')) : null;
     if (!appr || !appr.approved) { skipped.push(ph); continue; }
     phases.push(ph); approvedBy[ph] = appr.approved;
+    // optional "history_from": "YYYY-MM-DD" = first replay day of this phase (method 4.5.0; e.g. 2022-11 -> 2022-11-30)
+    if (/^\d{4}-\d\d-\d\d$/.test(appr.history_from || '')) historyFrom[ph] = appr.history_from;
     const ov = appr.wording_overrides || {};
     const hold = new Set((appr.counting && appr.counting.hold) || []);
     for (const f of fs.readdirSync(path.join(bf, ph)).filter(f => f.endsWith('.json')).sort()) {
@@ -363,7 +365,7 @@ function loadLedger(siteDir) {
   const resolutions = {}; for (const [k, v] of Object.entries(rul.resolutions || {})) { const { rationale, ...r } = v; resolutions[k] = r; }
   // single phase -> plain date string (unchanged snapshot format); several -> { phase: date }
   const approved = phases.length === 1 ? approvedBy[phases[0]] : approvedBy;
-  return { byInd, excluded, resolutions, approved, phases, skipped, nReviewed };
+  return { byInd, excluded, resolutions, approved, phases, skipped, nReviewed, historyFrom };
 }
 
 function buildProviders(ledger, asOf, P, drop) {

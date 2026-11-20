@@ -1,0 +1,27 @@
+{
+  "indicator": "I-TF-02",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Top-1% wealth share at 2027Q4 >= 2025Q4 + 1 pp (Federal Reserve Distributional Financial Accounts; 2027Q4 release)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable at the timeline start. The only in-window DFA release (2022-12-16, Q3 2022 data) put the top-0.1% share at 12.5%, the 90-99th percentile at 37.4%, the 50-90th at 28.7% and the bottom half at 3.3%, implying a top-1% share of ~30.6%, below the 2021 peak. In the ALFRED archive of that vintage the top-1% and 99-99.9th share series themselves carry no Q3 2022 observation, so the top-1% figure is derived by subtraction.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-TF-02-001",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2022-12-16",
+      "summary": "Bloc A central bank's distributional accounts (vintage of 2022-12-16, Q3 2022): top-0.1% share of household net worth 12.5%; 90-99th percentile 37.4%; 50-90th percentile 28.7%; bottom 50% 3.3%. Implied top-1% share ~30.6%.",
+      "detail": "Federal Reserve Board DFA as archived by ALFRED (St. Louis Fed), release vintage 2022-12-16: WFRBSTP1300 12.5, WFRBSN09161 37.4, WFRBSN40188 28.7, WFRBSB50215 3.3 (all last obs Q3 2022) (verified via web_extract this run). In this vintage WFRBST01134 (top 1%) and WFRBS99T999273 (99-99.9th) show 0 new observations with last obs Q1 2022 (31.9% and 18.8%), apparently an archive artefact around the Q3 2022 percentile-group restructuring; top-1% derived as 100 - 37.4 - 28.7 - 3.3 = 30.6 (rounding error up to ~0.2 pp).",
+      "value": "~30.6% (Q3 2022, implied; vintage 2022-12-16)",
+      "direction": "neutral",
+      "source_url": "https://alfred.stlouisfed.org/release?et=&pageID=1&rd=2022-12-16&rid=453&t=wealth%20percentile",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

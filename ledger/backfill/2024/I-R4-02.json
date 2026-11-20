@@ -1,0 +1,71 @@
+{
+  "indicator": "I-R4-02",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "A developer system card or government AISI evaluation reports a model at the developer's highest published autonomy or AI-R&D risk tier (by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2024, and far from it. The frontier reasoning model's scorecard rated Model Autonomy 'Low' (overall 'Medium' via CBRN and persuasion; Dec). Another top-5 developer stated all its models operated under its base safety level and newly defined an Autonomous AI R&D capability threshold (Oct). A third-party AI R&D benchmark found agents beat human experts at 2-hour budgets but fell behind at longer budgets (Nov). The first joint government institute pre-deployment evaluation (Nov) assessed software/AI-development capability without assigning a top tier.",
+  "items": [
+    {
+      "id": "BF-2024-I-R4-02-001",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2024-10-15",
+      "summary": "A top-5 developer stated all its models operate under its base safety standard and defined an 'Autonomous AI Research and Development' capability threshold that would require ASL-4-or-higher security. Establishes the highest AI-R&D tier this indicator watches; no model reported at it.",
+      "detail": "Anthropic, 'Announcing our updated Responsible Scaling Policy', 2024-10-15 ('At present, all of our models operate under ASL-2 Standards').",
+      "value": "all models at ASL-2",
+      "direction": "toward NO",
+      "source_url": "https://www.anthropic.com/news/announcing-our-updated-responsible-scaling-policy",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R4-02-002",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2024-11-19",
+      "summary": "Bloc A's and an allied government's AI safety institutes published their first joint pre-deployment evaluation of a frontier model, covering biological, cyber and software/AI-development capabilities and safeguard robustness (safeguards routinely circumvented by jailbreaks). No highest-tier autonomy or AI-R&D finding.",
+      "detail": "Bloc G AISI & Bloc A AISI, 'Pre-deployment evaluation of Anthropic's upgraded Claude 3.5 Sonnet', 2024-11-19 (technical report Bloc G-Bloc A-Testing-Report-Nov-19).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.aisi.gov.uk/blog/pre-deployment-evaluation-of-anthropics-upgraded-claude-3-5-sonnet",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2024-I-R2-03-003"
+    },
+    {
+      "id": "BF-2024-I-R4-02-003",
+      "indicator": "I-R4-02",
+      "kind": "data-series",
+      "published": "2024-11-22",
+      "summary": "An independent evaluator released an AI R&D benchmark: frontier agents outperformed human experts at a 2-hour budget but underperformed at higher budgets, which it considers more representative; median agent attempts made little progress.",
+      "detail": "METR, 'Evaluating frontier AI R&D capabilities of language model agents against human experts' (RE-Bench), 2024-11-22; Claude 3.5 Sonnet and o1-preview vs 71 human expert attempts.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://metr.org/blog/2024-11-22-evaluating-r-d-capabilities-of-llms/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2024-I-R2-03-002"
+    },
+    {
+      "id": "BF-2024-I-R4-02-004",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2024-12-05",
+      "summary": "A top-5 developer's system card for its frontier reasoning model rated Model Autonomy 'Low' and Cybersecurity 'Low' (CBRN and Persuasion 'Medium'; overall 'Medium'). Two tiers below the highest ('Critical').",
+      "detail": "OpenAI o1 System Card, 2024-12-05, Preparedness Scorecard. Pre-deployment evaluations by Bloc A and Bloc G AISI were conducted but not included in the card.",
+      "value": "Model Autonomy: Low",
+      "direction": "toward NO",
+      "source_url": "https://openai.com/index/openai-o1-system-card/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

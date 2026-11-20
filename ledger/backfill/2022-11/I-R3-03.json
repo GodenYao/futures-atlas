@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R3-03",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A top-3 compute jurisdiction has licensing or pre-approval of frontier training above a compute threshold in force (official gazette; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met. No jurisdiction had compute-threshold licensing of training. Bloc A had only a non-binding rights blueprint plus chip export licensing (which licenses exports, not training). Bloc B promulgated deep-synthesis rules (in force 2023-01-10) that require algorithm filing and security assessment for public-facing services, not pre-approval of training. A major non-top-3 bloc's Council adopted a risk-based AI Act position with no compute threshold.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R3-03-001",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2022-12-11",
+      "summary": "Bloc B regulators promulgated deep-synthesis (generative) service rules, in force 2023-01-10: providers with public-opinion or mobilisation attributes must file algorithms and run security assessments for new products; tools generating biometric or sensitive content need security assessment. Applies to public-facing services, not training, and has no compute threshold.",
+      "detail": "CAC/MIIT/MPS Order No. 12, 'Provisions on the Administration of Deep Synthesis of Internet Information Services' (互联网信息服务深度合成管理规定), signed 2022-11-25, posted on cac.gov.cn 2022-12-11, effective 2023-01-10 (verified via web_extract this run); Arts. 15, 19, 20. Filing is under the 2022 algorithm-recommendation provisions.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "http://www.cac.gov.cn/2022-12/11/c_1672221949354811.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-03-002",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2022-12-06",
+      "summary": "A non-top-3 regional bloc's Council adopted its general approach on a risk-based AI regulation: narrower AI definition, prohibited practices, high-risk requirements made less burdensome. Market-placement rules, no licensing of training and no compute threshold.",
+      "detail": "Council of the Bloc C press release, 'Artificial Intelligence Act: Council calls for promoting safe AI that respects fundamental rights', 2022-12-06 (verified via web_extract this run). Trilogues pending.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2022/12/06/artificial-intelligence-act-council-calls-for-promoting-safe-ai-that-respects-fundamental-rights/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-03-003",
+      "indicator": "I-R3-03",
+      "kind": "event",
+      "published": "2022-10-04",
+      "summary": "Bloc A's executive issued a non-binding blueprint of five principles for automated systems (safety, discrimination protections, privacy, notice, human alternatives); no licensing or pre-approval regime.",
+      "detail": "White House OSTP, 'Blueprint for an AI Bill of Rights', October 2022 (archived page verified via web_extract this run; publication date from the page context, not re-read in full).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://bidenwhitehouse.archives.gov/ostp/ai-bill-of-rights/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-03-004",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2022-10-13",
+      "summary": "Bloc A's export-control interim final rule requires licences to export advanced AI chips (and support for advanced chip production) to Bloc B; this licenses exports by chip performance, not domestic training runs. Comment period closed 2022-12-12.",
+      "detail": "BIS, 'Implementation of Additional Export Controls: Certain Advanced Computing and Semiconductor Manufacturing Items...', 87 FR 62186, 2022-10-13 (verified via web_extract this run); new ECCNs 3A090/4A090.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.federalregister.gov/documents/2022/10/13/2022-21658/implementation-of-additional-export-controls-certain-advanced-computing-and-semiconductor-manufacturing-items",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R3-01",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "An AI-involved incident officially attributed by a government or the developer causes >= USD 1 bn damage or >= 100 deaths (official statements; OECD AI Incidents Monitor; AIID cross-check; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in the window: no AI-involved incident with >= USD 1 bn damage or >= 100 deaths officially attributed by a government or developer was found published 2022-11-30..2022-12-31. Pre-window context: a regulator had begun publishing crash reports for driver-assistance and automated-driving systems (June 2022), and a non-top-3 government's algorithmic benefits-fraud scandal (government resigned Jan 2021) is a possible pre-window precedent for adjudication (damage scale and 'AI' classification not verified here). No qualifying event found in the window (search result, not counted).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R3-01-001",
+      "indicator": "I-R3-01",
+      "kind": "data-series",
+      "published": "2022-06-15",
+      "summary": "Bloc A road-safety regulator published its first data on crashes involving driver-assistance (Level 2) and automated-driving (Levels 3-5) systems under a 2021 standing reporting order, with monthly updates to follow; caveated as not comprehensive. Individual crashes, not a single incident near the threshold.",
+      "detail": "NHTSA, 'NHTSA Releases Initial Data on Safety Performance of Advanced Vehicle Technologies', 2022-06-15 (verified via web_extract this run). Crash counts by manufacturer are in the linked summary reports (not opened this run; no value recorded).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.nhtsa.gov/press-releases/initial-data-release-advanced-vehicle-technologies",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-01-002",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2021-10-25",
+      "summary": "Human-rights NGO analysis of a non-top-3 jurisdiction's childcare-benefit scandal: an algorithmic risk-classification system with built-in profiling flagged tens of thousands of families as potential fraudsters, causing severe financial harm; the scandal brought down the government in January 2021. Candidate precedent only: NGO attribution, damage total not verified in this run.",
+      "detail": "Amnesty International, 'Bloc 29 childcare benefit scandal an urgent wake-up call to ban racist algorithms' ('Xenophobic Machines' report), 2021-10-25 (verified via web_extract this run). Bloc 29 Tax and Customs Administration toeslagenaffaire. Needs adjudication: whether a rule/risk-scoring system counts as 'AI-involved', whether official (government) attribution to the algorithm exists, and whether compensation/damage exceeded USD 1 bn.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.amnesty.org/en/latest/news/2021/10/xenophobic-machines-dutch-child-benefit-scandal/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-01-003",
+      "indicator": "I-R3-01",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No qualifying AI-involved incident (>= USD 1 bn or >= 100 deaths, officially attributed) was located as published in the window. The major consumer AI release of the window came with developer-stated limitations but no reported incidents of that scale.",
+      "detail": "Searched this run; none found. Reference opened: OpenAI 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R2-02",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Share of firms using AI to produce goods or services >= 2x its 2025 average (Bloc A Census Bureau BTOS, 2027Q4)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not resolvable in 2024 (baseline is the 2025 average). The Bloc A business survey's biweekly AI-use share rose from 3.7% (Sept 2023, first collection) to 5.4% (Feb 2024), ~5.9% (Sept 2024) and ~6.1% (Nov-Dec 2024) - steady but slow growth, slightly below firms' own Feb-2024 expectation of 6.6% by fall. Employment-weighted use was higher (~9% current, ~12% expected). Few firms reported AI-driven headcount changes.",
+  "items": [
+    {
+      "id": "BF-2024-I-R2-02-001",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2024-03-15",
+      "summary": "Statistics-office working paper on the new business-survey AI questions: biweekly AI-use share rose from 3.7% (Sept 2023) to 5.4% (Feb 2024), +46% in five months; firms expected ~6.6% by fall 2024. Employment-weighted use averaged ~9.4% (excluding don't-know). Use ranged from 1.4% in construction/agriculture to 18.1% in information.",
+      "detail": "Bloc A Census Bureau CES-WP-24-16 (Bonney et al., 'Tracking Firm Use of AI in Real Time', March 2024; day approximate; also NBER w32319). Verified via search snippet of the Census PDF.",
+      "value": "5.4 % (Feb 2024)",
+      "direction": "neutral",
+      "source_url": "https://census.gov/hfp/btos/downloads/CES-WP-24-16.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-02-002",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2024-03-15",
+      "summary": "Same survey: 2.8% of firms reported AI raised employment and 2.6% that it lowered employment over the prior six months; 94.6% reported no change.",
+      "detail": "CES-WP-24-16, Table 'Effects of AI on Firm Employment', firm-weighted (Bloc A).",
+      "value": "2.6 % of firms report AI-driven employment decrease",
+      "direction": "neutral",
+      "source_url": "https://census.gov/hfp/btos/downloads/CES-WP-24-16.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-02-003",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2024-09-19",
+      "summary": "Business-survey biweekly AI-use share ~5.9% for the period ending early September 2024.",
+      "detail": "Bloc A Census BTOS AI core question, cycle ending 2024-09-08, value 5.9% via usstats.io aggregator of the Census AI file (verified). Publication day approximate (BTOS posts ~10 days after period end).",
+      "value": "5.9 % (period ending 2024-09-08)",
+      "direction": "neutral",
+      "source_url": "https://usstats.io/s/btosAiUseOriginal",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-02-004",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2024-12-12",
+      "summary": "Business-survey biweekly AI-use share 6.0-6.1% across Oct-Dec 2024 cycles (6.1% for the period ending 1 Dec 2024): growth flattening in Q4 2024.",
+      "detail": "Bloc A Census BTOS biweekly estimates via usstats.io (verified): 2024-10-20 6.0%, 11-03 6.1%, 11-17 6.1%, 12-01 6.1%. Later cycles (published after 2024-12-31) excluded. Publication day approximate.",
+      "value": "6.1 % (period ending 2024-12-01)",
+      "direction": "neutral",
+      "source_url": "https://usstats.io/s/btosAiUseOriginal",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "indicator": "I-R5-01",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": ">= 15 distinct organisations with a >= 1e26 FLOP run (shared with I-N-01; counted once per family) (Epoch AI; 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "0 organisations known to have a >= 1e26 FLOP run by end-2023 (same evidence family as I-N-01; do not double-count). Largest public estimate ~2e25 FLOP; the 1e26 level was adopted by Bloc A as a reporting trigger for future models. Open-weight releases from several organisations (incl. a new non-Bloc-A/B lab) were far below the threshold.",
+  "items": [
+    {
+      "id": "BF-2023-I-R5-01-001",
+      "indicator": "I-R5-01",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "Bloc A's interim reporting threshold of 1e26 operations was set above every publicly known model, implying zero organisations at that scale in-phase.",
+      "detail": "Bloc A EO 14110 sec. 4.2(b)(i), 88 FR 75191 (2023-11-01).",
+      "value": "0 orgs >= 1e26 (implied)",
+      "direction": "toward NO",
+      "source_url": "https://www.govinfo.gov/content/pkg/FR-2023-11-01/html/2023-24283.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true,
+      "duplicate_of": "BF-2023-I-N-01-002"
+    },
+    {
+      "id": "BF-2023-I-R5-01-002",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2023-03-17",
+      "summary": "The largest in-phase compute estimate for any model was about 2.2e25 FLOP (third-party estimate for the March 2023 frontier model), below 1e26.",
+      "detail": "LessWrong retrospective (2023-03-17) citing Epoch AI ~2.2e25 FLOP for GPT-4; figure seen in search snippet, possible later edit.",
+      "value": "2.2e25 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://lesswrong.com/posts/iQx2eeHKLwgBYdWPZ/retrospective-on-gpt-4-predictions-after-the-release-of-gpt",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-01-003",
+      "indicator": "I-R5-01",
+      "kind": "event",
+      "published": "2023-12-11",
+      "summary": "A young lab outside Bloc A and Bloc B released an open-weight sparse mixture-of-experts model matching or beating the previous-generation proprietary model on most benchmarks, showing new entrants at the sub-frontier scale but nowhere near 1e26.",
+      "detail": "Mistral AI (Bloc E), 'Mixtral of experts', 2023-12-11; Mixtral 8x7B, Apache 2.0; trained with CoreWeave and Scaleway support.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://mistral.ai/news/mixtral-of-experts",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

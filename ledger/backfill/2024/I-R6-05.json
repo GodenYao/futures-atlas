@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R6-05",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Global data-centre electricity use in 2027 is below the IEA's 2025 base-case projection for 2027 (IEA; 2028 release)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2024: the reference projection (IEA 2025 base case) did not yet exist. 2024 context: IEA estimated ~460 TWh data-centre use in 2022, possibly over 1,000 TWh by 2026; a national-lab report gave a wide scenario range for Bloc A data-centre demand to 2028.",
+  "items": [
+    {
+      "id": "BF-2024-I-R6-05-001",
+      "indicator": "I-R6-05",
+      "kind": "forecast",
+      "published": "2024-01-24",
+      "summary": "International energy agency: data centres consumed an estimated 460 TWh in 2022; consumption from data centres, AI and crypto could double, reaching more than 1,000 TWh in 2026.",
+      "detail": "IEA, Electricity 2024 - Analysis and forecast to 2026, executive summary (verified via web_extract this run; release date 2024-01-24 per IEA report listing, not shown in extracted text).",
+      "value": "460 TWh (2022); >1,000 TWh possible in 2026",
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/electricity-2024/executive-summary",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R6-05-002",
+      "indicator": "I-R6-05",
+      "kind": "forecast",
+      "published": "2024-12-19",
+      "summary": "A Bloc A national laboratory published a congressionally requested update estimating data-centre electricity use back to 2014 and a scenario range of future demand to 2028.",
+      "detail": "LBNL, '2024 Bloc A Data Center Energy Usage Report', published 2024-12-19, DOI 10.71468/P1WC7Q (verified via web_extract this run; scenario figures not in the extracted abstract, so no value recorded).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://eta.lbl.gov/publications/2024-lbnl-data-center-energy-usage-report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R6-05-003",
+      "indicator": "I-R6-05",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "The benchmark the indicator uses (the agency's 2025 base-case projection for 2027) had not been published by the end of the phase.",
+      "detail": "IEA's dedicated AI/data-centre energy projections appeared in 2025, after the phase window (excluded under the as-of rule). Reference page opened: IEA Electricity 2024.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/electricity-2024",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

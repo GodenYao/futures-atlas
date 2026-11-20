@@ -1,0 +1,75 @@
+{
+  "indicator": "I-R5-01",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": ">= 15 distinct organisations with a >= 1e26 FLOP run (shared with I-N-01; counted once per family) (Epoch AI; 2027-12-31)",
+  "generated": "2026-11-19",
+  "merged_with": "I-N-01",
+  "counting_note": "Per owner ruling 2026-11-17 (adjudications.md), I-R5-01 and I-N-01 are merged and I-N-01 is canonical. Items below mirror 2024/I-N-01.json (see duplicate_of) and must NOT be counted as separate evidence. All sources re-opened via web_extract on 2026-11-19; item 004 replaces I-N-01-004's unverified social-media source with a verified vendor press release (suggest updating I-N-01-004 to this source).",
+  "status_at_phase_end": "Not met: 0 organisations with a public >= 1e26 FLOP estimate at end-2024 (largest ~5e25). A 100k-GPU cluster able to run 1e26-scale training was operating by Oct 2024 and being doubled, and a proposed reporting rule set its threshold at 1e26 operations, but no such run was public by year-end.",
+  "items": [
+    {
+      "id": "BF-2024-I-R5-01-001",
+      "duplicate_of": "BF-2024-I-N-01-001",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2024-05-28",
+      "summary": "Compute tracker: frontier training compute grows 4-5x/year; largest known runs ~2e25 and ~5e25 FLOP. Organisation count 0.",
+      "detail": "Epoch AI, 'Training compute of frontier AI models grows by 4-5x per year' (re-verified this run).",
+      "value": "0 organisations; max ~5e25 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-01-002",
+      "duplicate_of": "BF-2024-I-N-01-003",
+      "indicator": "I-R5-01",
+      "kind": "forecast",
+      "published": "2024-08-20",
+      "summary": "Compute tracker: ~2e29 FLOP runs likely feasible by 2030; implies many 1e26+ runs within a few years if trends hold, but not how many organisations.",
+      "detail": "Epoch AI, 'Can AI scaling continue through 2030?' (re-verified this run).",
+      "value": "2e29 FLOP feasible by 2030",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/blog/can-ai-scaling-continue-through-2030",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-01-003",
+      "duplicate_of": "BF-2024-I-N-01-005",
+      "indicator": "I-R5-01",
+      "kind": "treaty-law",
+      "published": "2024-09-11",
+      "summary": "A Bloc A regulator proposed quarterly reporting for training runs above 1e26 operations, expecting it to apply to 'only a small number of entities'.",
+      "detail": "Bloc A BIS proposed rule 89 FR 73612 (re-verified this run; the '0-15 companies' figure in I-N-01-005 was not located in the extracted text this run).",
+      "value": "1e26 operations threshold",
+      "direction": "neutral",
+      "source_url": "https://www.federalregister.gov/documents/2024/09/11/2024-20529/establishment-of-reporting-requirements-for-the-development-of-advanced-artificial-intelligence-models-and-computing-clusters",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-01-004",
+      "duplicate_of": "BF-2024-I-N-01-004",
+      "indicator": "I-R5-01",
+      "kind": "event",
+      "published": "2024-10-28",
+      "summary": "The leading AI-chip vendor announced a Bloc A developer's 100,000-GPU cluster, described as the world's largest AI supercomputer, was training that developer's models and being doubled to 200,000 GPUs. Capacity for 1e26-scale runs existed; no such run public in 2024.",
+      "detail": "NVIDIA press release on xAI Colossus (Memphis), 2024-10-28 (verified this run).",
+      "value": "100k GPUs (doubling to 200k)",
+      "direction": "toward YES",
+      "source_url": "https://nvidianews.nvidia.com/news/spectrum-x-ethernet-networking-xai-colossus",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

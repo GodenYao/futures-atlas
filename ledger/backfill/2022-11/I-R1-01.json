@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R1-01",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": ">= 90% of training compute of the 10 largest known 2027 training runs belongs to organisations headquartered in the two leading jurisdictions (Epoch AI notable/large-scale models database; snapshot 2028-03-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in Dec 2022 (resolves on 2027 runs). State at the timeline start: the largest publicly documented runs (hundreds-of-billions-parameter dense models) belonged to Bloc A firms; Bloc B's largest public models were ~100-260B parameters; a compute tracker reported training compute doubling every ~5-6 months. Several items are pre-window baselines (published before 2022-11-30) that describe what was publicly known at the phase start.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R1-01-001",
+      "indicator": "I-R1-01",
+      "kind": "event",
+      "published": "2022-11-30",
+      "summary": "A Bloc A frontier developer released a conversational model fine-tuned from its latest model series (which finished training in early 2022), trained on a Bloc A cloud provider's AI supercomputing infrastructure.",
+      "detail": "OpenAI, 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run): fine-tuned from GPT-3.5 series; trained on Azure AI supercomputing infrastructure. Compute not disclosed.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-01-002",
+      "indicator": "I-R1-01",
+      "kind": "event",
+      "published": "2022-04-05",
+      "summary": "Pre-window baseline: a Bloc A developer documented a 540-billion-parameter dense language model trained on 6,144 accelerator chips across multiple pods, then among the largest known training runs.",
+      "detail": "Google, 'PaLM: Scaling Language Modeling with Pathways', arXiv 2204.02311, v1 2022-04-05 (verified via web_extract this run). The ~2.5e24 FLOP figure commonly cited is Epoch AI's later database estimate and is not used as an in-phase value.",
+      "value": "540B parameters; 6,144 TPU v4",
+      "direction": "toward YES",
+      "source_url": "https://arxiv.org/abs/2204.02311",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-01-003",
+      "indicator": "I-R1-01",
+      "kind": "event",
+      "published": "2022-10-05",
+      "summary": "Pre-window baseline: a Bloc B university lab released an open 130-billion-parameter bilingual model it reports outperforms a leading Bloc A 175B model on many English benchmarks and the largest Bloc B language model (260B) on related benchmarks.",
+      "detail": "Tsinghua University (THUDM), 'GLM-130B: An Open Bilingual Pre-trained Model', arXiv 2210.02414, v1 2022-10-05 (verified via web_extract this run). Indicates Bloc B's largest public runs were within the leading two jurisdictions but below Bloc A's largest.",
+      "value": "130B parameters",
+      "direction": "toward YES",
+      "source_url": "https://arxiv.org/abs/2210.02414",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-01-004",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2022-02-16",
+      "summary": "Pre-window baseline: the compute tracker's dataset of milestone ML systems found training compute grew ~10-billion-fold since 2010, doubling roughly every 5-6 months, with a distinct 'large-scale era' of industry runs.",
+      "detail": "Epoch AI, 'Compute trends across three eras of machine learning' (paper arXiv 2202.05924; blog verified via web_extract this run). Publication day approximated from the arXiv identifier (mid-Feb 2022). No jurisdiction breakdown of top runs in this piece.",
+      "value": "doubling ~5-6 months (2010-2022)",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/publications/compute-trends",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

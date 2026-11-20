@@ -1,0 +1,42 @@
+{
+  "indicator": "I-R6-04",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "BTOS AI-use share in 2027Q4 is < 1.5x its 2025 average (Bloc A Census BTOS; 2027Q4)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2024 (needs the 2025 baseline and 2027Q4 data). Context: the statistics agency reported firm AI use rising from 3.7% to 5.4% between Sept 2023 and Feb 2024, with ~6.6% expected by early autumn 2024 - growth of roughly 1.5x in about five months from a low base.",
+  "items": [
+    {
+      "id": "BF-2024-I-R6-04-001",
+      "indicator": "I-R6-04",
+      "kind": "data-series",
+      "published": "2024-03-01",
+      "summary": "Bloc A statistics agency working paper: bi-weekly survey estimates of firm AI use rose from 3.7% to 5.4% (Sept 2023 - Feb 2024), with ~6.6% expected by early autumn 2024; few AI users reported employment reductions due to AI.",
+      "detail": "Bloc A Census Bureau, CES Working Paper 24-16, 'Tracking Firm Use of AI in Real Time: A Snapshot from the Business Trends and Outlook Survey' (verified via web_extract this run). Publication day not shown in the extracted text; set to 2024-03-01 as an approximation (paper covers data to Feb 2024; issued spring 2024).",
+      "value": "5.4% of firms using AI (Feb 2024); 6.6% expected by early autumn 2024",
+      "direction": "toward NO",
+      "source_url": "https://www.census.gov/library/working-papers/2024/adrm/CES-WP-24-16.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2024-I-R2-02-001"
+    },
+    {
+      "id": "BF-2024-I-R6-04-002",
+      "indicator": "I-R6-04",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "The indicator's baseline (2025 average) and resolution quarter (2027Q4) lay in the future; no Bloc B equivalent firm-level AI-use series with comparable frequency was located in this run.",
+      "detail": "Comparable series for Bloc B not located; the current BTOS data page (opened this run) shows only post-phase data and is not used for values.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/hfp/btos/data",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

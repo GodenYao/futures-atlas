@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R2-04",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "A top-10 economy legally authorises fully automated decisions (no human sign-off) in a new benefits, tax or immigration domain (Official gazette; OECD.AI; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "No qualifying authorisation identified in 2023. The in-phase direction of travel was toward more safeguards: a Bloc A draft government-wide policy presumed AI used in federal benefits and immigration to be rights-impacting with mandatory safeguards; a large economic bloc's provisional AI law added high-risk obligations; and a national inquiry into an automated debt-recovery scheme (non-top-10 economy) recommended review rights and auditing of automated decision-making. Bloc B gazettes not searched in this run.",
+  "items": [
+    {
+      "id": "BF-2023-I-R2-04-001",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2023-11-01",
+      "summary": "Bloc A's budget office released draft guidance for agency AI use that presumes uses in federal benefits, immigration, health, employment and law enforcement to be rights- or safety-impacting and mandates safeguards (impact assessments, real-world testing, monitoring, notice and remedy).",
+      "detail": "Bloc A OMB, 'OMB Releases Implementation Guidance Following President Biden's Executive Order on Artificial Intelligence', 2023-11-01, draft memo 'Advancing Governance, Innovation, and Risk Management for Agency Use of Artificial Intelligence' for public comment (verified via web_extract this run). Draft only in-phase (finalised as M-24-10 in 2024, excluded).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://bidenwhitehouse.archives.gov/omb/briefing-room/2023/11/01/omb-releases-implementation-guidance-following-president-bidens-executive-order-on-artificial-intelligence/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R2-04-002",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2023-12-09",
+      "summary": "A major economic bloc's legislators reached a provisional deal on a comprehensive AI law: high-risk systems face obligations including a mandatory fundamental-rights impact assessment; citizens get a right to complaints and explanations of high-risk AI decisions affecting them. Not yet formally adopted.",
+      "detail": "Bloc C Parliament press release 20231206IPR15699, 'Artificial Intelligence Act: deal on comprehensive rules for trustworthy AI', 2023-12-09 (verified via web_extract this run). The Bloc C is not itself a single top-10 economy, but binds several (Bloc D, Bloc E, Bloc F).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.europarl.europa.eu/news/en/press-room/20231206IPR15699/artificial-intelligence-act-deal-on-comprehensive-rules-for-trustworthy-ai",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R2-04-003",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2023-07-07",
+      "summary": "A national royal commission into an automated welfare debt-recovery scheme reported 57 recommendations, including that where automated decision-making is used there be a clear review path, public explanation, published business rules, and a body to monitor and audit automated decisions.",
+      "detail": "Report of the Royal Commission into the Robodebt Scheme (Bloc W), presented and tabled 2023-07-07, updated 2023-07-11; Recommendations 17.1-17.2 (verified via web_extract this run). Bloc W is outside the top-10 economies; context for backlash against fully automated benefits decisions.",
+      "value": "57 recommendations",
+      "direction": "toward NO",
+      "source_url": "https://robodebt.royalcommission.gov.au/publications/report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

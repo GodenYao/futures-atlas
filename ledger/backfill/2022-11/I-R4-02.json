@@ -1,0 +1,41 @@
+{
+  "indicator": "I-R4-02",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A developer system card or government AISI evaluation reports a model at the developer's highest published autonomy or AI-R&D risk tier (system cards, AISI reports; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not applicable / not met. No developer had published autonomy or AI-R&D risk tiers and no government AI safety institute existed, so the indicator's measurement apparatus did not yet exist. Developers' public commitments were high-level principles and charters.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R4-02-001",
+      "indicator": "I-R4-02",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No developer had published a tiered autonomy or AI-R&D risk framework and no government AI safety evaluation body existed by the end of the window; the indicator's data did not yet exist.",
+      "detail": "Searched this run; none found. The in-window frontier release (OpenAI 'Introducing ChatGPT', 2022-11-30, verified via web_extract this run) listed limitations but no risk tier or system card with capability thresholds.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-02-002",
+      "indicator": "I-R4-02",
+      "kind": "event",
+      "published": "2022-12-19",
+      "summary": "A Bloc A frontier developer published model-written behavioural evaluations (including self-preservation and resource-acquisition questions) - an early form of dangerous-disposition evaluation, without capability tiers or thresholds.",
+      "detail": "Perez et al. (Anthropic), arXiv:2212.09251, 2022-12-19 (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2212.09251",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

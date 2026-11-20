@@ -1,0 +1,55 @@
+{
+  "indicator": "I-N-01",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": ">= 15 distinct organisations have a training run >= 1e26 FLOP (Epoch AI; snapshot 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "0 organisations known to have a >= 1e26 FLOP run at the timeline start. The largest publicly documented run was a Bloc A developer's 540B-parameter language model at ~2.5e24 FLOP (April 2022), about 40x below the threshold. The chat product launched on 2022-11-30 was fine-tuned from a model series that finished training in early 2022, with no compute disclosed.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-N-01-001",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2022-04-05",
+      "summary": "Independent compute analyst (co-author of the Epoch compute-trends paper): a Bloc A developer's new 540B-parameter model used ~2.56e24 FLOP for its final training run, about 10x GPT-3, making it the largest known run; prior record holders were 3e23-6e23 FLOP.",
+      "detail": "Lennart Heim, 'Estimating PaLM's training cost', 2022-04-05 (verified via web_extract this run), citing the PaLM paper: 6144 TPU v4 chips for 1200 h + 3072 chips for 336 h; ~$9M-$23M cloud-equivalent. Epoch AI's model page (current database, opened this run) lists PaLM (540B) at 2.5e24 FLOP, released 2022-04-04.",
+      "value": "max known run ~2.5e24 FLOP; 0 orgs >= 1e26",
+      "direction": "toward NO",
+      "source_url": "https://blog.heim.xyz/palm-training-cost",
+      "source_tier": 3,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-N-01-002",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2022-02-16",
+      "summary": "Epoch AI trend paper: training compute of milestone ML models grew ~10-billion-fold since 2010 (doubling ~5-6 months); a 'large-scale era' of corporate models since 2015-16 sits 2-3 orders of magnitude above trend but grows slower (doubling ~10 months).",
+      "detail": "Epoch AI, 'Compute Trends Across Three Eras of Machine Learning' (Sevilla et al.), published 2022-02-16, updated 2022-05-02 (verified via web_extract this run). At ~10-month doubling from ~2.5e24, 1e26 would be >4 years away; context for the 2027 snapshot.",
+      "value": "doubling ~10 months (large-scale models)",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/blog/compute-trends",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-N-01-003",
+      "indicator": "I-N-01",
+      "kind": "event",
+      "published": "2022-11-30",
+      "summary": "A Bloc A developer launched a free conversational research preview fine-tuned (RLHF) from a model series that finished training in early 2022 on a partner's cloud supercomputer; no training compute was disclosed.",
+      "detail": "OpenAI, 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run): fine-tuned from GPT-3.5 series, trained on Azure AI supercomputing infrastructure. No FLOP figure published in the window.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

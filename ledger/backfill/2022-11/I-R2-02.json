@@ -1,0 +1,41 @@
+{
+  "indicator": "I-R2-02",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Share of firms using AI to produce goods or services >= 2x its 2025 average (Bloc A Census Bureau BTOS; 2027Q4)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Data gap at the timeline start. The designated survey (BTOS) was running biweekly from mid-2022 but did not yet ask about AI use (the AI question was added in September 2023). The most recent official firm-level AI adoption evidence was the 2018 Annual Business Survey technology module, which found advanced-technology adoption including AI to be rare and skewed to large, older firms.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R2-02-001",
+      "indicator": "I-R2-02",
+      "kind": "data-gap",
+      "published": "2022-06-23",
+      "summary": "Bloc A statistics agency announced a new biweekly business survey (successor to its pandemic small-business pulse survey), with collection from mid-July 2022 covering performance, employment, demand and prices; no AI-use question was part of the announced content.",
+      "detail": "Bloc A Census Bureau, 'BTOS Expands Small Business Pulse Survey, Will Conduct Continuous Data Collection', 2022-06-23 (verified via web_extract this run). The current BTOS data page (also opened) notes the all-employer-business scope from 2023-09-11; the AI supplement began in the 2023 survey cycle, after this window.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.census.gov/library/stories/2022/06/btos-new-light-on-business-health.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R2-02-002",
+      "indicator": "I-R2-02",
+      "kind": "data-series",
+      "published": "2020-12-31",
+      "summary": "Bloc A statistics agency's 2018 business survey technology module (850,000+ firms): digitisation widespread, cloud use common, but adoption of AI and other advanced technologies rare and concentrated in larger, older firms, so worker exposure exceeds firm-count adoption.",
+      "detail": "Zolas, Kroff, Brynjolfsson, McElheran, Beede et al., 'Advanced Technologies Adoption and Use by Bloc A. Firms: Evidence from the Annual Business Survey', NBER Working Paper 28290, Dec 2020 (verified via web_extract this run; abstract only, no adoption percentage captured, so no value recorded). Different survey and question from BTOS; not splice-able.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.nber.org/papers/w28290",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

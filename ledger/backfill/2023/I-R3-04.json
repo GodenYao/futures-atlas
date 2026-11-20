@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R3-04",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "An international body gains inspection or compute-verification powers covering >= 2 of the top-5 compute jurisdictions (treaty text, official gazettes; by 2029-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. Ideas for an IAEA-style agency were floated by a developer and the UN process started, but the main intergovernmental output (a summit declaration signed by both Bloc A and Bloc B) created no body and no inspection or verification powers.",
+  "items": [
+    {
+      "id": "BF-2023-I-R3-04-001",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2023-05-22",
+      "summary": "A top-5 developer proposed that superintelligence efforts above a capability or compute threshold eventually be subject to an international authority able to inspect systems, require audits and test compliance, modelled on the nuclear agency; a proposal only.",
+      "detail": "OpenAI, 'Governance of superintelligence', 2023-05-22 (Altman, Brockman, Sutskever); proposes 'something like an IAEA' and a possible agreed cap on the rate of frontier capability growth.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/governance-of-superintelligence/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-04-002",
+      "indicator": "I-R3-04",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "A summit declaration signed by Bloc A, Bloc B and other states committed signatories to cooperate on frontier-AI risk 'through existing international fora' and future summits; non-binding, created no body and no inspection or verification powers.",
+      "detail": "The Bletchley Declaration by Countries Attending the AI Safety Summit, 1-2 November 2023 (Bloc G GOV.Bloc G). Signatories included the Bloc A and Bloc B (and the Bloc C).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.gov.uk/government/publications/ai-safety-summit-2023-the-bletchley-declaration/the-bletchley-declaration-by-countries-attending-the-ai-safety-summit-1-2-november-2023",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-04-003",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2023-12-21",
+      "summary": "A UN high-level advisory body on AI published an interim report on global AI governance; advisory, conferring no inspection or verification powers on any institution.",
+      "detail": "UN Secretary-General's High-level Advisory Body on AI, interim report 'Governing AI for Humanity', December 2023 (landing page confirms December 2023 interim report; exact day approximate). Landing page also refers to the Sept 2024 final report, which is outside the phase and not used here.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://un.org/sites/un2.un.org/files/un_ai_advisory_body_interim_report_press_release.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

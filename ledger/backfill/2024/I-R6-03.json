@@ -1,0 +1,27 @@
+{
+  "indicator": "I-R6-03",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "The Epoch Capabilities Index gain in 2027 is < 50% of its 2025 gain (Epoch AI; 2028-01)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Data gap: the composite capabilities index named in the indicator was not published during 2024, and neither reference year (2025, 2027) had occurred. Only per-benchmark comparisons existed.",
+  "items": [
+    {
+      "id": "BF-2024-I-R6-03-001",
+      "indicator": "I-R6-03",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No composite capabilities index existed during the phase; the compute tracker published per-benchmark comparisons (e.g. open vs closed model lags), which cannot be used to compute the indicator's year-on-year index gain.",
+      "detail": "Epoch AI's 2024 work compared models benchmark by benchmark (e.g. 'Open vs. closed AI: How behind are open models?', early November 2024, opened via web_extract this run). The Epoch Capabilities Index appeared only after the phase window and is excluded under the as-of rule.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/blog/open-models-report",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

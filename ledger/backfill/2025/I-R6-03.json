@@ -1,0 +1,97 @@
+{
+  "indicator": "I-R6-03",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "The Epoch Capabilities Index gain in 2027 is < 50% of its 2025 gain (Epoch AI; resolves 2028-01)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "2025 is the baseline year, and the index itself only launched in October 2025. As of the Dec-2025 vintage, the frontier stood at ~154 (a Bloc A developer's model released 2025-11-18); GPT-5 = 150 by construction (anchor). Epoch reported a frontier rate of ~15 pts/yr since an April-2024 breakpoint (vs ~8 before). No official '2025 gain' number was published in-phase; the end-2024 frontier value on the Dec-2025 vintage was not retrieved, so the baseline must be computed from the scale in force at resolution (later vintages put it at ~12.4). In-phase evidence pointed to continued fast progress, not a plateau.",
+  "items": [
+    {
+      "id": "BF-2025-I-R6-03-001",
+      "indicator": "I-R6-03",
+      "kind": "data-series",
+      "published": "2025-09-30",
+      "summary": "Before the composite index existed, the benchmark tracker reported steady capability gains over the prior 12 months across math, agentic coding, visual and common-sense reasoning (e.g. +25 pts on a graduate science benchmark, +52 pts on a coding benchmark, +23 pts on research-level math).",
+      "detail": "Epoch AI Data Insight 'AI capabilities have steadily improved over the past year' (2025-09-30): GPQA Diamond +25%, Aider Polyglot +52%, VPCT +26%, SimpleBench +21%, FrontierMath +23% (Oct 2024 - Jul 2025). Verified via web_extract.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/ai-capabilities-over-past-year",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-03-002",
+      "indicator": "I-R6-03",
+      "kind": "data-series",
+      "published": "2025-10-31",
+      "summary": "The capabilities index named by this indicator was launched in October 2025: an item-response-style composite of ~40 benchmarks, scaled so that a mid-2024 model = 130 and a mid-2025 flagship = 150. The indicator's series begins here; earlier values are retrospective fits.",
+      "detail": "Epoch AI Brief October 2025 (2025-10-31, verified) announcing the ECI; LessWrong 'Introducing the Epoch Capabilities Index' (Oct 2025). Anchors: Claude 3.5 Sonnet = 130, GPT-5 = 150 (ECI FAQ). Exact launch day not verified; month-end brief used as published date.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epochai.substack.com/p/the-epoch-ai-brief-october-2025",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-03-003",
+      "indicator": "I-R6-03",
+      "kind": "data-series",
+      "published": "2025-10-31",
+      "summary": "At launch, 2025 releases climbed the scale steadily: a spring reasoning model ~146.8, a mid-year model ~148.8, the August flagship 150 (anchor) and an October variant ~150.3, all from Bloc A developers.",
+      "detail": "Values from the Dec-2025 vintage table in Epoch 'AI capabilities progress has sped up': o3 (2025-04-16) 146.76, o3-pro (2025-06-10) 148.75, Grok 4 (2025-07-09) 147.42, GPT-5 (2025-08-07) 150.00, GPT-5 Pro (2025-10-07) 150.33. Launch-vintage values may differ by <1 pt.",
+      "value": "ECI ~150.3 (Oct 2025 frontier)",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/data-insights/ai-capabilities-progress-has-sped-up",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-03-004",
+      "indicator": "I-R6-03",
+      "kind": "data-series",
+      "published": "2025-12-23",
+      "summary": "End-2025 frontier on the index: ~154.0 (Bloc A developer, released 2025-11-18), followed by ~152.9 and ~152.0 for two December releases; about +4 over the August anchor model within four months.",
+      "detail": "Epoch Data Insight 'AI capabilities progress has sped up' (2025-12-23; CSV updated 2025-12-29), verified: Gemini 3 Pro 153.99, Gemini 3 Flash 152.88, GPT-5.2 (xhigh) 152.03, Claude Opus 4.5 149.93.",
+      "value": "ECI 154.0",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/ai-capabilities-progress-has-sped-up",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-03-005",
+      "indicator": "I-R6-03",
+      "kind": "data-series",
+      "published": "2025-12-23",
+      "summary": "Epoch: the best index score grew almost twice as fast in the last two years as in the two before, with a breakpoint around April 2024 (~8 -> ~15 points/yr), consistent with a time-horizon acceleration. A 2027 gain below half of 2025 would require reverting below the pre-breakpoint pace.",
+      "detail": "Same Data Insight (Edelman, Lee). Later superseded (Sept 2026 insight, April 2026 report) - superseding content is post-phase and not used here.",
+      "value": "~15 ECI pts/yr (post-Apr-2024)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/data-insights/ai-capabilities-progress-has-sped-up",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-03-006",
+      "indicator": "I-R6-03",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No official '2025 gain' figure was published in-phase, and the index is refitted as models are added (historical values shift ~0.5-1 pt). The baseline the indicator needs must be recomputed on the scale in force at resolution.",
+      "detail": "Dec-2025 vintage end-2024 frontier (o1) value not retrieved this run. Post-phase vintages give 142.67 -> 155.07 (=12.4), not used as in-phase evidence.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/data/eci-documentation/faq",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

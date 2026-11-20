@@ -1,0 +1,55 @@
+{
+  "indicator": "I-TF-01",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Labour share (nonfarm business, 4-quarter average) in 2027 is >= 1 pp below 2025 (Bloc A BLS Productivity & Costs; Q4 2027 release)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2023 (2025 baseline did not exist). Context: in 2023 releases, productivity recovered from its record 2022 decline (Q3 2023 +2.4% y/y) while real hourly compensation rose only 0.4% y/y, implying compensation lagged output per hour; the release text itself does not state a labour-share level, so no share value is recorded.",
+  "items": [
+    {
+      "id": "BF-2023-I-TF-01-001",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2023-03-02",
+      "summary": "Bloc A statistics office: nonfarm business productivity fell 1.7% in 2022 (annual average), the largest annual decline since 1974; unit labour costs rose 6.3% over the four quarters to Q4 2022.",
+      "detail": "Bloc A BLS, Productivity and Costs, Fourth Quarter and Annual Averages 2022, Revised (USDL 23-0398), 2023-03-02 (verified via web_extract this run). Falling productivity with rising unit labour costs is the pattern that typically raises measured labour share.",
+      "value": "-1.7% productivity 2022; ULC +6.3% y/y Q4 2022",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_03022023.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-TF-01-002",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2023-09-07",
+      "summary": "Q2 2023 nonfarm business productivity +3.5% (annualised), +1.2% y/y, the first positive four-quarter change since Q4 2021; real hourly compensation -0.3% y/y.",
+      "detail": "Bloc A BLS, Productivity and Costs, Second Quarter 2023, Revised (USDL 23-1942), 2023-09-07, reissued 2023-09-18 for an hours-worked error (corrections <= 0.1 pp) (verified via web_extract this run).",
+      "value": "+1.2% productivity y/y Q2 2023; real hourly comp -0.3% y/y",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_09072023.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-TF-01-003",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2023-12-06",
+      "summary": "Q3 2023 nonfarm business productivity +5.2% (annualised), +2.4% y/y; unit labour costs -1.2% in the quarter and +1.6% y/y; real hourly compensation +0.4% y/y, i.e. compensation lagged output per hour.",
+      "detail": "Bloc A BLS, Productivity and Costs, Third Quarter 2023, Revised (USDL 23-2529), 2023-12-06 (verified via web_extract this run). Productivity outpacing real compensation is consistent with a falling labour share, but the release gives no share level; base-rate context only for a 2027-vs-2025 test.",
+      "value": "+2.4% productivity y/y Q3 2023; real hourly comp +0.4% y/y",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_12062023.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R1-05",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Combined FY2027 capex of the 5 largest AI/cloud spenders >= 1.2x FY2026 (Securities filings; on FY2027 filings)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in Dec 2022. No capex filings fell in the window (Q4/FY2022 results were published from late January 2023, excluded). In-window evidence is trade-press reporting that one top spender paused or 'rescoped' around a dozen data-centre builds to redesign them for AI workloads; the latest pre-window filing showed that spender's quarterly capex near $9.5 bn.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R1-05-001",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2022-10-26",
+      "summary": "Pre-window baseline: a top AI/cloud spender reported Q3 2022 capital expenditures (including finance-lease principal) of $9.52 bn while revenue fell 4% year on year.",
+      "detail": "Meta, 'Meta Reports Third Quarter 2022 Results', 2022-10-26 (verified via web_extract this run). Forward 2023 capex guidance in the release was not in the extracted text and is not recorded.",
+      "value": "$9.52 bn Q3 2022 capex",
+      "direction": "neutral",
+      "source_url": "https://investor.atmeta.com/investor-news/press-release-details/2022/Meta-Reports-Third-Quarter-2022-Results/default.aspx",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-05-002",
+      "indicator": "I-R1-05",
+      "kind": "event",
+      "published": "2022-12-15",
+      "summary": "Trade press (exclusive): a top spender cancelled one data-centre expansion and was reworking ('rescoping') its other under-development projects for a new design for AI workloads, likely delaying construction timelines; the firm said AI at scale needs a different type of data centre.",
+      "detail": "DatacenterDynamics (Sebastian Moss), 'Exclusive: After Meta cancels Odense data center expansion, projects are being rescoped globally', 2022-12-14 (verified via web_extract this run); 11 under-development projects affected.",
+      "value": "11 projects rescoped, 1 cancelled",
+      "direction": "neutral",
+      "source_url": "https://www.datacenterdynamics.com/en/news/exclusive-after-meta-cancels-odense-data-center-expansion-other-projects-are-being-rescoped/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-05-003",
+      "indicator": "I-R1-05",
+      "kind": "event",
+      "published": "2022-12-16",
+      "summary": "The same spender confirmed a temporary construction pause at a large data centre begun that spring, to change its design; trade press reported it was redesigning data centres for AI workloads, with new designs not yet final.",
+      "detail": "DatacenterDynamics, 'Meta pauses construction on Temple, Texas, data center as part of AI rescope', 2022-12-16 (verified via web_extract this run; includes company statement).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.datacenterdynamics.com/en/news/meta-pauses-construction-of-temple-texas-data-center-as-part-of-ai-rescope/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-05-004",
+      "indicator": "I-R1-05",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No securities filing with capex data from the five largest spenders was published inside the window; full-year 2022 figures appeared only from late January 2023 and are excluded under the as-of rule.",
+      "detail": "Q3 2022 10-Qs were filed in late October 2022 (pre-window); Q4/FY2022 10-Ks and earnings releases followed in Jan-Feb 2023. Reference page opened this run: Meta Q3 2022 results release.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://investor.atmeta.com/investor-news/press-release-details/2022/Meta-Reports-Third-Quarter-2022-Results/default.aspx",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

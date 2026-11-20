@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R3-03",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "A top-3 compute jurisdiction has licensing or pre-approval of frontier training above a compute threshold in force (official gazette; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met at end-2024. Bloc A had only reporting (not approval) duties: an executive-order survey (Jan 2024) and a proposed quarterly reporting rule for training runs >1e26 operations (Sept 2024, not final). The most ambitious sub-national bill (frontier-model safety duties plus a new oversight board) was vetoed in Sept. Bloc B's 2023 interim measures require filing before public-facing generative services launch, but expressly exclude R&D not offered to the public, so they do not license training. A large economic bloc's AI act (in force Aug 2024) presumes systemic risk at a compute threshold and requires notification, not pre-approval.",
+  "items": [
+    {
+      "id": "BF-2024-I-R3-03-001",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2024-09-11",
+      "summary": "Bloc A's commerce department proposed a rule requiring quarterly notification of planned or ongoing training runs above 1e26 operations and of large computing clusters. Reporting only, no approval; proposed, not in force in 2024. It also confirms a mandatory survey of frontier developers was issued on 2024-01-26.",
+      "detail": "Bloc A BIS, 'Establishment of Reporting Requirements for the Development of Advanced AI Models and Computing Clusters', proposed rule, 89 FR 73612 (FR Doc. 2024-20529), comments closed 2024-10-11; implements EO 14110 s.4.2.",
+      "value": "1e26 operations (reporting threshold)",
+      "direction": "toward NO",
+      "source_url": "https://www.federalregister.gov/documents/2024/09/11/2024-20529/establishment-of-reporting-requirements-for-the-development-of-advanced-artificial-intelligence-models-and-computing-clusters",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-03-002",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2024-09-29",
+      "summary": "The governor of the sub-national jurisdiction home to most leading AI firms vetoed a bill that would have imposed safety duties on developers of large (compute/cost-thresholded) models and created a state board to oversee them, arguing compute thresholds give 'a false sense of security'.",
+      "detail": "California Governor Newsom, SB 1047 veto message, 2024-09-29.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.gov.ca.gov/wp-content/uploads/2024/09/SB-1047-Veto-Message.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-03-003",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2023-07-13",
+      "summary": "Bloc B's interim generative-AI measures (in force since 2023-08-15, operative through 2024) regulate generative services offered to the public, with pre-launch filing; Article 2 excludes organisations that research or develop the technology without offering it to the public. Service filing, not licensing of training.",
+      "detail": "CAC et al., 生成式人工智能服务管理暂行办法 (Order No. 15), published 2023-07-13, effective 2023-08-15. Article 2 scope exclusion verified this run. CAC's 2024 filing tally (302 services) was published 2025-01-08, after the phase end, so not used.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-03-004",
+      "indicator": "I-R3-03",
+      "kind": "treaty-law",
+      "published": "2024-07-12",
+      "summary": "A large economic bloc (not clearly a top-3 compute jurisdiction) published its AI act; general-purpose models above a training-compute threshold are presumed to carry systemic risk and must be notified and evaluated, but training does not need pre-approval. GPAI obligations apply from Aug 2025.",
+      "detail": "Regulation (Bloc C) 2024/1689 (AI Act), OJ L 2024-07-12, in force 2024-08-01; Art. 51-52 (10^25 FLOP presumption, notification). Page verified this run; threshold article not in the extracted excerpt.",
+      "value": "1e25 FLOP (systemic-risk presumption)",
+      "direction": "neutral",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

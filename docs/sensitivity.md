@@ -1,6 +1,6 @@
 # Sensitivity of the leading ending (week 2026-W46)
 
-What this tests: the published W46 result (method 4.3.0, Pooled lens, central values; computed before the 2026-11-20 data rulings, see CHANGELOG), with
+What this tests: the published W46 result (method 4.3.0, Pooled lens, central values; computed before the 2026-11-20 data rulings, see CHANGELOG; also before method 4.5.0 added the 2022-11..2025 phases, which moved W46 Pooled to Enslaved God 18.0 % / Conquerors 17.4 %), with
 **one parameter at a time** moved to each end of a plausible range while everything else stays at its
 default. 279 ranges were tested: 42 engine parameters, 24 lens priors, all 32 split cells, all 180
 likelihood cells, and the one maintainer ruling that moves the numbers. Script:

@@ -1,0 +1,97 @@
+{
+  "indicator": "I-TF-01",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Labour share (nonfarm business, 4-quarter average) in 2027 is >= 1 pp below 2025 (BLS Productivity & Costs, Q4 2027 release)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Indicator not resolvable in 2024 (baseline year 2025 not yet observed). 2024 releases showed Bloc A nonfarm-business productivity growth of ~2% y/y with unit labour costs rising a little faster than or in line with prices; the labour share was roughly flat at a historically low level after the 2022 drop. A strong Q1 2024 unit-labour-cost rise (later revised to +8.5% annualised in the Sept-2024 NIPA update vintage) pushed the share up early in the year, followed by softer Q2-Q3 cost growth. No AI-attributable fall visible in 2024 data.",
+  "items": [
+    {
+      "id": "BF-2024-I-TF-01-001",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2024-03-07",
+      "summary": "Revised Q4 2023 release: Bloc A nonfarm-business productivity +3.2% (annualised), unit labour costs +0.4% in Q4 and +2.5% over four quarters; 2023 annual productivity +1.3%. Low unit-labour-cost growth relative to prices implied a slightly falling labour share at end-2023.",
+      "detail": "BLS Productivity and Costs, Fourth Quarter and Annual Averages 2023, Revised (2024-03-07, verified). Release reissued 2024-04-26 with notice of hours-worked errors 2019Q1-2023Q4, corrected in the 2024-05-02 release.",
+      "value": "ULC +0.4% (Q4 2023, q/q ann.); productivity +3.2%",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_03072024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-01-002",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2024-05-02",
+      "summary": "Preliminary Q1 2024 release: productivity growth slowed to ~+0.3% (annualised) while unit labour costs rose ~4.7%, implying a rise in labour share in Q1 2024.",
+      "detail": "BLS Productivity and Costs, First Quarter 2024, Preliminary (2024-05-02), which also incorporated the corrected hours data. Values from memory of release coverage; revised 2024-06-06 to productivity +0.2%, ULC +4.0% (also not verified this run).",
+      "value": "ULC ~+4.7% (Q1 2024, q/q ann., preliminary)",
+      "direction": "toward NO",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_05022024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-01-003",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2024-09-05",
+      "summary": "Revised Q2 2024 release: productivity ~+2.5% (annualised) with unit labour costs ~+0.4%, i.e. labour costs growing more slowly than prices and the labour share easing back in Q2.",
+      "detail": "BLS Productivity and Costs, Second Quarter 2024, Revised (2024-09-05); preliminary 2024-08-01 had productivity +2.3%, ULC +0.9%. Values from memory of release coverage, not verified this run. Later vintages (after the 2024-09-26 NIPA annual update) show Q2 ULC +2.4%.",
+      "value": "ULC ~+0.4% (Q2 2024, q/q ann., revised)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_09052024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-01-004",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2024-11-07",
+      "summary": "Preliminary Q3 2024 release (incorporating the annual national-accounts update): productivity +2.2% (annualised), +2.0% y/y; unit labour costs +1.9%. Updated history shows Q1 2024 unit labour costs +8.5%, Q2 +2.4%: labour share rose early in 2024 and was broadly flat thereafter.",
+      "detail": "BLS Productivity and Costs, Third Quarter 2024, Preliminary (2024-11-07); quarterly table as reproduced in BLS The Economics Daily 2024-11-14 (verified via search snippet).",
+      "value": "ULC +1.9% (Q3 2024, q/q ann., preliminary)",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/opub/ted/2024/productivity-up-2-2-percent-in-third-quarter-2024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-01-005",
+      "indicator": "I-TF-01",
+      "kind": "data-series",
+      "published": "2024-12-10",
+      "summary": "Revised Q3 2024 release: productivity +2.2% unrevised; unit labour costs revised down to +0.8% (annualised), +2.2% y/y; real hourly compensation +1.6% y/y. Productivity outpacing real compensation slightly in Q3.",
+      "detail": "BLS Productivity and Costs, Third Quarter 2024, Revised (2024-12-10, delayed from early Dec; verified via search snippet of release text and PDF Table A1).",
+      "value": "ULC +0.8% (Q3 2024, q/q ann., revised)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_12102024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-01-006",
+      "indicator": "I-TF-01",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "The indicator compares 2027 with 2025; neither period existed in 2024. The labour-share index is revised with each national-accounts update, so 2024-vintage levels are not comparable with later vintages. No comparable quarterly labour-share series exists for Bloc B.",
+      "detail": "FRED PRS85006173 (current vintage, 2017=100) is a later vintage and is not used here (strict as-of rule). Bloc B NBS has no quarterly labour-share release.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://fred.stlouisfed.org/series/PRS85006173",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

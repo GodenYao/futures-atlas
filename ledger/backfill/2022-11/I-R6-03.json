@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R6-03",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "The Epoch Capabilities Index gain in 2027 is < 50% of its 2025 gain (Epoch AI; 2028-01)",
+  "generated": "2026-11-20",
+  "status_at_phase_end": "Data gap. The Epoch Capabilities Index did not exist; the main ML-trends analysis of the time tracked training compute (doubling ~every 6 months since ~2010), not a capability index. The nearest available capability measures were broad benchmark suites launched in 2022. Within the window a major conversational model launch (2022-11-30) signalled continued capability progress rather than a plateau, but no index-based gain can be computed.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R6-03-001",
+      "indicator": "I-R6-03",
+      "kind": "data-gap",
+      "published": "2022-02-11",
+      "summary": "The main published ML-trends analysis of the time tracked training compute (training compute doubling roughly every 6 months in the deep-learning era, with a separate large-scale trend from late 2015) but no capabilities index; the indicator metric did not exist at phase end.",
+      "detail": "Sevilla, Heim, Ho, Besiroglu, Hobbhahn, Villalobos, 'Compute Trends Across Three Eras of Machine Learning', arXiv:2202.05924 (v1 2022-02-11, v2 2022-03-09; verified via web_extract this run). No capabilities index existed as of 2022.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2202.05924",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-03-002",
+      "indicator": "I-R6-03",
+      "kind": "data-gap",
+      "published": "2022-11-17",
+      "summary": "The nearest capability-measurement effort at the time was a newly launched holistic benchmark covering 30 prominent language models across many scenarios and metrics - a cross-sectional snapshot, not a time series of frontier gains.",
+      "detail": "Stanford CRFM, 'Language Models are Changing AI: The Need for Holistic Evaluation' (HELM), 2022-11-17 (verified via web_extract this run).",
+      "value": "30 models benchmarked",
+      "direction": "neutral",
+      "source_url": "https://crfm.stanford.edu/2022/11/17/helm.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-03-003",
+      "indicator": "I-R6-03",
+      "kind": "event",
+      "published": "2022-06-09",
+      "summary": "A large collaborative benchmark suite for quantifying and extrapolating language-model capabilities was released in mid-2022, another sign that capability measurement was benchmark-based rather than index-based.",
+      "detail": "'Beyond the Imitation Game' (BIG-bench), arXiv:2206.04615, v1 2022-06-09 (verified via web_extract this run; the abstract page shown is v3 of 2023-06-12, so only the title, date and repo are used).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2206.04615",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-03-004",
+      "indicator": "I-R6-03",
+      "kind": "event",
+      "published": "2022-11-30",
+      "summary": "In the window a Bloc A developer launched a dialogue model trained with reinforcement learning from human feedback on a newer model series, a qualitative capability step rather than a plateau signal; no index measured the gain.",
+      "detail": "OpenAI, 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run): fine-tuned from a GPT-3.5 series model that finished training in early 2022; trained with RLHF; listed limitations include plausible-sounding but incorrect answers.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

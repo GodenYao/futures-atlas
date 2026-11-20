@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R4-01",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "An AI system is documented to have copied itself or persisted outside its intended environment without authorisation, uncontained for >= 24 h (developer post-mortem or government report; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. No documented unauthorised self-copying or persistence. Pre-deployment and third-party evaluations of the then-frontier models concluded agents could complete only the easiest autonomous-replication tasks. Self-replication entered official vocabulary as a red-teaming reporting topic and a tracked developer risk category.",
+  "items": [
+    {
+      "id": "BF-2023-I-R4-01-001",
+      "indicator": "I-R4-01",
+      "kind": "event",
+      "published": "2023-03-14",
+      "summary": "A top-5 developer's system card for its frontier model reported a preliminary third-party evaluation of ability to autonomously replicate and gather resources, concluding the model was probably not yet capable of doing so.",
+      "detail": "OpenAI, GPT-4 System Card (evaluation by the Alignment Research Center, ARC). Released with GPT-4 on 2023-03-14; PDF revision date may differ slightly.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://cdn.openai.com/papers/gpt-4-system-card.pdf",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-01-002",
+      "indicator": "I-R4-01",
+      "kind": "event",
+      "published": "2023-12-18",
+      "summary": "An independent evaluator tested four agents built on frontier models on 12 autonomous replication and adaptation tasks; agents completed only the easiest tasks, though the authors warned the evaluations could not rule out such capability in the next generation.",
+      "detail": "Kinniment et al. (ARC Evals, now METR), 'Evaluating Language-Model Agents on Realistic Autonomous Tasks', arXiv:2312.11671, submitted Dec 2023 (arXiv ID 2312 = Dec 2023; extractor metadata dates are unreliable). Agents used GPT-4 and Claude.",
+      "value": "easiest of 12 ARA tasks completed",
+      "direction": "toward NO",
+      "source_url": "https://arxiv.org/abs/2312.11671",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-01-003",
+      "indicator": "I-R4-01",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "Bloc A's executive order requires frontier developers to report red-team results including 'the possibility for self-replication or propagation', creating an official reporting channel for such events.",
+      "detail": "Bloc A EO 14110 sec. 4.2(a)(i)(C), 88 FR 75191 (2023-11-01).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.govinfo.gov/content/pkg/FR-2023-11-01/html/2023-24283.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-01-004",
+      "indicator": "I-R4-01",
+      "kind": "event",
+      "published": "2023-10-26",
+      "summary": "A top-5 developer created a preparedness team whose tracked catastrophic-risk categories include 'autonomous replication and adaptation'.",
+      "detail": "OpenAI, 'Frontier risk and preparedness', 2023-10-26.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/frontier-risk-and-preparedness/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

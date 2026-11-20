@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R5-02",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "The best open-weight model reaches the frontier score of 6 months earlier (Epoch Capabilities Index; rolling; 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met during 2023 on the evidence available in-phase. The frontier from mid-2023 (the March 2023 proprietary model) was not matched by any open-weight model by year-end: the best open-weight releases (July and December) matched the previous-generation proprietary model, implying an open-weight lag of well over 6 months. The Epoch Capabilities Index did not yet exist (data-gap for the named series).",
+  "items": [
+    {
+      "id": "BF-2023-I-R5-02-001",
+      "indicator": "I-R5-02",
+      "kind": "event",
+      "published": "2023-03-15",
+      "summary": "A top-5 developer published the technical report for its new frontier proprietary model, setting the 2023 frontier reference point.",
+      "detail": "OpenAI, 'GPT-4 Technical Report', arXiv:2303.08774 v1 2023-03-15 (later versions to Mar 2024 exist; only v1-era content relevant).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2303.08774",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-02-002",
+      "indicator": "I-R5-02",
+      "kind": "event",
+      "published": "2023-07-18",
+      "summary": "A top-5 developer released an open-weight model family (up to 70B parameters) for research and commercial use; its own paper says the largest is close to the previous-generation proprietary model on knowledge and math benchmarks but has 'a large gap in performance' versus the frontier model released four months earlier.",
+      "detail": "Meta, Llama 2 announcement 2023-07-18; Touvron et al., 'Llama 2: Open Foundation and Fine-Tuned Chat Models', arXiv:2307.09288 - 'Llama 2 70B is close to GPT-3.5 on MMLU and GSM8K ... There is still a large gap in performance between Llama 2 70B and GPT-4 and PaLM-2-L'.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/pdf/2307.09288",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-02-003",
+      "indicator": "I-R5-02",
+      "kind": "event",
+      "published": "2023-12-11",
+      "summary": "A lab outside Bloc A and Bloc B released an Apache-licensed open-weight mixture-of-experts model that it says matches or outperforms the previous-generation proprietary model on most standard benchmarks - still behind the March 2023 frontier, i.e. an open-weight lag of more than 6 months at year-end.",
+      "detail": "Mistral AI, 'Mixtral of experts', 2023-12-11: 'matches or outperforms GPT3.5 on most standard benchmarks'; 'strongest open-weight model with a permissive license'.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://mistral.ai/news/mixtral-of-experts",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-02-004",
+      "indicator": "I-R5-02",
+      "kind": "event",
+      "published": "2023-12-06",
+      "summary": "A further proprietary model was announced in December claiming a new high (90.0%) on a major knowledge benchmark, pushing the frontier further ahead of open-weight models.",
+      "detail": "Google, Gemini launch post, 2023-12-06 (Gemini Ultra MMLU 90.0%; Ultra not generally available until 2024).",
+      "value": "90.0% MMLU (claimed)",
+      "direction": "toward NO",
+      "source_url": "https://blog.google/technology/ai/google-gemini-ai/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-02-005",
+      "indicator": "I-R5-02",
+      "kind": "data-gap",
+      "published": "2023-12-31",
+      "summary": "The named resolution series (a composite capabilities index) was not published in 2023; in-phase comparisons rely on developer-reported benchmarks.",
+      "detail": "Epoch Capabilities Index launched after the phase; no in-phase index values exist. Assessment above uses developer self-reports (MMLU/GSM8K).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://mistral.ai/news/mixtral-of-experts",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

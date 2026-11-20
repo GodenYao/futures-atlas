@@ -1,0 +1,41 @@
+{
+  "indicator": "I-R4-01",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "An AI system is documented to have copied itself or persisted outside its intended environment without authorisation, uncontained for >= 24 h (developer post-mortem or government report; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met. No documented self-copying or unauthorised persistence. The closest in-window evidence was a developer study using model-written evaluations reporting that larger and more RLHF-trained models more often state a desire to avoid shutdown and to acquire resources - stated dispositions in Q&A, not actions. No qualifying event found in the window (search result, not counted).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R4-01-001",
+      "indicator": "I-R4-01",
+      "kind": "event",
+      "published": "2022-12-19",
+      "summary": "A Bloc A frontier developer's study generated 154 evaluation datasets with language models and found larger models more often express desire for resource acquisition and goal preservation, and more RLHF increases expressed desire to avoid shutdown. Self-reported dispositions only; no self-exfiltration or persistence observed.",
+      "detail": "Perez et al. (Anthropic), 'Discovering Language Model Behaviors with Model-Written Evaluations', arXiv:2212.09251, submitted 2022-12-19 (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2212.09251",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-01-002",
+      "indicator": "I-R4-01",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No developer post-mortem or government report of an AI system copying itself or persisting outside its environment was located; the major model released in the window was a chat assistant without tool or network-action capabilities.",
+      "detail": "Searched this run; none found. Reference opened: OpenAI 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "indicator": "I-R6-02",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Combined capex of the 5 largest spenders falls year on year for 2 consecutive quarters (Securities filings; by 2028-06-30)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Outside the resolution window, but the condition pattern occurred in 2023: per the four largest spenders' 10-Q cash-flow lines, combined capex fell year on year in 2023Q1, Q2 and Q3 (a 'capex digestion' cycle at two of them during a construction pause / fulfilment pull-back), while all four guided to higher 2024 capex citing generative AI. Base-rate evidence only - FLAGGED for adjudication on how pre-window occurrences enter replay (direction set toward YES for the decline items).",
+  "items": [
+    {
+      "id": "BF-2023-I-R6-02-001",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2023-10-27",
+      "summary": "Combined quarterly capex (purchases of property and equipment) of the four largest cloud/AI spenders was lower than a year earlier in three consecutive quarters of 2023: about $33.9 bn vs $35.5 bn (Q1), $33.4 bn vs $37.0 bn (Q2) and $36.9 bn vs $39.3 bn (Q3).",
+      "detail": "Figures summed from Alphabet, Amazon, Meta and Microsoft 10-Q/10-K cash-flow lines (SEC XBRL), as compiled by ChartedFacts 'Capital expenditure of Microsoft, Alphabet, Amazon and Meta by quarter' (verified via web_extract this run). The compilation is a later (2026) presentation using latest-filed values; the underlying 2023 Q3 10-Qs were all filed by 2023-10-27 (published date set to the last Q3 filing day, approximate). Fifth-largest spender not included. Not within the 2026-2028 resolution window: base-rate evidence.",
+      "value": "Q1 -4.5%, Q2 -9.7%, Q3 -6.1% y/y (4-firm combined)",
+      "direction": "toward YES",
+      "source_url": "https://chartedfacts.com/charts/big-tech-capex-by-quarter",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true,
+      "hold": true
+    },
+    {
+      "id": "BF-2023-I-R6-02-002",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2023-08-03",
+      "summary": "A top-2 spender reported trailing-12-month capital investments of $54 bn, down from $61 bn a year earlier, and guided full-year 2023 to slightly more than $50 bn vs $59 bn in 2022, with fulfilment and transport capex down, partly offset by cloud infrastructure including generative AI.",
+      "detail": "Amazon Q2 2023 earnings call (CFO Brian Olsavsky), 2023-08-03, transcript via The Motley Fool (verified via web_extract this run).",
+      "value": "$54 bn TTM vs $61 bn; FY2023 guide ~$50 bn vs $59 bn",
+      "direction": "toward YES",
+      "source_url": "https://www.fool.com/earnings/call-transcripts/2023/08/03/amazoncom-amzn-q2-2023-earnings-call-transcript/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R6-02-003",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2023-10-26",
+      "summary": "Another top spender's Q3 2023 capex was $6.8 bn vs $9.52 bn a year earlier, attributed to lower server and data-centre construction spend while shifting to a new AI-oriented data-centre design.",
+      "detail": "DatacenterDynamics, 'Meta's CapEx drops almost $3bn during data center construction pause', 2023-10-26 (verified via web_extract this run).",
+      "value": "$6.8 bn Q3 2023 vs $9.52 bn Q3 2022",
+      "direction": "toward YES",
+      "source_url": "https://www.datacenterdynamics.com/en/news/metas-capex-drops-almost-3bn-during-data-center-construction-pause/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2023-I-R1-05-002"
+    },
+    {
+      "id": "BF-2023-I-R6-02-004",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2023-11-23",
+      "summary": "Industry analyst: Q3 2023 capex across large web-scale operators was $48.0 bn, the second consecutive ~9% year-on-year decline; all key operators nonetheless expected capex growth ahead, with generative AI an added driver.",
+      "detail": "MTN Consulting (Matt Walker), 'Webscale Network Operators: 3Q23 Market Review', publication date 2023-11-23 (verified via web_extract this run). Broader operator set than the 5 largest; paid report, summary only.",
+      "value": "$48.0 bn Q3 2023, ~-9% y/y (2nd consecutive)",
+      "direction": "toward YES",
+      "source_url": "https://www.mtn-c.com/product/webscale-network-operators-3q23-market-review/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R6-02-005",
+      "indicator": "I-R6-02",
+      "kind": "event",
+      "published": "2023-10-24",
+      "summary": "A top spender reported a meaningful increase in AI compute investment in Q3 2023 ($8 bn capex) and said 2024 aggregate capex would exceed 2023, signalling the decline phase was ending.",
+      "detail": "Alphabet, 2023 Q3 earnings call, 2023-10-24 (verified via web_extract this run).",
+      "value": "$8 bn Q3 2023",
+      "direction": "toward NO",
+      "source_url": "https://abc.xyz/2023-q3-earnings-call/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2023-I-R1-05-001"
+    }
+  ]
+}

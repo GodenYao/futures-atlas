@@ -1,0 +1,57 @@
+{
+  "indicator": "I-R3-05",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A mandatory registry of large training clusters (or chip-location tracking) operates in >= 2 of the top-3 jurisdictions (official gazettes; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met (0 of 3). Bloc B operated a mandatory public registry of service algorithms (filing numbers published from August 2022), extended to deep-synthesis providers and technical supporters by rules promulgated in the window - an algorithm/service registry, not a cluster or chip-location registry. Bloc A's October 2022 chip rule imposed export licences, not cluster registration or chip tracking.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R3-05-001",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2022-08-12",
+      "summary": "Bloc B's internet regulator published its first list of filed service algorithms (30 entries, with filing numbers) under the 2022 algorithm-recommendation provisions, with the list to be updated on an ongoing basis. Registry of algorithms used in services, not of compute clusters.",
+      "detail": "CAC, 'Announcement on publishing internet information service algorithm filing information' (国家互联网信息办公室关于发布互联网信息服务算法备案信息的公告), 2022-08-12; mirror on MOFCOM policy database verified via web_extract this run (first list, August 2022, 30 algorithms incl. recommendation, search, scheduling, and one generation/synthesis algorithm). Later list updates on the original page are post-phase and not used.",
+      "value": "30 algorithms filed (Aug-2022 list)",
+      "direction": "neutral",
+      "source_url": "https://policy.mofcom.gov.cn/claw/clawContent.shtml?id=95761",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-05-002",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2022-12-11",
+      "summary": "Bloc B's deep-synthesis rules (in force 2023-01-10) extend algorithm filing to deep-synthesis providers with public-opinion attributes and to their technical supporters, who must display filing numbers. Still a service/algorithm registry; no cluster or chip-location registration.",
+      "detail": "CAC/MIIT/MPS Order No. 12, Art. 19, posted 2022-12-11 (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "http://www.cac.gov.cn/2022-12/11/c_1672221949354811.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2022-11-I-R3-03-001"
+    },
+    {
+      "id": "BF-2022-11-I-R3-05-003",
+      "indicator": "I-R3-05",
+      "kind": "treaty-law",
+      "published": "2022-10-13",
+      "summary": "Bloc A's advanced-computing export rule creates licence requirements for advanced AI chips and supercomputer end uses destined for Bloc B, with due-diligence certificates; it does not establish a domestic cluster registry or chip-location tracking.",
+      "detail": "BIS interim final rule, 87 FR 62186, 2022-10-13 (verified via web_extract this run); ECCNs 3A090/4A090; comments due 2022-12-12.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.federalregister.gov/documents/2022/10/13/2022-21658/implementation-of-additional-export-controls-certain-advanced-computing-and-semiconductor-manufacturing-items",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2022-11-I-R3-03-004"
+    }
+  ]
+}

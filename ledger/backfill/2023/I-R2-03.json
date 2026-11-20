@@ -1,0 +1,41 @@
+{
+  "indicator": "I-R2-03",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Frontier 50%-success task time horizon >= 16 h (METR measurements, cross-checked against government AISI reports; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "The 50%-time-horizon metric did not exist in 2023 (METR introduced it in 2025). The closest in-phase evidence was the evaluator's (then ARC Evals) Dec 2023 report: agents built on contemporary frontier models completed only the easiest of 12 autonomy tasks. No government AISI had yet published agent-autonomy measurements.",
+  "items": [
+    {
+      "id": "BF-2023-I-R2-03-001",
+      "indicator": "I-R2-03",
+      "kind": "data-gap",
+      "published": "2023-12-31",
+      "summary": "No task-time-horizon measurement series existed during 2023; the indicator's metric was introduced later.",
+      "detail": "METR time-horizon methodology first published March 2025 (outside phase). In-phase proxy recorded below.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2312.11671",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R2-03-002",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2023-12-18",
+      "summary": "Independent evaluator report: four example language-model agents were tested on 12 tasks relevant to autonomous replication and adaptation; they completed only the easiest tasks, with partial progress on harder ones. The authors warn the evaluations cannot rule out such capability in the next model generation (~100x effective compute).",
+      "detail": "Kinniment et al. (METR, then ARC Evals), 'Evaluating Language-Model Agents on Realistic Autonomous Tasks', arXiv:2312.11671 v1 2023-12-18 (verified via web_extract this run). Implies frontier autonomous task horizons far below 16 h at end-2023.",
+      "value": "easiest of 12 ARA tasks completed",
+      "direction": "toward NO",
+      "source_url": "https://arxiv.org/abs/2312.11671",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

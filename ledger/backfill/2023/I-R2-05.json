@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R2-05",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Recent-graduate unemployment minus the all-worker rate >= 2.0 pp in any 2027 quarter (NY Fed College Labor Market; 2027 quarterly)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2023. Last in-phase reading (Sept 2023 data, posted Nov 2023): recent-graduate unemployment 4.4% vs 3.6% for all workers, a gap of ~0.8 pp. The inversion (recent graduates above all workers) drew press attention, but the gap was far below 2.0 pp. Q4 2023 data were posted in Feb 2024 and are excluded.",
+  "items": [
+    {
+      "id": "BF-2023-I-R2-05-001",
+      "indicator": "I-R2-05",
+      "kind": "data-series",
+      "published": "2023-11-19",
+      "summary": "Major newspaper report, citing a Bloc A regional central bank's September 2023 data: recent college graduates were more likely to be unemployed than the overall workforce, a reversal of long-held norms.",
+      "detail": "Bloc A Post, 'New college grads are more likely to be unemployed in today's job market', 2023-11-19 (verified via web_extract this run; body mostly paywalled, headline and lede captured), based on the Federal Reserve Bank of New York College Labor Market data.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.washingtonpost.com/business/2023/11/19/college-grads-unemployed-jobs/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R2-05-002",
+      "indicator": "I-R2-05",
+      "kind": "data-series",
+      "published": "2023-12-17",
+      "summary": "Magazine analysis of the same data: as of September 2023, recent-graduate (ages 22-27) unemployment was 4.4% vs 3.6% for all workers, a 0.8 pp gap; the two rates had moved within a percentage point of each other for a decade.",
+      "detail": "The Atlantic, 'The Myth of the Unemployed College Grad', Dec 2023 (exact day approximate) (verified via web_extract this run), citing NY Fed College Labor Market data. Gap 0.8 pp vs the 2.0 pp threshold.",
+      "value": "4.4% vs 3.6% (gap 0.8 pp, Sept 2023)",
+      "direction": "toward NO",
+      "source_url": "https://www.theatlantic.com/ideas/archive/2023/12/myth-unemployed-college-grad/676364/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R2-05-003",
+      "indicator": "I-R2-05",
+      "kind": "data-series",
+      "published": "2023-11-01",
+      "summary": "Primary series: the regional central bank's recent-graduate unemployment data file (opened this run; current vintage only, so in-phase values are taken from the dated secondary reports above).",
+      "detail": "Federal Reserve Bank of New York, The Labor Market for Recent College Graduates, unemployment data CSV (verified reachable via web_extract this run; extract truncated before 2023 rows and file reflects later revisions, so no value recorded from it). Release month approximate (quarterly, typically November for Q3).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.newyorkfed.org/medialibrary/research/interactives/data/college-labor-market/college-labor-unemployment-data.csv",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

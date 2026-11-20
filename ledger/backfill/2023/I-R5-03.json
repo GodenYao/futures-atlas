@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R5-03",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": ">= 20% of announced >100 MW AI data-centre capacity is outside the two leading jurisdictions (Epoch data-centre tracker; IEA; 2027)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "No in-phase series for >100 MW AI-specific capacity (data-gap for the named series). Best proxy publicly known in 2023: hyperscale capacity split (Synergy, published Sept 2022) of ~53% Bloc A, ~15% Bloc B and ~32% elsewhere - i.e. on the broad hyperscale proxy the 'outside' share exceeded 20%, but this is general cloud capacity, not AI-specific >100 MW sites. In-phase Synergy releases flagged generative AI as driving much larger new facilities but gave no regional split. No dedicated series exists; proxy shown as background only.",
+  "items": [
+    {
+      "id": "BF-2023-I-R5-03-001",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2022-09-12",
+      "summary": "Latest regional split public during 2023: of hyperscale data-centre capacity, about 53% sat in Bloc A, 16% in a major third region, 15% in Bloc B and 16% elsewhere - roughly 32% outside the two leading jurisdictions on this broad (non-AI-specific) proxy.",
+      "detail": "TelecomTV (Ray Le Maistre), 2022-09-12, reporting Synergy Research Group: Bloc A 53%, Europe 16%, Bloc B 15%, rest of world 16%; >800 hyperscale data centres. Pre-phase publication used as the latest available baseline during 2023.; proxy (regional share of hyperscale data-centre capacity; no dedicated series)",
+      "value": "~32% outside the two leading jurisdictions (hyperscale, all workloads)",
+      "direction": "neutral",
+      "source_url": "https://telecomtv.com/content/digital-platforms-services/us-dominates-global-hyperscale-datacentre-capacity-and-will-continue-to-do-so-45381",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-03-002",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2023-10-17",
+      "summary": "An industry tracker reported 926 major hyperscale data centres operating by mid-2023 with 427 more in the pipeline, and forecast total hyperscale capacity to almost triple in six years, with generative AI driving much larger, more power-dense facilities; no regional split given.",
+      "detail": "Synergy Research Group, 'Hyperscale Data Center Capacity to Almost Triple in Next Six Years, Driven by AI', Reno NV, 2023-10-17.",
+      "value": "926 operating; 427 pipeline",
+      "direction": "neutral",
+      "source_url": "https://srgresearch.com/articles/hyperscale-data-center-capacity-to-almost-triple-in-next-six-years-driven-by-ai",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-03-003",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2023-07-12",
+      "summary": "The same tracker estimated hyperscale operators held 37% of worldwide data-centre capacity (colocation 23%, on-premise 40%) as hyperscale sites approached 900; context for concentration, no regional split.",
+      "detail": "Synergy Research Group, 'On-Premise Data Center Capacity Being Increasingly Dwarfed by Hyperscalers and Colocation Companies', 2023-07-12.",
+      "value": "hyperscale 37% of global DC capacity",
+      "direction": "neutral",
+      "source_url": "https://srgresearch.com/articles/on-premise-data-center-capacity-being-increasingly-dwarfed-by-hyperscalers-and-colocation-companies",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-03-004",
+      "indicator": "I-R5-03",
+      "kind": "data-gap",
+      "published": "2023-12-31",
+      "summary": "No public 2023 dataset tracked announced >100 MW AI-specific data-centre capacity by jurisdiction; the named resolution sources (a dedicated AI data-centre tracker; IEA AI-energy analysis) post-date the phase.",
+      "detail": "IEA data-centre page opened this run now shows only 2024-2026 material (Energy and AI reports), not usable under the as-of rule. Synergy's end-2023 split (Bloc A 51%) was published April 2024 - outside phase, excluded.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/energy-system/buildings/data-centres-and-data-transmission-networks",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

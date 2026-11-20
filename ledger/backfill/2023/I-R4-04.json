@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R4-04",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Largest known training run >= 5e27 FLOP (Epoch AI; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Far from met in 2023. The largest publicly estimated run in-phase was the March 2023 frontier model at roughly 2e25 FLOP (third-party estimate; developer did not disclose compute) - about 250x below the threshold. A larger multimodal model launched in December without disclosed compute. Bloc A's 1e26 reporting threshold was set above any known run.",
+  "items": [
+    {
+      "id": "BF-2023-I-R4-04-001",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2023-03-17",
+      "summary": "Following the March 2023 frontier-model release, a forecaster's retrospective cited the Epoch AI estimate of its training compute at about 2.2e25 FLOP, the largest known run at the time; compute was not disclosed by the developer.",
+      "detail": "LessWrong, Stephen McAleese, 'Retrospective on GPT-4 Predictions After the Release of GPT-4', posted 2023-03-17, citing EpochAI visualization (GPT-4 ~2.2e25 FLOP). The Epoch figure is visible in the search snippet but not in the extracted head; the post may have been edited after posting, so the as-of status of the figure is uncertain.",
+      "value": "2.2e25 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://lesswrong.com/posts/iQx2eeHKLwgBYdWPZ/retrospective-on-gpt-4-predictions-after-the-release-of-gpt",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-04-002",
+      "indicator": "I-R4-04",
+      "kind": "event",
+      "published": "2023-12-06",
+      "summary": "A top-5 developer launched its 'largest and most capable' multimodal model family, claiming the top variant was the first to beat human experts on a major knowledge benchmark (90.0%); training compute was not disclosed.",
+      "detail": "Google, 'Introducing Gemini: our largest and most capable AI model', 2023-12-06; Gemini Ultra MMLU 90.0%. (Later third-party compute estimates are outside the phase and not used.)",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://blog.google/technology/ai/google-gemini-ai/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-04-003",
+      "indicator": "I-R4-04",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "Bloc A set its interim frontier-model reporting threshold at 1e26 operations - above any publicly known 2023 run and still 50x below this indicator's 5e27 threshold.",
+      "detail": "Bloc A EO 14110 sec. 4.2(b)(i), 88 FR 75191.",
+      "value": "1e26 operations",
+      "direction": "neutral",
+      "source_url": "https://www.govinfo.gov/content/pkg/FR-2023-11-01/html/2023-24283.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-04-004",
+      "indicator": "I-R4-04",
+      "kind": "data-gap",
+      "published": "2023-03-14",
+      "summary": "The frontier developer's system card and technical report gave no training-compute figures, so in-phase compute for the largest runs rested on third-party estimates only.",
+      "detail": "OpenAI GPT-4 System Card (no compute disclosed; 'finished training in August of 2022').",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2303.08774",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

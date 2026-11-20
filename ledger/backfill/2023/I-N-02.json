@@ -1,0 +1,42 @@
+{
+  "indicator": "I-N-02",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Organisations with a >= 1e26 FLOP training run are headquartered in >= 4 jurisdictions (Epoch AI; snapshot 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "0 jurisdictions at end-2023 (no organisation known to have reached 1e26 FLOP). The frontier compute tier (~1e25 FLOP class) was concentrated in a handful of Bloc A firms; Bloc B labs trailed on compute and other metrics per Epoch.",
+  "items": [
+    {
+      "id": "BF-2023-I-N-02-001",
+      "indicator": "I-N-02",
+      "kind": "data-series",
+      "published": "2023-11-27",
+      "summary": "Epoch AI: frontier-scale training compute was concentrated in three Bloc A firms (largest run ~2e25 FLOP); Bloc B industry labs lagged on compute, citations and foundation models. No organisation in any jurisdiction had a 1e26 FLOP run.",
+      "detail": "Epoch AI, 'Who is leading in AI? An analysis of industry AI research' (late 2023; date approximate) (verified via web_extract this run). Named leaders Google, OpenAI, Meta (Bloc A); Tencent, Baidu, Huawei (Bloc B) trail.",
+      "value": "0 jurisdictions with a >= 1e26 FLOP organisation",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/blog/who-is-leading-in-ai-an-analysis-of-industry-ai-research",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2023-I-N-01-001"
+    },
+    {
+      "id": "BF-2023-I-N-02-002",
+      "indicator": "I-N-02",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "A Bloc A executive order treated 1e26-operation training runs as a future reporting category and required reporting of foreign customers' large training runs on domestic cloud infrastructure, signalling an intent to monitor where frontier-scale training could occur abroad.",
+      "detail": "Bloc A Executive Order 14110, Sec. 4.2(c) (IaaS / foreign-person training-run reporting; 1e26-operation default trigger), 88 FR 75191, 2023-11-01 (verified via web_extract of the Federal Register full text this run).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.federalregister.gov/documents/full_text/html/2023/11/01/2023-24283.html",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

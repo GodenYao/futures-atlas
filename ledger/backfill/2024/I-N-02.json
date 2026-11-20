@@ -1,0 +1,70 @@
+{
+  "indicator": "I-N-02",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Organisations with a training run >= 1e26 FLOP are headquartered in >= 4 jurisdictions (Epoch AI, snapshot 2027-12-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "No organisation had a public >=1e26 FLOP run at end-2024, so the jurisdiction count was 0. All runs near the frontier (~4-5e25) belonged to Bloc A organisations (one with dual Bloc A / Bloc C headquarters). Bloc B's strongest release of the year (Dec 2024) used ~3.3e24 FLOP on a 2,048-GPU cluster, ~30x below threshold, under Bloc A chip export controls. Bloc A also proposed know-your-customer rules for foreign large-training customers of its cloud providers, which would make offshore runs by non-Bloc-A organisations more visible.",
+  "items": [
+    {
+      "id": "BF-2024-I-N-02-001",
+      "indicator": "I-N-02",
+      "kind": "data-series",
+      "published": "2024-05-28",
+      "summary": "Compute tracker: the two largest known runs (~2e25 and ~5e25 FLOP) were by Bloc A organisations; no organisation in any jurisdiction had reached 1e26. Jurisdiction count 0.",
+      "detail": "Epoch AI, 'Training compute of frontier AI models grows by 4-5x per year' (2024-05-28): GPT-4 (OpenAI, Bloc A) 2e25, Gemini Ultra (Google DeepMind, Bloc G/Bloc A) 5e25.",
+      "value": "0 jurisdictions",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2024-I-N-01-001"
+    },
+    {
+      "id": "BF-2024-I-N-02-002",
+      "indicator": "I-N-02",
+      "kind": "treaty-law",
+      "published": "2024-01-29",
+      "summary": "A Bloc A regulator proposed know-your-customer rules requiring domestic cloud providers to report foreign customers' training of large AI models that could enable malicious cyber activity, adding oversight of offshore frontier-scale runs.",
+      "detail": "Bloc A Commerce/BIS proposed rule 'Taking Additional Steps To Address the National Emergency With Respect to Significant Malicious Cyber-Enabled Activities' (IaaS KYC; EO 13984/14110), 89 FR 5698, 2024-01-29. Not verified via web_extract this run.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.federalregister.gov/documents/2024/01/29/2024-01580/taking-additional-steps-to-address-the-national-emergency-with-respect-to-significant-malicious",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-N-02-003",
+      "indicator": "I-N-02",
+      "kind": "event",
+      "published": "2024-12-26",
+      "summary": "Bloc B's leading open-weight developer released a frontier-competitive model trained with 2.788M accelerator-hours on a 2,048-GPU cluster: ~3.3e24 FLOP by the standard 6ND estimate, ~30x below 1e26. Strong capability per FLOP, but no Bloc B organisation was near the threshold.",
+      "detail": "DeepSeek-V3 Technical Report (weights 2024-12-26; arXiv 2412.19437 v1 2024-12-27; verified via search snippet): 671B total / 37B active parameters, 14.8T tokens, 2,048 H800 GPUs. FLOP figure is our estimate (6 x 37e9 x 14.8e12 ~ 3.3e24).",
+      "value": "~3.3e24 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://arxiv.org/html/2412.19437",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-N-02-004",
+      "indicator": "I-N-02",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No public geographic breakdown of training-cluster capacity existed in 2024 (the tracker's cluster-share dataset came later), and dual-headquartered developers need a counting rule. Jurisdiction count 0 at year-end.",
+      "detail": "Epoch's GPU-cluster share by country was first published 2025; not usable here. Google DeepMind listed as Bloc G/Bloc A (same counting issue flagged in the 2025 phase).",
+      "value": "0 jurisdictions",
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/data/large-scale-ai-models",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "_doc": "Public review record for evidence phase 2024, read by engine/recompute. Phase 2024 was reviewed (auto-review, maintainer rulings, source re-reads) and approved on 2026-11-20. Items count from the first weekly snapshot on or after their own published date; items with hold:true are shown but not counted. 'hold' lists indicators that are shown but not counted. No wording overrides: corrections were applied to the ledger files themselves.",
+  "phase": "2024",
+  "approved": "2026-11-20",
+  "counting": {
+    "hold": []
+  },
+  "wording_overrides": {}
+}

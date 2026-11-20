@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R6-01",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Nonfarm business labour productivity growth in 2027 < 2.5% (Bloc A BLS; annual)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2024 (resolves on 2027 data). Context: in 2024 the statistics office reported preliminary 2022->2023 annual average productivity growth of 1.2% and a 1.6% annualised rate over the cycle since 2019Q4, both below the 2.5% threshold, though recent quarters ran ~2.3-2.7%.",
+  "items": [
+    {
+      "id": "BF-2024-I-R6-01-001",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2024-02-01",
+      "summary": "Bloc A statistics office (preliminary): nonfarm business labour productivity rose 3.2% (annualised) in 2023Q4 and 2.7% year on year; annual average productivity rose 1.2% from 2022 to 2023.",
+      "detail": "Bloc A BLS, Productivity and Costs, Fourth Quarter and Annual Averages 2023, Preliminary (USDL 24-0147), 2024-02-01 (verified via web_extract this run).",
+      "value": "1.2% (2023 annual average growth, preliminary)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_02012024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R6-01-002",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2024-03-07",
+      "summary": "Bloc A statistics office revised 2023 quarterly and annual productivity data to incorporate updated output and compensation source data.",
+      "detail": "Bloc A BLS, Productivity and Costs, Fourth Quarter and Annual Averages 2023, Revised, 2024-03-07 (verified via web_extract this run; the revised annual nonfarm figure was not located in the extracted text, so no value is recorded).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_03072024.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R6-01-003",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2024-08-01",
+      "summary": "Bloc A statistics office (preliminary): nonfarm business labour productivity rose 2.3% (annualised) in 2024Q2 and 2.7% year on year; since 2019Q4 it has grown at a 1.6% annualised rate.",
+      "detail": "Bloc A BLS, Productivity and Costs, Second Quarter 2024, Preliminary (USDL 24-1570), 2024-08-01 (verified via web_extract this run).",
+      "value": "2.3% q/q annualised; 2.7% y/y; 1.6% cycle average",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_08012024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R6-01-004",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2024-12-10",
+      "summary": "Bloc A statistics office's revised Q3 2024 release: nonfarm business labour productivity +2.2% annualised (unrevised), +2.0% over four quarters; unit labour costs revised to +0.8%.",
+      "detail": "Bloc A BLS, Productivity and Costs, Third Quarter 2024, Revised (2024-12-10); read from the Wayback copy of the archive page.",
+      "value": "2.2% (Q3 2024, unrevised); ULC 0.8%",
+      "direction": "neutral",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_12102024.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

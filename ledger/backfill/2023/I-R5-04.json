@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R5-04",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Price of inference at fixed capability falls >= 10x from 2026 to 2027 (Epoch / AI Index price series; 2027 annual)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2023 (resolution window is 2026->2027). Context: 2023 vendor price lists show steep cuts at roughly fixed capability - a chat model at $0.002/1k tokens (10x below the prior same-class model) in March, falling to $0.001/1k input by November; an open-weight model matching it on most benchmarks at ~13B active parameters in December. No methodology-stated price-at-fixed-capability series existed in-phase.",
+  "items": [
+    {
+      "id": "BF-2023-I-R5-04-001",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2023-03-01",
+      "summary": "A leading frontier developer opened API access to its chat model at $0.002 per 1k tokens, 10x cheaper than its existing models of the same class, citing a 90% cost reduction since December through system-wide optimisations.",
+      "detail": "OpenAI, 'Introducing ChatGPT and Whisper APIs' (gpt-3.5-turbo vs text-davinci-003), 2023-03-01 (verified via web_extract this run; page carries a 2024 naming update only).",
+      "value": "$0.002 per 1k tokens (10x below prior GPT-3.5 models)",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/introducing-chatgpt-and-whisper-apis/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-04-002",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2023-06-13",
+      "summary": "The same developer cut input-token prices of its most popular chat model by 25% (to $0.0015 / $0.002 per 1k input/output tokens) and its main embeddings model by 75%.",
+      "detail": "OpenAI, 'Function calling and other API updates', 2023-06-13 (verified via web_extract this run).",
+      "value": "-25% input price (gpt-3.5-turbo); -75% embeddings",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/function-calling-and-other-api-updates/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-04-003",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2023-11-06",
+      "summary": "The developer launched a faster version of its flagship model at 3x lower input and 2x lower output prices ($0.01 / $0.03 per 1k tokens) and cut its chat-class model to $0.001 / $0.002 per 1k tokens.",
+      "detail": "OpenAI, 'New models and developer products announced at DevDay' (GPT-4 Turbo vs GPT-4; new GPT-3.5 Turbo), 2023-11-06 (verified via web_extract this run). Over 2023 the GPT-3.5-class input price fell from $0.002 to $0.001 per 1k tokens (~2x), after the ~10x March step.",
+      "value": "GPT-4 Turbo $0.01/$0.03 per 1k tokens (3x/2x below GPT-4); GPT-3.5 Turbo $0.001/$0.002",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/new-models-and-developer-products-announced-at-devday/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-04-004",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2023-12-11",
+      "summary": "An independent developer released an Apache-licensed open-weight sparse mixture-of-experts model (46.7B total, 12.9B active parameters) that it reports matches or outperforms the leading chat-class model on most standard benchmarks, at the inference cost of a ~13B model.",
+      "detail": "Mistral AI, 'Mixtral of experts', 2023-12-11 (verified via web_extract this run). Developer is headquartered in Bloc E (outside both blocs). Self-reported benchmarks (interested party).",
+      "value": "12.9B active parameters per token",
+      "direction": "toward YES",
+      "source_url": "https://mistral.ai/news/mixtral-of-experts/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R5-04-005",
+      "indicator": "I-R5-04",
+      "kind": "data-gap",
+      "published": "2023-12-31",
+      "summary": "No research-tracker or official price-at-fixed-capability series with stated methodology was found published in 2023; in-phase evidence is vendor price lists only.",
+      "detail": "Industry and Epoch AI price-at-fixed-capability analyses appeared in late 2024 and 2025 (excluded under the as-of rule). Reference page opened this run: OpenAI DevDay 2023 pricing post.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/new-models-and-developer-products-announced-at-devday/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

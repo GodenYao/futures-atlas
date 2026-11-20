@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R1-03",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": ">= 2 of the top-3 compute jurisdictions publish new or expanded controls on AI chips, chip tools or model weights (Official gazettes; calendar 2027)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Resolution year is 2027, but the pattern was already present in 2023: Bloc A expanded advanced-chip and chipmaking-equipment controls (two interim final rules), and Bloc B imposed licensing on exports of gallium/germanium chip materials.",
+  "items": [
+    {
+      "id": "BF-2023-I-R1-03-001",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2023-07-03",
+      "summary": "Bloc B's commerce ministry and customs authority announced export licensing for gallium- and germanium-related items (semiconductor materials), effective 1 August 2023.",
+      "detail": "MOFCOM / GACC Announcement 2023 No. 23 on export controls for gallium and germanium items, dated 2023-07-03 (Bloc B original verified via web_extract this run). Materials rather than chips or tools, so only a partial analogue of the indicator.",
+      "value": "8 gallium + 6 germanium items",
+      "direction": "toward YES",
+      "source_url": "https://www.mofcom.gov.cn/zfxxgk/fdzdgknr/ztfl/blgg/art/2023/art_af334eaae89f4ee3b75e8189aa0e363c.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-03-002",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2023-10-25",
+      "summary": "Bloc A's export-control agency published an interim final rule expanding controls on advanced computing chips and products containing them, effective 17 November 2023.",
+      "detail": "Bloc A BIS, 'Implementation of Additional Export Controls: Certain Advanced Computing Items; Supercomputer and Semiconductor End Use; Updates and Corrections', 88 FR 73458, FR Doc. 2023-23055 (verified via web_extract this run). Rule states the aim of further restricting Bloc B's access to critical technologies.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2023/10/25/2023-23055/implementation-of-additional-export-controls-certain-advanced-computing-items-supercomputer-and-semiconductor-end-use",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-03-003",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2023-10-25",
+      "summary": "Bloc A's export-control agency published a companion interim final rule expanding controls on semiconductor manufacturing equipment, effective 17 November 2023.",
+      "detail": "Bloc A BIS, 'Export Controls on Semiconductor Manufacturing Items', 88 FR 73424, FR Doc. 2023-23049 (verified via web_extract this run).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2023/10/25/2023-23049/export-controls-on-semiconductor-manufacturing-items",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

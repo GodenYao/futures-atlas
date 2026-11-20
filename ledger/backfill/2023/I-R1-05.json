@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R1-05",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Combined FY2027 capex of the 5 largest AI/cloud spenders >= 1.2x FY2026 (Securities filings; on FY2027 filings)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2023. Context: during 2023 some of the largest spenders cut capex year on year (one paused data-centre construction to switch to an AI-oriented design) while others raised AI-driven spending; by Q3 2023 calls, the large spenders guided to higher capex in 2024, citing AI compute. Full-year 2023 aggregates were only published in Feb 2024 and are excluded under the as-of rule.",
+  "items": [
+    {
+      "id": "BF-2023-I-R1-05-001",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2023-10-24",
+      "summary": "A top cloud/AI spender reported Q3 2023 capex of $8 bn, 'reflecting a meaningful increase in our investments in AI compute', and said 2024 aggregate capex would exceed full-year 2023.",
+      "detail": "Alphabet, 2023 Q3 earnings call transcript, 2023-10-24 (verified via web_extract this run).",
+      "value": "$8 bn Q3 2023 capex",
+      "direction": "toward YES",
+      "source_url": "https://abc.xyz/2023-q3-earnings-call/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-05-002",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2023-10-26",
+      "summary": "Another top spender's Q3 2023 capex fell to $6.8 bn from $9.52 bn a year earlier during a data-centre construction pause for an AI-oriented redesign; it guided full-year 2023 capex to $27-29 bn and 2024 to $30-35 bn, with AI the largest area of increased investment.",
+      "detail": "DatacenterDynamics, 'Meta's CapEx drops almost $3bn during data center construction pause', 2023-10-26 (verified via web_extract this run), reporting Meta's Q3 2023 results and CFO remarks.",
+      "value": "$6.8 bn Q3 2023 vs $9.52 bn Q3 2022; 2024 guide $30-35 bn",
+      "direction": "toward YES",
+      "source_url": "https://datacenterdynamics.com/en/news/metas-capex-drops-almost-3bn-during-data-center-construction-pause",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-05-003",
+      "indicator": "I-R1-05",
+      "kind": "event",
+      "published": "2023-10-24",
+      "summary": "A third top spender reported quarterly results framed around 'infusing AI across every layer of our tech stack', with cloud revenue up 24% year on year; the release itself gives no capex figure.",
+      "detail": "Microsoft FY24 Q1 earnings press release, 2023-10-24 (verified via web_extract this run; capex not in the extracted release text, so no value recorded).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.microsoft.com/en-us/investor/earnings/fy-2024-q1/press-release-webcast",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

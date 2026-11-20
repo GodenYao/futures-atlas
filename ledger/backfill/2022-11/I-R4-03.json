@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R4-03",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A top-5 developer weakens or withdraws a published safety-framework commitment (documented by a text diff) (framework documents, archived; calendar 2027)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "No frontier safety frameworks (capability thresholds) existed yet, so no weakening was possible in the window. The relevant published commitments were 2018-era principles/charters; no change to them in the window was found. These serve as text baselines for later diffs.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R4-03-001",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2018-06-07",
+      "summary": "A top-5 developer's seven AI principles, including a list of applications it would not pursue, stood as its published commitment through the window; the page now carries a later note that the principles were updated, which falls outside this phase.",
+      "detail": "Google, 'AI at Google: our principles', 2018-06-07 (verified via web_extract this run). The page shows an 'Update Feb 4, 2025' banner; that update is post-phase and is NOT used for this phase, it only marks this page as a baseline for a later diff.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://blog.google/technology/ai/ai-principles/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-03-002",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2018-04-09",
+      "summary": "A top-5 developer's charter commits it to long-term safety research and to 'stop competing with and start assisting' a value-aligned, safety-conscious project that comes close to AGI first; it was its main published safety commitment in the window.",
+      "detail": "OpenAI Charter (verified via web_extract this run). The current page text has no date shown; the 2018-04-09 publication date is from the charter's widely cited release and was not shown on the page (date med confidence). No in-window revision found.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/charter/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-03-003",
+      "indicator": "I-R4-03",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No capability-threshold safety framework (scaling or preparedness policy) had been published by any top-5 developer by the end of the window, so the indicator's text-diff base did not yet exist.",
+      "detail": "Searched this run; none found in-window. Reference opened: Anthropic Constitutional AI paper, arXiv:2212.08073 (2022-12-15), a training method, not a framework.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2212.08073",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R6-02",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Combined capex of the 5 largest spenders falls year on year for 2 consecutive quarters (Securities filings; by 2028-06-30)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2024 (toward NO): the largest spenders' capex rose year on year through the year, with combined 2024 spending projected at a record well over $200 bn and guidance for further increases in 2025.",
+  "items": [
+    {
+      "id": "BF-2024-I-R6-02-001",
+      "indicator": "I-R6-02",
+      "kind": "event",
+      "published": "2024-10-31",
+      "summary": "Wire report: the largest cloud/AI spenders said after Q3 results that capital expenditure was growing because of AI investment, would stay elevated, and would rise into the next year.",
+      "detail": "Reuters, 'Big Tech's AI splurge worries investors about returns', 2024-10-31 (page opened via web_extract this run; only the lead paragraph was extractable: Microsoft, Meta, Amazon stepping up data-centre spending; the rest is from the search snippet of the same page).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.reuters.com/technology/artificial-intelligence/meta-microsoft-lift-ai-spending-worrying-wall-street-ahead-amazon-results-2024-10-31/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R6-02-002",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2024-11-01",
+      "summary": "Financial press: capex of the four largest internet/software companies set to total well over $200 bn in 2024, a record; one spent $14.9 bn in the quarter (+50% y/y), another projected a record $75 bn for the year, and all warned spending would continue or rise in 2025.",
+      "detail": "Bloomberg via Yahoo Finance, 'Tech Giants Are Set to Spend $200 Billion This Year Chasing AI', 2024-11-01 (verified via web_extract this run). Companies: Amazon, Microsoft, Meta, Alphabet; Apple also cited.",
+      "value": ">$200 bn combined 2024 capex (4 firms, projected)",
+      "direction": "toward NO",
+      "source_url": "https://finance.yahoo.com/news/tech-giants-set-spend-200-105522261.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R6-02-003",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2024-11-07",
+      "summary": "Market-data analysis: the four largest spenders' third-quarter capex rose sharply year on year, led by a +44% increase at one firm, as they expanded AI infrastructure.",
+      "detail": "S&P Global Market Intelligence, 'Big Tech ramps up capex as 1st signs of AI returns emerge', November 2024 (page opened via web_extract this run, but the capex figures were only visible in the search snippet: Q3 combined $58.86 bn vs $36.95 bn a year earlier; exact publication day not shown, set to 2024-11-01 as approximation).",
+      "value": "$58.86 bn Q3 2024 vs $36.95 bn Q3 2023 (4 firms)",
+      "direction": "toward NO",
+      "source_url": "https://www.spglobal.com/market-intelligence/en/news-insights/articles/2024/11/big-tech-ramps-up-capex-as-first-signs-of-ai-returns-emerge-86140639",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

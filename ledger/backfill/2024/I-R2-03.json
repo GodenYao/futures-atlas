@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R2-03",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Frontier 50%-success task time horizon >= 16 h (METR measurements, cross-checked against government AISI reports; by 2027-12-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "The 50%-success time-horizon metric was not yet published (first released Mar 2025). In-phase proxies: an independent evaluator found frontier agents matched what human baseliners do in ~30-35 minutes on its general autonomy suite (Aug-Oct 2024), and on 8-hour ML research-engineering tasks agents beat experts at a 2-hour budget but fell behind at 8 h and reached ~half of expert scores at 32 h (Nov 2024). Two government AI safety institutes began joint pre-deployment testing (Nov-Dec 2024). Frontier horizon at end-2024 thus well under 1 h on these proxies, far from 16 h.",
+  "items": [
+    {
+      "id": "BF-2024-I-R2-03-001",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2024-10-30",
+      "summary": "Independent evaluator: a frontier model agent with a basic scaffold completed ~40% of 77 general autonomy tasks, comparable to what human baseliners achieve in ~35 minutes; on 7 hard AI R&D tasks it matched professional ML engineers at a 2-hour limit but plateaued far below human 8-hour performance.",
+      "detail": "METR, 'Details about METR's preliminary evaluation of Claude 3.5 Sonnet' (original 2024-06-20 model), 2024-10-30 (verified via search snippet). A similar ~35-minute level was reported for o1-preview (METR report, Sept 2024).",
+      "value": "~35 min human-equivalent",
+      "direction": "toward NO",
+      "source_url": "https://metr.org/evaluations/claude-3-5-sonnet-report/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-03-002",
+      "indicator": "I-R2-03",
+      "kind": "data-series",
+      "published": "2024-11-22",
+      "summary": "Independent evaluator released an ML research-engineering benchmark (7 environments, 71 expert 8-hour attempts): best agents scored ~4x human experts at a 2-hour total budget, humans narrowly ahead at 8 hours, and ~2x the best agent at 32 hours. Agents iterate >10x faster and cheaper, but returns to longer time budgets are weak.",
+      "detail": "METR, RE-Bench, 'Evaluating frontier AI R&D capabilities of language model agents against human experts', 2024-11-22 (verified via search snippet); models: Claude 3.5 Sonnet (new) and o1-preview.",
+      "value": "humans 2x best agent at 32 h budget",
+      "direction": "toward NO",
+      "source_url": "https://metr.org/blog/2024-11-22-evaluating-r-d-capabilities-of-llms/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-03-003",
+      "indicator": "I-R2-03",
+      "kind": "event",
+      "published": "2024-11-19",
+      "summary": "Two government AI safety institutes published their first joint pre-deployment test of a frontier model (biological, cyber, software and AI-development tasks, safeguard efficacy), establishing the government cross-check channel this indicator relies on; no time-horizon figure reported.",
+      "detail": "Bloc A AISI and Bloc G AISI joint pre-deployment evaluation of Anthropic's upgraded Claude 3.5 Sonnet, report dated 2024-11-19 (verified via search snippet). A second joint report on OpenAI o1 followed in Dec 2024.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.aisi.gov.uk/blog/pre-deployment-evaluation-of-anthropics-upgraded-claude-3-5-sonnet",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-03-004",
+      "indicator": "I-R2-03",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No published 50%-success time-horizon series existed in 2024; the metric and its back-cast (including 2024 models) were first released in March 2025 and are excluded here under the as-of rule.",
+      "detail": "METR, 'Measuring AI Ability to Complete Long Tasks', 2025-03-19 - outside phase window.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://metr.org/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

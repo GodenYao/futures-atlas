@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R1-01",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": ">= 90% of training compute of the 10 largest known 2027 training runs belongs to organisations headquartered in the two leading jurisdictions (Epoch AI notable/large-scale models database; snapshot 2028-03-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2023 (resolves on 2027 runs). Context: 2023 analysis showed compute-intensive training runs dominated by Bloc A firms, with Bloc B labs lagging on every metric; the largest public estimate was ~2e25 FLOP for a Bloc A model.",
+  "items": [
+    {
+      "id": "BF-2023-I-R1-01-001",
+      "indicator": "I-R1-01",
+      "kind": "event",
+      "published": "2023-03-15",
+      "summary": "A Bloc A frontier developer released the technical report for its new flagship model, estimated in 2023 by the compute tracker as the largest known training run of the time (~2e25 FLOP).",
+      "detail": "OpenAI, 'GPT-4 Technical Report', arXiv 2303.08774, 2023-03-15 (arXiv page verified via web_extract this run; the ~2e25 FLOP estimate is Epoch AI's, from item 002).",
+      "value": "~2e25 FLOP (third-party estimate)",
+      "direction": "toward YES",
+      "source_url": "https://arxiv.org/abs/2303.08774",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-01-002",
+      "indicator": "I-R1-01",
+      "kind": "data-series",
+      "published": "2023-11-27",
+      "summary": "Compute tracker analysis of industry AI research 2012-2023: leading Bloc A companies scaled training compute ~1e6-1e7-fold, far above the field's trend; Bloc B industry labs lag their Bloc A counterparts on all metrics, including compute-intensive runs.",
+      "detail": "Epoch AI, 'Who is leading in AI? An analysis of industry AI research' (paper arXiv 2312.00043; verified via web_extract this run). Names Google, OpenAI, Meta, Anthropic vs Tencent, Baidu, Huawei; GPT-4 ~2e25 FLOP. Publication day approximated from the arXiv identifier (Dec 2023 listing).",
+      "value": "GPT-4 ~2e25 FLOP; Bloc A firms lead all metrics",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/blog/who-is-leading-in-ai-an-analysis-of-industry-ai-research",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-01-003",
+      "indicator": "I-R1-01",
+      "kind": "event",
+      "published": "2023-12-06",
+      "summary": "A second Bloc A developer launched what it called its largest and most capable model family (three sizes), adding another frontier-scale run headquartered in Bloc A.",
+      "detail": "Google, 'Introducing Gemini: our largest and most capable AI model', 2023-12-06 (verified via web_extract this run). Compute not disclosed in the post.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://blog.google/technology/ai/google-gemini-ai/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

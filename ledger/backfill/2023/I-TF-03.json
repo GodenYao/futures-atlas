@@ -1,0 +1,55 @@
+{
+  "indicator": "I-TF-03",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Median per-capita disposable income growth < mean growth in 2027 annual data (national statistics offices; one indicator per leading jurisdiction)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2023. Bloc B: in the 2022 annual data (published Jan 2023) median growth (4.7%) was below mean growth (5.0%), and in Q1-Q3 2023 data median growth (5.4%) was again below mean (6.3%) - the YES pattern held in-phase. Full-year 2023 data (published Jan 2024) excluded. Bloc A: no per-capita disposable median/mean series; the closest official release (money income, 2022) showed real median household income -2.3% while the Gini index fell, a mixed signal for the median-vs-mean test.",
+  "items": [
+    {
+      "id": "BF-2023-I-TF-03-001",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2023-01-17",
+      "summary": "Bloc B statistics office, 2022 annual: per-capita disposable income 36,883 yuan, +5.0% nominal; median 31,370 yuan, +4.7% (85.1% of mean) - median growth below mean growth.",
+      "detail": "Bloc B NBS 'Households' Income and Consumption Expenditure in 2022', released 2023-01-17 (NBS English page blocked to fetcher; verified via the NBS text republished on govt.chinadaily.com.cn, dated 2023-01-18, via web_extract this run).",
+      "value": "median +4.7% vs mean +5.0% (2022)",
+      "direction": "toward YES",
+      "source_url": "https://govt.chinadaily.com.cn/s/202301/18/WS642e73e8498ea274927b5b58/income-spending-2022.html",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-TF-03-002",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2023-10-19",
+      "summary": "Bloc B statistics office, first three quarters of 2023: per-capita disposable income 29,398 yuan, +6.3% nominal; median 24,528 yuan, +5.4% (83.4% of mean) - median growth below mean growth.",
+      "detail": "Bloc B NBS 'Households' Income and Consumption Expenditure in the First Three Quarters of 2023', 2023-10-19 (headline figures in NBS release of 2023-10-18) (verified via web_extract this run). Urban median +4.3% vs urban mean +5.2%; rural median +5.7% vs rural mean +7.6%.",
+      "value": "median +5.4% vs mean +6.3% (Q1-Q3 2023)",
+      "direction": "toward YES",
+      "source_url": "https://www.stats.gov.cn/english/PressRelease/202310/t20231026_1943920.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-TF-03-003",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2023-09-12",
+      "summary": "Bloc A statistics office, 2022 money income: real median household income fell 2.3% to $74,580; the money-income Gini index fell from 0.494 to 0.488 (the release flags this as a notable first decline). Not a per-capita disposable median-vs-mean series.",
+      "detail": "Bloc A Census Bureau press release CB23-150, 'Income, Poverty and Health Insurance Coverage in the Bloc A: 2022', 2023-09-12 (verified via web_extract this run). A falling Gini suggests the mean did not outpace the median in 2022, but the series concept (household money income, pre-tax) differs from the indicator.",
+      "value": "real median HH income -2.3% (2022); Gini 0.494 -> 0.488",
+      "direction": "toward NO",
+      "source_url": "https://www.census.gov/newsroom/press-releases/2023/income-poverty-health-insurance-coverage.html",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

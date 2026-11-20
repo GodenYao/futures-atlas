@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R3-02",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A top-5 developer publicly halts frontier training >= 30 days, citing safety (developer announcement + independent confirmation; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met. No top-5 developer announced a training halt in the window; frontier developers were launching products and publishing alignment methods (a chat research preview on 2022-11-30; an RL-from-AI-feedback harmlessness method on 2022-12-15). No published safety framework with pause conditions existed yet. No qualifying event found in the window (search result, not counted).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R3-02-001",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2022-11-30",
+      "summary": "A Bloc A frontier developer launched a free conversational research preview, framing safety work as iterative deployment with RLHF and moderation rather than a pause.",
+      "detail": "OpenAI, 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run): RLHF fine-tune of a GPT-3.5-series model, free research preview to gather user feedback on strengths and weaknesses.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-02-002",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2022-12-15",
+      "summary": "A Bloc A safety-focused frontier developer published a method for training a harmless assistant with AI feedback guided by a list of principles ('Constitutional AI'); continued training with alignment techniques, no halt.",
+      "detail": "Bai et al. (Anthropic), 'Constitutional AI: Harmlessness from AI Feedback', arXiv:2212.08073, submitted 2022-12-15 (verified via web_extract this run).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://arxiv.org/abs/2212.08073",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-02-003",
+      "indicator": "I-R3-02",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No developer safety framework with explicit pause/halt conditions had been published by the end of the window, so no mechanism yet existed that would trigger a qualifying halt announcement.",
+      "detail": "Searched this run; no in-window framework with pause commitments found. Reference opened this run: arXiv:2212.08073 (no pause provisions).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2212.08073",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

@@ -18,7 +18,8 @@ node tools/weekly_build.mjs        # the weekly build: --check, file merged item
 
 Week range options: `--from YYYY-Www`, `--to YYYY-Www`, `--today YYYY-MM-DD` (or env `FA_TODAY`).
 Defaults: the first week is the start of the oldest **reviewed** phase (phase `2026` -> 2026-W01,
-phase `2022-11` -> the ISO week of 2022-11-01); the last week is the last **complete** ISO week
+phase `2022-11` -> the ISO week of 2022-11-01, unless its `approved_<phase>.json` sets `history_from`:
+`2022-11-30` -> 2022-W48, the current first week); the last week is the last **complete** ISO week
 before today (a run on Monday 2026-11-23 ends at 2026-W47). To reproduce the 2026-W46 map
 exactly: `node engine/recompute --to 2026-W46`.
 
@@ -68,5 +69,6 @@ under review. A full run prints the sensitivity of each default (halved / double
   items appears with the next full site build.
 
 Verified 2026-11-19: on the public ledger all 46 weekly snapshots (2026-W01..W46) and the UI
-export match the published map byte for byte. The map's own build uses this same engine and
+export match the published map byte for byte. Since method 4.5.0 (2026-11-20) all five phases
+count and the replay runs 2022-W48..2026-W46 (207 weekly snapshots). The map's own build uses this same engine and
 stops if its copy differs.

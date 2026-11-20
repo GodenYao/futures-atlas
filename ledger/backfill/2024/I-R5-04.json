@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R5-04",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Price of inference at fixed capability falls >= 10x from 2026 to 2027 (Epoch / AI Index price series; 2027 annual)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2024 (resolution window is 2026->2027). Context: 2024 publications and vendor price lists show rapid price declines at fixed capability, with one industry analysis estimating ~10x per year since 2021.",
+  "items": [
+    {
+      "id": "BF-2024-I-R5-04-001",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2024-07-18",
+      "summary": "A leading frontier developer launched a small model priced at $0.15 / $0.60 per million input/output tokens, described as an order of magnitude cheaper than previous frontier models and more than 60% cheaper than its earlier mid-tier model, while scoring 82% on MMLU.",
+      "detail": "OpenAI, 'GPT-4o mini: advancing cost-efficient intelligence', 2024-07-18 (verified via web_extract this run).",
+      "value": "$0.15 / $0.60 per 1M tokens (input/output)",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-04-002",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2024-08-08",
+      "summary": "A major cloud/model vendor cut prices of its most popular fast model by 78% (input) and 71% (output), to $0.075 / $0.30 per million tokens, effective 12 August.",
+      "detail": "Google Developers Blog, 'Gemini 1.5 Flash price drop with tuning rollout complete, and more', 2024-08-08 (verified via web_extract this run).",
+      "value": "-78% input / -71% output price",
+      "direction": "toward YES",
+      "source_url": "https://developers.googleblog.com/en/gemini-15-flash-updates-google-ai-studio-gemini-api/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-04-003",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2024-11-12",
+      "summary": "Industry analysis of archived price lists: for an LLM of equivalent performance (fixed MMLU threshold), cost fell ~10x per year; the cheapest model scoring >= 42 MMLU went from $60 to $0.06 per million tokens in three years (~1,000x).",
+      "detail": "a16z (Guido Appenzeller), 'Welcome to LLMflation - LLM inference cost is going down fast', November 2024 (page verified via web_extract this run; exact day taken from the post's November 2024 asset paths and listing, not shown in extracted text). Venture-investor analysis, not an official series; limited to OpenAI, Anthropic and Llama models.",
+      "value": "~10x per year decline at fixed capability",
+      "direction": "toward YES",
+      "source_url": "https://a16z.com/llmflation-llm-inference-cost/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-04-004",
+      "indicator": "I-R5-04",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No official or research-tracker price-at-fixed-capability series with a stated methodology was found published within 2024 in this run; 2024 evidence consists of vendor price lists and one industry analysis.",
+      "detail": "Epoch AI's dedicated inference-price analysis appeared only after the phase window and is excluded under the as-of rule. Reference page opened: a16z LLMflation post (only 2024 series located).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://a16z.com/llmflation-llm-inference-cost/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

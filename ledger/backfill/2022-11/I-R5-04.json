@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R5-04",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Price of inference at fixed capability falls >= 10x from 2026 to 2027 (Epoch / AI Index price series; 2027 annual)",
+  "generated": "2026-11-20",
+  "status_at_phase_end": "Not resolvable; no fixed-capability price series existed. Only vendor list prices were public: the flagship API model's price was cut 3x (USD 0.06 -> 0.02 per 1k tokens) effective 2022-09-01 and was still USD 0.02 on the pricing page in December 2022; a conversational model launched 2022-11-30 as a free research preview. Within-window evidence is a single ~3x step, not a 10x/yr trend.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R5-04-001",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2022-08-22",
+      "summary": "A Bloc A frontier developer announced that per-token API prices for its base language models would fall by roughly 2-3x from 2022-09-01, the most capable tier going from USD 0.06 to USD 0.02 per 1k tokens, attributing it to efficiency gains in serving.",
+      "detail": "OpenAI community announcement 'The OpenAI API is now more affordable' (verified via web_extract this run): Davinci $0.06 -> $0.02 /1k tokens, Curie $0.006 -> $0.002, Babbage $0.0012 -> $0.0005, Ada $0.0008 -> $0.0004; fine-tuned models unchanged. Post date not shown in extract; 2022-08-22 taken from a contemporaneous Reddit post seen in search results (not opened).",
+      "value": "Davinci 0.06 -> 0.02 USD per 1k tokens (-67%)",
+      "direction": "toward YES",
+      "source_url": "https://community.openai.com/t/the-openai-api-is-now-more-affordable/20432",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-04-002",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2022-09-05",
+      "summary": "Archived pricing page confirms the cut took effect: the most capable base model listed at USD 0.02 per 1k tokens versus USD 0.06 before 2022-09-01; fine-tuned model usage prices did not change.",
+      "detail": "Wayback Machine capture 2022-09-05 of openai.com/api/pricing (verified via web_extract this run): 'We made our API more affordable on September 1'; Davinci $0.0600 -> $0.0200 /1K tokens; fine-tuned Davinci usage $0.12 /1K unchanged.",
+      "value": "0.02 USD per 1k tokens (most capable tier)",
+      "direction": "toward YES",
+      "source_url": "https://web.archive.org/web/20220905191340/https://openai.com/api/pricing/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-04-003",
+      "indicator": "I-R5-04",
+      "kind": "data-series",
+      "published": "2022-12-15",
+      "summary": "In the window the same pricing page still listed USD 0.02 per 1k tokens for the most capable language model and USD 0.016-0.020 per image for image generation - no further list-price cut during the window.",
+      "detail": "Wayback Machine request for 2022-12-15 of openai.com/api/pricing (verified via web_extract this run; the capture banner did not show the exact timestamp served). Davinci $0.0200, Curie $0.0020, Babbage $0.0005, Ada $0.0004 per 1K tokens; DALL-E 1024x1024 $0.020/image.",
+      "value": "0.02 USD per 1k tokens (unchanged)",
+      "direction": "neutral",
+      "source_url": "https://web.archive.org/web/20221215000000/https://openai.com/api/pricing/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-04-004",
+      "indicator": "I-R5-04",
+      "kind": "event",
+      "published": "2022-11-30",
+      "summary": "A Bloc A developer launched a conversational model fine-tuned from its newest model series as a research preview that was free to use, putting near-frontier inference at zero marginal price to end users (not a list-price series).",
+      "detail": "OpenAI, 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run): 'During the research preview, usage of ChatGPT is free'; fine-tuned from a GPT-3.5 series model that finished training in early 2022.",
+      "value": "0 USD (free research preview)",
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-04-005",
+      "indicator": "I-R5-04",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No independent price-per-capability series (of the kind the indicator uses) existed at phase end; only vendor list prices per token were public, so the indicator's 10x-per-year metric cannot be computed for this period.",
+      "detail": "Gap stated against the only verified price evidence opened this run (archived OpenAI pricing page, 2022-09-05 capture). Epoch's and the AI Index's inference-price-at-fixed-capability analyses were not available as of 2022; the AI Index landing page opened this run redirected to the 2026 edition and was not used.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://web.archive.org/web/20220905191340/https://openai.com/api/pricing/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

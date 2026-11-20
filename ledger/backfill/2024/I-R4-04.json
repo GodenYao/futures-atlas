@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R4-04",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Largest known training run >= 5e27 FLOP (Epoch AI; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met; largest known run ~5e25 FLOP at mid-2024 (Epoch estimate for the largest disclosed model), ~100x below 5e27. Epoch measured frontier compute growth of 4-5x/year (May) and judged ~2e29 FLOP runs feasible by 2030 (Aug); at 4-5x/year, 5e25 reaches 5e27 in ~3 years (around 2027), so the indicator was live at end-2024. The largest open-weight model released in 2024 (405B dense) was described by its developer as comparable to leading models; its paper reports compute in the mid-1e25 range (body not re-read this run).",
+  "items": [
+    {
+      "id": "BF-2024-I-R4-04-001",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2024-05-28",
+      "summary": "Epoch AI estimated training compute of frontier models grows 4-5x per year (4x/year at the frontier since 2018); the largest models with estimates were ~2e25 FLOP and ~5e25 FLOP.",
+      "detail": "Epoch AI, 'Training compute of frontier AI models grows by 4-5x per year' (GPT-4 ~2e25, Gemini Ultra ~5e25 FLOP). Publication date from memory (May 2024); page content verified this run.",
+      "value": "5e25 FLOP (largest known); 4-5x/yr",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R4-04-002",
+      "indicator": "I-R4-04",
+      "kind": "data-series",
+      "published": "2024-07-31",
+      "summary": "A top-5 developer published the technical report of its largest open-weight model (405B dense parameters), claiming quality comparable to leading models. Its training compute (mid-1e25 FLOP per the report body, not re-read here) is consistent with the end-2024 frontier being well below 1e26.",
+      "detail": "Meta, 'The Llama 3 Herd of Models', arXiv:2407.21783 v1 2024-07-31 (Llama 3.1 405B; report states ~3.8e25 FLOP - figure not re-verified this run).",
+      "value": "~3.8e25 FLOP (unverified figure)",
+      "direction": "toward NO",
+      "source_url": "https://arxiv.org/abs/2407.21783",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R4-04-003",
+      "indicator": "I-R4-04",
+      "kind": "forecast",
+      "published": "2024-08-20",
+      "summary": "Epoch AI judged training runs of ~2e29 FLOP likely technically feasible by 2030, with power as the first binding constraint; planned 1-5 GW campuses would support 1e28-3e29 FLOP runs. Implies 5e27 by 2027 is feasible if the 4x/year trend holds.",
+      "detail": "Epoch AI, 'Can AI scaling continue through 2030?' (Aug 2024; publication day from memory).",
+      "value": "2e29 FLOP feasible by 2030",
+      "direction": "toward YES",
+      "source_url": "https://epoch.ai/blog/can-ai-scaling-continue-through-2030",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

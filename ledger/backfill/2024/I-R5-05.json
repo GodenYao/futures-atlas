@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R5-05",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "No top-3 compute jurisdiction bans or licenses open-weight release at the frontier tier (Official gazettes; by 2028-06-30)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Holding (toward YES) at end-2024: no top-3 compute jurisdiction banned or licensed frontier open-weight release. Bloc A's executive-branch review recommended monitoring rather than restrictions; a subnational frontier-model bill was vetoed; Bloc B developers released large open-weight models through year-end; another major jurisdiction's AI law took a risk-based approach without banning open release.",
+  "items": [
+    {
+      "id": "BF-2024-I-R5-05-001",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2024-07-12",
+      "summary": "A large non-top-2 jurisdiction published its horizontal AI regulation in its official journal; it regulates general-purpose models by risk tier and does not ban open-weight release.",
+      "detail": "Regulation (Bloc C) 2024/1689 (Artificial Intelligence Act), OJ L 12.7.2024 (verified via web_extract this run). Open-source carve-outs exclude models with systemic risk, which keep obligations; no release ban. Whether the Bloc C counts as a top-3 compute jurisdiction is not settled here.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-05-002",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2024-07-30",
+      "summary": "A Bloc A executive agency published its mandated report on foundation models with widely available weights, weighing benefits (wider participation, less market concentration) against risks; it did not impose restrictions on open release.",
+      "detail": "Bloc A NTIA, 'Dual-Use Foundation Models with Widely Available Model Weights Report', 2024-07-30, under EO 14110 s.4.6 (page verified via web_extract this run; the extracted excerpt covers the executive summary opening; the report's recommendation to monitor rather than restrict now is from the report body, not re-read in full this run).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.ntia.gov/issues/artificial-intelligence/open-model-weights-report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-05-003",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2024-09-29",
+      "summary": "A subnational government in Bloc A vetoed a bill that would have imposed safety obligations on developers of very large (compute/cost-threshold) models and created a frontier-model oversight board.",
+      "detail": "California Governor's veto message on SB 1047, 2024-09-29 (verified via web_extract this run). The bill was not a ban on open weights but would have applied to open releases above the threshold.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.gov.ca.gov/wp-content/uploads/2024/09/SB-1047-Veto-Message.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-05-004",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2024-09-19",
+      "summary": "A Bloc B developer released a family of open-weight models up to 72B parameters, trained on up to 18 trillion tokens, described as possibly the largest open-source release to date.",
+      "detail": "Qwen Team (Alibaba), 'Qwen2.5: A Party of Foundation Models!', 2024-09-19 (verified via web_extract this run). Indicates no prohibitive open-release rule in Bloc B at the time.",
+      "value": "up to 72B parameters",
+      "direction": "toward YES",
+      "source_url": "https://qwenlm.github.io/blog/qwen2.5/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-05-005",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2024-12-26",
+      "summary": "A Bloc B developer published open weights (MIT-licensed code repository) for a 671B-parameter mixture-of-experts model trained on 14.8 trillion tokens.",
+      "detail": "deepseek-ai/DeepSeek-V3 GitHub repository, created 2024-12-26 (verified via web_extract this run; repository text has been updated since, only creation date and model description used).",
+      "value": "671B total / 37B active parameters",
+      "direction": "toward YES",
+      "source_url": "https://github.com/deepseek-ai/DeepSeek-V3",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R5-02",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "The best open-weight model reaches the frontier score of 6 months earlier (Epoch Capabilities Index; rolling, 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "The Epoch Capabilities Index did not exist yet in 2024 (proxy evidence only). Epoch's open-vs-closed analysis (late 2024) put the open-weight lag at 5-22 months on benchmarks and ~15 months on compute, about one year overall - i.e. outside the 6-month condition on that measure, while expecting the lag to shorten. Two releases narrowed it: a Bloc A 405B open model (Jul) claimed to rival the best closed models, and a Bloc B 671B MoE open model (late Dec) claimed parity with mid/late-2024 closed models on the developer's own benchmarks. Net: lag roughly 6-12 months at end-2024, trending toward YES.",
+  "items": [
+    {
+      "id": "BF-2024-I-R5-02-001",
+      "indicator": "I-R5-02",
+      "kind": "event",
+      "published": "2024-07-23",
+      "summary": "A Bloc A platform company released a 405B open-weight model it called 'the first frontier-level open source AI model', rivalling the best closed models. Self-reported benchmarks; narrows lag sharply for that moment.",
+      "detail": "Meta, 'Introducing Llama 3.1: Our most capable models to date', 2024-07-23.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://ai.meta.com/blog/meta-llama-3-1/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-02-002",
+      "indicator": "I-R5-02",
+      "kind": "event",
+      "published": "2024-09-19",
+      "summary": "A Bloc B developer released a large family of open-weight models (up to 72B, most Apache 2.0), described as possibly the largest open-source release to date. Broadens open-weight supply; not itself at the frontier.",
+      "detail": "Alibaba Qwen Team, 'Qwen2.5: A Party of Foundation Models!', Sept 2024 (blog; day from memory).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://qwenlm.github.io/blog/qwen2.5/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-02-003",
+      "indicator": "I-R5-02",
+      "kind": "data-series",
+      "published": "2024-11-04",
+      "summary": "Epoch AI: best open LLMs lagged the best closed LLMs by 5-22 months on benchmarks and ~15 months on training compute; 'once-frontier capabilities are reached by open models with a lag of about one year'; the lag expected to shorten.",
+      "detail": "Epoch AI, 'Open vs. closed AI: How behind are open models?' (open-models-report). Content verified this run; publication date (early Nov 2024) from memory - confidence med for the date.",
+      "value": "~12-month lag (5-22 mo benchmarks; ~15 mo compute)",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/blog/open-models-report",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R5-02-004",
+      "indicator": "I-R5-02",
+      "kind": "event",
+      "published": "2024-12-26",
+      "summary": "A Bloc B developer released a fully open-weight 671B-parameter MoE model (37B active, 14.8T tokens) and stated the gap between open and closed models was narrowing; its benchmark table compares it with leading closed models of mid/late 2024. Self-reported.",
+      "detail": "DeepSeek, 'Introducing DeepSeek-V3', API docs news 2024-12-26.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://api-docs.deepseek.com/news/news1226",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "indicator": "I-R6-05",
+  "phase": "2025",
+  "phase_window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "statement": "Global data-centre electricity use in 2027 is below the IEA's 2025 base-case projection for 2027 (IEA; 2028 release)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "2025 is the year the reference projection was published (IEA 'Energy and AI', 2025-04-10): 415 TWh in 2024 -> ~945 TWh in 2030 (Base Case, ~15%/yr); the implied 2027 value is ~664 TWh (third-party sum of chart components; IEA gives no headline 2027 number). Sensitivity cases bracket 2030 at ~670 TWh (Headwinds) to >1,260 TWh (Lift-Off); the Headwinds path is the closest analogue to YES. Later 2025 IEA publications (mid-year electricity update, World Energy Outlook in November) reiterated strong data-centre-led demand and grid bottleneck risk (~20% of planned projects at risk of delay). No actual 2025 consumption figure was published in-phase.",
+  "items": [
+    {
+      "id": "BF-2025-I-R6-05-001",
+      "indicator": "I-R6-05",
+      "kind": "forecast",
+      "published": "2025-04-10",
+      "summary": "The reference projection: the IEA's first special report on energy and AI estimates data-centre electricity at ~415 TWh in 2024 (~1.5% of global use, +12%/yr since 2017) and projects ~945 TWh by 2030 in its Base Case (~15%/yr), ~1,200 TWh by 2035. Bloc A ~45% and Bloc B ~25% of 2024 consumption.",
+      "detail": "IEA 'Energy and AI' (2025-04-10), executive summary and 'Energy demand from AI' chapter. Bloc A +240 TWh (+130%), Bloc B +175 TWh (+170%) to 2030. Implied 2027 Base Case ~664 TWh is a third-party derivation (BinaryBriefing) from IEA chart components; confirm against the IEA data explorer before resolution.",
+      "value": "~945 TWh (2030, Base Case); ~664 TWh (2027, derived)",
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/energy-and-ai/energy-demand-from-ai",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-05-002",
+      "indicator": "I-R6-05",
+      "kind": "forecast",
+      "published": "2025-04-10",
+      "summary": "Same report's sensitivity cases: Headwinds (slower AI adoption, local bottlenecks, tight supply chain) ~670 TWh in 2030 and a plateau ~700 TWh; High Efficiency ~800 TWh (2030); Lift-Off >1,260 TWh (2030) and >1,700 TWh (2035). A 2027 outcome below the Base Case would resemble the Headwinds or High Efficiency paths.",
+      "detail": "IEA 'Energy and AI' sensitivity-case section; 2030 case values per Latitude Media and Silicon & Systems summaries of the report. Range 700-1,700 TWh in 2035.",
+      "value": "~670 TWh (2030, Headwinds)",
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/energy-and-ai/energy-demand-from-ai",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-05-003",
+      "indicator": "I-R6-05",
+      "kind": "forecast",
+      "published": "2025-04-10",
+      "summary": "The report flags supply-side bottlenecks: ~20% of planned data-centre projects could be delayed by grid constraints; transformer and cable wait times doubled in three years; gas-turbine lead times of several years.",
+      "detail": "IEA 'Energy and AI' executive summary (PDF). The bottleneck mechanism is the main route by which actual 2027 use could undershoot the Base Case.",
+      "value": "~20% of planned projects at risk of delay",
+      "direction": "toward YES",
+      "source_url": "https://www.iea.org/files/dd7c2387-2f60-4b60-8c5f-6563b6aa1e4c/EnergyandAI.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-05-004",
+      "indicator": "I-R6-05",
+      "kind": "forecast",
+      "published": "2025-04-10",
+      "summary": "IEA's technology director warned that an escalating tariff war could slow data-centre growth, with the two leading jurisdictions and one other bloc set to account for most growth by 2030.",
+      "detail": "Reuters 2025-04-10, interview with Laura Cozzi (IEA). Snippet-level verification only.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.reuters.com/technology/artificial-intelligence/global-trade-war-may-produce-headwinds-nascent-ai-sector-iea-says-2025-04-10/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-05-005",
+      "indicator": "I-R6-05",
+      "kind": "forecast",
+      "published": "2025-07-30",
+      "summary": "IEA mid-year electricity update: Bloc A demand growth accelerating in 2025-2026 (2.3% and 2.2%/yr), driven mainly by data-centre expansion; big-tech 2025 capex commitments of ~$320B vs $230B in 2024. Bloc B services-sector demand +7.1% in H1 2025 partly on data centres.",
+      "detail": "IEA 'Electricity Mid-Year Update 2025', demand chapter (July 2025; exact day not verified). Bloc A data centres ~180 TWh in 2024.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.iea.org/reports/electricity-mid-year-update-2025/demand-global-electricity-use-to-grow-strongly-in-2025-and-2026",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-05-006",
+      "indicator": "I-R6-05",
+      "kind": "forecast",
+      "published": "2025-11-12",
+      "summary": "IEA's annual outlook: data-centre investment expected to reach ~$580B in 2025 (more than global oil-supply investment); data-centre electricity to triple by 2035; >85% of new capacity in the two leading jurisdictions and one other bloc; grid spending lagging generation, raising congestion.",
+      "detail": "IEA World Energy Outlook 2025 executive summary (released 2025-11-12; Data Center Knowledge 2025-11-13). Box 8.1 updates Bloc A supply outlook for policy changes. No revised 2027 data-centre number found.",
+      "value": "$580B data-centre investment (2025)",
+      "direction": "toward NO",
+      "source_url": "https://www.iea.org/reports/world-energy-outlook-2025/executive-summary",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2025-I-R6-05-007",
+      "indicator": "I-R6-05",
+      "kind": "data-gap",
+      "published": "2025-12-31",
+      "summary": "No measured 2025 global data-centre electricity figure was published within the phase; the reference projection publishes 2024 and 2030 headline values only, so the 2027 threshold is derived.",
+      "detail": "First IEA actual for 2025 (485 TWh) appeared 2026-04-16, outside this phase.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.iea.org/reports/energy-and-ai",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

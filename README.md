@@ -23,7 +23,8 @@ editorial scenario families (R1–R6).
 - **Not a forecast.** The numbers say how the evidence so far tilts a set of editorial
   starting weights, not how likely an ending is.
 - Not a poll: votes on Visions never change the map.
-- Not finished: one maintainer, one reviewed year of evidence (2026). Lenses other than
+- Not finished: one maintainer, reviewed evidence from 2022-11-30 to today (five backfill phases,
+  replayed week by week). Lenses other than
   Baseline are maintainer presets, not the views of the thinkers they are named after.
 
 ## Contribute

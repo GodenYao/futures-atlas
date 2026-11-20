@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R4-03",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "A top-5 developer weakens or withdraws a published safety-framework commitment, documented by a text diff (framework documents, archived; calendar 2027)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not applicable/met in 2023: this was the founding year of published frontier safety frameworks, so there was no prior text to weaken. Baseline commitments created in-phase: government-brokered voluntary commitments (July), a responsible scaling policy (Sept) and a beta preparedness framework (Dec). These texts are the baselines for later diffs.",
+  "items": [
+    {
+      "id": "BF-2023-I-R4-03-001",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2023-07-21",
+      "summary": "Seven leading developers made voluntary safety, security and transparency commitments brokered by Bloc A's government; establishes a baseline commitment set against which later weakening can be measured.",
+      "detail": "White House fact sheet, 2023-07-21 (Amazon, Anthropic, Google, Inflection, Meta, Microsoft, OpenAI); commitments text linked as 'Ensuring-Safe-Secure-and-Trustworthy-AI.pdf'.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2023/07/21/fact-sheet-biden-harris-administration-secures-voluntary-commitments-from-leading-artificial-intelligence-companies-to-manage-the-risks-posed-by-ai/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-03-002",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2023-09-19",
+      "summary": "A top-5 developer published its first scaling policy; changes require board approval after consultation with a long-term benefit trust, a procedural guard against silent weakening. Baseline v1 text.",
+      "detail": "Anthropic RSP announcement: 'changes must be approved by the board following consultations with the Long Term Benefit Trust'. Date approximate (not visible in extraction).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.anthropic.com/news/anthropics-responsible-scaling-policy",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-03-003",
+      "indicator": "I-R4-03",
+      "kind": "event",
+      "published": "2023-12-18",
+      "summary": "A second top-5 developer published a beta preparedness framework, described as a 'living document'; baseline text for later diffs. No weakening of any prior framework recorded in-phase.",
+      "detail": "OpenAI Preparedness Framework (Beta), 2023-12-18. (Its later 2025 revision exists but is outside the phase and not used here.)",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://cdn.openai.com/openai-preparedness-framework-beta.pdf",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

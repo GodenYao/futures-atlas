@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R1-03",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": ">= 2 of the top-3 compute jurisdictions publish new or expanded controls on AI chips, chip tools or model weights (Official gazettes; calendar 2027)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Resolution year is 2027. At the timeline start only Bloc A had published chip/tool controls: its October 2022 advanced-computing and semiconductor-equipment rule (pre-window baseline), then in December 2022 an Entity List expansion targeting AI-chip developers and chipmakers. Bloc B responded with a WTO dispute rather than its own controls during the window (1 of 3 jurisdictions).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R1-03-001",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2022-10-13",
+      "summary": "Pre-window baseline: Bloc A's export-control agency published an interim final rule adding controls on certain advanced computing chips, items containing them and semiconductor manufacturing items, with supercomputer and semiconductor end-use controls (new chip classifications effective 21 October 2022).",
+      "detail": "Bloc A BIS, 'Implementation of Additional Export Controls: Certain Advanced Computing and Semiconductor Manufacturing Items; Supercomputer and Semiconductor End Use; Entity List Modification', 87 FR 62186, FR Doc. 2022-21658, published 2022-10-13 (filed 2022-10-07; verified via web_extract this run; adds ECCNs 3A090 and 4A090).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2022/10/13/2022-21658/implementation-of-additional-export-controls-certain-advanced-computing-and-semiconductor-manufacturing-items",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-03-002",
+      "indicator": "I-R1-03",
+      "kind": "event",
+      "published": "2022-12-15",
+      "summary": "Bloc A's export-control agency announced the addition of 36 entities, primarily in Bloc B, to its restricted Entity List, framed as building on its October advanced-computing and chip-equipment rule to restrict access to AI and advanced computing technologies.",
+      "detail": "Bloc A BIS press release, 'Commerce Adds 36 to Entity List for Supporting the Bloc B's Military Modernization, Violations of Human Rights, and Risk of Diversion', 2022-12-15 (verified via web_extract this run). The breakdown '21 AI-chip R&D/manufacturing entities with foreign-direct-product rule applied' and the YMTC/SMEE additions appear in the release per search snippet; not in the extracted portion.",
+      "value": "36 entities added",
+      "direction": "toward YES",
+      "source_url": "https://www.bis.gov/press-release/commerce-adds-36-entity-list-supporting-peoples-republic-chinas-military-modernization-violations-human",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-03-003",
+      "indicator": "I-R1-03",
+      "kind": "treaty-law",
+      "published": "2022-12-19",
+      "summary": "Bloc A published the corresponding final rule in its official gazette, adding 36 entities (including AI-chip designers, a memory-chip maker and a lithography-equipment maker) to the Entity List, effective 16 December 2022.",
+      "detail": "Bloc A BIS, 'Additions and Revisions to the Entity List and Conforming Removal From the Unverified List', 87 FR 77505, FR Doc. 2022-27151, published 2022-12-19, effective 2022-12-16 (verified via web_extract this run; entity names incl. Cambricon units, YMTC, SMEE from the rule text/search snippet).",
+      "value": "36 entities",
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/documents/2022/12/19/2022-27151/additions-and-revisions-to-the-entity-list-and-conforming-removal-from-the-unverified-list",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-03-004",
+      "indicator": "I-R1-03",
+      "kind": "event",
+      "published": "2022-12-15",
+      "summary": "Bloc B requested dispute consultations at the multilateral trade body, challenging Bloc A's export controls on advanced computing chips, manufacturing items, supercomputer items and related technologies; it did not publish its own chip or tool controls in the window.",
+      "detail": "WTO news item, 'Bloc B initiates WTO dispute complaint targeting Bloc A semiconductor chip measures' (DS615), request circulated 2022-12-15 (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.wto.org/english/news_e/news22_e/ds615rfc_15dec22_e.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R4-05",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A top-5 developer reports AI systems did >= 50% of code or experiments in a frontier training project (technical report or system card; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met. AI code generation was assistive: a Bloc A developer measured its internal ML completion completing >3% of code; a code assistant vendor reported ~40% of code in files where it is enabled (general developers, not frontier training projects). In the window, a top-5 developer's competitive-programming system was published in a peer-reviewed journal at roughly median-competitor level. No report of AI doing a share of frontier training work.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R4-05-001",
+      "indicator": "I-R4-05",
+      "kind": "event",
+      "published": "2022-12-08",
+      "summary": "A top-5 developer's competitive-programming system, published in a peer-reviewed journal, placed around the median competitor (top ~54%) in 10 recent online contests - the first AI code-generation system at competitive level. Not used for its own research workflows.",
+      "detail": "DeepMind, 'Competitive programming with AlphaCode' (first published 2022-02-02, updated after Science publication on 2022-12-08; verified via web_extract this run). The Science article itself was blocked (403).",
+      "value": "~top 54% of participants",
+      "direction": "neutral",
+      "source_url": "https://www.deepmind.com/blog/competitive-programming-with-alphacode",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-05-002",
+      "indicator": "I-R4-05",
+      "kind": "data-series",
+      "published": "2022-07-26",
+      "summary": "A top-5 developer reported that its internal transformer-based hybrid code completion, used by 10k+ internal developers, completes about 3% of code with a 25-34% acceptance rate and a 6% reduction in coding iteration time.",
+      "detail": "Google Research blog, 'ML-Enhanced Code Completion Improves Developer Productivity', 2022-07-26 (updated 2022-09-06; verified via web_extract this run).",
+      "value": ">3% of code",
+      "direction": "toward NO",
+      "source_url": "https://research.google/blog/ml-enhanced-code-completion-improves-developer-productivity/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R4-05-003",
+      "indicator": "I-R4-05",
+      "kind": "data-series",
+      "published": "2022-06-21",
+      "summary": "A code-assistant vendor (affiliated with a top-5 developer's partner) reported that in files where its assistant is enabled, nearly 40% of code is written by it in popular languages; general developer population, not a frontier training project.",
+      "detail": "GitHub blog, 'GitHub Copilot is generally available to all developers', 2022-06-21 (verified via web_extract this run): 1.2M technical-preview users; 'nearly 40% of code is being written by GitHub Copilot' in enabled files (e.g. Python). Vendor self-report.",
+      "value": "~40% of code in enabled files",
+      "direction": "neutral",
+      "source_url": "https://github.blog/news-insights/product-news/github-copilot-is-generally-available-to-all-developers/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

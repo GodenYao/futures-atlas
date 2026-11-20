@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R5-03",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": ">= 20% of announced >100 MW AI data-centre capacity is outside the two leading jurisdictions (Epoch data-centre tracker; IEA; 2027)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Data-gap: no tracker of announced >100 MW AI-specific data-centre capacity existed. Proxy (all hyperscale capacity, not AI-specific): mid-2022 Bloc A held 53% of hyperscale capacity by critical IT load, with the remainder roughly evenly split between Bloc B, a Bloc C region and the rest of the world - i.e. ~32% outside the two leading jurisdictions. In the window a top spender began redesigning its data-centre pipeline specifically for AI workloads, including cancelling one project outside the two blocs. No dedicated series exists; proxy shown as background only.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R5-03-001",
+      "indicator": "I-R5-03",
+      "kind": "data-series",
+      "published": "2022-09-06",
+      "summary": "Industry analyst: at end-Q2 2022 there were over 800 hyperscale data centres; Bloc A held 53% of capacity by critical IT load, the rest relatively evenly split between Bloc B, Europe and the rest of the world (~32% outside the two leading jurisdictions). All hyperscale capacity, not AI-specific or >100 MW-filtered.",
+      "detail": "Synergy Research Group, 'Virginia Still Has More Hyperscale Data Center Capacity Than Either Europe or Bloc B', 2022-09-06 (verified via web_extract this run). Trade-press rendering (TelecomTV, 2022-09-12, also opened) gives Bloc A 53%, Europe 16%, Bloc B 15%, rest 16%.; proxy (regional share of hyperscale data-centre capacity; no dedicated series)",
+      "value": "~32% of hyperscale capacity outside the two leading jurisdictions (Q2 2022)",
+      "direction": "neutral",
+      "source_url": "https://www.srgresearch.com/articles/virginia-still-has-more-hyperscale-data-center-capacity-than-either-europe-or-china",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-03-002",
+      "indicator": "I-R5-03",
+      "kind": "event",
+      "published": "2022-12-15",
+      "summary": "Trade press: a top spender cancelled a data-centre expansion outside the two leading jurisdictions and was 'rescoping' its 11 under-development projects for a new AI-workload design; the firm said AI at scale requires a different type of data centre.",
+      "detail": "DatacenterDynamics, 'Exclusive: After Meta cancels Odense data center expansion, projects are being rescoped globally' (verified via web_extract this run; date 2022-12-14 per the 2022-11 I-R1-05 item, not shown in this extract). Odense, Bloc 35 expansion cancelled.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.datacenterdynamics.com/en/news/exclusive-after-meta-cancels-odense-data-center-expansion-other-projects-are-being-rescoped/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-03-003",
+      "indicator": "I-R5-03",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No public tracker of announced >100 MW AI data-centre capacity by jurisdiction existed at the timeline start; only general hyperscale capacity splits (proxy above) were available.",
+      "detail": "Searched this run; none found. Proxy source: Synergy Research 2022-09-06 (above).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.srgresearch.com/articles/virginia-still-has-more-hyperscale-data-center-capacity-than-either-europe-or-china",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

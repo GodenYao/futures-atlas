@@ -1,0 +1,28 @@
+{
+  "indicator": "I-R2-05",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Recent-graduate unemployment minus the all-worker rate >= 2.0 pp in any 2027 quarter (NY Fed College Labor Market; 2027 quarterly)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable at the timeline start. In the regional central bank's series, recent-graduate unemployment ran about 0.5-0.7 pp above the all-worker rate in mid/late 2022 (e.g. Sept 2022 ~4.0% vs ~3.4%), far below the 2.0 pp threshold. Values are from a later vintage of the data file; an in-window vintage was not retrievable.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R2-05-001",
+      "indicator": "I-R2-05",
+      "kind": "data-series",
+      "published": "2022-11-01",
+      "summary": "Bloc A regional central bank's recent-graduate series (ages 22-27, 3-month average, SA): Sept 2022 recent graduates 4.03% vs all workers 3.44% (gap ~0.6 pp); Q3 2022 monthly gaps 0.6-0.7 pp.",
+      "detail": "Federal Reserve Bank of New York, 'The Labor Market for Recent College Graduates', unemployment data CSV, retrieved via Wayback Machine (verified via web_extract this run; the archived file returned contains data through Sept 2023, i.e. a 2023 vintage, so 2022 values may include later revisions). Q3 2022 posting date approximate (quarterly update, typically ~November). Oct-Dec 2022 rows were published only in early 2023 and are excluded under the as-of rule.",
+      "value": "gap ~0.6 pp (Sept 2022: 4.03% vs 3.44%)",
+      "direction": "toward NO",
+      "source_url": "https://web.archive.org/web/20221220000000id_/https://www.newyorkfed.org/medialibrary/research/interactives/data/college-labor-market/college-labor-unemployment-data.csv",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true,
+      "hold": true
+    }
+  ]
+}

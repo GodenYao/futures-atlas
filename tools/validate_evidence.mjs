@@ -301,9 +301,11 @@ function checkLedger() {
   const bfDir = path.join(P.ledger, 'backfill'), rvDir = path.join(P.ledger, 'reviewed'), rdDir = path.join(bfDir, 'review');
   const bfSchema = readJSON(path.join(P.ledger, 'schema', 'backfill.schema.json'));
   const allIds = new Map(); const dupRefs = [];
-  const dateRules = (E, it, at) => {
+  const dateRules = (E, it, at, bf) => {
     if (typeof it.published === 'string' && isDate(it.published)) {
-      if (it.published < MIN_DATE) E(`${at}: published ${it.published} is before the ledger start ${MIN_DATE}`);
+      // backfill phases may carry older baseline readings (pre-window context); they enter the first replay week
+      // (method 4.5.0, replay from 2022-11-30). Contributor items must still be on/after the ledger start.
+      if (it.published < MIN_DATE && !bf) E(`${at}: published ${it.published} is before the ledger start ${MIN_DATE}`);
       if (it.published > today) E(`${at}: published ${it.published} is in the future`);
     }
   };
@@ -327,7 +329,7 @@ function checkLedger() {
         if (allIds.has(it.id)) E(`${at}: duplicate id, also in ${allIds.get(it.id)}`); else allIds.set(it.id, path.relative(root, file));
       }
       if (it.duplicate_of) dupRefs.push([file, at, it.duplicate_of]);
-      dateRules(E, it, at); neutral(W, it, at);
+      dateRules(E, it, at, true); neutral(W, it, at);
     });
   }
   // accepted contributor items (filed by tools/weekly_build.mjs)

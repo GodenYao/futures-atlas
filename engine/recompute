@@ -121,11 +121,12 @@ const ledger = E.loadLedger(SITE);
 const OUT = path.join(__dirname, 'snapshots'); fs.mkdirSync(OUT, { recursive: true });
 // Week range (year-agnostic, no hard-coded year):
 //   first week = --from YYYY-Www, else the start of the OLDEST counted phase (phase "2026" -> 2026-W01,
-//                phase "2022-11" -> the ISO week of 2022-11-01);
+//                phase "2022-11" -> the ISO week of 2022-11-01; an approved_<phase>.json "history_from" date wins,
+//                e.g. "2022-11-30" -> the ISO week of 2022-11-30 = 2022-W48);
 //   last week  = --to YYYY-Www, else the last COMPLETE ISO week before today (--today YYYY-MM-DD or env
 //                FA_TODAY; default = system date, UTC). Run on Monday 01:00 UTC -> the week that just ended.
 const wkMon = s => { const m = /^(\d{4})-W(\d\d)$/.exec(s || ''); if (!m) throw new Error('bad week ' + s + ' (want YYYY-Www)'); return E.isoWeekMonday(+m[1], +m[2]); };
-const phaseMon = ph => { const m = /^(\d{4})(?:-(\d\d))?/.exec(ph); if (!m) throw new Error('phase folder name must start with YYYY: ' + ph); if (!m[2]) return E.isoWeekMonday(+m[1], 1); const n = E.dnum(`${m[1]}-${m[2]}-01`); return n - ((new Date(n * 864e5).getUTCDay() + 6) % 7); };
+const phaseMon = ph => { const hf = (ledger.historyFrom || {})[ph]; if (hf) { const n = E.dnum(hf); return n - ((new Date(n * 864e5).getUTCDay() + 6) % 7); } const m = /^(\d{4})(?:-(\d\d))?/.exec(ph); if (!m) throw new Error('phase folder name must start with YYYY: ' + ph); if (!m[2]) return E.isoWeekMonday(+m[1], 1); const n = E.dnum(`${m[1]}-${m[2]}-01`); return n - ((new Date(n * 864e5).getUTCDay() + 6) % 7); };
 if (!ledger.phases.length && !ledger.nReviewed) { console.error('recompute: no reviewed phase (backfill/review/approved_<phase>.json) and no reviewed/ items - nothing to replay'); process.exit(1); }
 const firstMon = arg('--from') ? wkMon(arg('--from')) : Math.min(...ledger.phases.map(phaseMon));
 const todayN = E.dnum(arg('--today', process.env.FA_TODAY || new Date().toISOString().slice(0, 10)));

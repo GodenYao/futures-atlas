@@ -1,0 +1,55 @@
+{
+  "indicator": "I-N-01",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": ">= 15 distinct organisations have a training run >= 1e26 FLOP (Epoch AI; snapshot 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "0 organisations known to have a >= 1e26 FLOP run by end-2023. The largest publicly estimated run was ~2e25 FLOP (a Bloc A developer's GPT-4, per Epoch), roughly 5x below the threshold; a second Bloc A developer released a new flagship model family in Dec 2023 with no disclosed compute. A Bloc A executive order (Oct 2023) adopted 1e26 operations as a reporting trigger, showing the threshold was then regarded as beyond existing models.",
+  "items": [
+    {
+      "id": "BF-2023-I-N-01-001",
+      "indicator": "I-N-01",
+      "kind": "data-series",
+      "published": "2023-11-27",
+      "summary": "Epoch AI analysis of industry labs: the most compute-intensive known run was a Bloc A developer's flagship model at an estimated 2e25 FLOP; a few Bloc A firms dominate frontier compute, and Bloc B labs lag on all metrics.",
+      "detail": "Epoch AI, 'Who is leading in AI? An analysis of industry AI research' (late 2023; publication date approximate) (verified via web_extract this run): Google ~10-million-fold compute growth over 11 years, OpenAI and Meta ~1-million-fold in six years; GPT-4 ~2e25 FLOP; Bloc B labs trail Bloc A labs.",
+      "value": "max known run ~2e25 FLOP; 0 orgs >= 1e26",
+      "direction": "toward NO",
+      "source_url": "https://epoch.ai/blog/who-is-leading-in-ai-an-analysis-of-industry-ai-research",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-N-01-002",
+      "indicator": "I-N-01",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "A Bloc A executive order set interim reporting triggers for dual-use foundation models trained with > 1e26 operations and for clusters with > 1e20 operations per second, i.e. above every model then known.",
+      "detail": "Bloc A Executive Order 14110, Sec. 4.2(b)-(c), 88 FR 75191, published 2023-11-01 (signed 2023-10-30) (verified via web_extract of the Federal Register full text this run: cluster threshold 1e20 ops/s and 1e26-operation model trigger in 4.2(c)(iii)).",
+      "value": "1e26 operations reporting trigger",
+      "direction": "neutral",
+      "source_url": "https://www.federalregister.gov/documents/full_text/html/2023/11/01/2023-24283.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-N-01-003",
+      "indicator": "I-N-01",
+      "kind": "event",
+      "published": "2023-12-06",
+      "summary": "A second Bloc A developer launched a new flagship multimodal model family in three sizes, trained on its in-house accelerators; training compute was not disclosed.",
+      "detail": "Google, 'Introducing Gemini: our largest and most capable AI model', 2023-12-06 (verified via web_extract this run): Ultra/Pro/Nano, trained on TPU v4 and v5e. No FLOP figure published in-phase.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://blog.google/technology/ai/google-gemini-ai/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

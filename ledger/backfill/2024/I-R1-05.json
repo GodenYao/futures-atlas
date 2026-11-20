@@ -1,0 +1,99 @@
+{
+  "indicator": "I-R1-05",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Combined FY2027 capex of the 5 largest AI/cloud spenders >= 1.2x FY2026 (securities filings; on FY2027 filings)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not resolvable until FY2027 filings; 2024 shows the trajectory. The four largest Bloc A cloud/platform spenders raised capex every quarter of 2024: ~$104B in H1 (+47% y/y) and ~$59-65B in Q3 alone (+56-68% y/y depending on lease treatment); full-year 2024 ~$230B. All four signalled further increases for 2025 ('significant' growth per one CFO). Growth far exceeded the 1.2x bar; the 2024 base also set a high comparison level. Q4 2024 figures were published only in 2025 and are excluded.",
+  "items": [
+    {
+      "id": "BF-2024-I-R1-05-001",
+      "indicator": "I-R1-05",
+      "kind": "forecast",
+      "published": "2024-02-01",
+      "summary": "In Q4 2023 results, one large Bloc A platform guided 2024 capex of $30-37B and others signalled notably larger 2024 AI infrastructure spending than 2023.",
+      "detail": "Meta Q4 2023 earnings (2024-02-01), SEC Form 8-K Exhibit 99.1: 'We anticipate our full-year 2024 capital expenditures will be in the range of $30-37 billion' (checked 2026-11-19 in the web.archive.org copy; the investor-site press release URL now returns 404). Alphabet (2024-01-30) said 2024 capex 'notably larger' than 2023.",
+      "value": "$30-37B (one firm, 2024 guidance)",
+      "direction": "toward YES",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680124000010/meta-12312023xexhibit991.htm",
+      "archive_url": "https://web.archive.org/web/20250211124643/https://www.sec.gov/Archives/edgar/data/1326801/000132680124000010/meta-12312023xexhibit991.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-05-002",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2024-08-01",
+      "summary": "First-half 2024 combined capex of the four largest Bloc A spenders ~$104B (+47% y/y). Q2: one firm $13.2B (+91% y/y), another $8.5B (+33%); a third raised the low end of its 2024 guidance to $37B.",
+      "detail": "I/O Fund via Forbes (2024-08-08 and 2024-11-14); Meta Q2 2024 (2024-07-31, CNBC/NYT): capex $8.47B, guidance $37-40B; Alphabet Q2 $13.2B. Figures include finance-lease principal for some firms.",
+      "value": "~$104B (H1 2024, 4 firms)",
+      "direction": "toward YES",
+      "source_url": "https://www.forbes.com/sites/bethkindig/2024/08/08/microsoft-leads-big-tech-in-ai-monetization-amazon-a-close-second",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-05-003",
+      "indicator": "I-R1-05",
+      "kind": "event",
+      "published": "2024-09-17",
+      "summary": "A Bloc A cloud provider, an asset manager and a Gulf state-backed investor launched an AI-infrastructure partnership targeting $30B of equity and up to $100B including debt for data centres and power.",
+      "detail": "Global AI Infrastructure Investment Partnership (BlackRock, GIP, Microsoft, MGX), announced 2024-09-17. Not verified via web_extract this run; announced intent, not filings.",
+      "value": "up to $100B (intent)",
+      "direction": "toward YES",
+      "source_url": "https://news.microsoft.com/2024/09/17/blackrock-global-infrastructure-partners-microsoft-and-mgx-launch-new-ai-partnership-to-invest-in-data-centers-and-supporting-power-infrastructure/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-05-004",
+      "indicator": "I-R1-05",
+      "kind": "data-series",
+      "published": "2024-10-31",
+      "summary": "Q3 2024 combined capex of the four: ~$58.9B (+59% y/y) on cash P&E, ~$64.9B (+68% y/y) including finance leases; one firm said quarterly spending would hold ~$13B in Q4 with a further increase in 2025, another raised its 2024 range to $38-40B and expects 'significant' 2025 growth; a third expected ~$75B for 2024.",
+      "detail": "S&P Global Market Intelligence (Nov 2024): $58.86B vs $36.95B a year earlier; I/O Fund via Forbes 2024-11-14: $64.9B. Meta Q3 2024 results (8-K Exhibit 99.1, 2024-10-30): capex incl. finance-lease principal $9.20B, 2024 guide $38-40B. Alphabet Q3 call (2024-10-29). Amazon Q3 (2024-10-31): ~$75B 2024.",
+      "value": "~$59-65B (Q3 2024, 4 firms)",
+      "direction": "toward YES",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680124000077/meta-09302024xexhibit991.htm",
+      "archive_url": "https://web.archive.org/web/20250124135300/https://www.sec.gov/Archives/edgar/data/1326801/000132680124000077/meta-09302024xexhibit991.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-05-005",
+      "indicator": "I-R1-05",
+      "kind": "forecast",
+      "published": "2024-11-14",
+      "summary": "Analyst tracking: big-tech capex ~$171B through Q3 2024 (+56% y/y) and projected to exceed a quarter-trillion dollars in 2025.",
+      "detail": "Forbes / I/O Fund 'AI Spending To Exceed A Quarter Trillion Next Year' (2024-11-14). Dell'Oro estimated the four increased data-centre infrastructure investment 81% y/y in Q3 (Construction Dive).",
+      "value": "~$170B (capex through Q3 2024)",
+      "direction": "toward YES",
+      "source_url": "https://www.forbes.com/sites/bethkindig/2024/11/14/ai-spending-to-exceed-a-quarter-trillion-next-year/",
+      "source_tier": 3,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R1-05-006",
+      "indicator": "I-R1-05",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "Spender list and capex definition are not fixed (cash P&E vs including finance leases; fiscal years ending June; fifth spender undetermined). Same gap as later phases.",
+      "detail": "Differences of ~$6B/quarter in 2024 between S&P (cash) and I/O Fund (incl. leases) totals illustrate the definitional sensitivity.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.spglobal.com/market-intelligence/en/news-insights/articles/2024/11/big-tech-ramps-up-capex-as-first-signs-of-ai-returns-emerge-86140639",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

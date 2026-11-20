@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R1-02",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "A government in a top-3 compute jurisdiction takes equity, a golden share or a formal priority-access security partnership with a top-5 frontier developer (Official gazette, securities filing or official release; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. Closest steps: voluntary safety commitments brokered by Bloc A's executive with seven developers; a non-top-2 government announced early/priority model access for research and safety from three frontier labs; a multi-government plan for state-led pre-release testing. No equity, golden share or formal security partnership.",
+  "items": [
+    {
+      "id": "BF-2023-I-R1-02-001",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2023-06-12",
+      "summary": "A non-top-2 government announced that three frontier developers committed to give it early or priority access to models for research and safety evaluation.",
+      "detail": "Bloc G Prime Minister, Bloc G Tech Week speech, 2023-06-12 (verified via web_extract this run): Google DeepMind, OpenAI and Anthropic 'committed to give early or priority access to models for research and safety purposes'. Not a security partnership; whether the Bloc G is a top-3 compute jurisdiction is doubtful.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.gov.uk/government/speeches/pm-london-tech-week-speech-12-june-2023",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-02-002",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2023-07-21",
+      "summary": "Bloc A's executive secured voluntary safety, security and trust commitments from seven leading AI developers; voluntary, with no equity or priority-access terms.",
+      "detail": "White House fact sheet, 2023-07-21 (verified via web_extract this run): Amazon, Anthropic, Google, Inflection, Meta, Microsoft, OpenAI.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://whitehouse.gov/briefing-room/statements-releases/2023/07/21/fact-sheet-biden-harris-administration-secures-voluntary-commitments-from-leading-artificial-intelligence-companies-to-manage-the-risks-posed-by-ai",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-02-003",
+      "indicator": "I-R1-02",
+      "kind": "event",
+      "published": "2023-11-02",
+      "summary": "Leaders of 11 governments (including Bloc A, not Bloc B) and 10 developers agreed to collaborate on state-led testing of next-generation models before release; an informal plan rather than a formal partnership.",
+      "detail": "Bloc G government, 'Safety Testing: Chair's Statement of Session Outcomes, 2 November 2023' (verified via web_extract this run). Governments: Bloc W, Bloc P, Bloc C, Bloc E, Bloc D, Bloc F, Bloc N, Bloc H, Bloc 33, Bloc A, Bloc G; companies incl. Anthropic, Google DeepMind, Meta, Microsoft, OpenAI, xAI.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gov.uk/government/publications/ai-safety-summit-2023-chairs-statement-safety-testing-2-november/safety-testing-chairs-statement-of-session-outcomes-2-november-2023",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

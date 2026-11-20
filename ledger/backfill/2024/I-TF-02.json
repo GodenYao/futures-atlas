@@ -1,0 +1,69 @@
+{
+  "indicator": "I-TF-02",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Top-1% wealth share at 2027Q4 >= 2025Q4 + 1 pp (Federal Reserve Distributional Financial Accounts, 2027Q4 release)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not resolvable in 2024 (baseline 2025Q4 not yet observed). In-phase vintages of the Bloc A DFA put the top-1% net-worth share at 30.3% (Q4 2023, Mar 2024 vintage), 30.2% (Q2 2024, Sept 2024 vintage after a broad revision) and 30.8% (Q3 2024, Dec 2024 vintage). The share rose ~0.5 pp within 2024, driven by equity gains; the top 1% held ~50% of corporate equities and mutual-fund shares. Vintages revise by up to a few tenths of a point, comparable to the annual trend.",
+  "items": [
+    {
+      "id": "BF-2024-I-TF-02-001",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2024-03-22",
+      "summary": "Wealth-distribution accounts for Q4 2023: top-1% share of Bloc A household net worth 30.3%; top 0.1% 13.6%; top-1% share of corporate equities and mutual-fund shares 49.4%.",
+      "detail": "Federal Reserve DFA, release vintage 2024-03-22 per ALFRED (WFRBST01134 last obs Q4 2023 = 30.3; WFRBSTP1300 = 13.6; WFRBST01122 = 49.4). Verified.",
+      "value": "30.3 % (Q4 2023)",
+      "direction": "neutral",
+      "source_url": "https://alfred.stlouisfed.org/release?ob=pv&od=desc&rd=2024-03-22&rid=453&rt=securities&t=securities",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-02-002",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2024-09-20",
+      "summary": "Q2 2024 update with broad back-revisions (75 observations revised): top-1% net-worth share 30.2%, top-1% net worth ~$46.7T; top 0.1% 13.5%.",
+      "detail": "Federal Reserve DFA, release vintage 2024-09-20 per ALFRED (WFRBST01134 last obs Q2 2024 = 30.2; WFRBLT01026 = 46,704,627 $M). Revision coincides with the annual national-accounts update. Verified.",
+      "value": "30.2 % (Q2 2024)",
+      "direction": "neutral",
+      "source_url": "https://alfred.stlouisfed.org/release?ob=pv&od=desc&rd=2024-09-20&rid=453&rt=securities&t=securities",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-02-003",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2024-12-20",
+      "summary": "Q3 2024 update: top-1% net-worth share rose to 30.8% (net worth ~$49.2T, +$2.5T in one quarter); top 0.1% 13.8%; top-1% share of corporate equities 49.9%. Rise of ~0.6 pp from the previous release, equity-driven.",
+      "detail": "Federal Reserve DFA, release vintage 2024-12-20 per ALFRED (WFRBST01134 Q3 2024 = 30.8; WFRBLT01026 = 49,238,194 $M; WFRBSTP1300 = 13.8; WFRBST01122 = 49.9). Verified.",
+      "value": "30.8 % (Q3 2024)",
+      "direction": "toward YES",
+      "source_url": "https://alfred.stlouisfed.org/release?ob=pv&od=desc&rd=2024-12-20&rid=453&rt=securities&t=securities",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-TF-02-004",
+      "indicator": "I-TF-02",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "Q1 2024 vintage not retrieved this run. The indicator's baseline (2025Q4) and the triennial survey benchmark used to re-anchor the series (2025 wave) did not exist yet. No quarterly top-wealth-share series exists for Bloc B.",
+      "detail": "DFA is benchmarked to the Survey of Consumer Finances (latest wave then: 2022). Bloc B has no official quarterly wealth-distribution account.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.federalreserve.gov/releases/efa/efa-distributional-financial-accounts.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

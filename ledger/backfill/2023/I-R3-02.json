@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R3-02",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "A top-5 developer publicly halts frontier training >= 30 days, citing safety (developer announcement + independent confirmation; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. A widely signed open letter called for a 6-month pause on training beyond the then-frontier; no top-5 developer announced a halt. One developer CEO said a next-generation model was not being trained 'for some time', but this was not framed as a safety halt with a defined duration. Conditional-pause commitments appeared in the first published developer safety frameworks.",
+  "items": [
+    {
+      "id": "BF-2023-I-R3-02-001",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2023-03-22",
+      "summary": "An open letter called on all AI labs to immediately pause, for at least 6 months, training of systems more powerful than the then-frontier model; it gathered tens of thousands of signatures but no top-5 developer adopted the pause.",
+      "detail": "Future of Life Institute, 'Pause Giant AI Experiments: An Open Letter', published 22 March 2023; page shows 31,810 signatures at fetch time (count is current, not as of 2023). Targets 'AI systems more powerful than GPT-4'.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://futureoflife.org/open-letter/pause-giant-ai-experiments/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-02-002",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2023-04-14",
+      "summary": "Asked about the pause letter, the CEO of a top-5 developer said the firm was not training its next flagship model and would not for some time; framed as a sequencing statement, not a safety halt of defined duration, and not independently confirmed.",
+      "detail": "The Verge, 'OpenAI's CEO confirms the company isn't training GPT-5 and won't for some time' (Sam Altman, MIT event), 2023-04-14. Does not satisfy the resolution rule (no announced safety-cited halt of a frontier run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.theverge.com/2023/4/14/23683084/openai-gpt-5-rumors-training-sam-altman",
+      "source_tier": 3,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-02-003",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2023-09-19",
+      "summary": "A top-5 developer published a scaling policy whose safety-level system 'implicitly requires' it to temporarily pause training of more powerful models if scaling outstrips its ability to meet required safety procedures; a conditional commitment, not an actual halt.",
+      "detail": "Anthropic, 'Introducing Anthropic's Responsible Scaling Policy' (AI Safety Levels, ASL). Publication date 2023-09-19 not visible in the extracted text; date from the announcement's known release (treat as approximate).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.anthropic.com/news/anthropics-responsible-scaling-policy",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R3-02-004",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2023-12-18",
+      "summary": "Another top-5 developer published a beta preparedness framework stating it would only continue capabilities-enhancing development if it could reasonably assure safety when a model reaches 'critical' pre-mitigation risk; again a conditional pause trigger, none invoked in-phase.",
+      "detail": "OpenAI, 'Preparedness Framework (Beta)', dated December 18, 2023 (PDF).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://cdn.openai.com/openai-preparedness-framework-beta.pdf",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R4-05",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "A top-5 developer reports AI systems did >= 50% of code or experiments in a frontier training project (technical report or system card; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. No developer reported an AI share of code or experiments in a frontier training project. Related signals: a coding assistant vendor claimed its tool wrote 46% of code among its users (general software, not frontier training), and a top-5 developer set a 4-year goal of building an automated alignment researcher.",
+  "items": [
+    {
+      "id": "BF-2023-I-R4-05-001",
+      "indicator": "I-R4-05",
+      "kind": "data-series",
+      "published": "2023-03-22",
+      "summary": "A major code-hosting platform claimed its AI pair-programmer was 'already writing 46% of code' for its users and helped developers code up to 55% faster; a general-software usage claim, not a frontier-training-project measurement.",
+      "detail": "GitHub blog, Thomas Dohmke, 'GitHub Copilot X: The AI-powered developer experience', 2023-03-22 (page notes an update on 2024-05-21; the 46% figure appears in the original announcement text).",
+      "value": "46% of code (Copilot users)",
+      "direction": "neutral",
+      "source_url": "https://github.blog/news-insights/product-news/github-copilot-x-the-ai-powered-developer-experience/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-05-002",
+      "indicator": "I-R4-05",
+      "kind": "event",
+      "published": "2023-07-05",
+      "summary": "A top-5 developer launched a team with 20% of its secured compute, aiming within four years to build a roughly human-level automated alignment researcher - an explicit plan to automate parts of AI research.",
+      "detail": "OpenAI, 'Introducing Superalignment', 2023-07-05 (co-led by Ilya Sutskever and Jan Leike).",
+      "value": "20% of secured compute",
+      "direction": "toward YES",
+      "source_url": "https://openai.com/index/introducing-superalignment/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R4-05-003",
+      "indicator": "I-R4-05",
+      "kind": "data-gap",
+      "published": "2023-12-31",
+      "summary": "No 2023 technical report or system card from a top-5 developer quantified the share of code or experiments done by AI in a frontier training project; the metric did not yet exist publicly.",
+      "detail": "Checked in-phase frontier disclosures opened this run: GPT-4 System Card (2023-03), Gemini launch post (2023-12-06), Preparedness Framework beta (2023-12-18) - none report such a share.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://cdn.openai.com/papers/gpt-4-system-card.pdf",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

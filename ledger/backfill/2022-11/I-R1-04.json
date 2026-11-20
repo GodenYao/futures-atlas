@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R1-04",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "No agreement between the two leading compute jurisdictions sets verifiable limits on training compute or capabilities (Official readouts, treaty texts; by 2028-06-30)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Holding (toward YES) at the timeline start: the most recent leaders' meeting (pre-window, 2022-11-14) produced no AI arrangement of any kind; during the window relations on chips moved toward confrontation (new Bloc A entity listings; a Bloc B trade-dispute filing). No AI compute or capability limit was agreed or under negotiation.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R1-04-001",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2022-11-14",
+      "summary": "Pre-window baseline: Bloc A's official readout of a leaders' meeting with Bloc B lists cooperation on climate, macroeconomic stability, health and food security, agreement that nuclear war must never be fought, and follow-up talks on principles for managing competition; AI is not mentioned and no technology limits were agreed.",
+      "detail": "White House readout, 'Readout of President Joe Biden's Meeting with President Xi Jinping of the Bloc B', Bali, 2022-11-14 (verified via web_extract this run; full text read).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2022/11/14/readout-of-president-joe-bidens-meeting-with-president-xi-jinping-of-the-peoples-republic-of-china/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-04-002",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2022-11-14",
+      "summary": "Pre-window baseline: Bloc B's official readout of the same meeting describes a candid exchange and instructions to teams to follow up on 'common understandings' and maintain regular contact; it records no agreement on AI compute or capability limits.",
+      "detail": "Bloc B Ministry of Foreign Affairs, 'President Xi Jinping Meets with Bloc A. President Joe Biden in Bali', 2022-11-14 (verified via web_extract this run; middle of the long readout was truncated in extraction, so absence of any AI reference is asserted with medium confidence).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.fmprc.gov.cn/eng/zxxx_662805/202211/t20221114_10974686.html",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R1-04-003",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2022-12-15",
+      "summary": "In the window, Bloc B opened a formal trade dispute against Bloc A's advanced-chip export controls, the same day Bloc A announced new entity listings aimed at AI-chip developers: the two blocs' interaction on compute was adversarial, not limit-setting.",
+      "detail": "WTO DS615 request for consultations circulated 2022-12-15 (verified via web_extract this run); BIS Entity List press release 2022-12-15 (see I-R1-03 items 002-004).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.wto.org/english/news_e/news22_e/ds615rfc_15dec22_e.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

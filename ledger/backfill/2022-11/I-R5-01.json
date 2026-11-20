@@ -1,0 +1,58 @@
+{
+  "indicator": "I-R5-01",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": ">= 15 distinct organisations with a >= 1e26 FLOP run (shared with I-N-01; counted once per family) (Epoch AI; 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "0 organisations at >= 1e26 FLOP (largest known run ~2.5e24). Mirrors I-N-01 for this phase; items below carry duplicate_of and must be counted once in the 'holders' family. Diffusion context: a Bloc B university lab openly released a 130B-parameter model's weights (Oct 2022).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R5-01-001",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2022-04-05",
+      "summary": "Largest known training run ~2.56e24 FLOP (Bloc A developer, 540B parameters); 0 organisations at >= 1e26.",
+      "detail": "Lennart Heim, 'Estimating PaLM's training cost' (verified via web_extract this run). Same evidence as BF-2022-11-I-N-01-001.",
+      "value": "0 orgs >= 1e26; max ~2.56e24 FLOP",
+      "direction": "toward NO",
+      "source_url": "https://blog.heim.xyz/palm-training-cost",
+      "source_tier": 3,
+      "confidence": "high",
+      "duplicate_of": "BF-2022-11-I-N-01-001",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-01-002",
+      "indicator": "I-R5-01",
+      "kind": "data-series",
+      "published": "2022-02-16",
+      "summary": "Epoch AI compute-trend analysis (doubling ~5-6 months since 2010) - context for how many organisations could reach 1e26 by 2027.",
+      "detail": "Epoch AI, 'Compute trends across three eras of machine learning' (verified via web_extract this run). Same evidence as BF-2022-11-I-N-01-002.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://epoch.ai/blog/compute-trends",
+      "source_tier": 1,
+      "confidence": "high",
+      "duplicate_of": "BF-2022-11-I-N-01-002",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-01-003",
+      "indicator": "I-R5-01",
+      "kind": "event",
+      "published": "2022-10-05",
+      "summary": "A Bloc B university lab released open weights for a 130B-parameter bilingual model claimed to outperform the 2020 GPT-3 (175B) on many English benchmarks and runnable on consumer GPUs with INT4 quantisation - broadening 100B-scale model holders, though far below 1e26 compute.",
+      "detail": "Zeng et al. (Tsinghua/Zhipu), 'GLM-130B: An Open Bilingual Pre-trained Model', arXiv:2210.02414 v1 2022-10-05 (verified via web_extract this run; abstract shown is v2 of 2023-10-25, so wording may post-date the phase - core release facts are pre-phase).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2210.02414",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true,
+      "duplicate_of": "BF-2022-11-I-N-02-002"
+    }
+  ]
+}

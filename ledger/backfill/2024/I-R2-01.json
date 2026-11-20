@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R2-01",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "Relative employment index of ages 22-25 in the most AI-exposed occupation quintile falls >= 5 pts from its 2026 level (Stanford Digital Economy Lab 'Canaries' series, last 2027 release)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "The named series did not exist in 2024 (first circulated Aug 2025). Evidence on early-career / exposed-occupation employment in 2024 came only from online-freelance-platform studies: modest declines (~2% contracts, ~5% earnings) for writing-type freelancers after the first mass-market chatbot launch, and ~20-30% fewer job posts in automation-prone writing/coding categories, with reduced demand for novices. Payroll-based age-by-exposure evidence was not yet public.",
+  "items": [
+    {
+      "id": "BF-2024-I-R2-01-001",
+      "indicator": "I-R2-01",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No age-by-AI-exposure payroll employment index was published during 2024; the indicator's source series begins in 2025. Bloc B has no comparable series.",
+      "detail": "Brynjolfsson, Chandar & Chen 'Canaries in the Coal Mine?' first circulated Aug 2025 (ADP data, Bloc A). Its back-cast values for 2024 are later-published and excluded under the as-of rule.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://digitaleconomy.stanford.edu/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-01-002",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2024-06-15",
+      "summary": "Peer-reviewed study of a large online freelance platform: after the first mass-market chatbot launch, freelancers in the most exposed (writing-related) occupations saw ~2% fewer monthly contracts and ~5% lower monthly earnings; declines were larger, not smaller, for higher-skilled freelancers. Proxy evidence only (freelancers, not age-specific).",
+      "detail": "Hui, Reshef & Zhou, 'The Short-Term Effects of Generative Artificial Intelligence on Employment: Evidence from an Online Labor Market', Organization Science 2024 (doi 10.1287/orsc.2023.18441), Upwork data. Online publication day approximate (2024); working paper since Aug 2023.",
+      "value": "-2% contracts, -5% earnings (exposed freelancers)",
+      "direction": "toward YES",
+      "source_url": "https://doi.org/10.1287/orsc.2023.18441",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-01-003",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2024-06-01",
+      "summary": "Working paper on online freelancing: job posts for automation-prone writing and coding work fell ~21% relative to manual-intensive jobs after the chatbot launch (writing ~30%), and image-creation posts ~17% after image-generator launches. Proxy for entry-level knowledge-work demand.",
+      "detail": "Demirci, Hannane & Zhu, 'Who Is AI Replacing? The Impact of Generative AI on Online Freelancing Platforms', presented at Platform Strategy Research Symposium (June 2024; day approximate), later in Management Science.",
+      "value": "-21% job posts (automation-prone vs manual)",
+      "direction": "toward YES",
+      "source_url": "https://questromworld.bu.edu/platformstrategy/wp-content/uploads/sites/49/2024/06/PlatStrat2024_paper_119.pdf",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-01-004",
+      "indicator": "I-R2-01",
+      "kind": "data-series",
+      "published": "2024-12-15",
+      "summary": "Journal article on freelancer demand: postings in skill clusters substitutable by generative AI fell ~7% overall (20-50% for writing and translation clusters), while complementary clusters such as programming grew; demand for novice workers fell even in complementary clusters.",
+      "detail": "Teutloff et al., 'Winners and losers of generative AI: Early Evidence of Shifts in Freelancer Demand', Journal of Economic Behavior & Organization (ScienceDirect S0167268124004591; online ~Dec 2024, date approximate).",
+      "value": "-7% substitutable postings",
+      "direction": "toward YES",
+      "source_url": "https://www.sciencedirect.com/science/article/pii/S0167268124004591",
+      "source_tier": 2,
+      "confidence": "low",
+      "backfilled": true
+    }
+  ]
+}

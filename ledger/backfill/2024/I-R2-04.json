@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R2-04",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "A top-10 economy legally authorises fully automated decisions (no human sign-off) in a new benefits, tax or immigration domain (official gazette; OECD.AI; by 2028-12-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not met in 2024; the legal trend ran mostly toward NO. Bloc A's federal budget office required minimum practices including human review/appeal for rights-impacting AI (explicitly covering benefits and immigration). The supranational AI regulation covering three top-10 economies was published and entered into force, classifying benefits and migration AI as high-risk with mandatory human oversight. The one YES-leaning item: a top-10 economy reintroduced a data bill (after an earlier version lapsed) that would relax its general ban on solely automated significant decisions - pending at year-end and not domain-specific.",
+  "items": [
+    {
+      "id": "BF-2024-I-R2-04-001",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2024-03-28",
+      "summary": "Bloc A's federal budget office set binding minimum practices for 'rights-impacting' government AI by Dec 2024: impact assessments, human oversight, notice, and human consideration/remedy or opt-out. Benefits eligibility and immigration decisions were presumed rights-impacting.",
+      "detail": "OMB Memorandum M-24-10 'Advancing Governance, Innovation, and Risk Management for Agency Use of AI', 2024-03-28 (Bloc A). Executive guidance, not statute.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.whitehouse.gov/wp-content/uploads/2024/03/M-24-10-Advancing-Governance-Innovation-and-Risk-Management-for-Agency-Use-of-Artificial-Intelligence.pdf",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-04-002",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2024-07-12",
+      "summary": "A supranational AI regulation covering three top-10 economies was published in the official journal (in force 1 Aug 2024). It lists AI for public-benefit eligibility and for migration, asylum and border control as high-risk, requiring human oversight once high-risk obligations apply (Aug 2026).",
+      "detail": "Regulation (Bloc C) 2024/1689 (Bloc C AI Act), OJ L 2024-07-12; Annex III points 5(a) and 7; Art. 14 human oversight. Bloc D, Bloc E, Bloc F are top-10 economies.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-04-003",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2024-05-24",
+      "summary": "A top-10 economy's bill that would have relaxed its ban on solely automated significant decisions lapsed when parliament was dissolved before an election.",
+      "detail": "Bloc G Data Protection and Digital Information Bill (would have replaced Bloc G GDPR Art. 22) fell at the dissolution of Parliament announced 2024-05-22 / prorogued 2024-05-24. Not re-extracted this run.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://bills.parliament.uk/bills/3430",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-04-004",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2024-10-23",
+      "summary": "The same top-10 economy's new government introduced a successor data bill again allowing solely automated significant decisions on most lawful bases, with safeguards (information, human intervention on request, contestation). Pending at end-2024; general, not specific to benefits, tax or immigration.",
+      "detail": "Bloc G Data (Use and Access) Bill, introduced in the House of Lords 2024-10-23 (clause on new Bloc G GDPR Arts 22A-22D). Enacted 2025-06-19 (after phase; not used for as-of status).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://bills.parliament.uk/bills/3825",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R2-04-005",
+      "indicator": "I-R2-04",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No 2024 statute found in Bloc A, Bloc B or other top-10 economies newly authorising fully automated decisions in benefits, tax or immigration. Bloc B and several other top-10 gazettes not systematically searched.",
+      "detail": "Pre-existing bases (Bloc D § 155(4) AO tax, § 31a SGB X social) predate 2024. Bloc B, Bloc N, Bloc O, Bloc P, Bloc Q not systematically checked.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://oecd.ai/en/dashboards/overview",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

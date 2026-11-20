@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R5-05",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "No top-3 compute jurisdiction bans or licenses open-weight release at the frontier tier (official gazettes; by 2028-06-30)",
+  "generated": "2026-11-20",
+  "status_at_phase_end": "Condition holding (YES-consistent), high confidence. No top-3 jurisdiction banned or licensed open-weight release. Bloc A's October 2022 export rule controlled chips and chip-making items, not model weights; Bloc B's deep-synthesis rules (promulgated in the window, in force 2023-01-10) impose filing on 'technical supporters' and security assessments for tools that edit biometric or sensitive content, which is a conditional requirement on service/tool providers rather than a frontier-tier open-weight licence (owner ruling suggested); a non-top-3 bloc's draft AI regulation excluded pure R&D and deferred general-purpose AI rules to an implementing act. Open-weight releases continued (a 2.1 image model with weights released 2022-12-07).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R5-05-001",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2022-12-11",
+      "summary": "Bloc B regulators published deep-synthesis rules (in force 2023-01-10) requiring 'technical supporters' of generative services to file like providers, and requiring security assessments for models or templates that generate or edit biometric (face, voice) or sensitive non-biometric content. No ban on, or licence for, open release of model weights at a capability tier.",
+      "detail": "CAC/MIIT/MPS Order No. 12, 互联网信息服务深度合成管理规定 (signed 2022-11-25; published on cac.gov.cn 2022-12-11; verified via web_extract this run): Art. 15 (security assessment for models/templates with biometric or national-security-relevant editing functions), Art. 19 (filing by technical supporters), Art. 25 (effective 2023-01-10). Scope Art. 2: providing deep-synthesis internet information services within Bloc B.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.cac.gov.cn/2022-12/11/c_1672221949354811.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-05-002",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2022-12-06",
+      "summary": "A non-top-3 regional bloc's Council general approach on its AI regulation excluded AI systems used solely for research and development, and left obligations for general-purpose AI to a later implementing act; no ban or licensing of open-weight release.",
+      "detail": "Council of the Bloc C press release 2022-12-06, 'Artificial Intelligence Act: Council calls for promoting safe AI...' (verified via web_extract this run): general-purpose AI section (requirements via implementing act after consultation and impact assessment); scope excludes national security/defence and 'AI systems and their outputs used for the sole purpose of research and development'.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2022/12/06/artificial-intelligence-act-council-calls-for-promoting-safe-ai-that-respects-fundamental-rights/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-05-003",
+      "indicator": "I-R5-05",
+      "kind": "treaty-law",
+      "published": "2022-10-13",
+      "summary": "Bloc A's export-control interim final rule licensed exports of advanced AI chips, chip-containing computers and certain chip-manufacturing items (and support for advanced chip production in Bloc B); it did not control model weights or open-weight publication. Comment period was extended in the window.",
+      "detail": "BIS, 'Implementation of Additional Export Controls: Certain Advanced Computing and Semiconductor Manufacturing Items...', 87 FR 62186, FR Doc 2022-21658 (verified via web_extract this run): effective 2022-10-07; related document 2022-12-07 'extension of comment period'. Controlled items are ICs, computers, semiconductor manufacturing items and related software/technology ECCNs (3B090, 3D001, 3E001 etc.).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.federalregister.gov/d/2022-21658",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R5-05-004",
+      "indicator": "I-R5-05",
+      "kind": "event",
+      "published": "2022-12-07",
+      "summary": "An open-weight text-to-image developer released version 2.1 of its model with downloadable checkpoints under a permissive responsible-AI licence, a few weeks after 2.0, stating it is committed to developing future versions in the open - no regulatory barrier to open release observed.",
+      "detail": "Stability AI, 'Stable Diffusion v2.1 and DreamStudio Updates 7-Dec 22' (verified via web_extract this run): weights and model cards on Hugging Face; Hugging Face model card stabilityai/stable-diffusion-2-1 (also opened) shows CreativeML Open RAIL++-M licence.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://stability.ai/news-updates/stablediffusion2-1-release7-dec-2022",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

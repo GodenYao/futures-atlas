@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R3-04",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "An international body gains inspection or compute-verification powers covering >= 2 of the top-5 compute jurisdictions (treaty text, official gazettes; by 2029-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met. International AI activity in the window was limited to a bilateral trade-and-technology council issuing a non-binding roadmap on evaluation and measurement tools; the only multilateral AI instrument in force was a non-binding ethics recommendation. No body had inspection or compute-verification powers. No qualifying event found in the window (search result, not counted).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R3-04-001",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2022-12-05",
+      "summary": "Bloc A and a non-top-3 regional bloc, at their trade-and-technology council, issued a first joint roadmap on evaluation and measurement tools for trustworthy AI and risk management, plus research cooperation. Non-binding coordination; no inspection or verification body.",
+      "detail": "Bloc A-Bloc C Joint Statement of the Trade and Technology Council, 2022-12-05 (verified via web_extract this run): 'Joint Roadmap on Evaluation and Measurement Tools for Trustworthy AI and Risk Management (AI Roadmap)'; pilot on privacy-enhancing technologies.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2022/12/05/u-s-eu-joint-statement-of-the-trade-and-technology-council/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-04-002",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2021-11-25",
+      "summary": "The only global AI standard applicable to all UN-agency member states at the time was a non-binding ethics recommendation (adopted 2021) built on principles and policy action areas, with human oversight emphasised; it confers no inspection or verification powers.",
+      "detail": "UNESCO, 'Recommendation on the Ethics of Artificial Intelligence', adopted November 2021, applicable to 194 member states (verified via web_extract this run; the landing page itself is dated 2023-05-16 / updated 2024, so only the 2021 adoption fact is used; exact adoption day not shown on the page).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.unesco.org/en/articles/recommendation-ethics-artificial-intelligence",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R3-04-003",
+      "indicator": "I-R3-04",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No proposal for an international AI inspection or compute-verification body by governments of top-5 compute jurisdictions was located in the window; the chip-control action in the window was unilateral export licensing.",
+      "detail": "Searched this run. The multilateral dual-use export regime's 2022 plenary (Vienna, 2022-11-30..12-01) updated high-performance-computer controls per a search snippet, but its statement could not be opened (404/422) and is not used as an item. Reference opened: TTC joint statement above.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2022/12/05/u-s-eu-joint-statement-of-the-trade-and-technology-council/",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

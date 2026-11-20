@@ -1,0 +1,41 @@
+{
+  "indicator": "I-N-02",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Organisations with a >= 1e26 FLOP run are headquartered in >= 4 jurisdictions (Epoch AI; snapshot 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "0 jurisdictions at the timeline start (no organisation had a >= 1e26 FLOP run). The largest documented runs (~2.5e24 FLOP) belonged to Bloc A developers; Bloc B's largest open model at the time was a 130B-parameter bilingual model positioned as GPT-3-class, well below the frontier.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-N-02-001",
+      "indicator": "I-N-02",
+      "kind": "data-series",
+      "published": "2022-04-04",
+      "summary": "The largest documented training run (~2.5e24 FLOP, 540B parameters, 6144 accelerator chips) was by a Bloc A developer; no organisation in any jurisdiction was near 1e26.",
+      "detail": "Google Research blog, 'Pathways Language Model (PaLM): Scaling to 540 Billion Parameters', 2022-04-04 (verified via web_extract this run; 6144 TPU v4 chips, 'largest TPU-based system configuration used for training to date'). Compute figure 2.5e24 FLOP per Epoch AI model page (current database, opened this run; country listed as Bloc A) and Heim (2022-04-05).",
+      "value": "0 jurisdictions with >= 1e26 orgs",
+      "direction": "toward NO",
+      "source_url": "https://research.google/blog/pathways-language-model-palm-scaling-to-540-billion-parameters-for-breakthrough-performance/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-N-02-002",
+      "indicator": "I-N-02",
+      "kind": "event",
+      "published": "2022-10-05",
+      "summary": "A Bloc B university lab released open weights for a 130B-parameter bilingual model, claimed to beat GPT-3 175B and the previous largest Bloc B language model (260B) on benchmarks; scale roughly an order of magnitude below the largest Bloc A run.",
+      "detail": "Tsinghua University (THUDM), 'GLM-130B: An Open Bilingual Pre-trained Model', arXiv:2210.02414 v1 submitted 2022-10-05 (verified via web_extract this run; abstract cites ERNIE 3.0 Titan 260B as the largest Bloc B language model). Training compute not stated in the abstract; the order-of-magnitude comparison is an inference from parameter count and GPT-3-class positioning.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2210.02414",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

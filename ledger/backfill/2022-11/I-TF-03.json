@@ -1,0 +1,41 @@
+{
+  "indicator": "I-TF-03",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Median per-capita disposable income growth < mean growth in 2027 annual data (national statistics office, e.g. Bloc B NBS; annual release)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable at the timeline start. No household-income release fell inside the window; the latest available figures (Q1-Q3 2022, published 2022-10-25) showed Bloc B median per-capita disposable income growing 5.1% vs 5.3% for the mean (median below mean), with the median at 84.2% of the mean. Full-year 2022 data were published in January 2023 and are excluded.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-TF-03-001",
+      "indicator": "I-TF-03",
+      "kind": "data-series",
+      "published": "2022-10-25",
+      "summary": "Bloc B statistics office, first three quarters of 2022: mean per-capita disposable income 27,650 yuan (+5.3% nominal, +3.2% real); median 23,277 yuan (+5.1%), 84.2% of the mean. Median growth below mean growth; urban median growth equal to urban mean (4.3%), rural median below rural mean (5.9% vs 6.4%).",
+      "detail": "Bloc B National Bureau of Statistics, 'Households' Income and Consumption Expenditure in the First Three Quarters of 2022', 2022-10-25 (verified via web_extract this run). Pre-window baseline: the latest such release available during the window.",
+      "value": "median +5.1% vs mean +5.3% (Q1-Q3 2022 y/y, nominal)",
+      "direction": "toward YES",
+      "source_url": "https://www.stats.gov.cn/english/PressRelease/202210/t20221025_1889686.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-TF-03-002",
+      "indicator": "I-TF-03",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No Bloc A equivalent median-vs-mean disposable income series is set up for this indicator, and no Bloc B household-income release was published inside the window (full-year 2022 data appeared in January 2023).",
+      "detail": "Indicator source names one series per leading jurisdiction; only the NBS series is populated in this backfill. Reference: NBS Q1-Q3 2022 release (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.stats.gov.cn/english/PressRelease/202210/t20221025_1889686.html",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

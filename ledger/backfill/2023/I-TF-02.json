@@ -1,0 +1,27 @@
+{
+  "indicator": "I-TF-02",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "Top-1% wealth share at 2027Q4 >= 2025Q4 + 1 pp (Federal Reserve Distributional Financial Accounts; 2027Q4 release)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not resolvable in 2023. As of the last 2023 DFA vintage (released 2023-12-15), the top-1% share of net worth stood at 30.5% for Q3 2023, near but below its 2021 peak. The Q4 2023 value (~30%) was published in March 2024 and is excluded under the as-of rule.",
+  "items": [
+    {
+      "id": "BF-2023-I-TF-02-001",
+      "indicator": "I-TF-02",
+      "kind": "data-series",
+      "published": "2023-12-15",
+      "summary": "Bloc A central bank's distributional accounts (vintage of 2023-12-15): top-1% share of household net worth 30.5% in Q3 2023; top-0.1% share 13.9%.",
+      "detail": "Federal Reserve Board DFA, as archived by ALFRED (St. Louis Fed) release vintage 2023-12-15, series WFRBST01134 (top 1%) and WFRBSTP1300 (top 0.1%), last observation Q3 2023 (verified via web_extract this run). Strict as-of vintage, not the later-revised series.",
+      "value": "30.5% (Q3 2023, vintage 2023-12-15)",
+      "direction": "neutral",
+      "source_url": "https://alfred.stlouisfed.org/release?et=&pageID=1&rd=2023-12-15&rid=453&t=",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

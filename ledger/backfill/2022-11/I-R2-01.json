@@ -1,0 +1,28 @@
+{
+  "indicator": "I-R2-01",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Relative employment index of ages 22-25 in the most AI-exposed occupation quintile falls >= 5 pts from its 2026 level (Stanford Digital Economy Lab 'Canaries' series; last 2027 release)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Data gap. The 'Canaries' series did not exist at the timeline start; it was first published in August 2025 (payroll data back-cast to late 2022). No in-window series of young-worker employment by AI-exposure quintile was available.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R2-01-001",
+      "indicator": "I-R2-01",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No public series tracking employment of workers aged 22-25 by occupational AI-exposure quintile existed in the window; the designated source was first documented in August 2025. Later back-cast values for late 2022 are not usable as in-window evidence under the as-of rule.",
+      "detail": "Stanford Digital Economy Lab, 'Canaries in the Coal Mine? Six Facts about the Recent Employment Effects of Artificial Intelligence' (Brynjolfsson, Chandar, Chen; ADP payroll data; page states the divergence was 'first documented in August 2025') (opened via web_extract this run to confirm series origin only).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://digitaleconomy.stanford.edu/publications/canaries-in-the-coal-mine/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true,
+      "hold": true
+    }
+  ]
+}

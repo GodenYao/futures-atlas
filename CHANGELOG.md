@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-20 — method 4.5.0 (backfill phases 2022-11..2025 approved; replay from 2022-11-30)
+- The four remaining history phases (2022-11, 2023, 2024, 2025; 107 + 113 + 154 + 212 items) passed review (auto-review, maintainer rulings, source re-reads) and now count, each item in the week of its own published date. All five phases are in `ledger/backfill/` (the three missing 2025 files added).
+- The replay starts in the week of 2022-11-30 (2022-W48) instead of 2026-W01: `approved_2022-11.json` sets `history_from`, which the engine uses as the first week (207 weekly snapshots).
+- Backfill items may carry baseline readings published before 2022-11-30 (they enter the first replay week); the validator no longer flags them. Contributor items must still be dated on or after 2022-11-30.
+- Map: the replay paces itself to about 80 s over the longer span (weeks with evidence hold shorter, never faster than 3 steps a second); replay pills name the start week with its year.
+- Effect on week 2026-W46 (Pooled): Enslaved God 14.13 → 17.99 %, Conquerors 13.81 → 17.39 %, Descendants 12.6 %; R1 20.1 → 25.6 %, R3 18.1 → 8.0 %, R4 30.7 → 38.6 %, R5 13.6 → 11.1 %, R2 12.7 → 12.1 %, R6 1.9 → 1.6 %. The leading ending is unchanged. The sensitivity table in `docs/sensitivity.md` was computed before this change.
+
 ## 2026-11-20 — evidence corrections (online re-sourcing, method 4.4.0 unchanged)
 - Rulings that needed a source re-read were applied: release dates and first-print values read from archived copies (productivity, wealth-share and labour-cost releases), corrected Federal Register links, primary announcement links, a corrected bill sponsor line, and summaries rewritten to say only what their source says.
 - Items whose filing values could not be re-read are now on `hold` (shown, not counted): 2 more in the counted 2026 phase, 13 in total.

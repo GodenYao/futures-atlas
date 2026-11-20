@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R3-01",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "An AI incident with >= USD 1bn damage or >= 100 deaths is officially attributed to AI (OECD AIM; government statements; by 2027-12-31)",
+  "generated": "2026-11-18",
+  "status_at_phase_end": "Not met in 2024. The largest officially reported single AI-enabled loss was a deepfake video-call fraud of ~USD 25 m against a multinational's regional office. Media investigations alleged AI decision-support systems were used to generate military targets at large scale in an armed conflict, but the military denied that the AI made targeting decisions; no official attribution of deaths to AI. A wrongful-death lawsuit over a companion chatbot (one death) was an allegation. The year's costliest IT outage (multi-billion losses) was a faulty software update, not AI. An interim international scientific report found no incident at this scale.",
+  "items": [
+    {
+      "id": "BF-2024-I-R3-01-001",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2024-02-02",
+      "summary": "Police in a major financial centre disclosed that an employee of a multinational firm paid out ~USD 25 m after a video call in which the CFO and colleagues were deepfakes; the firm confirmed in May. Largest publicly reported deepfake fraud of the year, ~40x below the USD 1 bn threshold.",
+      "detail": "Bloc 30 Police briefing 2024-02-04 (HK$200 m); victim later confirmed as Arup (May 2024). Not re-extracted this run.",
+      "value": "~USD 25 m",
+      "direction": "neutral",
+      "source_url": "https://www.cnn.com/2024/02/04/asia/deepfake-cfo-scam-hong-kong-intl-hnk/index.html",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-01-002",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2024-04-03",
+      "summary": "Investigative reporting alleged that a military used an AI system to mark tens of thousands of people as targets in an armed conflict with minimal human review. The military stated the system was a database for cross-referencing intelligence, not an AI that identifies targets. Allegation, not an official attribution of deaths to AI.",
+      "detail": "+972 Magazine / Local Call, 'Lavender: The AI machine directing Bloc 31's bombing spree in Gaza', 2024-04-03; IDF response published by The Guardian 2024-04-03. Not re-extracted this run.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.972mag.com/lavender-ai-israeli-army-gaza/",
+      "source_tier": 3,
+      "confidence": "low",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-01-003",
+      "indicator": "I-R3-01",
+      "kind": "forecast",
+      "published": "2024-05-17",
+      "summary": "Interim government-backed international scientific report on advanced-AI safety catalogued current harms (fraud, non-consensual imagery, bias, reliability failures) and potential large-scale risks; it did not identify any incident of USD 1 bn damage or 100 deaths attributed to AI.",
+      "detail": "International Scientific Report on the Safety of Advanced AI: Interim Report (chair Y. Bengio), published by Bloc G DSIT 2024-05-17 ahead of the Bloc H AI Summit.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gov.uk/government/publications/international-scientific-report-on-the-safety-of-advanced-ai",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-01-004",
+      "indicator": "I-R3-01",
+      "kind": "event",
+      "published": "2024-10-22",
+      "summary": "A wrongful-death lawsuit alleged a companion-chatbot service contributed to a teenager's suicide: first prominent case of its kind. One death; allegation in litigation, not an official attribution.",
+      "detail": "Garcia v. Character Technologies et al., Bloc A District Court M.D. Florida, filed 2024-10-22. Not re-extracted this run.",
+      "value": "1 death (alleged)",
+      "direction": "neutral",
+      "source_url": "https://dockets.justia.com/docket/florida/flmdce/6:2024cv01903/433581",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-01-005",
+      "indicator": "I-R3-01",
+      "kind": "data-gap",
+      "published": "2024-12-31",
+      "summary": "No 2024 incident met either threshold with official AI attribution. The year's largest IT incident (a faulty security-software update, est. multi-billion insured/uninsured losses) was not AI-related and is a reference point for scale only.",
+      "detail": "CrowdStrike outage 2024-07-19 (Parametrix est. ~USD 5.4 bn losses to Fortune 500, 2024-07-24) - not AI. OECD AIM monitor not systematically queried this run.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://oecd.ai/en/incidents",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

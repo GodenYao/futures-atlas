@@ -1,0 +1,41 @@
+{
+  "indicator": "I-TF-04",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "A top-3 compute jurisdiction legislates guaranteed public access to frontier AI, or an AI dividend or sovereign fund paid to citizens (Official gazette; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2023. No top-3 compute jurisdiction legislated public access to frontier AI or an AI dividend. The nearest Bloc A step was a bill (introduced, not enacted) to establish a national AI research resource for researchers; the Bloc A executive order of Oct 2023 is an executive act, not legislation, and does not create citizen access or a dividend.",
+  "items": [
+    {
+      "id": "BF-2023-I-TF-04-001",
+      "indicator": "I-TF-04",
+      "kind": "treaty-law",
+      "published": "2023-07-28",
+      "summary": "A bill was introduced in a Bloc A legislature to establish a national AI research resource (shared compute and data for researchers); in 2023 it remained at 'Introduced' status. Researcher access, not guaranteed public access or a dividend.",
+      "detail": "H.R.5077, CREATE AI Act of 2023 (118th Congress), introduced 2023-07-28 by Rep. Anna Eshoo, referred to House Science, Space, and Technology (verified via web_extract this run on congress.gov; later 2024 committee action ignored under as-of rule).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.congress.gov/bill/118th-congress/house-bill/5077",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-TF-04-002",
+      "indicator": "I-TF-04",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "Bloc A's head of government signed a broad AI executive order on safety, security and trustworthy AI; it is an executive act, not legislation, and contains no AI dividend or guaranteed public-access entitlement.",
+      "detail": "Bloc A Executive Order 14110, 'Safe, Secure, and Trustworthy Development and Use of Artificial Intelligence', signed 2023-10-30, published 88 FR 75191 on 2023-11-01 (verified via web_extract this run; only head/tail of text extracted, so absence of a dividend provision is our reading of the order's scope, confidence med).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.federalregister.gov/documents/2023/11/01/2023-24283/safe-secure-and-trustworthy-development-and-use-of-artificial-intelligence",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

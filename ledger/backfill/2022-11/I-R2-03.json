@@ -1,0 +1,42 @@
+{
+  "indicator": "I-R2-03",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Frontier 50%-success task time horizon >= 16 h (METR measurements, cross-checked against government AISI reports; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Data gap. The 50%-success time-horizon metric did not exist at the timeline start (introduced by METR in March 2025), and no government AI safety institute existed yet. The frontier system released in the window was a chat assistant fine-tuned from a model series trained in early 2022; its developer listed limitations (plausible but wrong answers, sensitivity to phrasing) rather than any autonomous-task measurements.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R2-03-001",
+      "indicator": "I-R2-03",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No autonomous task-length measurement of frontier models was published in the window; the designated metric (50%-task-completion time horizon) was first proposed in March 2025. Retrospective estimates for 2022-era models made in 2025 are excluded under the as-of rule.",
+      "detail": "METR (Kwa, West et al.), 'Measuring AI Ability to Complete Long Software Tasks', arXiv:2503.14499 (opened via web_extract this run to confirm the metric's origin: 'we propose a new metric: 50%-task-completion time horizon'). No in-window values recorded.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://arxiv.org/abs/2503.14499",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "hold": true
+    },
+    {
+      "id": "BF-2022-11-I-R2-03-002",
+      "indicator": "I-R2-03",
+      "kind": "event",
+      "published": "2022-11-30",
+      "summary": "A Bloc A developer released a conversational assistant as a research preview, documenting limitations such as plausible-sounding incorrect answers, sensitivity to rephrasing, verbosity and guessing user intent; no agentic or long-horizon task evaluation was reported.",
+      "detail": "OpenAI, 'Introducing ChatGPT', 2022-11-30 (verified via web_extract this run). Qualitative capability context only.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R2-04",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A top-10 economy legally authorises fully automated decisions (no human sign-off) in a new benefits, tax or immigration domain (official gazette; OECD.AI policy database; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in the window. Pre-existing baseline: at least one top-10 economy already permitted fully automated tax assessments by statute (in force since 2017), so tax assessment there is not a 'new' domain. In-window policy moved toward oversight: a regional bloc's council adopted its AI regulation position (2022-12-06) adding registration duties for public-sector users of high-risk AI; Bloc A's non-binding AI rights blueprint (Oct 2022) called for human alternatives and fallback.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R2-04-001",
+      "indicator": "I-R2-04",
+      "kind": "treaty-law",
+      "published": "2016-07-22",
+      "summary": "A top-10 economy's fiscal code allows tax authorities to issue, correct and amend tax assessments 'exclusively automated' where there is no reason for case handling by an official; the decision is deemed made when machine processing ends. Pre-existing domain, so it does not count as new.",
+      "detail": "Bloc D, Abgabenordnung (AO) § 155(4), inserted by the Gesetz zur Modernisierung des Besteuerungsverfahrens (July 2016, in force 2017) (current consolidated text verified via web_extract this run at gesetze-im-internet.de; promulgation date 2016-07-22 not re-verified this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gesetze-im-internet.de/ao_1977/__155.html",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R2-04-002",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2022-10-04",
+      "summary": "Bloc A science office issued a non-binding blueprint of five principles for automated systems, including 'human alternatives, consideration, and fallback' and notice and explanation, aimed at systems that limit access to critical resources or services.",
+      "detail": "White House OSTP, 'Blueprint for an AI Bill of Rights', Oct 2022 (verified via web_extract this run; release date 2022-10-04 per OSTP, not shown in extracted text). Not law; signals policy preference for human fallback in public-benefit decisions.",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://bidenwhitehouse.archives.gov/ostp/ai-bill-of-rights/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R2-04-003",
+      "indicator": "I-R2-04",
+      "kind": "event",
+      "published": "2022-12-06",
+      "summary": "A regional bloc's council of member-state governments adopted its common position on a horizontal AI regulation (risk-based), adding that public-entity users of high-risk AI systems must register in a central database for high-risk systems; a negotiating position, not yet law, pointing to oversight rather than authorising unsupervised automation.",
+      "detail": "Council of the Bloc C, 'Artificial Intelligence Act: Council calls for promoting safe AI that respects fundamental rights', press release 2022-12-06 (general approach) (verified via web_extract this run). Covers several top-10 economies (Bloc D, Bloc E, Bloc F).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2022/12/06/artificial-intelligence-act-council-calls-for-promoting-safe-ai-that-respects-fundamental-rights/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

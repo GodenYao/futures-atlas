@@ -1,0 +1,55 @@
+{
+  "indicator": "I-R1-04",
+  "phase": "2023",
+  "phase_window": [
+    "2023-01-01",
+    "2023-12-31"
+  ],
+  "statement": "No agreement between the two leading compute jurisdictions sets verifiable limits on training compute or capabilities (Official readouts, treaty texts; by 2028-06-30)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Holding (toward YES) at end-2023: Bloc A and Bloc B both endorsed a non-binding multilateral declaration on frontier-AI risk and, at a leaders' summit, agreed to hold government talks on AI risk and safety; neither set any verifiable compute or capability limit.",
+  "items": [
+    {
+      "id": "BF-2023-I-R1-04-001",
+      "indicator": "I-R1-04",
+      "kind": "treaty-law",
+      "published": "2023-11-01",
+      "summary": "28 countries plus a regional union, including both Bloc A and Bloc B, endorsed a declaration recognising frontier-AI risks (including potential catastrophic harm) and resolving to cooperate on risk understanding; it contains no limits or verification.",
+      "detail": "Bloc G government, 'Countries agree to safe and responsible development of frontier AI in landmark Bletchley Declaration', 2023-11-01, and the declaration text (both verified via web_extract this run; the declaration page shows a later 'updated 13 February 2025' stamp, only the 2023 text is used). Signatories include the Bloc A and Bloc B.",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.gov.uk/government/news/countries-agree-to-safe-and-responsible-development-of-frontier-ai-in-landmark-bletchley-declaration",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-04-002",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2023-11-15",
+      "summary": "Leaders of Bloc A and Bloc B met and 'affirmed the need to address the risks of advanced AI systems and improve AI safety' through bilateral government talks; no limits on compute or capabilities were agreed.",
+      "detail": "White House readout of President Biden's meeting with President Xi Jinping, Woodside, California, 2023-11-15 (archived page verified via web_extract this run).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2023/11/15/readout-of-president-joe-bidens-meeting-with-president-xi-jinping-of-the-peoples-republic-of-china/",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2023-I-R1-04-003",
+      "indicator": "I-R1-04",
+      "kind": "event",
+      "published": "2023-11-02",
+      "summary": "At the same summit, a plan for state-led pre-release testing of frontier models was agreed by 11 governments and 10 developers; Bloc B was not among the governments listed, so it is not a bilateral limit-setting arrangement.",
+      "detail": "Bloc G government, 'Safety Testing: Chair's Statement of Session Outcomes, 2 November 2023' (verified via web_extract this run).",
+      "value": null,
+      "direction": "toward YES",
+      "source_url": "https://www.gov.uk/government/publications/ai-safety-summit-2023-chairs-statement-safety-testing-2-november/safety-testing-chairs-statement-of-session-outcomes-2-november-2023",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

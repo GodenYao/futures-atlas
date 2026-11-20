@@ -136,7 +136,7 @@ priors.** Evidence, likelihood rows, splits and every engine parameter are the s
 | **Pooled** (default) | 0.2125 | 0.185 | 0.1175 | 0.1275 | 0.17 | 0.1575 | 0.03 | Equal-weight average of the four lens **results** (not of their priors) |
 
 Before any evidence, the pooled priors put Normal technology first (20.1 %) and Enslaved God second
-(15.7 %). The 2026 evidence moves the pooled view to Enslaved God 14.1 % and Conquerors 13.8 % (week 2026-W46, method 4.4.0).
+(15.7 %). The evidence since 2022-11-30 moves the pooled view to Enslaved God 18.0 % and Conquerors 17.4 % (week 2026-W46, method 4.5.0; 2026 evidence alone under 4.4.0: 14.1 % and 13.8 %).
 
 All four are seed lenses written by the maintainer to span the main camps of the debate; they are not
 anyone's published forecast. Plausible range used in the sensitivity run: each prior ×0.5 to ×1.5. What

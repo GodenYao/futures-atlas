@@ -1,0 +1,41 @@
+{
+  "indicator": "I-R3-02",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "A top-5 developer publicly halts frontier training >= 30 days, citing safety (developer announcement + independent confirmation; by 2027-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2024. No top-5 developer announced a safety-motivated halt of frontier training. Conditional 'pause' language spread instead: 16 developers signed voluntary commitments (May) to not develop or deploy a model if risks cannot be kept below thresholds, and one developer's updated scaling policy (Oct) kept its commitment not to train or deploy without adequate safeguards. These raise the institutional possibility of a halt but are not halts.",
+  "items": [
+    {
+      "id": "BF-2024-I-R3-02-001",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2024-05-21",
+      "summary": "At an intergovernmental AI summit, 16 frontier developers (incl. all likely top-5 developers of the time from Bloc A and one Bloc B developer) signed voluntary Frontier AI Safety Commitments, including to set risk thresholds and, 'in the extreme', not to develop or deploy a model at all if mitigations cannot keep risks below them. Creates a conditional halt mechanism; no halt occurred.",
+      "detail": "Bloc G DSIT / Bloc H, 'Frontier AI Safety Commitments, AI Bloc H Summit 2024' (signatories incl. Amazon, Anthropic, Google, Meta, Microsoft, OpenAI, xAI, Zhipu.ai). Page later updated 2025-02-07 with added signatories; 2024 text of commitment IV verified in this run.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.gov.uk/government/publications/frontier-ai-safety-commitments-ai-seoul-summit-2024/frontier-ai-safety-commitments-ai-seoul-summit-2024",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-02-002",
+      "indicator": "I-R3-02",
+      "kind": "event",
+      "published": "2024-10-15",
+      "summary": "A top-5 developer published a significantly updated scaling policy with new capability thresholds, while 'maintaining our commitment not to train or deploy models unless we have implemented adequate safeguards'. A pre-committed pause trigger exists; the developer reported no pause.",
+      "detail": "Anthropic, 'Announcing our updated Responsible Scaling Policy' (RSP v2.0), 2024-10-15. Verified via web_extract this run.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.anthropic.com/news/announcing-our-updated-responsible-scaling-policy",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

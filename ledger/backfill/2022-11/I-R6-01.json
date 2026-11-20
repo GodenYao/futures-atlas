@@ -1,0 +1,69 @@
+{
+  "indicator": "I-R6-01",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Nonfarm business labour productivity growth in 2027 < 2.5% (Bloc A BLS; annual)",
+  "generated": "2026-11-20",
+  "status_at_phase_end": "Proxy reading YES-consistent (well below 2.5%), high confidence. Latest data in the window (BLS, 2022-12-07): Q3 2022 nonfarm business productivity +0.8% annualised q/q but -1.3% y/y; 2021 annual +2.4% (Table 2 vintage); nonfinancial corporate productivity -2.7% y/y, the largest four-quarter decline since 1948. No sign of an AI-driven productivity acceleration.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R6-01-001",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2022-12-07",
+      "summary": "Bloc A's statistics agency revised Q3 2022 nonfarm business labour productivity to +0.8% (annualised) from a preliminary +0.3%; from a year earlier productivity fell 1.3% (output +2.1%, hours +3.4%).",
+      "detail": "BLS Productivity and Costs, Third Quarter 2022 Revised, USDL 22-2265, 2022-12-07 (verified via web_extract this run). Unit labour costs +2.4% q/q, +5.3% y/y; real hourly compensation -4.0% y/y, the largest four-quarter decline in the series since 1948.",
+      "value": "-1.3 % y/y (Q3 2022); +0.8 % q/q annualised",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_12072022.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-01-002",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2022-12-07",
+      "summary": "In the same release the latest annual figure for nonfarm business labour productivity growth was +2.4% for 2021 (2020: +4.3%), i.e. already near the indicator's 2.5% threshold before the 2022 declines.",
+      "detail": "BLS USDL 22-2265, Table 2 'Nonfarm business sector: Labor productivity, hourly compensation, unit labor costs, and prices', percent change rows: 2021 ANNUAL 2.4; 2020 ANNUAL 4.3 (verified via web_extract this run; read from the saved full text).",
+      "value": "2.4 % (2021 annual)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_12072022.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-01-003",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2022-12-07",
+      "summary": "Nonfinancial corporate sector productivity fell 1.8% (annualised) in Q3 2022 and 2.7% over four quarters - the largest four-quarter decline in that series since 1948.",
+      "detail": "BLS USDL 22-2265, preliminary Q3 2022 nonfinancial corporate measures, Table A2 (verified via web_extract this run).",
+      "value": "-2.7 % y/y (nonfinancial corporations, Q3 2022)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_12072022.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-01-004",
+      "indicator": "I-R6-01",
+      "kind": "data-series",
+      "published": "2022-11-03",
+      "summary": "The preliminary Q3 2022 estimate (released shortly before the window) showed productivity +0.3% annualised and -1.4% y/y, the first instance of three consecutive four-quarter declines since 1982.",
+      "detail": "BLS Productivity and Costs, Third Quarter 2022 Preliminary, USDL 22-2096, 2022-11-03 (verified via web_extract this run).",
+      "value": "-1.4 % y/y (Q3 2022 preliminary)",
+      "direction": "toward YES",
+      "source_url": "https://www.bls.gov/news.release/archives/prod2_11032022.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

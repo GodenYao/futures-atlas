@@ -1,0 +1,41 @@
+{
+  "indicator": "I-TF-04",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "A top-3 compute jurisdiction legislates guaranteed public access to frontier AI, or an AI dividend or sovereign fund paid to citizens (official gazette; by 2028-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met. No legislation guaranteeing public access to frontier AI or paying an AI dividend was found in the window. The nearest policy track was Bloc A's research-compute access plan (a shared AI research resource for researchers and students), still at task-force stage; its final roadmap was scheduled for a task-force vote in December 2022 and published only in January 2023 (excluded). No qualifying event found in the window (search result, not counted).",
+  "items": [
+    {
+      "id": "BF-2022-11-I-TF-04-001",
+      "indicator": "I-TF-04",
+      "kind": "event",
+      "published": "2022-05-25",
+      "summary": "Bloc A science office released an interim task-force report proposing a national shared AI research resource (compute, data, testbeds) to 'democratize access' for researchers and students; a proposal for research access, not legislation and not access for the general public or a citizen dividend.",
+      "detail": "White House OSTP, 'Bridging the Resource Divide for Artificial Intelligence Research' (Lynne Parker), 2022-05-25, announcing the NAIRR Task Force interim report (verified via web_extract this run). Task-force schedule (NSF meeting #7 slides, seen in search results only) planned a 2022-12-07 vote on the final report; the final report was published after the window.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://bidenwhitehouse.archives.gov/ostp/news-updates/2022/05/25/bridging-the-resource-divide-for-artificial-intelligence-research",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-TF-04-002",
+      "indicator": "I-TF-04",
+      "kind": "data-gap",
+      "published": "2022-12-31",
+      "summary": "No statute in a top-3 compute jurisdiction guaranteeing public access to frontier AI, or creating an AI dividend or AI sovereign fund paid to citizens, was located as published between 2022-11-30 and 2022-12-31. The leading consumer AI chat product launched in the window as a free private research preview, not a legal entitlement.",
+      "detail": "Searched this run; none found. Reference opened: OpenAI 'Introducing ChatGPT', 2022-11-30 ('During the research preview, usage of ChatGPT is free') (verified via web_extract this run).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://openai.com/index/chatgpt/",
+      "source_tier": 2,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}

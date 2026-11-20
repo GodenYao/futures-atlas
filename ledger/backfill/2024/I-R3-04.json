@@ -1,0 +1,83 @@
+{
+  "indicator": "I-R3-04",
+  "phase": "2024",
+  "phase_window": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "statement": "An international body gains inspection or compute-verification powers covering >= 2 of the top-5 compute jurisdictions (treaty text, official gazettes; by 2029-12-31)",
+  "generated": "2026-11-19",
+  "status_at_phase_end": "Not met in 2024; no body had or was close to having inspection/verification powers. The year's multilateral outputs were non-binding (consensus UN General Assembly resolution, Mar), a binding human-rights framework convention without inspection or compute provisions (opened Sept, Bloc A signed), and a UN advisory body report recommending only 'light' institutional mechanisms (Sept). Bloc A-Bloc B government talks on AI risk started (May) and leaders agreed on human control over nuclear-use decisions (Nov) - no verification regime.",
+  "items": [
+    {
+      "id": "BF-2024-I-R3-04-001",
+      "indicator": "I-R3-04",
+      "kind": "treaty-law",
+      "published": "2024-03-21",
+      "summary": "The UN General Assembly adopted without a vote its first resolution on 'safe, secure and trustworthy' AI for sustainable development. Non-binding; creates no inspection or verification powers.",
+      "detail": "UNGA resolution A/78/L.49, adopted 2024-03-21 (Bloc A-led, co-sponsored by Bloc B per later readout).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://press.un.org/en/2024/ga12588.doc.htm",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-04-002",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2024-05-15",
+      "summary": "Bloc A and Bloc B held their first intergovernmental talks on AI risk and safety; the Bloc A readout describes an exchange of perspectives and keeping lines open - no agreed measures, no verification.",
+      "detail": "White House NSC statement on Bloc A-Bloc B talks on AI risk and safety, Geneva, 2024-05-14 (statement dated 2024-05-15).",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2024/05/15/statement-from-nsc-spokesperson-adrienne-watson-on-the-u-s-prc-talks-on-ai-risk-and-safety-2/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-04-003",
+      "indicator": "I-R3-04",
+      "kind": "treaty-law",
+      "published": "2024-09-05",
+      "summary": "First legally binding international AI treaty (human rights, democracy, rule of law) opened for signature; signed by Bloc A among others. It contains no inspection or compute-verification powers and was not yet in force.",
+      "detail": "Council of Europe Framework Convention on AI (CETS No. 225), Vilnius 2024-09-05; signatories incl. Bloc A, Bloc G, Bloc C, Bloc 31. Entry into force requires 5 ratifications.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://www.coe.int/en/web/portal/-/council-of-europe-opens-first-ever-global-treaty-on-ai-for-signature",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-04-004",
+      "indicator": "I-R3-04",
+      "kind": "forecast",
+      "published": "2024-09-19",
+      "summary": "A UN advisory body's final report proposed seven recommendations and 'light institutional mechanisms' for global AI governance - no proposal of an inspection/verification agency with powers. Indicates low near-term likelihood.",
+      "detail": "UN Secretary-General's High-level Advisory Body on AI, 'Governing AI for Humanity' final report, Sept 2024 (released 2024-09-19).",
+      "value": null,
+      "direction": "toward NO",
+      "source_url": "https://www.un.org/en/ai-advisory-body",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2024-I-R3-04-005",
+      "indicator": "I-R3-04",
+      "kind": "event",
+      "published": "2024-11-16",
+      "summary": "Leaders of Bloc A and Bloc B affirmed the need to maintain human control over the decision to use nuclear weapons and to address AI risks and improve AI safety cooperation. Political statement only; no verification mechanism.",
+      "detail": "White House readout of Biden-Xi meeting, Lima, 2024-11-16.",
+      "value": null,
+      "direction": "neutral",
+      "source_url": "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2024/11/16/readout-of-president-joe-bidens-meeting-with-president-xi-jinping-of-the-peoples-republic-of-china-3/",
+      "source_tier": 2,
+      "confidence": "high",
+      "backfilled": true
+    }
+  ]
+}

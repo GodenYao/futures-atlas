@@ -1,0 +1,84 @@
+{
+  "indicator": "I-R6-02",
+  "phase": "2022-11",
+  "phase_window": [
+    "2022-11-30",
+    "2022-12-31"
+  ],
+  "statement": "Combined capex of the 5 largest spenders falls year on year for 2 consecutive quarters (securities filings; by 2028-06-30)",
+  "generated": "2026-11-20",
+  "status_at_phase_end": "Condition not holding (toward NO), high confidence. No new quarterly filings fell inside the window; the latest (calendar Q3 2022, filed late October 2022) showed cash capex rising year on year at each of the three large spenders where both years were verified (+4% to +8%), and a fourth guided its 2023 capex up to USD 34-39 bn from USD 32-33 bn in 2022, citing AI capacity. Combined capex of the four verified spenders was ~USD 39.5 bn in the quarter.",
+  "items": [
+    {
+      "id": "BF-2022-11-I-R6-02-001",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2022-10-27",
+      "summary": "The largest cloud/e-commerce spender reported Q3 2022 purchases of property and equipment of USD 16.4 bn versus USD 15.7 bn a year earlier (+4%); trailing-twelve-month gross purchases USD 66.0 bn versus USD 56.9 bn.",
+      "detail": "Amazon.com Q3 2022 earnings release, Exhibit 99.1 to Form 8-K, SEC EDGAR (verified via web_extract this run): Purchases of property and equipment (15,748) Q3 2021, (16,378) Q3 2022; nine months (42,118)/(47,053); TTM (56,941)/(65,988), USD m.",
+      "value": "16.378 bn USD (Q3 2022), +4.0 % y/y",
+      "direction": "toward NO",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872422000021/amzn-20220930xex991.htm",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-02-002",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2022-10-25",
+      "summary": "A search/cloud spender reported Q3 2022 purchases of property and equipment of USD 7.3 bn versus USD 6.8 bn a year earlier (+7%); nine-month total USD 23.9 bn versus USD 18.3 bn.",
+      "detail": "Alphabet Q3 2022 earnings release (Exhibit 99.1), investor-relations PDF (verified via web_extract this run): Purchases of property and equipment (6,819) Q3 2021, (7,276) Q3 2022; nine months (18,257)/(23,890), USD m.",
+      "value": "7.276 bn USD (Q3 2022), +6.7 % y/y",
+      "direction": "toward NO",
+      "source_url": "https://s206.q4cdn.com/479360582/files/doc_financials/2022/q3/2022q3-alphabet-earnings-release.pdf",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-02-003",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2022-10-25",
+      "summary": "A software/cloud spender reported additions to property and equipment of USD 6.3 bn in the quarter ended 2022-09-30 versus USD 5.8 bn a year earlier (+8%).",
+      "detail": "Microsoft FY23 Q1 earnings, cash-flow statement on investor-relations site (verified via web_extract this run): Additions to property and equipment (6,283) vs (5,810), USD m. Page notes figures are as of the earnings date.",
+      "value": "6.283 bn USD (quarter to 2022-09-30), +8.1 % y/y",
+      "direction": "toward NO",
+      "source_url": "https://www.microsoft.com/en-us/investor/earnings/fy-2023-q1/cash-flows",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true
+    },
+    {
+      "id": "BF-2022-11-I-R6-02-004",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2022-10-26",
+      "summary": "A social-media spender reported Q3 2022 capex (incl. finance-lease principal) of USD 9.5 bn, narrowed 2022 guidance to USD 32-33 bn and guided 2023 to USD 34-39 bn, saying an increase in AI capacity drives substantially all of the 2023 capex growth.",
+      "detail": "Meta Platforms, 'Meta Reports Third Quarter 2022 Results', 2022-10-26 (verified via web_extract this run): capex $9.52 bn Q3 2022; 2022 outlook $32-33 bn (prior $30-34 bn); 2023 outlook $34-39 bn driven by data centers, servers and network infrastructure.",
+      "value": "9.52 bn USD (Q3 2022); 2023 guide 34-39 bn USD",
+      "direction": "toward NO",
+      "source_url": "https://investor.atmeta.com/investor-news/press-release-details/2022/Meta-Reports-Third-Quarter-2022-Results/default.aspx",
+      "source_tier": 1,
+      "confidence": "high",
+      "backfilled": true,
+      "duplicate_of": "BF-2022-11-I-R1-05-001"
+    },
+    {
+      "id": "BF-2022-11-I-R6-02-005",
+      "indicator": "I-R6-02",
+      "kind": "data-series",
+      "published": "2022-10-27",
+      "summary": "Derived: combined Q3 2022 capex of the four verified large spenders was about USD 39.5 bn; for the three with verified prior-year figures, combined capex rose ~5.5% y/y (USD 28.4 bn -> 29.9 bn). No year-on-year decline in the latest quarter.",
+      "detail": "Arithmetic on items 001-004 (Amazon 16.378 + Alphabet 7.276 + Microsoft 6.283 + Meta 9.52 = 39.457 bn; Amazon+Alphabet+Microsoft 28.377 -> 29.937 bn). Fifth spender not determined this run. Source URL is the latest of the four filings.",
+      "value": "~39.5 bn USD combined (4 firms, Q3 2022); +5.5 % y/y (3 firms)",
+      "direction": "toward NO",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872422000021/amzn-20220930xex991.htm",
+      "source_tier": 1,
+      "confidence": "med",
+      "backfilled": true
+    }
+  ]
+}
