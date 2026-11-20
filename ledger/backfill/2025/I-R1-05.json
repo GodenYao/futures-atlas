@@ -49,7 +49,8 @@
       "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
       "source_tier": 3,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2025-I-R1-05-004",
@@ -63,7 +64,8 @@
       "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
       "source_tier": 3,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2025-I-R1-05-005",

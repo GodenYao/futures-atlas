@@ -106,5 +106,6 @@
       "confidence": "high",
       "backfilled": true
     }
-  ]
+  ],
+  "status_at_phase_end": "Not yet resolvable: the statement concerns the 10 largest known 2027 training runs. As of the phase end, all notable models above 1e26 FLOP in the Epoch database belong to Bloc A organisations, the best Bloc B model trails the Bloc A frontier by ~7 months, and ~82% of AI compute arriving 2022-H1 2026 went to the two leading jurisdictions. Frontier developers no longer disclose training compute, so resolution will rely on estimates with wide intervals."
 }

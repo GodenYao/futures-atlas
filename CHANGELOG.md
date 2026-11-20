@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-20 — evidence corrections (online re-sourcing, method 4.4.0 unchanged)
+- Rulings that needed a source re-read were applied: release dates and first-print values read from archived copies (productivity, wealth-share and labour-cost releases), corrected Federal Register links, primary announcement links, a corrected bill sponsor line, and summaries rewritten to say only what their source says.
+- Items whose filing values could not be re-read are now on `hold` (shown, not counted): 2 more in the counted 2026 phase, 13 in total.
+- Effect on week 2026-W46 (Pooled): R1 20.0 → 20.1 %; other roads and the leading endings unchanged at one decimal.
+
 ## 2026-11-20 — method 4.4.0 (data rulings)
 - Maintainer rulings on the evidence review applied to the backfill ledger: source tiers, confidence, dates, directions (search-result items with no finding are neutral and not counted), kinds, corrected summaries and source links.
 - New item flag `hold`: the item stays on the Evidence page with a "Not counted" tag but is not scored (used when a source is only readable in a version later than the item's date). 11 items in the counted 2026 phase are on hold.

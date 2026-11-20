@@ -70,7 +70,7 @@
       "indicator": "I-R5-01",
       "kind": "data-gap",
       "published": "2026-10-31",
-      "summary": "At least three more Bloc A developers' flagships are likely above 1e26 but lack Epoch estimates; even counting them the total would be ~5 organisations, well short of 15. (Duplicate of I-N-01-006.)",
+      "summary": "Three more Bloc A developers' flagships lack Epoch compute estimates; the tracker lists two as 'above 1e25, likely' and names all three as likely candidates above 1e26, so the count is a floor; even counting them the total would be ~5 organisations, well short of 15. (Duplicate of I-N-01-006.)",
       "detail": "Google (Gemini 3/4), Anthropic (Claude), Meta (Muse) undisclosed. cluster: CL-2026-10-undisclosed-1e26.",
       "value": "~5 organisations (upper reading)",
       "direction": "neutral",

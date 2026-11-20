@@ -43,12 +43,12 @@
       "kind": "event",
       "published": "2025-06-10",
       "summary": "A Bloc A developer cut the API price of its flagship reasoning model by 80% (to ~$2/$8 per million input/output tokens), a step change at fixed capability.",
-      "detail": "OpenAI o3 price reduction (2025-06-10). Recollection; not verified via web_extract this run.",
+      "detail": "OpenAI developer-forum announcement 'O3 is 80% cheaper and introducing o3-pro' (2025-06-10): o3 input $2 / output $8 per 1M tokens, 'now in effect'.",
       "value": "-80% (o3 API)",
       "direction": "toward YES",
-      "source_url": "https://platform.openai.com/docs/pricing",
+      "source_url": "https://community.openai.com/t/o3-is-80-cheaper-and-introducing-o3-pro/1284925",
       "source_tier": 2,
-      "confidence": "low",
+      "confidence": "high",
       "backfilled": true
     },
     {

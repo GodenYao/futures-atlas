@@ -71,7 +71,7 @@
       "indicator": "I-R5-03",
       "kind": "data-series",
       "published": "2025-04-10",
-      "summary": "IEA baseline (2025 report, current in 2026): Bloc A ~45%, Bloc B ~25%, Europe ~15% of global data-centre electricity use (2024); the two blocs account for ~80% of projected growth to 2030 - i.e. ~30% of all data-centre load is outside them, but AI-specific large campuses are far more concentrated.",
+      "summary": "IEA baseline (2025 report, current in 2026): Bloc A ~45%, Bloc B ~25%, Europe ~15% of global data-centre electricity use in 2024, i.e. ~30% of data-centre load lies outside the two blocs; Bloc A accounts for by far the largest share of projected growth to 2030, followed by Bloc B.",
       "detail": "IEA 'Energy and AI' (Apr 2025) executive summary; still IEA's reference figures in 2026 'Key Questions on Energy and AI'. 'published' set to phase start as carried-forward baseline.",
       "value": "~30% outside (all data centres, electricity)",
       "direction": "neutral",

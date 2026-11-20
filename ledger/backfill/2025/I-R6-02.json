@@ -21,7 +21,8 @@
       "source_url": "https://www.cnbc.com/2025/02/08/tech-megacaps-to-spend-more-than-300-billion-in-2025-to-win-in-ai.html",
       "source_tier": 2,
       "confidence": "high",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2025-I-R1-05-002"
     },
     {
       "id": "BF-2025-I-R6-02-002",
@@ -35,7 +36,8 @@
       "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
       "source_tier": 1,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2025-I-R6-02-003",
@@ -49,7 +51,8 @@
       "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
       "source_tier": 1,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2025-I-R6-02-004",

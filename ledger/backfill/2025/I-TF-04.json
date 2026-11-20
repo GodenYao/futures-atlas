@@ -15,10 +15,10 @@
       "kind": "treaty-law",
       "published": "2025-02-03",
       "summary": "Bloc A's head of government ordered a plan for a national sovereign wealth fund within 90 days. Not AI-specific and with no citizen dividend; later cited by advocates of an AI-funded public wealth fund.",
-      "detail": "Executive Order 14196 'A Plan for Establishing a Bloc A Sovereign Wealth Fund' (signed 2025-02-03). No fund was legislated in 2025. Not verified via web_extract this run.",
+      "detail": "Executive Order 14196 'A Plan for Establishing a Bloc A Sovereign Wealth Fund' (signed 2025-02-03). No fund was legislated in 2025. Federal Register doc 2025-02477 (published 2025-02-10).",
       "value": null,
       "direction": "neutral",
-      "source_url": "https://www.federalregister.gov/documents/2025/02/06/2025-02297/a-plan-for-establishing-a-united-states-sovereign-wealth-fund",
+      "source_url": "https://www.federalregister.gov/documents/2025/02/10/2025-02477/a-plan-for-establishing-a-united-states-sovereign-wealth-fund",
       "source_tier": 1,
       "confidence": "med",
       "backfilled": true

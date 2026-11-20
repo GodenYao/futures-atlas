@@ -85,7 +85,7 @@
       "kind": "event",
       "published": "2026-10-28",
       "summary": "A sub-national legislature in Bloc A introduced a bill that would let a state office limit compute large developers devote to training or automated AI research and let the attorney general seek court halts; lowers the coverage threshold to 1e25. Sub-national and introduced only.",
-      "detail": "New York 'RAISE Act 2.0' (S10731, Sen. Gounardes / AM Wright), introduced 2026-10-29. California Frontier AI Safety Act announced 2026-10-20 (compute-share reporting).",
+      "detail": "New York 'RAISE Act 2.0' (S10731, Sens. Gounardes and Fahy), introduced 2026-10-28. California Frontier AI Safety Act announced 2026-10-20 (compute-share reporting).",
       "value": "threshold 1e25 FLOP",
       "direction": "toward YES",
       "source_url": "https://www.nysenate.gov/legislation/bills/2025/S10731",

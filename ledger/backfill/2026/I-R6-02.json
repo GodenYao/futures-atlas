@@ -21,7 +21,8 @@
       "source_url": "https://kufenberg.ch/blog/news/ai-spending-now-outruns-big-techs-cash",
       "source_tier": 2,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R6-02-002",
@@ -35,7 +36,8 @@
       "source_url": "https://kufenberg.ch/blog/news/ai-spending-now-outruns-big-techs-cash",
       "source_tier": 2,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R6-02-003",

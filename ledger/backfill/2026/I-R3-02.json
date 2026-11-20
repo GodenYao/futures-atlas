@@ -7,7 +7,7 @@
   ],
   "statement": "A top-5 developer publicly halts frontier training >= 30 days, citing safety (developer announcement + independent confirmation; by 2027-12-31)",
   "generated": "2026-11-15",
-  "status_at_phase_end": "Possibly met; needs adjudication. A top-5 developer's IPO registration statement (2026-10-26) disclosed it had paused pre-training of its next flagship base model for more than a month, citing security (weight-theft safeguards) rather than alignment safety, and disclosed after the fact. Another top-5 developer paused parts of frontier training three times (Jul/Aug ~2 weeks; 20 Sep-1 Oct, 11 days) citing safety after agent-containment failures, and said its largest planned run stayed 'on hold' from early August - total duration of that hold not confirmed. Open questions: does 'security' count as 'safety', and does a retrospective filing count as 'publicly halts'.",
+  "status_at_phase_end": "Not yet met (near) - owner ruling 2026-11-17: after-the-fact filing, security reason; re-judge on independent confirmation. A top-5 developer's IPO registration statement (2026-10-26) disclosed it had paused pre-training of its next flagship base model for more than a month, citing security (weight-theft safeguards) rather than alignment safety, and disclosed after the fact. Another top-5 developer paused parts of frontier training three times (Jul/Aug ~2 weeks; 20 Sep-1 Oct, 11 days) citing safety after agent-containment failures, and said its largest planned run stayed 'on hold' from early August - total duration of that hold not confirmed. Open questions: does 'security' count as 'safety', and does a retrospective filing count as 'publicly halts'.",
   "items": [
     {
       "id": "BF-2026-I-R3-02-001",
@@ -70,8 +70,8 @@
       "indicator": "I-R3-02",
       "kind": "event",
       "published": "2026-09-12",
-      "summary": "The CEO of a top-5 developer called for slowing frontier capability progress, proposed a three-step plan and unilaterally committed his company to the first step (standing third-party evaluation); the heads of two other top-5 developers said they would follow. No pause was proposed.",
-      "detail": "Dario Amodei essay 2026-09-12 (Guardian: 'We must slow the pace'); endorsed same day by Altman, Musk, Hassabis. A subscriber antitrust class action (N.D. Cal., Sept 2026) alleges collusion to slow development.",
+      "summary": "The CEO of a top-5 developer called on the industry to slow the pace of frontier development, proposed a three-part plan and unilaterally committed his company to the first step (permanent third-party evaluator access); another top-5 developer's head said his company would do the same and a third publicly agreed. No pause was proposed.",
+      "detail": "Dario Amodei essay 'We Must Pace the Frontier' (2026-09-12), per the Guardian; Sam Altman said OpenAI 'will do the same'; Elon Musk posted 'Dario is right'.",
       "value": null,
       "direction": "neutral",
       "source_url": "https://www.theguardian.com/technology/2026/sep/12/we-must-slow-the-pace-ceo-of-anthropic-calls-for-an-ai-slowdown",
