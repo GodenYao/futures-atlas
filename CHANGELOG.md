@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-20 — docs and text: sensitivity re-run under method 4.5.0 (numbers unchanged)
+- `docs/sensitivity.md` regenerated from `node tools/sens.js .` on the current ledger (five phases, 2022-11..2026): W46 Pooled Enslaved God 18.0 % vs Conquerors 17.4 % (margin 0.6 pp); Monte Carlo leader 48.4 % / 44.3 % of 4,000 draws (was 39.8 / 39.0 %); 63 of 279 one-at-a-time ranges flip the Pooled leader (was 48); without the I-R4-01 ruling Enslaved God leads by 8.2 pp (was 5.4 pp) and Conquerors stays second; Many powers lens leader is Conquerors.
+- METHODS.md (§4.2 break-evens 0.625 / 0.48, §6 ruling impact, §7 known limits) and engine/README.md (known gaps) updated to the same run.
+- Site text: the Evidence page says countries appear as Bloc labels (the old line said names appear in the detail; the build anonymises every phase); the Visions notes say shares are editorial weights moved by evidence.
+
 ## 2026-11-20 — evidence corrections (source tiers per the self-report rule, method 4.5.0 unchanged)
 - Six items citing a developer's or company's own publication (launch blog, earnings-release page, technical reports, a safety policy) moved from source tier 1 to tier 2, as the rule for self-reports requires; two items whose author is an independent evaluator stay tier 1.
 - Three 2024 values were re-read from their original sources (productivity release, graduate unemployment data, capex analysis); one summary aligned to the source figure (~$170B, was ~$171B).

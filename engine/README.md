@@ -62,7 +62,8 @@ under review. A full run prints the sensitivity of each default (halved / double
 
 ## Known gaps
 
-- The 2025 phase is in the ledger but not reviewed, so it does not count.
+- 16 items (of 818 in the five phases 2022-11..2026) are on `hold`: shown on the map's Evidence page
+  but not scored, because their source could not be re-read as of the item's date.
 - The road-row wiring of a merged indicator (`rowFrom` in the `IND` table of `lib.js`) is
   still model code; the rulings themselves are read from `ledger/backfill/review/rulings.json`.
 - The weekly build updates the numbers in `index.html`; the Evidence page text of newly filed

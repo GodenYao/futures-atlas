@@ -265,8 +265,8 @@ published argument that the road leads there more or less often (open a correcti
 | R6 | Reversion | 0.05 | 0.01–0.10 | Disillusion turns into retreat from technology |
 
 **The current leader is decided here.** At the current week, Enslaved God (fed mostly by R1 × 0.70) and
-Conquerors (fed mostly by R4 × 0.45) are 0.5 pp apart. R1 → Enslaved God below 0.615, or R4 → Conquerors
-above 0.485, changes the leader. See [sensitivity.md](docs/sensitivity.md).
+Conquerors (fed mostly by R4 × 0.45) are 0.6 pp apart (week 2026-W46, method 4.5.0). R1 → Enslaved God
+below 0.625, or R4 → Conquerors above 0.48, changes the leader. See [sensitivity.md](docs/sensitivity.md).
 
 ### 4.3 Likelihood rows: p(statement true | road)
 
@@ -345,22 +345,22 @@ Current rulings:
 | I-R5-01 (≥ 15 organisations with a ≥ 1e26 FLOP run) | **Merged** into I-N-01 | 2026-11-17 | Same question; counted once, I-N-01 is the canonical one |
 | I-R2-02, I-R6-04 (business-survey AI use) | Readings from 2026-10-19 excluded | 2026-11-17 | The survey changed its question; later readings are not comparable with the 2025 baseline |
 
-**Impact of the I-R4-01 ruling** (week 2026-W46, Pooled, computed under method 4.3.0, before the 2026-11-20 data rulings): with it, R4 "Race → loss of control" is 30.3 %
-and Conquerors is 13.6 %, 0.5 pp behind Enslaved God. Without it, R4 would be 23.5 % and Conquerors
-10.6 % (third). It is the single most influential decision in the model. Full what-if:
+**Impact of the I-R4-01 ruling** (week 2026-W46, Pooled, method 4.5.0): with it, Enslaved God 18.0 % and
+Conquerors 17.4 % are 0.6 pp apart. Without it, Enslaved God would lead with 21.8 %, 8.2 pp ahead of
+Conquerors, and a Pooled road would move by up to 8.4 pp. It is the single most influential decision in
+the model. Full what-if:
 [sensitivity.md](docs/sensitivity.md#what-if-i-r4-01-not-met-maintainer-ruling).
 
 ---
 
 ## 7. Known limits
 
-- **The leader is a near tie.** Enslaved God and Conquerors are 0.5 pp apart and each lead in about 40 %
-  of the range draws. Read the top two together.
-- **Evidence overwhelms some priors.** After one year, Gradual adoption (R6) sits on its 1 % floor in the
-  Baseline, Loss of control and Many powers lenses (at or within 0.1 pp of it), and falls from 37 % to under
-  5 % in Slow diffusion. Half-strength evidence (β = 0.5) would lift it to 3.0–14.9 % in Baseline, Slow
-  diffusion and Many powers; without the I-R4-01 ruling it would be 2.5–11.7 % there. In Loss of control it
-  stays near 1 % either way. The correlated-source rule does not change this.
+- **The leader is a near tie.** Enslaved God and Conquerors are 0.6 pp apart and lead in 48 % and 44 % of
+  the range draws (week 2026-W46, method 4.5.0). Read the top two together.
+- **Evidence overwhelms some priors.** After nearly four years of evidence (2022-11-30 to 2026-W46), Gradual
+  adoption (R6) sits on its 1 % floor in the Baseline, Loss of control and Many powers lenses (first
+  reached in 2026-W35, W23 and W35), and falls from 37 % to 3.3 % in Slow diffusion. Without the I-R4-01 ruling it
+  would be on the floor in one lens only (see [sensitivity.md](docs/sensitivity.md)).
 - The likelihood rows, splits and lens priors have not been elicited from outside experts or back-tested.
 - Correlated evidence is detected by URL only; two outlets reporting the same event are caught only when
   the reviewer files them as one item.

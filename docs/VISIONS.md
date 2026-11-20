@@ -50,7 +50,7 @@ that ending could look like. The order is set by community votes in GitHub Discu
 3. Per ending it keeps the top 3 by votes (ties: earlier reply first) and writes ending id,
    link, title, creator, kind, start, votes and the reply URL.
 4. The site shows them in the Visions strip with the vote count and the date the counts were
-   read, plus the line *"Votes reflect online opinion only; map shares come from evidence."*
+   read, plus the line *"Votes reflect online opinion only; map shares are editorial weights moved by evidence."*
 5. Counts are read once a week (same freeze as the evidence snapshot), so the strip never
    changes between builds. Vote counts are not stored in the ledger and are not inputs to
    the engine.
