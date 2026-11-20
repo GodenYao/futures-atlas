@@ -19,7 +19,7 @@
       "value": null,
       "direction": "neutral",
       "source_url": "https://openai.com/index/chatgpt/",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "med",
       "backfilled": true
     },

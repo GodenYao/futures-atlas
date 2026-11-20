@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-20 — evidence corrections (source tiers per the self-report rule, method 4.5.0 unchanged)
+- Six items citing a developer's or company's own publication (launch blog, earnings-release page, technical reports, a safety policy) moved from source tier 1 to tier 2, as the rule for self-reports requires; two items whose author is an independent evaluator stay tier 1.
+- Three 2024 values were re-read from their original sources (productivity release, graduate unemployment data, capex analysis); one summary aligned to the source figure (~$170B, was ~$171B).
+- Effect on week 2026-W46 (Pooled): Conquerors 17.39 -> 17.38 %, Road 4 38.64 -> 38.63 %; Enslaved God 17.99 % unchanged.
+
 ## 2026-11-20 — evidence corrections (capex items re-sourced, method 4.5.0 unchanged)
 - Seven quarterly capex items that were on `hold` (2023 Q1-Q3, 2025 Q1-Q2, 2026 Q1-Q2; four-firm totals) were re-read from the companies' own quarterly earnings releases (investor-relations copies, same cash-flow line as the 10-Q) and now count again. They replace third-party compilations and a blog published after the items' dates.
 - Corrections from the re-read: 2023 y/y changes -4.4 / -9.4 / -5.9 % (were -4.5 / -9.7 / -6.1 %), dates moved to the last of the four releases (2023-10-26, 2026-04-29, 2026-07-30), source tier 2 (company releases), the 2023 item marked low confidence, one unverifiable guidance clause dropped, and the two 2025 Road-6 copies marked `duplicate_of` their Road-1 counterparts.

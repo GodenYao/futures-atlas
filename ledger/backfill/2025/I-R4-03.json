@@ -61,7 +61,7 @@
       "value": null,
       "direction": "toward YES",
       "source_url": "https://www-cdn.anthropic.com/872c653b2d0501d6ab44cf87f43e1dc4853e4d37.pdf",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "high",
       "backfilled": true
     },

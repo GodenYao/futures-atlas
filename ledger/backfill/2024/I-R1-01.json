@@ -47,7 +47,7 @@
       "value": "3.8e25 FLOP",
       "direction": "toward YES",
       "source_url": "https://ai.meta.com/research/publications/the-llama-3-herd-of-models/",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "high",
       "backfilled": true
     },
@@ -90,7 +90,7 @@
       "value": "~3.4e24 FLOP",
       "direction": "neutral",
       "source_url": "https://github.com/deepseek-ai/DeepSeek-V3",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "high",
       "backfilled": true
     },

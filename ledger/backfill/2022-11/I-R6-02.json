@@ -47,7 +47,7 @@
       "value": "6.283 bn USD (quarter to 2022-09-30), +8.1 % y/y",
       "direction": "toward NO",
       "source_url": "https://www.microsoft.com/en-us/investor/earnings/fy-2023-q1/cash-flows",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "high",
       "backfilled": true
     },
