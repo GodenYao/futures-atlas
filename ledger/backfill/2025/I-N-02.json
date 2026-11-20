@@ -21,7 +21,8 @@
       "source_url": "https://epoch.ai/models/gpt-4-5",
       "source_tier": 1,
       "confidence": "high",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2025-I-N-01-003"
     },
     {
       "id": "BF-2025-I-N-02-002",
@@ -77,7 +78,8 @@
       "source_url": "https://epoch.ai/data-insights/open-closed-eci-gap",
       "source_tier": 1,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2025-I-N-01-006"
     },
     {
       "id": "BF-2025-I-N-02-006",
@@ -91,7 +93,8 @@
       "source_url": "https://epoch.ai/models/gemini-3-pro",
       "source_tier": 1,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2025-I-N-01-007"
     }
   ]
 }

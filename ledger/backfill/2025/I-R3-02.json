@@ -59,7 +59,7 @@
       "summary": "No public announcement by a top-5 developer of a training halt of 30 days or more citing safety was found for 2025. Training pauses are generally not disclosed in real time, so absence of evidence is weak evidence; disclosures made after 2025 are excluded under the as-of rule.",
       "detail": "Searched developer blogs/press for 2025. Later disclosures (e.g. 2026 IPO filing describing a pre-training pause) are out of phase.",
       "value": null,
-      "direction": "toward NO",
+      "direction": "neutral",
       "source_url": "https://www.anthropic.com/news/activating-asl3-protections",
       "source_tier": 2,
       "confidence": "med",

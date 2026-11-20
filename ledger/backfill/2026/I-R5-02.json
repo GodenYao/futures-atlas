@@ -21,7 +21,8 @@
       "source_url": "https://exponentialtracker.com/curve/open_weight_frontier",
       "source_tier": 3,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R5-02-002",
@@ -49,7 +50,8 @@
       "source_url": "https://exponentialtracker.com/curve/open_weight_frontier",
       "source_tier": 3,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R5-02-004",
@@ -63,7 +65,8 @@
       "source_url": "https://exponentialtracker.com/curve/open_weight_frontier",
       "source_tier": 3,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R5-02-005",

@@ -21,7 +21,8 @@
       "source_url": "https://epoch.ai/latest/introducing-the-ai-chip-imports-explorer",
       "source_tier": 1,
       "confidence": "high",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2026-I-R1-01-005"
     },
     {
       "id": "BF-2026-I-R5-03-002",
@@ -69,12 +70,12 @@
       "id": "BF-2026-I-R5-03-005",
       "indicator": "I-R5-03",
       "kind": "data-series",
-      "published": "2026-01-15",
+      "published": "2025-04-10",
       "summary": "IEA baseline (2025 report, current in 2026): Bloc A ~45%, Bloc B ~25%, Europe ~15% of global data-centre electricity use (2024); the two blocs account for ~80% of projected growth to 2030 - i.e. ~30% of all data-centre load is outside them, but AI-specific large campuses are far more concentrated.",
       "detail": "IEA 'Energy and AI' (Apr 2025) executive summary; still IEA's reference figures in 2026 'Key Questions on Energy and AI'. 'published' set to phase start as carried-forward baseline.",
       "value": "~30% outside (all data centres, electricity)",
       "direction": "neutral",
-      "source_url": "https://www.iea.org/reports/energy-and-ai/executive-summary",
+      "source_url": "https://web.archive.org/web/20260115211016/https://www.iea.org/reports/energy-and-ai/executive-summary",
       "source_tier": 1,
       "confidence": "med",
       "backfilled": true

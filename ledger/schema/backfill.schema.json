@@ -35,7 +35,8 @@
         "source_tier": { "enum": [1, 2, 3] },
         "confidence": { "enum": ["high", "med", "low"] },
         "backfilled": { "const": true },
-        "duplicate_of": { "type": "string" }
+        "duplicate_of": { "type": "string", "description": "Display/annotation mark: same evidence as the named item. Scoring is unchanged (same-source down-weighting already applies)." },
+        "hold": { "type": "boolean", "description": "true = shown on the page but not counted (e.g. the source is only readable in a version later than the item's date)." }
       },
       "additionalProperties": false
     }

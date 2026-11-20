@@ -61,7 +61,7 @@
       "value": "several weeks (partial)",
       "direction": "toward YES",
       "source_url": "https://www.anthropic.com/news/improving-alignment-security-efforts",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "med",
       "backfilled": true
     },
@@ -70,7 +70,7 @@
       "indicator": "I-R3-02",
       "kind": "event",
       "published": "2026-09-12",
-      "summary": "Heads of three top-5 developers publicly endorsed an industry-wide slowdown of frontier development, conditioned on simultaneous, verifiable participation across developers and blocs; no unilateral commitment.",
+      "summary": "The CEO of a top-5 developer called for slowing frontier capability progress, proposed a three-step plan and unilaterally committed his company to the first step (standing third-party evaluation); the heads of two other top-5 developers said they would follow. No pause was proposed.",
       "detail": "Dario Amodei essay 2026-09-12 (Guardian: 'We must slow the pace'); endorsed same day by Altman, Musk, Hassabis. A subscriber antitrust class action (N.D. Cal., Sept 2026) alleges collusion to slow development.",
       "value": null,
       "direction": "neutral",
@@ -89,7 +89,7 @@
       "value": "11 days",
       "direction": "toward NO",
       "source_url": "https://openai.com/index/securing-our-frontier-model-training-environment/",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "high",
       "backfilled": true
     },

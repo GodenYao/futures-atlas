@@ -47,7 +47,7 @@
       "value": null,
       "direction": "toward YES",
       "source_url": "https://www.whitehouse.gov/wp-content/uploads/2025/07/Americas-AI-Action-Plan.pdf",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "high",
       "backfilled": true
     },
@@ -76,7 +76,7 @@
       "direction": "toward YES",
       "source_url": "https://www.gov.cn/zhengce/content/202508/content_7037861.htm",
       "source_tier": 1,
-      "confidence": "low",
+      "confidence": "med",
       "backfilled": true
     }
   ]

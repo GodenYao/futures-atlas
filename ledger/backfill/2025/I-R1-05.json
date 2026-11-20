@@ -20,7 +20,7 @@
       "direction": "toward YES",
       "source_url": "https://openai.com/index/announcing-the-stargate-project/",
       "source_tier": 2,
-      "confidence": "med",
+      "confidence": "high",
       "backfilled": true
     },
     {
@@ -47,7 +47,7 @@
       "value": "$71.9B (Q1 2025, 4 firms)",
       "direction": "toward YES",
       "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
-      "source_tier": 1,
+      "source_tier": 3,
       "confidence": "med",
       "backfilled": true
     },
@@ -61,7 +61,7 @@
       "value": "$88.2B (Q2 2025, 4 firms)",
       "direction": "toward YES",
       "source_url": "https://ai-industry-reviews.com/research/hyperscaler-ai-capex-statistics-2026",
-      "source_tier": 1,
+      "source_tier": 3,
       "confidence": "med",
       "backfilled": true
     },

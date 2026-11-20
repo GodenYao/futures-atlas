@@ -68,7 +68,7 @@
     {
       "id": "BF-2026-I-R3-03-005",
       "indicator": "I-R3-03",
-      "kind": "treaty-law",
+      "kind": "event",
       "published": "2026-10-16",
       "summary": "Bloc B released draft export-control revisions requiring a licence to export the core technology (weights, checkpoints, code) of models trained with >=1e26 operations, >=2 trillion parameters, or ranked global top-10, with interim pre-export registration from that date. This controls cross-border transfer, not domestic training.",
       "detail": "Bloc B MOFCOM/MOST Announcement No. 48 (2026-10-16), draft revision of the Catalogue of Technologies Prohibited and Restricted from Export; comments to 2026-11-15. Bloc B Daily 2026-11-09.",
@@ -83,7 +83,7 @@
       "id": "BF-2026-I-R3-03-006",
       "indicator": "I-R3-03",
       "kind": "event",
-      "published": "2026-10-29",
+      "published": "2026-10-28",
       "summary": "A sub-national legislature in Bloc A introduced a bill that would let a state office limit compute large developers devote to training or automated AI research and let the attorney general seek court halts; lowers the coverage threshold to 1e25. Sub-national and introduced only.",
       "detail": "New York 'RAISE Act 2.0' (S10731, Sen. Gounardes / AM Wright), introduced 2026-10-29. California Frontier AI Safety Act announced 2026-10-20 (compute-share reporting).",
       "value": "threshold 1e25 FLOP",

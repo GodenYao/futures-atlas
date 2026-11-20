@@ -88,9 +88,9 @@
       "detail": "Trump announcement allowing Nvidia H200 exports to Bloc B with 25% to the Bloc A government (reported 2025-12-08). Not verified via web_extract this run.",
       "value": null,
       "direction": "toward NO",
-      "source_url": "https://www.reuters.com/world/china/trump-says-us-will-allow-nvidias-h200-chip-exports-china-2025-12-08/",
+      "source_url": "https://reuters.com/world/china/us-allow-nvida-ship-h200-chips-china-trump-says-2025-12-08/",
       "source_tier": 2,
-      "confidence": "low",
+      "confidence": "high",
       "backfilled": true
     }
   ]

@@ -54,7 +54,7 @@
     {
       "id": "BF-2026-I-R6-02-004",
       "indicator": "I-R6-02",
-      "kind": "forecast",
+      "kind": "event",
       "published": "2026-10-29",
       "summary": "All four largest spenders signalled higher 2027 capex ('increase significantly', 'meaningfully more', 'accelerate', 'continue investing aggressively'); implied Q4 2026 combined capex (incl. a fifth firm) $247-272B.",
       "detail": "Q3 2026 earnings calls (Alphabet CFO Ashkenazi; Amazon CFO Olsavsky; Microsoft; Meta). Business Insider tally incl. SpaceX: $556B spent in first three quarters, $803-828B full-year.",
@@ -69,13 +69,13 @@
       "id": "BF-2026-I-R6-02-005",
       "indicator": "I-R6-02",
       "kind": "data-series",
-      "published": "2026-10-30",
+      "published": "2026-11-13",
       "summary": "Financing strain: in Q3 2026 capex exceeded operating cash flow at four of the five largest spenders (combined shortfall ~$32B); one raised $115B of long-term debt in nine months. A leading indicator of possible future cuts, not yet a decline.",
       "detail": "Alphabet FCF -$9.1B, Meta -$1.2 to -2.1B, Oracle -$5.4B, Amazon -$34.8B (quarter), Microsoft +$18.6B. Kufenberg / Global Terminal from filings.",
       "value": "-$31.8B combined FCF (Q3 2026, 5 firms)",
       "direction": "toward YES",
       "source_url": "https://kufenberg.ch/blog/news/ai-spending-now-outruns-big-techs-cash",
-      "source_tier": 2,
+      "source_tier": 3,
       "confidence": "med",
       "backfilled": true
     }

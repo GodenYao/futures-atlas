@@ -73,7 +73,7 @@
       "summary": "No treaty or agreement in 2025 gave an international body inspection or compute-verification powers over any top-5 compute jurisdiction. Academic proposals (conditional AI-safety treaties, verification frameworks) remained proposals only.",
       "detail": "E.g. arXiv 2503.18956 (conditional AI safety treaty, Mar 2025); Oxford AIGI 'Verification for International AI Governance' (Jul 2025). Council of Europe AI Convention (2024) has no inspection powers.",
       "value": null,
-      "direction": "toward NO",
+      "direction": "neutral",
       "source_url": "https://arxiv.org/abs/2503.18956",
       "source_tier": 2,
       "confidence": "med",

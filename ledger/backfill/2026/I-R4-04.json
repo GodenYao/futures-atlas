@@ -21,7 +21,8 @@
       "source_url": "https://exponentialtracker.com/curve/ai_compute",
       "source_tier": 3,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R4-04-002",

@@ -41,7 +41,7 @@
       "id": "BF-2025-I-R2-05-003",
       "indicator": "I-R2-05",
       "kind": "data-series",
-      "published": "2025-08-14",
+      "published": "2025-08-25",
       "summary": "Another regional central bank's analysis: young college graduates (23-27) averaged 4.59% unemployment in 2025 vs 3.25% for all college graduates; the recent-graduate disadvantage has persisted and widened since the late 2010s.",
       "detail": "St. Louis Fed On the Economy, 'Recent College Grads Bear Brunt of Labor Market Shifts', August 2025 (own CPS definition, not NY Fed; day approximate).",
       "value": "4.59% (ages 23-27, 2025 avg to date)",
@@ -63,7 +63,8 @@
       "source_url": "https://x.com/NewYorkFed/status/2005676412691210490",
       "source_tier": 1,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2025-I-R2-05-005",

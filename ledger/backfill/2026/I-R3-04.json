@@ -55,13 +55,13 @@
       "id": "BF-2026-I-R3-04-004",
       "indicator": "I-R3-04",
       "kind": "event",
-      "published": "2026-09-25",
+      "published": "2026-09-23",
       "summary": "A Bloc A legislative committee held its first hearing calling for a binding, verifiable bilateral treaty on catastrophic AI risks, and a member urged the executive to work toward an IAEA-style international AI inspection agency with access to both blocs' data centres. Advocacy only.",
       "detail": "House Select Committee on the CCP (Democratic members) letter to Secretary of State Rubio following the hearing; date approximate (around the Sept 2026 Trump-Xi summit).",
       "value": null,
       "direction": "toward YES",
       "source_url": "https://democrats-selectcommitteeontheccp.house.gov/sites/evo-subsites/democrats-selectcommitteeontheccp.house.gov/files/evo-media-document/letter-to-sec-rubio-on-us-prc-ai.pdf",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "low",
       "backfilled": true
     },
@@ -77,14 +77,15 @@
       "source_url": "https://pbs.org/newshour/world/china-and-u-s-agree-to-establish-ai-safety-channel-and-continue-trade-and-military-talks",
       "source_tier": 2,
       "confidence": "high",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2026-I-R1-04-003"
     },
     {
       "id": "BF-2026-I-R3-04-006",
       "indicator": "I-R3-04",
       "kind": "data-gap",
       "published": "2026-11-14",
-      "summary": "No treaty text or gazette granting any international body inspection or compute-verification powers was found as of phase end; the first bilateral AI dialogue session was scheduled for November and had no published outcome.",
+      "summary": "The Bloc A and Bloc B governments announced a dialogue mechanism on superintelligence; public reporting mentions no inspection or verification rights.",
       "detail": "Checked UN mechanisms and Bloc A-Bloc B channel; Council of Europe Framework Convention has no compute verification. CNBC 2026-11-11 notes dialogue still pending.",
       "value": null,
       "direction": "toward NO",

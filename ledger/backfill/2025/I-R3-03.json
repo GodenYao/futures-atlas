@@ -87,10 +87,10 @@
       "summary": "Bloc B continued its pre-deployment filing and security-assessment regime for public-facing generative AI services, which gates release rather than training. No compute-threshold training licence was found in Bloc B in 2025, but Bloc B gazettes were not systematically searched.",
       "detail": "Bloc B CAC Interim Measures for Generative AI Services (in force 2023-08-15) with algorithm filing; AI content labelling measures in force 2025-09-01. No compute-threshold training permit identified.",
       "value": null,
-      "direction": "toward NO",
+      "direction": "neutral",
       "source_url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
       "source_tier": 1,
-      "confidence": "low",
+      "confidence": "high",
       "backfilled": true
     }
   ]

@@ -62,7 +62,7 @@
       "direction": "neutral",
       "source_url": "https://oecd.ai/en/dashboards/overview",
       "source_tier": 1,
-      "confidence": "low",
+      "confidence": "med",
       "backfilled": true
     }
   ]

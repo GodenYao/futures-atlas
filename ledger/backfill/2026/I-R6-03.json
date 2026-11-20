@@ -91,7 +91,8 @@
       "source_url": "https://aisocratic.org/leaderboard",
       "source_tier": 2,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R6-03-007",
@@ -119,7 +120,8 @@
       "source_url": "https://models.fru.dev/benchmarks/epoch-eci",
       "source_tier": 2,
       "confidence": "low",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     }
   ]
 }

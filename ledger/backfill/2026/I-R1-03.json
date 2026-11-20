@@ -31,7 +31,7 @@
       "summary": "Bloc A export regulator issued guidance confirming it enforces the licence requirement for advanced AI chips to any entity headquartered in Bloc B (wherever located). Reaffirmation rather than new control.",
       "detail": "BIS 'Guidance Regarding Enforcement of License Requirements for Advanced Computing Items for Entities Headquartered in Country Group D:5 and Bloc R', 2026-05-31; FAQ updated 2026-06-17.",
       "value": null,
-      "direction": "toward YES",
+      "direction": "neutral",
       "source_url": "https://www.bis.gov/media/documents/bis-guidance-may-31-2026.pdf",
       "source_tier": 1,
       "confidence": "med",
@@ -68,7 +68,7 @@
     {
       "id": "BF-2026-I-R1-03-005",
       "indicator": "I-R1-03",
-      "kind": "treaty-law",
+      "kind": "event",
       "published": "2026-10-16",
       "summary": "Bloc B commerce and science ministries issued a draft revision of the prohibited/restricted technology export catalogue adding 40 technologies (23 AI-related), including core technology of the largest models (weights, source code, training methods above compute/parameter thresholds) and AI/memory chip design; pre-export registration applies immediately. Comments closed 2026-11-15.",
       "detail": "MOFCOM & MOST Announcement No. 48 (2026), draft Catalogue of Technologies Prohibited or Restricted from Export (Bloc B). Open-source/public technology excluded.",

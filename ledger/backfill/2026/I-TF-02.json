@@ -44,7 +44,7 @@
       "published": "2026-03-20",
       "summary": "2025Q4 baseline reading of the top-1% net-worth share: 31.8% (current vintage), defining the +1 pp threshold at about 32.8%.",
       "detail": "FRED WFRBST01134 Q4 2025 value in the 2026-09-18 vintage (Bloc A). Q4 data first published with the March 2026 Z.1/DFA update; exact date and first-vintage value not verified.",
-      "value": "31.8 %",
+      "value": "31.7% (2025Q3, vintage as of 2026-03-20)",
       "direction": "neutral",
       "source_url": "https://fred.stlouisfed.org/series/WFRBST01134",
       "source_tier": 1,

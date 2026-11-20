@@ -62,7 +62,7 @@
       "direction": "neutral",
       "source_url": "https://www.census.gov/library/publications/2025/demo/p60-286.html",
       "source_tier": 1,
-      "confidence": "low",
+      "confidence": "high",
       "backfilled": true
     },
     {

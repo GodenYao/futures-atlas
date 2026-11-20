@@ -35,7 +35,8 @@
       "source_url": "https://datacentersx.com/frontier-training-runs.html",
       "source_tier": 3,
       "confidence": "low",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2026-I-N-01-002"
     },
     {
       "id": "BF-2026-I-N-02-003",
@@ -49,7 +50,8 @@
       "source_url": "https://epoch.ai/models/gpt-6-astra",
       "source_tier": 1,
       "confidence": "high",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2026-I-N-01-004"
     },
     {
       "id": "BF-2026-I-N-02-004",
@@ -69,7 +71,7 @@
       "id": "BF-2026-I-N-02-005",
       "indicator": "I-N-02",
       "kind": "event",
-      "published": "2026-10-30",
+      "published": "2026-10-22",
       "summary": "Sovereign-model releases outside the two blocs in 2026 were small mixture-of-experts models trained on 12-24T tokens, well below 1e25 FLOP; none approached the 1e26 threshold.",
       "detail": "Examples: Kolibri (Bloc D sovereign MoE, 78B total/3.5B active, 24T tokens, arXiv 2610.31945); LLM-jp-4 (Bloc N, 8B and 32B-A3B, ~12T tokens, arXiv 2610.19331). Dates approximate (late Oct 2026). Rough compute 6*N_active*D << 1e25.",
       "value": null,
@@ -91,7 +93,8 @@
       "source_url": "https://aiwiki.ai/wiki/training_compute",
       "source_tier": 3,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "duplicate_of": "BF-2026-I-N-01-006"
     }
   ]
 }

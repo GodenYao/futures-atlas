@@ -98,11 +98,11 @@
       "indicator": "I-R2-03",
       "kind": "data-series",
       "published": "2026-09-30",
-      "summary": "Third-party long-horizon agent benchmark (5-day game-based space programme) mapped two Bloc A frontier models' progress to ~86-116 hours of expert-human-equivalent work; a proxy, not a METR measurement.",
+      "summary": "Third-party long-horizon agent benchmark (5-day game-based space programme) mapped two Bloc A frontier models' progress to ~90-120 hours of expert-human-equivalent work; a proxy, not a METR measurement.",
       "detail": "Vals AI Time Horizon Index: KSP, September results: GPT-6 Astra 85h41m-113h32m; Claude Opus 5.5 87h9m-115h33m; Gemini 4 Argon 47-61 h. Date approximate (Sept 2026).",
       "value": "~86-116 h proxy",
       "direction": "toward YES",
-      "source_url": "https://vals.ai/benchmarks/time_horizon_index",
+      "source_url": "https://web.archive.org/web/20261002164443/https://www.vals.ai/benchmarks/time_horizon_index",
       "source_tier": 3,
       "confidence": "low",
       "backfilled": true

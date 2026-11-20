@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-20 — method 4.4.0 (data rulings)
+- Maintainer rulings on the evidence review applied to the backfill ledger: source tiers, confidence, dates, directions (search-result items with no finding are neutral and not counted), kinds, corrected summaries and source links.
+- New item flag `hold`: the item stays on the Evidence page with a "Not counted" tag but is not scored (used when a source is only readable in a version later than the item's date). 11 items in the counted 2026 phase are on hold.
+- `duplicate_of` is a display mark only; scoring keeps the existing same-source down-weighting.
+- Effect on week 2026-W46 (Pooled): Enslaved God 14.15 → 14.13 %, Conquerors 13.62 → 13.81 %; R3 20.3 → 18.1 %, R5 12.6 → 13.6 %, R2 12.0 → 12.7 %. The leading ending is unchanged. The sensitivity table in `docs/sensitivity.md` was computed before this change.
+
 ## 2026-11-19 — method 4.3.0
 - Source de-duplication: items citing the same source share one unit of weight per week.
 - Methods published in `METHODS.md` (every parameter with value, range and rationale); one-at-a-time sensitivity test in `docs/sensitivity.md`.

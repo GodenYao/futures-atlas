@@ -136,7 +136,7 @@ priors.** Evidence, likelihood rows, splits and every engine parameter are the s
 | **Pooled** (default) | 0.2125 | 0.185 | 0.1175 | 0.1275 | 0.17 | 0.1575 | 0.03 | Equal-weight average of the four lens **results** (not of their priors) |
 
 Before any evidence, the pooled priors put Normal technology first (20.1 %) and Enslaved God second
-(15.7 %). The 2026 evidence moves the pooled view to Enslaved God 14.1 % and Conquerors 13.6 % (week 2026-W46).
+(15.7 %). The 2026 evidence moves the pooled view to Enslaved God 14.1 % and Conquerors 13.8 % (week 2026-W46, method 4.4.0).
 
 All four are seed lenses written by the maintainer to span the main camps of the debate; they are not
 anyone's published forecast. Plausible range used in the sensitivity run: each prior ×0.5 to ×1.5. What
@@ -345,7 +345,7 @@ Current rulings:
 | I-R5-01 (≥ 15 organisations with a ≥ 1e26 FLOP run) | **Merged** into I-N-01 | 2026-11-17 | Same question; counted once, I-N-01 is the canonical one |
 | I-R2-02, I-R6-04 (business-survey AI use) | Readings from 2026-10-19 excluded | 2026-11-17 | The survey changed its question; later readings are not comparable with the 2025 baseline |
 
-**Impact of the I-R4-01 ruling** (week 2026-W46, Pooled): with it, R4 "Race → loss of control" is 30.3 %
+**Impact of the I-R4-01 ruling** (week 2026-W46, Pooled, computed under method 4.3.0, before the 2026-11-20 data rulings): with it, R4 "Race → loss of control" is 30.3 %
 and Conquerors is 13.6 %, 0.5 pp behind Enslaved God. Without it, R4 would be 23.5 % and Conquerors
 10.6 % (third). It is the single most influential decision in the model. Full what-if:
 [sensitivity.md](docs/sensitivity.md#what-if-i-r4-01-not-met-maintainer-ruling).

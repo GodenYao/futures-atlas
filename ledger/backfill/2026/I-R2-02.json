@@ -35,7 +35,8 @@
       "source_url": "https://www.census.gov/hfp/btos/data",
       "source_tier": 1,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R2-02-003",
@@ -69,8 +70,8 @@
       "id": "BF-2026-I-R2-02-005",
       "indicator": "I-R2-02",
       "kind": "data-series",
-      "published": "2026-05-20",
-      "summary": "Regional central-bank analysis: on the original wording, firm AI use in production was ~10% in late 2025, double mid-2024; under the broader wording it jumped to ~20% in early 2026. Implied 2025 average on the original series is roughly 8-9%.",
+      "published": "2026-05-29",
+      "summary": "Regional central-bank analysis: on the original wording, firm AI use in production was ~10% in late 2025, double mid-2024; under the broader wording it jumped to ~20% in early 2026.",
       "detail": "Federal Reserve Bank of Minneapolis, 'AI adoption in business grows steadily but unevenly' (2026; exact day not verified).",
       "value": "~10% (late 2025, original wording)",
       "direction": "neutral",

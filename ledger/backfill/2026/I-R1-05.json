@@ -77,7 +77,8 @@
       "source_url": "https://supercyclehq.com/blog/reports/hyperscaler-capex-october-2026",
       "source_tier": 3,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R1-05-006",

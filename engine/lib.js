@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const METHOD_VERSION = '4.3.0';
+const METHOD_VERSION = '4.4.0';
 const ROADS = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6'];
 const NONE = 'None';
 
@@ -325,6 +325,9 @@ function loadLedger(siteDir) {
   const merges = rul.merges || {};
   const byInd = {}; const excluded = []; const phases = []; const skipped = []; const approvedBy = {};
   const add = (id, it, hold) => {
+    // item-level hold (owner rulings A17/D2, 2026-11-20): the item stays on the page (flag hold:true) but is not scored.
+    // duplicate_of is a display/annotation mark only; same-source down-weighting (srcDedup) is unchanged.
+    if (it.hold === true) { excluded.push({ id: it.id, why: 'item on hold: shown, not counted', hold: true }); return; }
     if (merges[id]) { excluded.push({ id: it.id, why: merges[id].why || ('merged into ' + merges[id].into) }); return; }
     if (hold && hold.has(id)) { excluded.push({ id: it.id, why: 'indicator on hold' }); return; }
     if (it.kind === 'data-gap') { excluded.push({ id: it.id, why: 'data-gap: displayed, not counted (§3.2)' }); return; }

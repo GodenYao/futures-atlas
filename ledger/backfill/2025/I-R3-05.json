@@ -87,7 +87,7 @@
       "summary": "No mandatory registry of large training clusters and no chip-location-tracking mandate was in force in any top-3 compute jurisdiction at end-2025. Bloc B's domestic compute-network schemes are not a public mandatory cluster registry (not systematically checked).",
       "detail": "Checked: Federal Register/BIS, Congress.gov, CAC. Third top-3 jurisdiction not separately checked.",
       "value": "0 of 3",
-      "direction": "toward NO",
+      "direction": "neutral",
       "source_url": "https://www.congress.gov/bill/119th-congress/senate-bill/1705/text",
       "source_tier": 1,
       "confidence": "med",

@@ -87,7 +87,7 @@
       "summary": "No gazetted, operating mandatory registry of large training clusters or chip-location tracking was found in any top-3 jurisdiction as of phase end. Bloc B regulatory sources were only lightly searched.",
       "detail": "The 2024 BIS proposed rule on reporting by frontier developers and compute providers (NPRM 2024-09-09) was not finalised. The third top-3 jurisdiction (Bloc C) not checked in this run.",
       "value": null,
-      "direction": "toward NO",
+      "direction": "neutral",
       "source_url": "https://www.bis.gov/press-release/commerce-proposes-reporting-requirements-frontier-ai-developers-compute-providers",
       "source_tier": 1,
       "confidence": "med",

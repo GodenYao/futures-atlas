@@ -46,7 +46,7 @@
       "detail": "METR, 'Details about METR's evaluation of OpenAI GPT-5', 2025-08-07 (verified via search snippet of report). 80% horizon ~25 min.",
       "value": "2.28 h",
       "direction": "toward YES",
-      "source_url": "https://evaluations.metr.org/gpt-5-report/",
+      "source_url": "https://metr.org/evaluations/gpt-5-report/",
       "source_tier": 1,
       "confidence": "high",
       "backfilled": true

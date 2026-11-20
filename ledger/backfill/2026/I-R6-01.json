@@ -30,7 +30,7 @@
       "published": "2026-05-07",
       "summary": "Q1 2026 nonfarm business productivity growth was weak, ~1.4% annualised (as later revised), ~2.8% year over year.",
       "detail": "BLS Productivity and Costs Q1 2026 (preliminary release date approximate); values from revised table of 2026-11-05.",
-      "value": "1.4% annualised (Q1 2026, revised)",
+      "value": "0.8% / 2.9% (BLS first print, archive prod2_05072026)",
       "direction": "toward YES",
       "source_url": "https://www.bls.gov/news.release/prod2.t02.htm",
       "source_tier": 1,
@@ -46,7 +46,7 @@
       "detail": "BLS 'Productivity and Costs, Second Quarter 2026, Preliminary' (2026-08-06).",
       "value": "1.4% annualised (Q2 2026, preliminary)",
       "direction": "toward YES",
-      "source_url": "https://www.dol.gov/newsroom/economicdata/prod2_08062026.pdf",
+      "source_url": "https://web.archive.org/web/20260827164001/https://www.dol.gov/newsroom/economicdata/prod2_08062026.pdf",
       "source_tier": 1,
       "confidence": "high",
       "backfilled": true

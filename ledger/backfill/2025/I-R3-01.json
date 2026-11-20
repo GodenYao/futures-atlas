@@ -73,7 +73,7 @@
       "summary": "No 2025 incident was found that a government or developer officially attributed to AI with damage of at least USD 1 bn or at least 100 deaths. AI-enabled fraud losses are tallied only in aggregate (annual national crime reports published after year-end), which does not fit the single-incident rule. Bloc B incident disclosures were not systematically searched.",
       "detail": "FBI IC3 2025 report (AI-related complaints ~$893M aggregate) published April 2026, so excluded under the as-of rule. OECD AIM / AIID 2025 entries not systematically reviewed in this run.",
       "value": null,
-      "direction": "toward NO",
+      "direction": "neutral",
       "source_url": "https://oecd.ai/en/incidents",
       "source_tier": 1,
       "confidence": "med",

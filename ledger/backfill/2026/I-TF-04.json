@@ -87,7 +87,7 @@
       "summary": "No enacted statute guaranteeing citizen access to frontier AI or paying an AI dividend was found in any top-3 compute jurisdiction as of the phase end; public-compute programmes elsewhere target researchers and firms, not citizens.",
       "detail": "Search of congress.gov, OECD.AI policy database and press found only proposals (Bloc A S.4825) and researcher-access compute programmes (e.g. Bloc P sovereign compute, Bloc C AI factories). No Bloc B measure found that guarantees citizen access or dividends.",
       "value": null,
-      "direction": "toward NO",
+      "direction": "neutral",
       "source_url": "https://oecd.ai/en/dashboards/policy-initiatives/ai-sovereign-compute-infrastructure-program",
       "source_tier": 1,
       "confidence": "med",

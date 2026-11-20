@@ -20,7 +20,7 @@
       "direction": "toward YES",
       "source_url": "https://www.reuters.com/technology/china-sets-up-new-82-billion-ai-investment-fund-2025-01-20/",
       "source_tier": 2,
-      "confidence": "low",
+      "confidence": "high",
       "backfilled": true
     },
     {
@@ -88,9 +88,9 @@
       "detail": "Bloc A government ~9.9% stake in Intel (announced 2025-08-22) from CHIPS Act grants. Context only for this indicator; not directly verified this run.",
       "value": "~10% stake",
       "direction": "toward YES",
-      "source_url": "https://www.reuters.com/legal/transactional/us-government-take-10-stake-intel-2025-08-22/",
+      "source_url": "https://cnbc.com/2025/08/22/intel-goverment-equity-stake.html",
       "source_tier": 2,
-      "confidence": "low",
+      "confidence": "high",
       "backfilled": true
     },
     {

@@ -89,7 +89,7 @@
       "value": "~649 TWh (Bloc A 2030, LBNL reference)",
       "direction": "toward NO",
       "source_url": "https://binarybriefing.com/data-brief/ai-electricity-demand-what-will-power-it",
-      "source_tier": 2,
+      "source_tier": 3,
       "confidence": "low",
       "backfilled": true
     },

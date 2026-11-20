@@ -21,7 +21,8 @@
       "source_url": "https://www.newyorkfed.org/research/college-labor-market",
       "source_tier": 1,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R2-05-002",
@@ -41,7 +42,7 @@
       "id": "BF-2026-I-R2-05-003",
       "indicator": "I-R2-05",
       "kind": "data-series",
-      "published": "2026-05-20",
+      "published": "2026-05-07",
       "summary": "Labour think-tank analysis: young college-graduate unemployment rose from 4.0% (Jul 2023) to 5.3% (Mar 2026), 1.0 pp above the overall rate, but mostly because of higher participation; the graduate employment-to-population ratio has held steady since 2024.",
       "detail": "Economic Policy Institute, 'Class of 2026: Young college graduates face a weaker labor market...' (EPI's own CPS definition, differs from NY Fed). Date approximate (spring 2026).",
       "value": "+1.0 pp vs overall (EPI def.)",

@@ -13,7 +13,7 @@
       "id": "BF-2025-I-R5-04-001",
       "indicator": "I-R5-04",
       "kind": "data-series",
-      "published": "2025-03-13",
+      "published": "2025-03-12",
       "summary": "A compute tracker found that the price of reaching fixed performance on six benchmarks fell 9-900x per year (median 50x). Using only data from 2024 on, the median was 200x per year. Example: GPT-4-level PhD-science performance got ~40x cheaper per year. The fastest rates rest on <1 year of data.",
       "detail": "Epoch AI Data Insight 'LLM inference prices have fallen rapidly but unequally across tasks' (March 2025; X thread ~2025-03-13; date approximate).",
       "value": "9-900x/yr (median 50x)",

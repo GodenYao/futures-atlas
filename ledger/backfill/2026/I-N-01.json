@@ -12,7 +12,7 @@
     {
       "id": "BF-2026-I-N-01-001",
       "indicator": "I-N-01",
-      "kind": "data-series",
+      "kind": "data-gap",
       "published": "2026-04-13",
       "summary": "Annual AI index report notes that leading Bloc A developers have stopped reporting training compute, so threshold counts drawn from public data are increasingly estimates and lower bounds.",
       "detail": "Stanford AI Index 2026 (uses Epoch AI data); Foundation Model Transparency Index fell to 40 from 58.",

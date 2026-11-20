@@ -60,7 +60,7 @@
       "detail": "BLS Productivity and Costs, Second Quarter 2025, Revised (2025-09-04).",
       "value": "productivity +3.3% (Q2 2025, q/q ann.)",
       "direction": "toward YES",
-      "source_url": "https://www.bls.gov/news.release/archives/prod2_09042025.pdf",
+      "source_url": "https://dol.gov/newsroom/economicdata/prod2_09042025.pdf",
       "source_tier": 1,
       "confidence": "med",
       "backfilled": true

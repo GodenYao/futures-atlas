@@ -41,7 +41,7 @@
       "id": "BF-2025-I-TF-04-003",
       "indicator": "I-TF-04",
       "kind": "forecast",
-      "published": "2025-07-15",
+      "published": "2025-07-22",
       "summary": "Think-tank proposal for a Bloc A strategic sovereign wealth fund taking minority stakes in frontier AI firms and paying universal basic dividends on the model of a state oil-revenue fund.",
       "detail": "Liam Epstein (Convergence Analysis), 'Lead, Own, Share: Sovereign Wealth Funds for Transformative AI', SSRN 5343934, July 2025 (day approximate; listed in Windfall Trust Policy Atlas).",
       "value": null,
@@ -76,21 +76,7 @@
       "direction": "neutral",
       "source_url": "https://www.gov.cn/zhengce/content/202508/content_7037861.htm",
       "source_tier": 1,
-      "confidence": "low",
-      "backfilled": true
-    },
-    {
-      "id": "BF-2025-I-TF-04-006",
-      "indicator": "I-TF-04",
-      "kind": "data-gap",
-      "published": "2025-12-31",
-      "summary": "No bill to guarantee public access to frontier AI or to create an AI dividend/sovereign fund was introduced in any top-3 compute jurisdiction during 2025 (first such Bloc A bill came in 2026).",
-      "detail": "Searches of 2025 legislative trackers found none; the Bloc A A.I. Sovereign Wealth Fund Act (S. 4825) was announced in 2026 and is outside this phase - mentioned only to mark the as-of boundary.",
-      "value": null,
-      "direction": "toward NO",
-      "source_url": "https://www.congress.gov/crs-product/IF13301",
-      "source_tier": 1,
-      "confidence": "med",
+      "confidence": "high",
       "backfilled": true
     }
   ]

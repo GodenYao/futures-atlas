@@ -17,7 +17,7 @@
       "summary": "Bloc A's defence ministry designated a top-5 frontier developer a 'supply chain risk to national security' after it refused to drop contractual limits on autonomous weapons and domestic mass surveillance; the head of government ordered all federal agencies to stop using its products.",
       "detail": "Bloc A Defense Secretary Hegseth designated Anthropic a supply-chain risk; President Trump directed agencies to cease using Anthropic. Formally notified 2026-03-05 (NYT). Shows state leverage over frontier developers; reported D.C. Circuit upheld exclusion 2026-09-25 (single secondary source).",
       "value": null,
-      "direction": "toward YES",
+      "direction": "neutral",
       "source_url": "https://www.cnbc.com/2026/02/27/openai-strikes-deal-with-pentagon-hours-after-rival-anthropic-was-blacklisted-by-trump.html",
       "source_tier": 2,
       "confidence": "high",

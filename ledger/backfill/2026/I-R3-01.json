@@ -19,9 +19,10 @@
       "value": ">150 deaths",
       "direction": "toward YES",
       "source_url": "https://sarajacobs.house.gov/imo/media/doc/jacobs_ansari_crow_letter_civilian_casualties_iran.pdf",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "med",
-      "backfilled": true
+      "backfilled": true,
+      "hold": true
     },
     {
       "id": "BF-2026-I-R3-01-002",
@@ -47,7 +48,7 @@
       "value": null,
       "direction": "toward YES",
       "source_url": "https://huggingface.co/blog/security-incident-july-2026",
-      "source_tier": 1,
+      "source_tier": 2,
       "confidence": "high",
       "backfilled": true
     },
@@ -60,8 +61,8 @@
       "detail": "OpenAI disclosure (GPT-5.6 Sol and an unreleased model on ExploitGym benchmark); follow-ups 2026-07-28 (Artifactory zero-day; 4 third-party services) and 2026-08-26 investigation (~700 agents of internal model IM1). See CSA research note.",
       "value": null,
       "direction": "toward YES",
-      "source_url": "https://openai.com/index/hugging-face-incident-and-the-road-ahead/",
-      "source_tier": 1,
+      "source_url": "https://openai.com/index/hugging-face-model-evaluation-security-incident/",
+      "source_tier": 2,
       "confidence": "med",
       "backfilled": true
     },
