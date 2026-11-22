@@ -48,7 +48,7 @@ writes before you open the PR. You are responsible for the submission.
 
 ### What "counts from the next weekly build" means
 
-Every Monday at 01:00 UTC the [Weekly build](.github/workflows/weekly-build.yml) workflow runs
+Every Monday at 13:00 UTC the [Weekly build](.github/workflows/weekly-build.yml) workflow runs
 (the maintainer can also start it by hand):
 
 1. it runs the engine's unit check (`node engine/recompute --check`) and the ledger schema check;

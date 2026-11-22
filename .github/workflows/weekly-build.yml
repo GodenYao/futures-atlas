@@ -1,13 +1,13 @@
 name: Weekly build
 
-# Every Monday 01:00 UTC (after the Monday 00:00 UTC freeze) and on demand:
+# Every Monday 13:00 UTC (after the Monday 00:00 UTC freeze; leaves the day for review and merges) and on demand:
 #   engine --check, file merged inbox items into ledger/reviewed/, recompute the replay up to the week
 #   that just ended, export the map data and update index.html - only if the inputs changed.
 # The result is a pull request "Weekly build Wxx" for the maintainer to merge; nothing is pushed to main.
 # Needs the repository setting "Allow GitHub Actions to create and approve pull requests".
 on:
   schedule:
-    - cron: "0 1 * * 1"
+    - cron: "0 13 * * 1"
   workflow_dispatch:
     inputs:
       today:

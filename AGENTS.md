@@ -130,7 +130,7 @@ wording edits (with reasons); the maintainer decides and merges. Rejections give
 
 - The open PR is the public comment window: **at most 7 days**. The maintainer may merge
   earlier once review is complete and no objection is open. No auto-merge.
-- **Merge = accepted.** The item counts from the next weekly build (Monday 01:00 UTC workflow
+- **Merge = accepted.** The item counts from the next weekly build (Monday 13:00 UTC workflow
   that opens a "Weekly build Wxx" PR; live once the maintainer merges it), **only in the week of its
   own publication date**. It is never new evidence for the current week.
 - There is no window after the merge: objections to a merged item go through the Correction form.

@@ -29,7 +29,7 @@ PR adds ledger/inbox/EV-....json
        - anyone can comment in the PR
   └─ maintainer merges after review (earlier than 7 days if review is done and no objection
      is open; no auto-merge)  -> label: accepted      or closed -> label: rejected + reason
-  └─ merge = accepted. Next weekly build (workflow every Monday 01:00 UTC, after the 00:00 freeze):
+  └─ merge = accepted. Next weekly build (workflow every Monday 13:00 UTC, after the 00:00 freeze):
        - files the item under reviewed/<year>/<indicator>.json with reviewer fields
          (kind, source_tier, confidence, review: {pr, merged})
        - counts it in the week of its OWN `published` date; past weekly snapshots are
