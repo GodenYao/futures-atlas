@@ -5,8 +5,10 @@
   "published": "2026-11-20",
   "title": "tencent/Hy4 · Hugging Face",
   "summary": "A large technology firm released the full weights of its flagship Hy4 model (770B total parameters, 49B active per token, 1M-token context), its FP8 version and the pre-trained base. The model card calls Hy4 one of the strongest open-weight models available but says a notable gap remains to top proprietary models on research-level maths, long-horizon coding and model self-improvement.",
-  "detail": "Tencent Hy Team, Hugging Face model card updated 2026-11-20; also on ModelScope and GitCode. Released under the Tencent Hy License (derived from Apache 2.0 with separate authorisation needed for large API providers). A 220B Hy4 flash open-weight model was released on 2026-11-18.",
-  "roads": ["R5"],
+  "detail": "Tencent Hy Team, Hugging Face model card updated 2026-11-20; also on ModelScope and GitCode. Released under the Tencent Hy License (derived from Apache 2.0; model-as-a-service operators above a revenue threshold or 100 million monthly users need a separate licence).",
+  "roads": [
+    "R5"
+  ],
   "indicator": "I-R5-02",
   "direction": "unclear",
   "reasoning": "A new flagship open-weight release bears on how far open weights trail the frontier (I-R5-02), but no Epoch Capabilities Index score is available yet to place it.",
