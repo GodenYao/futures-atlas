@@ -10,7 +10,7 @@
   "indicator": "I-R2-01",
   "direction": "raises",
   "reasoning": "A deepening year-over-year fall for 22-25-year-olds in the most AI-exposed jobs is the series I-R2-01 resolves on, which bears on the gradual-disempowerment road R2.",
-  "counterpoint": "The figure is a year-over-year change in an ADP payroll sample, not the index level against its 2026 level that I-R2-01 uses; the release itself says the pattern alone does not show AI caused the decline, and least-exposed young workers also fell.",
+  "counterpoint": "The figure is a year-over-year change in an ADP payroll sample, not the index level against its 2026 level that I-R2-01 uses; the release reports employment by AI exposure but does not by itself establish that AI caused the decline, and employment of least-exposed young workers also fell.",
   "source_type": "dataset",
   "access": "open",
   "language": "en",
