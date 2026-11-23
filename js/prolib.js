@@ -91,9 +91,9 @@ Z.glassMat=(hex,op,rim)=>{const m=new THREE.MeshStandardMaterial({color:hex||'#5
   'outgoingLight+=vec3('+rc.r.toFixed(3)+','+rc.g.toFixed(3)+','+rc.b.toFixed(3)+')*zf;diffuseColor.a=min(.62,diffuseColor.a+zf*.42);}\n#include <output_fragment>');};
  m.customProgramCacheKey=()=>'g1zglass';return m;};
 // ---------------- Libertarian Utopia ----------------
-// mega r1 (owner 11-23, prototype, default OFF): ?mega=1 loads js/prolib_mega.js (hero 'Monolith Array' + readable walls/zones/market)
+// mega (owner 11-23): r2 is the DEFAULT for Libertarian Utopia; ?mega=0 falls back to the original generator (js/prolib_mega.js = hero 'Monolith Array' + walls/zones/market)
 // synchronously during parse (same-origin classic script) and build() delegates to it; any error falls back to this generator.
-const MEGA=/[?&]mega=1(&|$)/.test(location.search);
+const MEGA=!/[?&]mega=0(&|$)/.test(location.search);
 if(MEGA&&document.readyState==='loading'&&!FA.PROLIB_MEGA)document.write('<script src="js/prolib_mega.js"><\/script>');
 FA.PROLIB={build(site,ctx){if(MEGA&&FA.PROLIB_MEGA){try{const o=FA.PROLIB_MEGA.build(site,ctx);if(o&&o.mid){o.mega=1;if(FA.PROLIB_MEGA.hook)FA.PROLIB_MEGA.hook(o,site);return o;}}catch(e){(window.__errs=window.__errs||[]).push('mega lib: '+(e&&e.message));}}
  return FA.PROLIB.build0(site,ctx);},build0(site,ctx){const k=K();return Z.city(site,ctx,'libertarian',E=>{
