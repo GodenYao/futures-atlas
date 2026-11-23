@@ -1,0 +1,33 @@
+{
+  "indicator": "I-R5-02",
+  "items": [
+    {
+      "kind": "event",
+      "source_tier": 2,
+      "confidence": "med",
+      "schema_version": 1,
+      "id": "EV-20261120-hy4-open-weights",
+      "source_url": "https://huggingface.co/tencent/Hy4",
+      "published": "2026-11-20",
+      "title": "tencent/Hy4 · Hugging Face",
+      "summary": "A large technology firm released the full weights of its flagship Hy4 model (770B total parameters, 49B active per token, 1M-token context), its FP8 version and the pre-trained base. The model card calls Hy4 one of the strongest open-weight models available but says a notable gap remains to top proprietary models on research-level maths, long-horizon coding and model self-improvement.",
+      "detail": "Tencent Hy Team, Hugging Face model card updated 2026-11-20; also on ModelScope and GitCode. Released under the Tencent Hy License (derived from Apache 2.0; model-as-a-service operators above a revenue threshold or 100 million monthly users need a separate licence).",
+      "roads": [
+        "R5"
+      ],
+      "indicator": "I-R5-02",
+      "direction": "unclear",
+      "reasoning": "A new flagship open-weight release bears on how far open weights trail the frontier (I-R5-02), but no Epoch Capabilities Index score is available yet to place it.",
+      "counterpoint": "The developer itself reports a notable gap to top proprietary models, and the licence restricts large API providers, so the release may not narrow the open/closed gap or widen diffusion as much as the headline suggests.",
+      "source_type": "company",
+      "access": "open",
+      "language": "en",
+      "submitted_by": "gh:GodenYao",
+      "agent": "Hermes Agent weekly collector (claude-opus-5-5)",
+      "licence": "CC-BY-4.0",
+      "review": {
+        "filed": "2026-11-23"
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "indicator": "I-R2-03",
+  "items": [
+    {
+      "kind": "event",
+      "source_tier": 2,
+      "confidence": "med",
+      "schema_version": 1,
+      "id": "EV-20261120-metr-q4-capability-update",
+      "source_url": "https://metr.org/blog/2026-11-20-q4-2026-capability-update/",
+      "published": "2026-11-20",
+      "title": "AI R&D-relevant model capabilities are improving rapidly and are getting harder to measure",
+      "summary": "METR's November 2026 capability update, covering public models up to Opus 5.5 and GPT-6 Astra, estimates frontier time horizons of up to 27 hours on the verifiable subset of its new TH2 tasks and finds time horizons on the combined TH1.1 and TH2 suite doubling roughly every 3.6 months (95% CI 2.08-4.94). METR says current public evidence is insufficient to rule out drastic AI R&D acceleration in the next couple of years.",
+      "detail": "METR blog 2026-11-20, Sections 3.A.1 (27 h on TH2 verifiable subset) and 3.C.1 (3.61-month doubling). Also reports models showing worse judgment than human experts on tasks without clear empirical feedback (Section 3.B.2).",
+      "roads": [
+        "R2"
+      ],
+      "indicator": "I-R2-03",
+      "direction": "raises",
+      "reasoning": "A METR estimate above 16 hours on part of its task suite, with a short doubling time, bears directly on the I-R2-03 time-horizon statement.",
+      "counterpoint": "The 27-hour figure is for the verifiable subset only; on the combined suite a given model's 50% horizon is lower, METR stresses its measurements are getting harder to make, and no government AISI cross-check is cited.",
+      "source_type": "paper",
+      "access": "open",
+      "language": "en",
+      "submitted_by": "gh:GodenYao",
+      "agent": "Hermes Agent weekly collector (claude-opus-5-5)",
+      "licence": "CC-BY-4.0",
+      "review": {
+        "filed": "2026-11-23"
+      }
+    }
+  ]
+}

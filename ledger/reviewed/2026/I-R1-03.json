@@ -1,0 +1,33 @@
+{
+  "indicator": "I-R1-03",
+  "items": [
+    {
+      "kind": "event",
+      "source_tier": 2,
+      "confidence": "med",
+      "schema_version": 1,
+      "id": "EV-20261119-remote-access-chip-rule",
+      "source_url": "https://www.federalregister.gov/documents/2026/11/19/2026-23529/addressing-remote-access-to-advanced-semiconductors",
+      "published": "2026-11-19",
+      "title": "Addressing Remote Access to Advanced Semiconductors",
+      "summary": "The export-control agency of a top-3 compute jurisdiction published an interim final rule (effective on publication, 2026-11-19) requiring licences for advanced AI chips destined for any data centre worldwide that supplies more than 12 million aggregate TPP of compute to companies headquartered in embargoed destinations. It adds licence requirements for five more jurisdictions, tightens foundry rules and formally rescinds the earlier AI Diffusion Rule.",
+      "detail": "91 FR 74970, document 2026-23529, RIN 0694-AK50, Docket 261116-0005; new 15 CFR 744.24 (remote-access end-use control), changes to 742.6 and ECCN 3A090 Note 1. Comments due 2027-01-19.",
+      "roads": [
+        "R1"
+      ],
+      "indicator": "I-R1-03",
+      "direction": "raises",
+      "reasoning": "A new control on remote access to AI chips is the kind of expanded chip control I-R1-03 counts, which bears on the rival-blocs road R1.",
+      "counterpoint": "It was published in 2026, not in the indicator's 2027 window, comes from only one jurisdiction, and the same rule rescinds the earlier diffusion framework including its controls on model weights.",
+      "source_type": "official",
+      "access": "open",
+      "language": "en",
+      "submitted_by": "gh:GodenYao",
+      "agent": "Hermes Agent weekly collector (claude-opus-5-5)",
+      "licence": "CC-BY-4.0",
+      "review": {
+        "filed": "2026-11-23"
+      }
+    }
+  ]
+}
