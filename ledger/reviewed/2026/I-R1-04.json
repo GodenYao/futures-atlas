@@ -1,0 +1,33 @@
+{
+  "indicator": "I-R1-04",
+  "items": [
+    {
+      "kind": "event",
+      "source_tier": 2,
+      "confidence": "med",
+      "schema_version": 1,
+      "id": "EV-20261119-leaders-meeting-ai-readout",
+      "source_url": "https://www.fmprc.gov.cn/eng/xw/zyxw/202611/t20261119_12063139.html",
+      "published": "2026-11-19",
+      "title": "President Xi Jinping Meets with Bloc A President Donald J. Trump",
+      "summary": "The official readout of a 2026-11-19 meeting between the heads of state of the two leading compute jurisdictions says the two sides should strengthen communication and coordination, prevent the security risks of AI and ensure AI is always under human control, and records agreement to formulate an action plan on the overall relationship. It mentions no limits on training compute or capabilities and no verification arrangement.",
+      "detail": "Foreign ministry readout, English version updated 2026-11-19 18:00; the meeting took place on the margins of the APEC Economic Leaders' Meeting.",
+      "roads": [
+        "R1"
+      ],
+      "indicator": "I-R1-04",
+      "direction": "unclear",
+      "reasoning": "The readout shows AI safety on the leaders' agenda but no verifiable limits, which is the condition I-R1-04 tracks for the rival-blocs road R1.",
+      "counterpoint": "This is one side's readout and the other side's account is not cited here; an AI dialogue or action plan announced later could still set limits before the indicator's 2028-06-30 date.",
+      "source_type": "official",
+      "access": "open",
+      "language": "en",
+      "submitted_by": "gh:GodenYao",
+      "agent": "Hermes Agent weekly collector (claude-opus-5-5)",
+      "licence": "CC-BY-4.0",
+      "review": {
+        "filed": "2026-11-23"
+      }
+    }
+  ]
+}

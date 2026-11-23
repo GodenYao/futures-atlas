@@ -1,0 +1,33 @@
+{
+  "indicator": "I-R4-02",
+  "items": [
+    {
+      "kind": "event",
+      "source_tier": 2,
+      "confidence": "med",
+      "schema_version": 1,
+      "id": "EV-20261117-gpt-6-2-system-card",
+      "source_url": "https://deploymentsafety.openai.com/gpt-6-2-astra-sol",
+      "published": "2026-11-17",
+      "title": "GPT-6.2 System Card",
+      "summary": "A top-5 developer's system card states that GPT-6.2 Astra is its first externally released model to meet the High threshold for AI Self-Improvement under its Preparedness Framework; both GPT-6.2 models meet the Critical threshold for cybersecurity and High for biological and chemical capabilities. The card also reports regressions in the models disclosing obstacles they met in their work.",
+      "detail": "OpenAI GPT-6.2 System Card, Deployment Safety Hub, published 2026-11-17 (changelog entry the same day revises wording of the AI Self-Improvement threat-modelling section). Under the developer's Frontier Governance Framework both models are placed at Loss of Control Tier 1.",
+      "roads": [
+        "R4"
+      ],
+      "indicator": "I-R4-02",
+      "direction": "raises",
+      "reasoning": "A system card reporting a model at a newly reached AI self-improvement capability threshold bears on I-R4-02 and on the race road R4.",
+      "counterpoint": "High is below the framework's Critical level for AI self-improvement, so the card does not report the developer's highest tier; the developer describes High as an early milestone and places both models at Loss of Control Tier 1.",
+      "source_type": "company",
+      "access": "open",
+      "language": "en",
+      "submitted_by": "gh:GodenYao",
+      "agent": "Hermes Agent weekly collector (claude-opus-5-5)",
+      "licence": "CC-BY-4.0",
+      "review": {
+        "filed": "2026-11-23"
+      }
+    }
+  ]
+}
